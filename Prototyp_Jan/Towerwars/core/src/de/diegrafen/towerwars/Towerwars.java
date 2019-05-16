@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
+import de.diegrafen.towerwars.screens.PlayScreen;
 import de.diegrafen.towerwars.states.GameStateManager;
 import de.diegrafen.towerwars.states.MenuState;
 
@@ -18,11 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class Towerwars extends ApplicationAdapter implements InputProcessor {
+public class Towerwars extends Game implements InputProcessor {
 
-	public static final int WIDTH = 800;
+	public static final int WIDTH = 1280;
 
-    public static final int HEIGHT = 450;
+    public static final int HEIGHT = 720;
 
     public static final String TITLE = "TowerWars";
 
@@ -44,7 +45,7 @@ public class Towerwars extends ApplicationAdapter implements InputProcessor {
 	
 	@Override
 	public void create () {
-	    gameStateManager = new GameStateManager();
+/*	    gameStateManager = new GameStateManager();
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
 		//img = new Texture(Gdx.files.internal("assets/textures/badlogic.jpg"));
@@ -61,7 +62,8 @@ public class Towerwars extends ApplicationAdapter implements InputProcessor {
 		camera.update();
 		tiledMap = new TmxMapLoader().load("test.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		Gdx.input.setInputProcessor(this);
+		Gdx.input.setInputProcessor(this);*/
+		setScreen(new PlayScreen());
 	}
 
 	@Override
@@ -69,15 +71,32 @@ public class Towerwars extends ApplicationAdapter implements InputProcessor {
 //		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 //		gameStateManager.update(Gdx.graphics.getDeltaTime());
 //		gameStateManager.render(batch);
-        camera.update();
-        tiledMapRenderer.setView(camera);
-        tiledMapRenderer.render();
+//        camera.update();
+//        tiledMapRenderer.setView(camera);
+//        tiledMapRenderer.render();
+		super.render();
 	}
+
+	@Override
+	public void resize (int width, int height) {
+	    super.resize(width, height);
+    }
+
+    @Override
+    public void pause () {
+	    super.pause();
+    }
+
+    @Override
+    public void resume () {
+        super.resume();
+    }
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
+		//batch.dispose();
+		//img.dispose();
+		super.dispose();
 	}
 
 	public void connectToServer() {
@@ -88,11 +107,6 @@ public class Towerwars extends ApplicationAdapter implements InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
 		if(keycode == Input.Keys.LEFT)
 			camera.translate(-32,0);
 		if(keycode == Input.Keys.RIGHT)
@@ -105,6 +119,11 @@ public class Towerwars extends ApplicationAdapter implements InputProcessor {
 			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
 		if(keycode == Input.Keys.NUM_2)
 			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
 		return false;
 	}
 

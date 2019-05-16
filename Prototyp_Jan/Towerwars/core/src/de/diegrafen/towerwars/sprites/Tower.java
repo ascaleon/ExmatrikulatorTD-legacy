@@ -3,7 +3,7 @@ package de.diegrafen.towerwars.sprites;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 
-public class Tower extends Sprite {
+public class Tower extends Sprite2 {
     private final static int GRAVITY = -15;
 
     private Vector3 velocity;
