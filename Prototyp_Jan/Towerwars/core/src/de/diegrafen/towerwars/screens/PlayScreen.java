@@ -1,12 +1,14 @@
 package de.diegrafen.towerwars.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -27,6 +29,8 @@ public class PlayScreen implements Screen, InputProcessor {
     private OrthogonalTiledMapRenderer mapRenderer;
     private OrthographicCamera camera;
 
+    private SpriteBatch batch;
+
     private Enemy enemy;
 
     private DataBase dataBase;
@@ -46,7 +50,9 @@ public class PlayScreen implements Screen, InputProcessor {
         map = mapLoader.load("prototypeMap.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Math.round(Towerwars.WIDTH), Math.round(Towerwars.HEIGHT));
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+        camera.setToOrtho(false, Towerwars.WIDTH, Towerwars.HEIGHT);
         enemy = new Enemy(new Sprite(new Texture("badlogic.jpg")));
 
 
@@ -70,6 +76,7 @@ public class PlayScreen implements Screen, InputProcessor {
         mapRenderer.setView(camera);
         mapRenderer.render();
 
+
     }
 
     /**
@@ -80,8 +87,9 @@ public class PlayScreen implements Screen, InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportWidth = Towerwars.WIDTH;
-        camera.viewportHeight = Towerwars.HEIGHT;
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+
         camera.update();
 
     }
@@ -120,7 +128,10 @@ public class PlayScreen implements Screen, InputProcessor {
         enemy.getTexture().dispose();
     }
     public boolean keyDown (int keycode) {
-        return false;
+        if(keycode == Input.Keys.LEFT){return false;}
+
+        if(keycode == Input.Keys.RIGHT){return false;}
+        else{return false;}
     }
 
     public boolean keyUp (int keycode) {
@@ -132,8 +143,7 @@ public class PlayScreen implements Screen, InputProcessor {
     }
 
     public boolean touchDown (int x, int y, int pointer, int button) {
-        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-        map.getTileSets().getTile(0);
+        return false;
     }
 
     public boolean touchUp (int x, int y, int pointer, int button) {

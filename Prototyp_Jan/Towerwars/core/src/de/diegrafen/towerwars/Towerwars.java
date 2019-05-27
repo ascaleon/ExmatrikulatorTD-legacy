@@ -51,12 +51,6 @@ public class Towerwars extends Game implements InputProcessor {
 
 	@Override
 	public void render () {
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		gameStateManager.update(Gdx.graphics.getDeltaTime());
-//		gameStateManager.render(batch);
-//        camera.update();
-//        tiledMapRenderer.setView(camera);
-//        tiledMapRenderer.render();
 		super.render();
 	}
 
