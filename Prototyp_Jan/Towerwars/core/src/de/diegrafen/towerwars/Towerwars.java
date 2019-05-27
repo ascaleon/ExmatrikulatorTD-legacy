@@ -23,7 +23,7 @@ public class Towerwars extends Game implements InputProcessor {
 
 	public static final int WIDTH = 1280;
 
-    public static final int HEIGHT = 720;
+    public static final int HEIGHT = 1280;
 
     public static final String TITLE = "TowerWars";
 
@@ -45,24 +45,7 @@ public class Towerwars extends Game implements InputProcessor {
 	
 	@Override
 	public void create () {
-/*	    gameStateManager = new GameStateManager();
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		//img = new Texture(Gdx.files.internal("assets/textures/badlogic.jpg"));
-
-        Gdx.gl.glClearColor(1, 0, 0, 1);
-
-        gameStateManager.push(new MenuState(gameStateManager));
-
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false,w,h);
-		camera.update();
-		tiledMap = new TmxMapLoader().load("test.tmx");
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		Gdx.input.setInputProcessor(this);*/
 		setScreen(new PlayScreen());
 	}
 
