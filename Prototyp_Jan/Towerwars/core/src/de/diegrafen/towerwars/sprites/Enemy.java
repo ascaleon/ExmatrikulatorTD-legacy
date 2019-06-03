@@ -40,9 +40,9 @@ public class Enemy extends Sprite {
 
         //System.out.println(getX());
 
-        setX(getX() + velocity.x * deltaTime);
-        setY(getY() + velocity.y * deltaTime);
+        //setX(getX() + velocity.x * deltaTime);
+        //setY(getY() + velocity.y * deltaTime);
 
-        translateX(3);
+        translateX(speed * deltaTime);
     }
 }

@@ -1,6 +1,7 @@
 package de.diegrafen.towerwars;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,7 +12,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
+import de.diegrafen.towerwars.screens.MenuScreen;
 import de.diegrafen.towerwars.screens.PlayScreen;
+import de.diegrafen.towerwars.screens.SplashScreen;
 import de.diegrafen.towerwars.states.GameStateManager;
 import de.diegrafen.towerwars.states.MenuState;
 
@@ -19,7 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class Towerwars extends Game implements InputProcessor {
+public class Towerwars extends Game {
+
+	private AssetManager assetManager = new AssetManager();
+	private MenuScreen menuScreen;
+	private SplashScreen splashScreen;
+
+	private Preferences preferences;
+
 
 	public static final int WIDTH = 1280;
 
@@ -45,6 +55,9 @@ public class Towerwars extends Game implements InputProcessor {
 	
 	@Override
 	public void create () {
+
+
+
 /*	    gameStateManager = new GameStateManager();
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
@@ -105,55 +118,20 @@ public class Towerwars extends Game implements InputProcessor {
         clientSocket = Gdx.net.newClientSocket(Net.Protocol.TCP, "localhost", 9001, socketHints);
     }
 
-	@Override
-	public boolean keyDown(int keycode) {
-		if(keycode == Input.Keys.LEFT)
-			camera.translate(-32,0);
-		if(keycode == Input.Keys.RIGHT)
-			camera.translate(32,0);
-		if(keycode == Input.Keys.UP)
-			camera.translate(0,-32);
-		if(keycode == Input.Keys.DOWN)
-			camera.translate(0,32);
-		if(keycode == Input.Keys.NUM_1)
-			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
-		if(keycode == Input.Keys.NUM_2)
-			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		return false;
-	}
+//	@Override
+//	public boolean keyDown(int keycode) {
+//		if(keycode == Input.Keys.LEFT)
+//			camera.translate(-32,0);
+//		if(keycode == Input.Keys.RIGHT)
+//			camera.translate(32,0);
+//		if(keycode == Input.Keys.UP)
+//			camera.translate(0,-32);
+//		if(keycode == Input.Keys.DOWN)
+//			camera.translate(0,32);
+//		if(keycode == Input.Keys.NUM_1)
+//			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
+//		if(keycode == Input.Keys.NUM_2)
+//			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
+//		return false;
+//	}
 }

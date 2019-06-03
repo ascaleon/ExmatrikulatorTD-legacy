@@ -6,12 +6,17 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import de.diegrafen.towerwars.persistance.DataBase;
+import com.badlogic.gdx.math.MathUtils;
+import de.diegrafen.towerwars.models.Player;
+import de.diegrafen.towerwars.persistence.PlayerDao;
 import de.diegrafen.towerwars.sprites.Enemy;
-import de.diegrafen.towerwars.sprites.Tower;
+
+import java.util.List;
+
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -27,7 +32,7 @@ public class PlayScreen implements Screen {
 
     private Enemy enemy;
 
-    private DataBase dataBase;
+    private PlayerDao playerDao = new PlayerDao();
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
@@ -35,13 +40,44 @@ public class PlayScreen implements Screen {
     @Override
     public void show() {
 
-        dataBase = new DataBase();
+        //DataBase.getInstance().connect();
+
+        Player player1 = new Player("Rainer Koschke");
+        Player player2 = new Player("Tim Haga");
+        Player player3 = new Player("Jan Paleska");
+
+        playerDao.create(player1);
+        playerDao.create(player2);
+        playerDao.create(player3);
+
+        List<Player> players = playerDao.findAll();
+
+        for (Player player : players) {
+            System.out.println(player.toString());
+        }
+
+        playerDao.deleteAll();
+
+        players = playerDao.findAll();
+
+        for (Player player : players) {
+            System.out.println(player.toString());
+        }
 
         tiledMap = new TmxMapLoader().load("test.tmx");
 
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         camera = new OrthographicCamera();
+
+        MapProperties properties = tiledMap.getProperties();
+
+        camera.position.x = MathUtils.clamp(camera.position.x,
+                camera.viewportWidth / 2,
+                properties.get("width", Integer.class) - camera.viewportWidth / 2);
+        camera.position.y = MathUtils.clamp(camera.position.y,
+                camera.viewportHeight / 2,
+                properties.get("height", Integer.class) - camera.viewportHeight / 2);
 
         enemy = new Enemy(new Sprite(new Texture("badlogic.jpg")));
 
@@ -74,8 +110,18 @@ public class PlayScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-        camera.viewportWidth = width * 2;
-        camera.viewportHeight = height * 2;
+        camera.viewportWidth = width;// * 2;
+        camera.viewportHeight = height;// * 2;
+
+        MapProperties properties = tiledMap.getProperties();
+
+        camera.position.x = MathUtils.clamp(camera.position.x,
+                camera.viewportWidth / 2,
+                properties.get("width", Integer.class) - camera.viewportWidth / 2);
+        camera.position.y = MathUtils.clamp(camera.position.y,
+                camera.viewportHeight / 2,
+                properties.get("height", Integer.class) - camera.viewportHeight / 2);
+
         camera.update();
 
     }
