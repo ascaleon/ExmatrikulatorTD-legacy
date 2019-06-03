@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.width = Towerwars.WIDTH;
         config.height = Towerwars.HEIGHT;
         config.title = Towerwars.TITLE;
+
 		new LwjglApplication(new Towerwars(), config);
 	}
 }
