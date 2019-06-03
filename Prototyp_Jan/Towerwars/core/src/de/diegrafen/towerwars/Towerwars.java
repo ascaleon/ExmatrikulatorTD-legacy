@@ -24,69 +24,45 @@ import java.io.OutputStream;
 
 public class Towerwars extends Game {
 
-	private AssetManager assetManager = new AssetManager();
-	private MenuScreen menuScreen;
-	private SplashScreen splashScreen;
+    private AssetManager assetManager = new AssetManager();
+    private MenuScreen menuScreen;
+    private SplashScreen splashScreen;
 
-	private Preferences preferences;
+    private Preferences preferences;
 
 
-	public static final int WIDTH = 1280;
+    public static final int WIDTH = 1280;
 
-    public static final int HEIGHT = 720;
+    public static final int HEIGHT = 1280;
 
     public static final String TITLE = "TowerWars";
 
     private GameStateManager gameStateManager;
 
-	private SpriteBatch batch;
+    private SpriteBatch batch;
 
-	Texture img;
+    Texture img;
 
-	private Socket clientSocket;
+    private Socket clientSocket;
 
-	private boolean isConnected;
+    private boolean isConnected;
 
     TiledMap tiledMap;
 
     OrthographicCamera camera;
 
     TiledMapRenderer tiledMapRenderer;
-	
-	@Override
-	public void create () {
 
+    @Override
+    public void create() {
 
-
-/*	    gameStateManager = new GameStateManager();
+    //gameStateManager = new GameStateManager();
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		//img = new Texture(Gdx.files.internal("assets/textures/badlogic.jpg"));
-
-        Gdx.gl.glClearColor(1, 0, 0, 1);
-
-        gameStateManager.push(new MenuState(gameStateManager));
-
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false,w,h);
-		camera.update();
-		tiledMap = new TmxMapLoader().load("test.tmx");
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		Gdx.input.setInputProcessor(this);*/
 		setScreen(new PlayScreen());
 	}
 
 	@Override
 	public void render () {
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		gameStateManager.update(Gdx.graphics.getDeltaTime());
-//		gameStateManager.render(batch);
-//        camera.update();
-//        tiledMapRenderer.setView(camera);
-//        tiledMapRenderer.render();
 		super.render();
 	}
 
@@ -104,7 +80,7 @@ public class Towerwars extends Game {
     public void resume () {
         super.resume();
     }
-	
+
 	@Override
 	public void dispose () {
 		//batch.dispose();
