@@ -2,9 +2,12 @@ package de.diegrafen.towerwars;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -15,12 +18,12 @@ import com.badlogic.gdx.net.SocketHints;
 import de.diegrafen.towerwars.screens.MenuScreen;
 import de.diegrafen.towerwars.screens.PlayScreen;
 import de.diegrafen.towerwars.screens.SplashScreen;
-import de.diegrafen.towerwars.states.GameStateManager;
-import de.diegrafen.towerwars.states.MenuState;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import static de.diegrafen.towerwars.util.HibernateUtils.getSessionFactory;
 
 public class Towerwars extends Game {
 
@@ -30,14 +33,21 @@ public class Towerwars extends Game {
 
     private Preferences preferences;
 
+    private static long frame;
+    private long start;
+    private long count = 0;
+    private long startTime = System.currentTimeMillis();
+    private boolean skipTipp = true;
+
+    public static final int TILE_SIZE = 20;
+    public static final int GRID_SIZE = 3 * TILE_SIZE;
+
 
     public static final int WIDTH = 1280;
 
-    public static final int HEIGHT = 1280;
+    public static final int HEIGHT = 680;
 
-    public static final String TITLE = "TowerWars";
-
-    private GameStateManager gameStateManager;
+    public static final String TITLE = "Exmatrikulator TD";
 
     private SpriteBatch batch;
 
@@ -53,17 +63,66 @@ public class Towerwars extends Game {
 
     TiledMapRenderer tiledMapRenderer;
 
+    public Towerwars() {
+        this.start = System.currentTimeMillis();
+    }
+
     @Override
     public void create() {
 
+        Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        //Gdx.gl.glHint(GL20, GL20.GL_NICEST);
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_LINEAR);
+
+        preferences = Gdx.app.getPreferences(Assets.GLOBAL_PREF_NAME);
+        //skipTipp = preferences.contains(SplashScreen.REMEMBER_KEY) && preferences.getBoolean(SplashScreen.REMEMBER_KEY);
+
+        assetManager.setLoader(ParticleEffect.class, new ParticleEffectLoader(new InternalFileHandleResolver()));
+
+        Texture.setAssetManager(assetManager);
+        Assets.setAssetManager(assetManager);
+
+        Assets.loadFonts();
+        Assets.queueAssets();
+
+        splashScreen = new SplashScreen(this);
     //gameStateManager = new GameStateManager();
-		batch = new SpriteBatch();
-		setScreen(new PlayScreen());
+		//batch = new SpriteBatch();
+		//setScreen(new PlayScreen());
 	}
 
 	@Override
 	public void render () {
-		super.render();
+		//super.render();
+
+        if (assetManager.update()) {
+
+            // instantiate if not already here
+            if (menuScreen == null) {
+                menuScreen = new MenuScreen(this);
+                System.out.println("Blah2");
+            }
+
+            splashScreen.setLoadingPercentage(1);
+
+            // automatic change change to menu screen
+            if (skipTipp) {
+                if (getScreen() == splashScreen) {
+                    System.out.println("Blah3");
+                    setScreen(menuScreen);
+                    System.out.println("Blah4");
+                }
+            }
+
+        } else {
+            if (getScreen() == null) {
+                setScreen(splashScreen);
+            }
+            splashScreen.setLoadingPercentage(assetManager.getProgress());
+        }
+
+        if (getScreen() != null) getScreen().render(Gdx.graphics.getDeltaTime());
 	}
 
 	@Override
@@ -83,8 +142,6 @@ public class Towerwars extends Game {
 
 	@Override
 	public void dispose () {
-		//batch.dispose();
-		//img.dispose();
 		super.dispose();
 	}
 
@@ -94,20 +151,9 @@ public class Towerwars extends Game {
         clientSocket = Gdx.net.newClientSocket(Net.Protocol.TCP, "localhost", 9001, socketHints);
     }
 
-//	@Override
-//	public boolean keyDown(int keycode) {
-//		if(keycode == Input.Keys.LEFT)
-//			camera.translate(-32,0);
-//		if(keycode == Input.Keys.RIGHT)
-//			camera.translate(32,0);
-//		if(keycode == Input.Keys.UP)
-//			camera.translate(0,-32);
-//		if(keycode == Input.Keys.DOWN)
-//			camera.translate(0,32);
-//		if(keycode == Input.Keys.NUM_1)
-//			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
-//		if(keycode == Input.Keys.NUM_2)
-//			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
-//		return false;
-//	}
+    public void switchToMenu() {
+        menuScreen.validateGameScreen();
+
+        setScreen(menuScreen);
+    }
 }

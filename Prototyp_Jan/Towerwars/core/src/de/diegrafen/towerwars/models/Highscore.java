@@ -12,8 +12,8 @@ public class Highscore extends BaseEntity {
     private int score;
 
     @ManyToOne
-    @JoinColumn(name="player_id")
-    private Player player;
+    @JoinColumn(name="profile_id")
+    private Profile profile;
 
     public Highscore () {
 

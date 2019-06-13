@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Mon Jun 03 15:23:51 CEST 2019:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.1.0 - (1808820): instance a816c00e-016b-1d82-a763-0000044802a8 
+Mon Jun 10 20:23:05 CEST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.1.0 - (1808820): instance a816c00e-016b-42a1-2083-000003b95418 
 on database directory /home/jan/Seafile/Dropbox/Studium/Informatik BSc/Semester 4/Softwareprojekt/diegrafen/Prototyp_Jan/Towerwars/core/assets/TowerwarsDB with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
 Loaded from file:/home/jan/.m2/repository/org/apache/derby/derby/10.14.1.0/derby-10.14.1.0.jar
 java.vendor=Oracle Corporation

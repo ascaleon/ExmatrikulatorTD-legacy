@@ -5,28 +5,28 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Player")
-@NamedQueries({ @NamedQuery(name = "Player.findAll", query = "SELECT p FROM Player p")})
-public class Player extends BaseEntity {
+@Table(name = "Profile")
+@NamedQueries({ @NamedQuery(name = "Profile.findAll", query = "SELECT p FROM Profile p")})
+public class Profile extends BaseEntity {
 
     static final long serialVersionUID = 223795568;
 
     private String name;
 
-    public Player() {
+    public Profile() {
 
     }
 
-    public Player(String name) {
+    public Profile(String name) {
         this.name = name;
     }
 
-    @OneToMany(mappedBy="player")
+    @OneToMany(mappedBy="profile")
     private List<Highscore> highscores;
 
     @Override
     public String toString() {
-        return String.format("Player {id: %d, name: %s}", getId(), name);
+        return String.format("Profile {id: %d, name: %s}", getId(), name);
     }
 
     public String getName() {

@@ -1,5 +1,4 @@
 buildscript {
-    
 
     repositories {
         mavenLocal()
@@ -10,24 +9,18 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-<<<<<<< HEAD
-        //classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.4.RELEASE")
-
-=======
-        classpath "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
->>>>>>> 281a0608f4a4790cc60cceef6ff9b0de020bb1a0
-
+        //classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
+        //classpath "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        //classpath "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     }
 }
 
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
-    //apply plugin: 'org.springframework.boot'
-    //apply plugin: 'io.spring.dependency-management'
 
     version = '1.0'
+
     ext {
         appName = "towerwars"
         gdxVersion = '1.9.9'
@@ -56,26 +49,27 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-tiledmappacker:$gdxVersion"
-        
+        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+
     }
 }
 
-project(":html") {
-    apply plugin: "gwt"
-    apply plugin: "war"
-
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
-        
-    }
-}
+//project(":html") {
+//    apply plugin: "gwt"
+//    apply plugin: "war"
+//
+//
+//    dependencies {
+//        compile project(":core")
+//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+//        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
+//
+//    }
+//}
 
 project(":core") {
     apply plugin: "java"
@@ -84,17 +78,11 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.esotericsoftware:kryonet:2.22.0-RC1"
-        //compile group: 'org.apache.derby', name: 'derby', version: '10.14.1.0'
-        compile group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2'
-//        compile("org.springframework.boot:spring-boot-starter-data-jpa")
-//        compile("com.h2database:h2")
-        compile group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.5.1'
-        // https://mvnrepository.com/artifact/javax.ejb/javax.ejb-api
-        compile group: 'javax.ejb', name: 'javax.ejb-api', version: '3.2'
         compile "org.hibernate:hibernate-core:5.4.3.Final"
-        // https://mvnrepository.com/artifact/org.apache.derby/derby
         compile group: 'org.apache.derby', name: 'derby', version: '10.14.1.0'
+
 
     }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class AbstractScreen implements Screen {
@@ -21,6 +22,10 @@ public class AbstractScreen implements Screen {
 
         final SpriteBatch stageBatch = new SpriteBatch(2048);
 
+        this.stage = new Stage(new ScreenViewport());
+        this.ui = new Stage(new ScreenViewport(), stageBatch);
+
+        //this.ui = new Stage(new StretchViewport(480,270), stageBatch);
         //this.stage = new Stage( 480, 270, true);
         //this.ui = new Stage(480, 270, true, stageBatch);
         this.stageCamera = (OrthographicCamera) stage.getCamera();
@@ -87,7 +92,7 @@ public class AbstractScreen implements Screen {
 
         //ui.setViewport(gameWidth, gameHeight, true);
 
-        //stage.setViewport(gameWidth, gameHeight, true);
+        stage.setViewport(new ScreenViewport());
         stageCamera.setToOrtho(true, gameWidth, gameHeight);
 
     }
@@ -118,5 +123,25 @@ public class AbstractScreen implements Screen {
 
     protected boolean handleBack() {
         return true;
+    }
+
+    public Stage getUi() {
+        return ui;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float getSpeed() {
+        return speed;
     }
 }

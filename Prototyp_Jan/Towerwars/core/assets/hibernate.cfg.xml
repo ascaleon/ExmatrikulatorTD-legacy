@@ -31,7 +31,7 @@
         <property name="hbm2ddl.auto">update</property>
 
         <mapping class="de.diegrafen.towerwars.models.Tower" />
-        <mapping class="de.diegrafen.towerwars.models.Player" />
+        <mapping class="de.diegrafen.towerwars.models.Profile" />
         <mapping class="de.diegrafen.towerwars.models.Highscore" />
 
     </session-factory>
