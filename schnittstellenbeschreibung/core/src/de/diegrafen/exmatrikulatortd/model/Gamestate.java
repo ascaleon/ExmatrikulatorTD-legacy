@@ -1,23 +1,34 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Vector2;
 import de.diegrafen.exmatrikulatortd.controller.Controller;
+import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
-import java.util.Collection;
+import javax.persistence.*;
 import java.util.List;
 
-public class Gamestate {
+@Entity
+@Table(name = "Gamestates")
+public class Gamestate extends BaseModel {
 
-    private Player player;
+    static final long serialVersionUID = 48546846516547L;
 
-    private TiledMap worldMap;
+    @OneToMany(mappedBy="gameState")
+    private List<Player> player;
 
-    private List<Vector2> wayPoints;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Coordinates> wayPoints;
 
+    @Enumerated(EnumType.ORDINAL)
     private Difficulty difficulty;
 
-    private int roundNumer;
+    private int roundNumber;
+
+    private int numberOfRounds;
 
     private Wave wave;
 

@@ -1,4 +1,4 @@
-package de.diegrafen.exmatrikulatortd.view;
+package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -6,16 +6,18 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.diegrafen.exmatrikulatortd.controller.GameController;
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
 
-public class BaseScreen implements Screen {
+public abstract class BaseScreen implements Screen {
 
-    protected GameController controller;
-    protected GameWorld world;
+    protected GameController gameController;
+    protected Gamestate gameState;
     protected Stage ui;
 
-    public BaseScreen(GameController controller, GameWorld world) {
-        this.controller = controller;
-        this.world = world;
+    public BaseScreen(GameController gameController, Gamestate gameState) {
+        this.gameController = gameController;
+        this.gameState = gameState;
         ui = new Stage(new ScreenViewport());
     }
 
@@ -23,14 +25,14 @@ public class BaseScreen implements Screen {
     @Override
     public void show() {
         // Set Debug Mode
-        ui.setDebugAll(controller.isDebugOn());
+        ui.setDebugAll(gameController.isDebugOn());
 
         // Map the controller
         InputMultiplexer input = new InputMultiplexer();
         input.addProcessor(ui);
 
         // Add an input processor to toggle debug mode via F3.
-        input.addProcessor(new DebugProcessor(ui, controller));
+        //input.addProcessor(new DebugProcessor(ui, gameController));
         Gdx.input.setInputProcessor(input);
 
         // Screen-specific initialization
@@ -80,6 +82,5 @@ public class BaseScreen implements Screen {
     public void dispose() {
         if(ui != null) ui.dispose();
         ui = null;
-    }
     }
 }
