@@ -4,23 +4,22 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 04:54
  */
-public class SplashScreen implements Screen {
+public class SplashScreen extends BaseScreen {
 
-    public SplashScreen(ExmatrikulatorTD exmatrikulatorTD) {
-
+    public SplashScreen (MainController mainController) {
+        super(mainController);
     }
 
-    /**
-     * Called when this screen becomes the current screen for a {@link Game}.
-     */
     @Override
-    public void show() {
-
+    public void init() {
+        System.out.println("Dies ist der SplashScreen!");
+        //getMainController().loadAssets();
     }
 
     /**
@@ -29,49 +28,11 @@ public class SplashScreen implements Screen {
      * @param delta The time in seconds since the last render.
      */
     @Override
-    public void render(float delta) {
-
+    public void update(float delta) {
+        if (getMainController().areAssetsLoaded()) {
+            getMainController().setMenuScreen();
+        }
     }
 
-    /**
-     * @param width
-     * @param height
-     * @see ApplicationListener#resize(int, int)
-     */
-    @Override
-    public void resize(int width, int height) {
 
-    }
-
-    /**
-     * @see ApplicationListener#pause()
-     */
-    @Override
-    public void pause() {
-
-    }
-
-    /**
-     * @see ApplicationListener#resume()
-     */
-    @Override
-    public void resume() {
-
-    }
-
-    /**
-     * Called when this screen is no longer the current screen for a {@link Game}.
-     */
-    @Override
-    public void hide() {
-
-    }
-
-    /**
-     * Called when this screen should release all resources.
-     */
-    @Override
-    public void dispose() {
-
-    }
 }

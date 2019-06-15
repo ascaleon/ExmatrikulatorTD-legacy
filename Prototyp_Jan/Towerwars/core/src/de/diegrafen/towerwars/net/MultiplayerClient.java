@@ -14,10 +14,8 @@ public class MultiplayerClient extends Connector {
 
     private Client client;
 
-    public MultiplayerClient () {
-        client = new Client();
-        Kryo kryo = client.getKryo();
-        registerObjects(kryo);
+    public MultiplayerClient (Client client) {
+        super(client.getKryo());
     }
 
     public void startClient () {

@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
@@ -11,12 +12,12 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
  */
 public interface GameView {
 
-    public void addTower (GameObject towerObject);
+    public void addTower (TowerObject towerObject);
 
-    public void removeTower (GameObject towerObject);
+    public void removeTower (TowerObject towerObject);
 
-    public void addEnemy (GameObject enemyObject);
+    public void addEnemy (EnemyObject enemyObject);
 
-    public void removeEnemy (GameObject enemyObject);
+    public void removeEnemy (EnemyObject enemyObject);
 
 }

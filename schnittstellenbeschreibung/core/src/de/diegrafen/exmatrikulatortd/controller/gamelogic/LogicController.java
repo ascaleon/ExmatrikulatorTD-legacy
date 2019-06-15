@@ -1,4 +1,4 @@
-package de.diegrafen.exmatrikulatortd.controller;
+package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;

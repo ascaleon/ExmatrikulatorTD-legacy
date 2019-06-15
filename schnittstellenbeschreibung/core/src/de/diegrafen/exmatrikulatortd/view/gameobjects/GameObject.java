@@ -11,4 +11,6 @@ public interface GameObject {
     public void update(float deltaTime);
 
     public void draw(SpriteBatch spriteBatch);
+
+    public void dispose();
 }

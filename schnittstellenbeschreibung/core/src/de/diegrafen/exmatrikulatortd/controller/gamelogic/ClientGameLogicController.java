@@ -1,8 +1,10 @@
-package de.diegrafen.exmatrikulatortd.controller;
+package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -14,10 +16,11 @@ public class ClientGameLogicController extends GameLogicController {
 
     private GameClient gameClient;
 
-    public ClientGameLogicController (Gamestate gameState, GameClient gameClient) {
-        super(gameState);
+    public ClientGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameClient gameClient) {
+        super(mainController, gamestate, profile);
         this.gameClient = gameClient;
     }
+
 
     @Override
     public void update(float deltaTime) {
@@ -45,6 +48,12 @@ public class ClientGameLogicController extends GameLogicController {
     }
 
     public void refreshLocalGameState () {
+
+    }
+
+    public void exitGame () {
+        gameClient.shutdown();
+        super.exitGame(false);
 
     }
 

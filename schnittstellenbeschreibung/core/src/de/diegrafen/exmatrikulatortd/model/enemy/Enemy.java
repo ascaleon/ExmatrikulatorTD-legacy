@@ -3,10 +3,9 @@ package de.diegrafen.exmatrikulatortd.model.enemy;
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Player;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Enemies")
@@ -21,6 +20,9 @@ public class Enemy extends BaseModel {
     private float maxHitPoints;
 
     private float currentHitPoints;
+
+    @OneToMany(mappedBy="enemy", orphanRemoval=true)
+    private List<Debuff> debuffs;
 
     @ManyToOne
     @JoinColumn(name="player_id")
@@ -46,8 +48,6 @@ public class Enemy extends BaseModel {
     private ArmorType armorType;
 
     private String assetsName;
-
-    private transient EnemyObject enemyObject;
 
     public Enemy () {
 

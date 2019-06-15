@@ -1,8 +1,11 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
 import com.esotericsoftware.kryonet.Server;
-import de.diegrafen.exmatrikulatortd.controller.LogicController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
+
+import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
+import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -18,12 +21,14 @@ public class GameServer extends Connector {
 
     private LogicController logicController;
 
-    public GameServer (int tcpPort, int udpPort, LogicController logicController) {
-        this.tcpPort = tcpPort;
-        this.udpPort = udpPort;
-        this.server = new Server();
+    private boolean connected;
 
-        this.logicController = logicController;
+    public GameServer () {
+        this.tcpPort = TCP_PORT;
+        this.udpPort = UDP_PORT;
+        this.server = new Server();
+        this.connected = false;
+        registerObjects(server.getKryo());
 
         attachBuildRequestListener();
         attachSellRequestListener();
@@ -34,7 +39,6 @@ public class GameServer extends Connector {
 
 
     public boolean startServer() {
-        server.start();
         try {
             server.bind(tcpPort, udpPort);
         } catch (java.io.IOException e) {
@@ -42,7 +46,11 @@ public class GameServer extends Connector {
             return false;
         }
 
-        return true;
+        return connected = true;
+    }
+
+    public void shutdown () {
+
     }
 
     private void attachBuildRequestListener () {
@@ -65,5 +73,11 @@ public class GameServer extends Connector {
 
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
 
+    public void setLogicController(LogicController logicController) {
+        this.logicController = logicController;
+    }
 }

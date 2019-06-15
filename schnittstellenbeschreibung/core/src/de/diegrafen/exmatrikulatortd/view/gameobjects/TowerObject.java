@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 /**
@@ -9,8 +10,8 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class TowerObject extends BaseObject {
 
-    public TowerObject() {
-        super();
+    public TowerObject(Tower tower) {
+        super(tower);
     }
 
     @Override

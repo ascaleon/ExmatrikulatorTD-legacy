@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.model.tower;
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 
@@ -55,6 +56,9 @@ public class Tower extends BaseModel {
     @OneToOne
     private Enemy currentTarget;
 
+    @OneToMany(mappedBy="tower", orphanRemoval=true)
+    private List<Buff> buffs;
+
     /**
      * Variable, die den Zeitpunkt des letzten Suchens nach einem Gegner abspeichert. Wird nicht in der Datenbank
      * gespeichert.
@@ -62,18 +66,10 @@ public class Tower extends BaseModel {
     private transient float timeSinceLastSearch;
 
     /**
-     * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
-     * Wird nicht in der Datenbank gespeichert.
-     */
-    private static final float SEARCH_TARGET_INTERVALL = 0.75f;
-
-    /**
      * Variable, die angibt, wie lange der letzte Angriff zurückliegt. Wird für die Wiederherstellung eines
      * laufenden Spiels in der Datenbank gespeichert.
      */
     private float timeSinceLastAttack;
-
-    private transient TowerObject towerObject;
 
     private String assetsName;
 
@@ -87,12 +83,5 @@ public class Tower extends BaseModel {
 
     public void setAttackDamage(int attackDamage) {
         this.attackDamage = attackDamage;
-    }
-
-    /**
-     * Aktualisiert den Zustand des  mit diesem
-     */
-    public void update () {
-
     }
 }

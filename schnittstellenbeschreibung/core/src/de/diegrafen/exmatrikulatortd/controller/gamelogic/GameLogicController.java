@@ -1,9 +1,13 @@
-package de.diegrafen.exmatrikulatortd.controller;
+package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
+import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 /**
@@ -12,16 +16,65 @@ import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
  */
 public class GameLogicController implements LogicController {
 
+    private MainController mainController;
+
     private Gamestate gamestate;
 
     private GameScreen gameScreen;
 
-    public GameLogicController (Gamestate gamestate) {
+    private Profile profile;
+
+    GameStateDao gameStateDao;
+
+    SaveStateDao saveStateDao;
+
+    public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
+        this.mainController = mainController;
         this.gamestate = gamestate;
+        this.profile = profile;
+        this.gameStateDao = new GameStateDao();
+        this.saveStateDao = new SaveStateDao();
+        gameStateDao.create(gamestate);
     }
 
     @Override
     public void update(float deltaTime) {
+
+    }
+
+    void applyAuras (float deltaTime) {
+
+    }
+
+    void applyBuffsAndDebuffs (float deltaTime) {
+
+    }
+
+    void applyMovement (float deltaTime) {
+
+    }
+
+    void makeAttacks (float deltaTime) {
+
+    }
+
+    void applyPlayerDamage () {
+
+    }
+
+    void spawnWave () {
+
+    }
+
+    void hasRoundEnded () {
+
+    }
+
+    void startNewRound () {
+
+    }
+
+    void initializeCollisionMap () {
 
     }
 
@@ -61,6 +114,7 @@ public class GameLogicController implements LogicController {
         this.gameScreen = gameScreen;
     }
 
-    public void initGameScreen() {
+    public void exitGame (boolean saveBeforeExit) {
+        mainController.setEndScreen(gamestate);
     }
 }

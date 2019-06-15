@@ -10,7 +10,16 @@ import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
  */
 public abstract class Connector {
 
-    private void registerObjects (Kryo kryo) {
-
+    protected void registerObjects (Kryo kryo) {
+        kryo.register(BuildRequest.class);
+        kryo.register(BuildResponse.class);
+        kryo.register(GetServerStateRequest.class);
+        kryo.register(GetServerStateResponse.class);
+        kryo.register(SellRequest.class);
+        kryo.register(SellResponse.class);
+        kryo.register(SendEnemyRequest.class);
+        kryo.register(SendEnemyResponse.class);
+        kryo.register(UpgradeRequest.class);
+        kryo.register(UpgradeResponse.class);
     }
 }

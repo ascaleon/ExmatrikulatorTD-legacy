@@ -23,5 +23,32 @@ public class WaveFactory {
     }
 
 
+    private Wave createRegularWave ( ) {
+        return null;
+    }
+
+    private Wave createHeavyWave () {
+        return null;
+    }
+
+    private Wave createFastWave () {
+        return null;
+    }
+
+    private Wave createRegularAndHeavyWave () {
+        return null;
+    }
+
+    private Wave createRegularAndFastWave () {
+        return null;
+    }
+
+    private Wave createHeavyAndFastWave () {
+        return null;
+    }
+
+    private Wave createBossWave () {
+        return null;
+    }
 
 }

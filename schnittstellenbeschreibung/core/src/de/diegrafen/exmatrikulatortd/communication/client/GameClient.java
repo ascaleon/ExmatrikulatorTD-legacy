@@ -1,7 +1,7 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
 import com.esotericsoftware.kryonet.Client;
-import de.diegrafen.exmatrikulatortd.controller.LogicController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -16,11 +16,14 @@ public class GameClient extends Connector implements ClientInterface {
 
     private Client client;
 
+    private boolean connected;
+
     /**
      * Erzeugt einen neuen GameClient
      */
     public GameClient () {
         client = new Client();
+        registerObjects(client.getKryo());
     }
 
     @Override
@@ -51,13 +54,16 @@ public class GameClient extends Connector implements ClientInterface {
     /**
      * Stellt die Verbindung
      * @param host Die Hostadresse
-     * @param tcpPort Die Nummer des TCP-Ports
-     * @param udpPort Die Nummer des UDP-Ports
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
-    public boolean connect (String host, int tcpPort, int udpPort) {
+    public boolean connect (String host) {
         //client.connect(5000, host, tcpPort, udpPort);
         return false;
+    }
+
+    @Override
+    public void shutdown() {
+        client.close();
     }
 
     public void attachBuildResponseListener (LogicController logicController) {
@@ -78,5 +84,9 @@ public class GameClient extends Connector implements ClientInterface {
 
     public void attachGetServerStateResponseListener (LogicController logicController) {
 
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

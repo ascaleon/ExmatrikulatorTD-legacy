@@ -38,7 +38,9 @@
         <mapping class="de.diegrafen.exmatrikulatortd.model.SaveState" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.enemy.Enemy" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.enemy.Wave" />
+        <mapping class="de.diegrafen.exmatrikulatortd.model.enemy.Debuff" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Tower" />
+        <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Buff" />
 
 
     </session-factory>

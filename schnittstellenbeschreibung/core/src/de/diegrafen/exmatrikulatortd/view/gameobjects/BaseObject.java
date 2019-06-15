@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
 
 /**
@@ -22,11 +23,7 @@ public abstract class BaseObject implements GameObject {
 
     private String name;
 
-    private Sprite sprite;
-
-    BaseObject () {
-
-    }
+    private BaseModel baseModel;
 
     public BaseObject(final BaseModel baseModel) {
 

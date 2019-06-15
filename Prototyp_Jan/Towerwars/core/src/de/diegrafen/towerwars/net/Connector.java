@@ -9,7 +9,11 @@ import de.diegrafen.towerwars.sprites.Tower;
  */
 abstract class Connector {
 
-    void registerObjects (Kryo kryo) {
+    public Connector (Kryo kryo) {
+        registerObjects(kryo);
+    }
+
+    private void registerObjects (Kryo kryo) {
         kryo.register(GameState.class);
         kryo.register(PlayerMove.class);
     }

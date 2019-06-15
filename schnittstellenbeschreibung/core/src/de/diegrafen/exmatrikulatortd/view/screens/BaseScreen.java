@@ -8,7 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
-import de.diegrafen.exmatrikulatortd.controller.GameLogicController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 public abstract class BaseScreen implements Screen {
 
@@ -16,11 +17,16 @@ public abstract class BaseScreen implements Screen {
 
     private OrthographicCamera camera;
 
+    private MainController mainController;
+
     GameLogicController gameLogicController;
 
     protected Stage ui;
 
-    public BaseScreen (ExmatrikulatorTD game) {
+
+
+    public BaseScreen (MainController mainController) {
+        this.mainController = mainController;
         this.game = game;
         ui = new Stage(new ScreenViewport());
     }
@@ -65,7 +71,7 @@ public abstract class BaseScreen implements Screen {
         }
     }
 
-    void update(float deltaTime) {
+    public void update(float deltaTime) {
     }
 
     /**
@@ -106,6 +112,14 @@ public abstract class BaseScreen implements Screen {
 
     public void setGame(ExmatrikulatorTD game) {
         this.game = game;
+    }
+
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
 }

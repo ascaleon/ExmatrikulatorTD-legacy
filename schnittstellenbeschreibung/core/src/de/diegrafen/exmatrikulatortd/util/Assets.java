@@ -1,4 +1,4 @@
-package de.diegrafen.exmatrikulatortd.view;
+package de.diegrafen.exmatrikulatortd.util;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
