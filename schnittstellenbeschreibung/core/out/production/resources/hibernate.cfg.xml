@@ -40,6 +40,7 @@
         <mapping class="de.diegrafen.exmatrikulatortd.model.enemy.Wave" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Tower" />
 
+
     </session-factory>
 
 </hibernate-configuration>

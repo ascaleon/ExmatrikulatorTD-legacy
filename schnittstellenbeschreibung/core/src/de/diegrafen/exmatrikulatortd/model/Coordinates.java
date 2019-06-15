@@ -1,7 +1,8 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+
+import javax.persistence.*;
 import java.awt.geom.Point2D;
 
 /**
@@ -9,12 +10,28 @@ import java.awt.geom.Point2D;
  * @version 13.06.2019 21:41
  */
 @Entity
-@Table(name = "Coordinates")
+@Table(name = "way_points")
+@SecondaryTable(name = "collision_matrix")
+@NamedQueries({
+        @NamedQuery(name="Coordinates.findAll",
+                query="SELECT c FROM Coordinates c"),
+        @NamedQuery(name="Coordinates.findByXandY",
+                query="SELECT c FROM Coordinates c WHERE c.xCoordinate = :xCoordinate AND c.yCoordinate = :yCoordinate"),
+        @NamedQuery(name="Coordinates.findBuildableFields",
+                query="SELECT c FROM Coordinates c WHERE c.xCoordinate = :xCoordinate AND c.yCoordinate = :yCoordinate")
+})
 public class Coordinates extends BaseModel {
 
     private int xCoordinate;
 
     private int yCoordinate;
+
+    @Column(table = "collision_matrix")
+    private boolean isBuildable;
+
+    @OneToOne
+    @JoinColumn(table = "collision_matrix")
+    private Tower tower;
 
     public Coordinates() {
 

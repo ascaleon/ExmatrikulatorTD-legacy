@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.model.tower;
 
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
+import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
@@ -35,7 +36,12 @@ public class Tower extends BaseModel {
 
     private int price;
 
+    private int sellPrice;
+
     private int upgradeLevel;
+
+    @OneToOne(mappedBy = "tower")
+    private Coordinates position;
 
     public int getAttackDamage() {
         return attackDamage;

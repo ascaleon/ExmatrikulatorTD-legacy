@@ -14,6 +14,8 @@ public class Gamestate extends BaseModel {
 
     static final long serialVersionUID = 48546846516547L;
 
+    String mapName;
+
     @OneToMany(mappedBy="gameState")
     private List<Player> player;
 
@@ -22,6 +24,12 @@ public class Gamestate extends BaseModel {
             orphanRemoval = true
     )
     private List<Coordinates> wayPoints;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Coordinates> collisionMatrix;
 
     @Enumerated(EnumType.ORDINAL)
     private Difficulty difficulty;
@@ -42,6 +50,5 @@ public class Gamestate extends BaseModel {
 
         this.isActive = true;
     }
-
 
 }

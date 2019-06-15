@@ -15,7 +15,7 @@ public abstract class GameController extends Controller {
         super(screen, model);
     }
 
-    public abstract void buildTower (Tower tower);
+    public abstract boolean buildTower (Tower tower);
 
 
     public abstract void upgradeTower (Tower tower);

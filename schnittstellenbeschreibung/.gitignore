@@ -1,6 +1,8 @@
 ## Hibernate/Derby
 
-/core/assets/TowerwarsDB
+/core/assets/TowerwarsDB/
+/core/out/production/resources/TowerwarsDB/*
+/core/out/
 
 ## Java
 

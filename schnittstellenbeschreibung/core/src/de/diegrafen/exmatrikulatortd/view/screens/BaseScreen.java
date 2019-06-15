@@ -4,16 +4,29 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
+import de.diegrafen.exmatrikulatortd.GameLogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.GameController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 
 public abstract class BaseScreen implements Screen {
 
+    private ExmatrikulatorTD game;
+
+    private OrthographicCamera camera;
+
+    GameLogicController gameLogicController;
+
     protected GameController gameController;
     protected Gamestate gameState;
     protected Stage ui;
+
+    public BaseScreen (ExmatrikulatorTD game) {
+        this.game = game;
+    }
 
     public BaseScreen(GameController gameController, Gamestate gameState) {
         this.gameController = gameController;
@@ -21,15 +34,19 @@ public abstract class BaseScreen implements Screen {
         ui = new Stage(new ScreenViewport());
     }
 
+    public BaseScreen () {
+
+    }
+
 
     @Override
     public void show() {
         // Set Debug Mode
-        ui.setDebugAll(gameController.isDebugOn());
+        //ui.setDebugAll(gameController.isDebugOn());
 
         // Map the controller
         InputMultiplexer input = new InputMultiplexer();
-        input.addProcessor(ui);
+        //input.addProcessor(ui);
 
         // Add an input processor to toggle debug mode via F3.
         //input.addProcessor(new DebugProcessor(ui, gameController));
@@ -60,7 +77,7 @@ public abstract class BaseScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        ui.getViewport().update(width, height);
+        //ui.getViewport().update(width, height);
     }
 
     @Override

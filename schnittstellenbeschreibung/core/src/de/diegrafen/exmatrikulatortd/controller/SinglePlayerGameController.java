@@ -16,8 +16,8 @@ public class SinglePlayerGameController extends GameController {
     }
 
     @Override
-    public void buildTower(Tower tower) {
-
+    public boolean buildTower(Tower tower) {
+        return false;
     }
 
     @Override

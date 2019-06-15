@@ -12,8 +12,10 @@ public class Player extends BaseModel {
     static final long serialVersionUID = 4918147183123L;
 
     @ManyToOne
-    @JoinColumn(name="player_id")
+    @JoinColumn(name="gamestate_id")
     private Gamestate gameState;
+
+    private int playerNumber;
 
     private String playerName;
 
