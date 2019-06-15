@@ -22,4 +22,7 @@ public class Profile extends BaseModel {
     @OneToMany(mappedBy="profile")
     private List<Highscore> highscores;
 
+    @OneToMany(mappedBy="profile")
+    private List<SaveState> saveStates;
+
 }

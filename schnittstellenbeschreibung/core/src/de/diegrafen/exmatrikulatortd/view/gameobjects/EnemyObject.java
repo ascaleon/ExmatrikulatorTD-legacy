@@ -9,17 +9,22 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
  */
 public class EnemyObject extends BaseObject {
 
-    public EnemyObject(Enemy enemy) {
-        super(enemy);
+    public EnemyObject() {
+        super();
     }
 
     @Override
-    public void update() {
+    public void update(float deltaTime) {
 
     }
 
     @Override
     public void draw(SpriteBatch spriteBatch) {
+
+    }
+
+    @Override
+    public void dispose() {
 
     }
 

@@ -1,6 +1,11 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
-import de.diegrafen.exmatrikulatortd.communication.server.Response;
+import com.esotericsoftware.kryonet.Client;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.Request;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.Response;
+import de.diegrafen.exmatrikulatortd.controller.LogicController;
+import de.diegrafen.exmatrikulatortd.model.Coordinates;
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -10,14 +15,33 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public interface ClientInterface {
 
-    public void buildTower (Tower tower, int xPosition, int yPosition);
+    boolean buildTower (Tower tower, Coordinates coordinates);
 
-    public void sellTower (Tower tower);
+    boolean sellTower (Tower tower);
 
-    public void upgradeTower (Tower tower);
+    boolean upgradeTower (Tower tower);
 
-    public void sendEnemy (Enemy enemy);
+    boolean sendEnemy (Enemy enemy);
 
-    public void updateLocalGameState (Response response);
+    Gamestate refreshLocalGameState ();
+
+    /**
+     * Stellt die Verbindung zu einem Server her.
+     * @param host Die Hostadresse
+     * @param tcpPort Die Nummer des TCP-Ports
+     * @param udpPort Die Nummer des UDP-Ports
+     * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
+     */
+    boolean connect (String host, int tcpPort, int udpPort);
+
+    void attachBuildResponseListener (LogicController logicController);
+
+    void attachSellResponseListener (LogicController logicController);
+
+    void attachSendEnemyResponseListener (LogicController logicController);
+
+    void attachUpgradeResponseListener (LogicController logicController);
+
+    void attachGetServerStateResponseListener (LogicController logicController);
 
 }

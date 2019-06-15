@@ -4,6 +4,7 @@ import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 @Entity
 @Table(name = "Towers")
 public class Tower extends BaseModel {
+
+    private String towerName;
 
     /**
      * Der durch den Turm verursachte Schaden.
@@ -38,10 +41,45 @@ public class Tower extends BaseModel {
 
     private int sellPrice;
 
+    private int upgradePrice;
+
     private int upgradeLevel;
 
     @OneToOne(mappedBy = "tower")
     private Coordinates position;
+
+    @ManyToOne
+    @JoinColumn(name="player_id")
+    private Player owner;
+
+    @OneToOne
+    private Enemy currentTarget;
+
+    /**
+     * Variable, die den Zeitpunkt des letzten Suchens nach einem Gegner abspeichert. Wird nicht in der Datenbank
+     * gespeichert.
+     */
+    private transient float timeSinceLastSearch;
+
+    /**
+     * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
+     * Wird nicht in der Datenbank gespeichert.
+     */
+    private static final float SEARCH_TARGET_INTERVALL = 0.75f;
+
+    /**
+     * Variable, die angibt, wie lange der letzte Angriff zurückliegt. Wird für die Wiederherstellung eines
+     * laufenden Spiels in der Datenbank gespeichert.
+     */
+    private float timeSinceLastAttack;
+
+    private transient TowerObject towerObject;
+
+    private String assetsName;
+
+    public Tower () {
+
+    }
 
     public int getAttackDamage() {
         return attackDamage;
@@ -51,11 +89,10 @@ public class Tower extends BaseModel {
         this.attackDamage = attackDamage;
     }
 
-    @ManyToOne
-    @JoinColumn(name="player_id")
-    private Player owner;
+    /**
+     * Aktualisiert den Zustand des  mit diesem
+     */
+    public void update () {
 
-    private transient Enemy currentTarget;
-
-    private String textureName;
+    }
 }

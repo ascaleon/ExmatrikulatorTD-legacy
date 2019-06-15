@@ -5,4 +5,9 @@ package de.diegrafen.exmatrikulatortd.view;
  * @version 15.06.2019 00:58
  */
 public class Assets {
+
+
+
+
+
 }

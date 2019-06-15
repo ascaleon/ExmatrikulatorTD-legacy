@@ -8,9 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
-import de.diegrafen.exmatrikulatortd.GameLogic.GameLogicController;
-import de.diegrafen.exmatrikulatortd.controller.GameController;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.controller.GameLogicController;
 
 public abstract class BaseScreen implements Screen {
 
@@ -20,22 +18,19 @@ public abstract class BaseScreen implements Screen {
 
     GameLogicController gameLogicController;
 
-    protected GameController gameController;
-    protected Gamestate gameState;
     protected Stage ui;
 
     public BaseScreen (ExmatrikulatorTD game) {
         this.game = game;
-    }
-
-    public BaseScreen(GameController gameController, Gamestate gameState) {
-        this.gameController = gameController;
-        this.gameState = gameState;
         ui = new Stage(new ScreenViewport());
     }
 
-    public BaseScreen () {
+//    public BaseScreen(GameController gameController, Gamestate gameState) {
+//
+//    }
 
+    public BaseScreen () {
+        ui = new Stage(new ScreenViewport());
     }
 
 
@@ -59,14 +54,18 @@ public abstract class BaseScreen implements Screen {
     public void init() { }
 
     @Override
-    public void render(float delta) {
+    public void render(float deltaTime) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        draw(delta);
+        update(deltaTime);
+        draw(deltaTime);
         if(ui != null) {
-            ui.act(delta);
+            ui.act(deltaTime);
             ui.draw();
         }
+    }
+
+    void update(float deltaTime) {
     }
 
     /**
@@ -100,4 +99,13 @@ public abstract class BaseScreen implements Screen {
         if(ui != null) ui.dispose();
         ui = null;
     }
+
+    public ExmatrikulatorTD getGame() {
+        return game;
+    }
+
+    public void setGame(ExmatrikulatorTD game) {
+        this.game = game;
+    }
+
 }

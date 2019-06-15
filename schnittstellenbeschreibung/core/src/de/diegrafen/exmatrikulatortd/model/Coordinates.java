@@ -10,7 +10,7 @@ import java.awt.geom.Point2D;
  * @version 13.06.2019 21:41
  */
 @Entity
-@Table(name = "way_points")
+@Table(name = "points")
 @SecondaryTable(name = "collision_matrix")
 @NamedQueries({
         @NamedQuery(name="Coordinates.findAll",
@@ -25,6 +25,9 @@ public class Coordinates extends BaseModel {
     private int xCoordinate;
 
     private int yCoordinate;
+
+    @ManyToOne
+    private Gamestate gameState;
 
     @Column(table = "collision_matrix")
     private boolean isBuildable;

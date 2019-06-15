@@ -1,16 +1,11 @@
 package de.diegrafen.exmatrikulatortd;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import de.diegrafen.exmatrikulatortd.GameLogic.GameLogicController;
-import de.diegrafen.exmatrikulatortd.controller.SinglePlayerGameController;
+import de.diegrafen.exmatrikulatortd.controller.GameLogicController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
-import de.diegrafen.exmatrikulatortd.view.screens.SplashScreen;
 
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
@@ -22,7 +17,7 @@ public class ExmatrikulatorTD extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
-		setScreen(new GameScreen(new GameLogicController(), new Gamestate()));
+		setScreen(new GameScreen(new GameLogicController(new Gamestate())));
 		getSessionFactory();
 	}
 

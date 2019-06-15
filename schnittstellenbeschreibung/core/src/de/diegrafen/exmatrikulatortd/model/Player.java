@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
+import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import javax.persistence.*;
@@ -30,8 +31,24 @@ public class Player extends BaseModel {
     @OneToMany(mappedBy="owner")
     private List<Tower> towers;
 
+    @OneToMany(mappedBy="player")
+    private List<Wave> waves;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Coordinates> wayPoints;
+
     public Player () {
 
     }
 
+    public List<Coordinates> getWayPoints() {
+        return wayPoints;
+    }
+
+    public void setWayPoints(List<Coordinates> wayPoints) {
+        this.wayPoints = wayPoints;
+    }
 }

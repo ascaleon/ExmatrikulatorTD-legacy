@@ -1,4 +1,4 @@
-package de.diegrafen.exmatrikulatortd.GameLogic;
+package de.diegrafen.exmatrikulatortd.controller;
 
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -16,28 +16,33 @@ public class GameLogicController implements LogicController {
 
     private GameScreen gameScreen;
 
-    @Override
-    public void update() {
-
-    }
-
-    public void buildTower (Tower tower, int xPosition, int yPosition) {
-
+    public GameLogicController (Gamestate gamestate) {
+        this.gamestate = gamestate;
     }
 
     @Override
-    public void sellTower(Tower tower) {
+    public void update(float deltaTime) {
 
     }
 
     @Override
-    public void upgradeTower(Tower tower) {
-
+    public boolean buildTower(Tower tower, Coordinates coordinates) {
+        return false;
     }
 
     @Override
-    public void sendEnemy(Enemy enemy) {
+    public boolean sellTower(Tower tower) {
+        return false;
+    }
 
+    @Override
+    public boolean upgradeTower(Tower tower) {
+        return false;
+    }
+
+    @Override
+    public boolean sendEnemy(Enemy enemy) {
+        return false;
     }
 
     public Gamestate getGamestate() {
@@ -54,5 +59,8 @@ public class GameLogicController implements LogicController {
 
     public void setGameScreen(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
+    }
+
+    public void initGameScreen() {
     }
 }

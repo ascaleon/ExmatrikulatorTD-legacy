@@ -35,7 +35,7 @@
         <mapping class="de.diegrafen.exmatrikulatortd.model.Highscore" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.Player" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.Profile" />
-        <mapping class="de.diegrafen.exmatrikulatortd.model.ServerState" />
+        <mapping class="de.diegrafen.exmatrikulatortd.model.SaveState" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.enemy.Enemy" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.enemy.Wave" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Tower" />

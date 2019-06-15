@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import de.diegrafen.exmatrikulatortd.controller.Controller;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -16,19 +15,19 @@ public class Gamestate extends BaseModel {
 
     String mapName;
 
+    /**
+     * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
+     */
+    private transient int localPlayerNumber;
+
+
+    /**
+     * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
+     */
     @OneToMany(mappedBy="gameState")
     private List<Player> player;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Coordinates> wayPoints;
-
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy="gameState")
     private List<Coordinates> collisionMatrix;
 
     @Enumerated(EnumType.ORDINAL)
@@ -38,17 +37,14 @@ public class Gamestate extends BaseModel {
 
     private int numberOfRounds;
 
-    private Wave wave;
-
     private boolean isActive;
 
     public Gamestate () {
 
     }
 
-    public void initializeGameState (Controller controller) {
+    public void initializeSinglePlayerGameState (Difficulty difficulty) {
 
-        this.isActive = true;
     }
 
 }

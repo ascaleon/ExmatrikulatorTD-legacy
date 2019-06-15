@@ -2,16 +2,9 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.esotericsoftware.kryonet.Connection;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
-import de.diegrafen.exmatrikulatortd.GameLogic.GameLogicController;
-import de.diegrafen.exmatrikulatortd.controller.MultiPlayerGameController;
-import de.diegrafen.exmatrikulatortd.controller.SinglePlayerGameController;
-import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
+import de.diegrafen.exmatrikulatortd.controller.GameLogicController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
@@ -44,43 +37,56 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private List<TowerObject> towers;
 
-    public GameScreen(SinglePlayerGameController singlePlayerGameController, Gamestate gameState) {
-        super(singlePlayerGameController, gameState);
-        this.multiPlayer = false;
-    }
+//    public GameScreen(SinglePlayerGameController singlePlayerGameController, Gamestate gameState) {
+//        super(singlePlayerGameController, gameState);
+//        this.multiPlayer = false;
+//    }
+//
+//    public GameScreen(MultiPlayerGameController multiPlayerGameController, Gamestate gameState, Connection connection) {
+//        super(multiPlayerGameController, gameState);
+//        this.multiPlayer = true;
+//    }
 
-    public GameScreen(MultiPlayerGameController multiPlayerGameController, Gamestate gameState, Connection connection) {
-        super(multiPlayerGameController, gameState);
-        this.multiPlayer = true;
-    }
-
-    public GameScreen(GameLogicController gameLogicController, Gamestate gameState) {
+    public GameScreen(GameLogicController gameLogicController) {
         super();
         this.gameLogicController = gameLogicController;
-        this.gameState = gameState;
+        gameLogicController.setGameScreen(this);
+        gameLogicController.initGameScreen();
     }
 
     @Override
-    public void addTower(Tower tower) {
+    void update (float deltaTime) {
+        super.update(deltaTime);
+        gameLogicController.update(deltaTime);
 
-    }
-
-    @Override
-    public void removeTower(Tower tower) {
-
-    }
-
-    @Override
-    public void addEnemy(Enemy enemy) {
 
     }
 
     @Override
-    public void removeEnemy(Enemy enemy) {
+    public void addTower(TowerObject towerObject) {
+
+    }
+
+    @Override
+    public void removeTower(TowerObject towerObject) {
+
+    }
+
+    @Override
+    public void addEnemy(EnemyObject enemyObject) {
+
+    }
+
+    @Override
+    public void removeEnemy(EnemyObject enemyObject) {
 
     }
 
     private void loadMap (String mapPath) {
+
+    }
+
+    private void initializeUserInterface () {
 
     }
 }
