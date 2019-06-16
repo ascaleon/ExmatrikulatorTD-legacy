@@ -28,6 +28,8 @@ style=ieee
 ]{biblatex}
 % \DeclareLanguageMapping{ngerman}{ngerman-apa}
 
+\usepackage{booktabs}
+
 \addbibresource{bibo.bib}
 
 \input{Glossar}
@@ -129,19 +131,13 @@ style=ieee
 % identifizieren sein, hier und optimalerweise auf dem Titelblatt.}
 
 \begin{tabular}{ccp{.675\textwidth}}
-Version & Datum & Änderungen \\
-\hline
-0.1 & 04.12.2018 & Dokumentvorlage als initiale Fassung kopiert \\
-0.2 & 07.12.2018 & Anwendungsfälle hinzugefügt \\
-0.3 & 11.12.2018 & Erste Version der Einflussfaktoren hinzugefügt \\
-0.4 & 13.12.2018 & Einflassfaktoren überarbeitet, erste Issue-Cards hinzugefügt \\
-0.5 & 15.12.2018 & Erste Version der Einleitung hinzugefügt \\
-0.5.1 & 16.12.2018 & Grundlage für das Glossar gelegt, Problemkarten weiter geschrieben, Abschnitt \enquote{Evolution} eröffnet \\
-0.6 & 18.12.2018 & Probleme und Strategien fertiggestellt \\
-0.7 & 21.12.2018 & Paketsicht entworfen \\
-0.8 & 23.12.2018 & Modul- und Datensicht fertiggestellt, Sequenzdiagramme \\
-0.9 & 23.12.2018 & Konzeptionelle und Ausführungssicht fertiggestellt \\
-1.0 & 23.12.2018 & Rest fertiggestellt\\
+\textbf{Version} & \textbf{Datum} & \multicolumn{1}{c}{\textbf{Änderungen}} \\\toprule
+0.5 & 23.05.2019 & Übernahme der Architekturbeschreibung aus dem letzten Semester als initiale Fassung\\
+0.6 & 10.06.2019 & Globale Analyse\\
+0.7 & 11.06.2019 & Einf"uhrung\\
+0.8 & 14.06.2019 & Erste Modulsicht\\
+0.9 & 15.06.2019 & Evolution, Konzeptionelle Sicht, Anwendungsf"alle\\
+1.0 & 16.06.2019 & Letzte Konkretisierungen der Modulsicht, Datensicht, Ausf"uhrungssicht, Kleinigkeiten, Feinschliff
 \end{tabular}
 
 %\cleardoublepage
@@ -213,6 +209,22 @@ Nach der in diesem Abschnitt erfolgten Einführung beschreiben wir in Abschnitt 
 
 \section{Anwendungsfälle}
 \label{sec:anwendungsfaelle}
+\subsection{Allgemeine Spiellogik}
+\subsubsection{Platzieren von T"urmen}
+Um seine Verteidung zu errichten, kann der Spieler aus einer Reihe von verschiedenen Turmtypen w"ahlen (zu verschiedenen Kosten) und diese an erlaubten Stellen platzieren.
+\subsubsection{Verkaufen von Türmen}
+Der Spieler kann auf Wunsch einen schlecht plazierten oder nicht mehr benötigten Turm wieder verkaufen und erhält dadurch einen Prozentsatz des ausgegebenen Geldes zurück.
+\subsubsection{Aufr"usten von T"urmen}
+Zum Verst"arken der Verteidung, ggf. um mit dem steigenden Schwierigkeitsgrad mitzuhalten, k"onnen bereits platzierte T"urme aufger"ustet werden. So kann entweder der Turm selbst ein Upgrade bekommen oder der Spieler verleiht ihm eine Aura, sodass auch T"urme in dessen N"ahe gest"arkt werden oder Gegnereinheiten ggf. geschw"acht werden.
+\subsection{Singleplayer}
+\subsubsection{W"ahlen des Spielmodus}
+Der Spieler muss im Singleplayer den Spielmodus vor Spielbeginn w"ahlen. Dabei stehen entweder der Endlos-Modus, bei dem es praktisch unendlich viele Wellen mit ansteigender Schwierigkeit gibt, oder der Story-Modus, welcher auf verschiedenen Schwierigkeitsgraden erfolgreich durchgespielt werden kann, zur Verf"ugung.
+
+\subsection{Multiplayer}
+\subsubsection{Verbinden mit dem Gegenspieler}
+Um eine Partie gegen einen Spieler anzutreten, muss dessen IP-Addresse bekannt sein und benutzt werden um sich mit Diesem zu verbinden.
+\subsubsection{Angriffswellen aufstocken}
+Im Multiplayer k"onnen zus"atzlich zu den Basis-Angriffswellen gegen Geld weitere Einheiten zum Gegner geschickt werden.
 
 \clearpage
 
@@ -297,7 +309,7 @@ Einflussfaktor & Flexibilität und Veränderlichkeit & Auswirkung \\\hline
 \multicolumn{3}{|l|}{\orga} \\\nobreakhline
 \faktorartEintrag{Entwicklungsplan}
 \faktorEintrag{Time-to-Market}{\label{factor:time-to-market}Die fertige Software muss am 11.08.2019 ausgeliefert werden.}{Keine Veränderlichkeit, keine Flexibilität }{Die Implementierung aller Funktionen kann unter Umständen nicht umgesetzt werden. Daher sollte die Architektur so aufgebaut werden, dass leicht eine Basisanwendung erstellt werden kann, die um weitere Komponenten erweitert werden kann.}
-\faktorEintrag{Architektur-Abgabe}{Die Architekturbeschreibung muss am 16.06.2019 abgegeben werden.}{Keine Veränderlichkeit, keine Flexibilität.}{Da nur eine kurze Bearbeitungszeit gegeben ist, sollte für eine schnelle schnelle und fehlerlose Umsetzung auf möglichst einfache Entwurfsmuster bzw. Frameworks sowie eine Modularisierung (um Komponenten später austauschen zu können) zurückgegriffen werden. %Eine Modularisierung der einzelnen Funktionalitäten (wie Datenbank und Netzwerk) ermöglicht dabei, die Archtitektur später 
+\faktorEintrag{Architektur-Abgabe}{Die Architekturbeschreibung muss am 16.06.2019 abgegeben werden.}{Keine Veränderlichkeit, keine Flexibilität.}{Da nur eine kurze Bearbeitungszeit gegeben ist, sollte für eine schnelle und fehlerlose Umsetzung auf möglichst einfache Entwurfsmuster bzw. Frameworks sowie eine Modularisierung (um Komponenten später austauschen zu können) zurückgegriffen werden. %Eine Modularisierung der einzelnen Funktionalitäten (wie Datenbank und Netzwerk) ermöglicht dabei, die Archtitektur später 
 }
 \faktorartEintrag{Entwicklungsbudget}
 \faktorEintrag{Anzahl Entwickler}{An dem Projekt beteiligen sich sechs Entwickler.}{Die Zahl kann sich ändern, falls Gruppenmitglieder aussteigen, jedoch können keine neuen hinzukommen.}{%Moderater Einfluss auf Zeitplan; partielle Implementierung droht.
@@ -305,6 +317,10 @@ Dadurch, dass mehrere Entwickler am Projekt beteiligt sind, kann arbeitsteilig v
 %(Ein Ausfall kann zu Verzögerungen führen da bereits verteilte Aufgaben neu verteilt werden müssen. Der Umfang der Arbeit kann auch unter dem Ausfall leiden.)} %Bessere Formulierung und Ausführung des bestehenden, kann aber auch reduziert werden.
 \faktorEintrag{Finanzielle Mittel}{Es steht kein Entwicklungsbudget zur Verfügung.}{Es wird keine Änderungen beim Budget geben.}{Es können nur kostenlos nutzbare oder von den Gruppenmitgliedern privat erworbene Mittel (wie Assets) benutzt werden. Dies kann dazu führen, dass nicht die optimale Lösung umgesetzt werden kann bzw. in der Architektur Kompromisse gemacht werden müssen.}
 %Die Verwendung von kostenlosen (und open source) Bibliotheken kann eine Einschränkung in der Entwicklung dar stellen da die Bibliotheken nicht unbedingt die optimalsten Lösungen für die Entwicklung bieten.
+\faktorEintrag{Fehlendes Know-How}{Die am Projekt beteiligten Entwickler haben noch nicht viel Erfahrung im Bereich Softwareentwicklung.}{(Positive) Veränderlichkeit ist allenfalls durch die während des Projektes gewonnene Erfahrung gegeben.}{%Moderater Einfluss auf Zeitplan; partielle Implementierung droht.
+Fehlende Erfahrung stellt einen großen Risikofaktor dar, der sowohl zu falsche Designentscheidungen als auch Fehlern während der Implementierung führen kann. Gerade der Einsatz neuer Technologien stellt wird durch die mangelnde Erfahrung zu einem Risikofaktor, den es zu minimieren gilt. % kann den Einsatz neuer Technologien 
+%Dadurch, dass mehrere Entwickler am Projekt beteiligt sind, kann arbeitsteilig vorgegangen werden. Daher sollte die Architektur möglichst modularisiert aufgebaut sein und die Schnittstellen so beschrieben werden, dass die einzelnen Komponenenten unabhängig voneinander implementiert werden können.
+}
 \faktorartEintrag{Prozesse und Werkzeuge}
 %\faktorEintrag{Entwicklung (IDE)}{Um Komplikationen zu vermeiden, wird einheitlich IntelliJ von JetBrains verwendet.}{Bei einheitlicher Absprache Änderung möglich.}{Alle Entwickler benutzen IntelliJ.}
 %\faktorEintrag{Konfigurationsmanagement}{}{}{}
@@ -315,24 +331,24 @@ Das fertige Programm muss auf verschiedenste Art und Weise getestet werden (z.\,
 }{Testen ist essentiell, um eine ordnungsgemäße Funktionsweise unserer Software zu garantieren. Zudem ist die Abgabe eines Testprotokolls vorgesehen. In den Anforderungen ist daher keine Veränderlichkeit gegeben, zudem sind die vorzunehmenden Testarten ebenfalls relativ genau vorgegeben, weshalb nur geringe Flexibilität besteht.}{Bei der Erstellung der Architektur sollte berücksichtigt werden, dass }
 \faktorEintrag{Release}{  Kein Installer, Auslieferung als .jar-Datei}{\relax%Ich bin dein Vater!
 \NEEEEIN
-}{Dank der  JVM muss das Programm nur wenig die verschiedenen Zielsysteme angepasst werden.}
-\faktorEintrag{Client}{Die Entwicklung des Gameclients muss mit einer der zwei Vorgegebenen Bibliotheken (?) erfolgen}{Geringe Flexibilität, Änderungen nur in frühen Entwicklungsstadium problemlos möglich}{Es muss vor Beginn der Implementierung fest stehen welche Bibliothek verwendet werden soll um Probleme, die durch einen Wechsel auftretten könne, zu vermeiden}
+}{Dank der  JVM muss das Programm nur wenig an die verschiedenen Zielsysteme angepasst werden.}
+\faktorEintrag{Client}{Die Entwicklung des Gameclients muss mit einer der zwei Vorgegebenen Bibliotheken  erfolgen}{Geringe Flexibilität, Änderungen nur in frühen Entwicklungsstadium problemlos möglich}{Es muss vor Beginn der Implementierung fest stehen welche Bibliothek verwendet werden soll um Probleme, die durch einen Wechsel auftretten könne, zu vermeiden}
 \multicolumn{3}{|l|}{\technik} \\\nobreakhline
 \multicolumn{3}{|l|}{\faktorart{Hardware}} \\\nobreakhline
 % \multicolumn{3}{|l|}{\faktor{Prozessoren}} \\\nobreakhline
 % Für die Ausführung des Programms gibt es lediglich die Prämisse, dass... & & \\\hline
 \multicolumn{3}{|l|}{\faktor{Anzahl an Threads}} \\\nobreakhline
-Eine der Mindestanforderungen an das ausführende System ist, dass min. 3 Threads erzeugt werden können, nämlich der sowieso vorhandene Main-Thread, ein GUI-Thread und für weitere Funktionalitäten wie das Logging (?). & Die Anwendung würde auch bei der Erzeugung von weniger Threads funktionieren, jedoch würde dann die Nebenläufigkeit nur simuliert werden. & Sollten nicht ausreichend viele Threads erzeugt werden können, wirkt sich dies negativ auf die Performanz aus.\\\hline
-\faktorEintrag{Netzwerk}{Es soll möglich sein, über eine Netzwerkverbindung gegen eine andere Spielerin zu spielen. Hierbei kann es entweder eine Instanz geben, die nur als Server auftritt, mit dem sich zwei Clients verbinden, oder die Server- und Client-Funktionalität kann in einem Modul kombiniert werden.}{Diese Vorgabe ist unveränderlich, bei der Ausgestaltung haben wir jedoch hohe Flexibilität.}{}
+Eine der Mindestanforderungen an das ausführende System ist, dass min. 3 Threads erzeugt werden können, nämlich der sowieso vorhandene Main-Thread, ein GUI-Thread und für weitere Funktionalitäten wie die Datenbank. & Die Anwendung würde auch bei der Erzeugung von weniger Threads funktionieren, jedoch würde dann die Nebenläufigkeit nur simuliert werden. & Sollten nicht ausreichend viele Threads erzeugt werden können, wirkt sich dies negativ auf die Performanz aus.\\\hline
+\faktorEintrag{Netzwerk}{Es soll möglich sein, über eine Netzwerkverbindung gegen andere Spielerin zu spielen. Hierbei kann es entweder eine Instanz geben, die nur als Server auftritt, mit dem sich zwei Clients verbinden, oder die Server- und Client-Funktionalität kann in einem Modul kombiniert werden.}{Diese Vorgabe ist unveränderlich, bei der Ausgestaltung haben wir jedoch hohe Flexibilität.}{Die Netzwerkverbindung sollte gewährleisten, dass das Spiel Synchron für beide Spieler des Multiplayer-Modus läuft. }
 \faktorEintrag{Hauptspeicher}{Es gibt keine genauen Hardware-Anforderungen. Die Software wird jedoch auf den Rechnern der Ebene 0 getestet, bei denen es sich nicht um High-End-Geräte handelt.}{Da es keine genauen Anforderungen an die Hardware gibt, haben wir eine relativ }{Die Anwendung sollte einen möglichst kleinen Memory-Footprint haben.}
-\faktorEintrag{Plattenspeicher}{Unsere Software muss ggf. auf älteren Schulrechnern mit begrenzter Speicherkapazität laufen. Zudem können Logfiles bzw. die entsprechenden Einträge in der Datenbank sehr groß werden.}{Durch Optimierung lässt sich nach der Implementierung zusätzlich Speicher einsparen.}{Zu Beginn sollte eine Herangehenweise gewählt werden, die das Speicheraufkommen von Logs so stark wie möglich reduziert.}
+% \faktorEintrag{Plattenspeicher}{Unsere Software muss ggf. auf älteren Schulrechnern mit begrenzter Speicherkapazität laufen. Zudem können Logfiles bzw. die entsprechenden Einträge in der Datenbank sehr groß werden.}{Durch Optimierung lässt sich nach der Implementierung zusätzlich Speicher einsparen.}{Zu Beginn sollte eine Herangehenweise gewählt werden, die das Speicheraufkommen von Logs so stark wie möglich reduziert.}
 \faktorartEintrag{Software}
 % \faktorEintrag{Betriebssystem (BS)}{Wir wissen nicht, welches Betriebssysteme vom Kunden benutzt werden. Da wir aber Java verwenden, erlaubt uns dies überwiegend plattformunabhängig zu entwickeln.}{Wir haben keinen Einfluss darauf, welche Betriebssysteme vom Kunden verwendet werden. Die Plattformunabhängigkeit ist vorgegeben.}{Die Entwicklung muss möglichst plattformunabhängig erfolgen. Die Nutzung }
 % \faktorEintrag{Benutzerschnittstelle}{Irgendwas mit der GUI.}{}{} 
 % \faktorEintrag{Software-Komponenten}{Datenbank ist vorgegeben, }{}{}
 \faktorEintrag{Implementierungssprache}{Die Mindestanforderungen sehen vor, dass entweder Java 8 oder Java 11 für die Implementierung genutzt werden soll.}{Dass \textit{eine} der beiden Sprachversionen genutzt werden soll, ist unveränderlich. Bei der Auswahl, welche der beiden Versionen verwendet werden soll, sind wir hingegen flexibel und können Vor- und Nachteile abwägen.}{Java 8 hat nach wie vor einen höheren Verbreitungsgrad als Java 11, ist allerdings bereits im Stadium \enquote{End of Life} (EOF) angekommen. Beide der fest vorgegebenen Spieleframeworks (siehe T2.3) sind für beide Java-Versionen verfügbar, wobei es gewisse Unterschiede zwischen den beiden Versionen bei FXGL gibt und die Java-11-Version dieses Framework (noch) nicht alle Features der Java-8-Version unterstützt. Es kann daher Sinn ergeben, zunächst auf Java 8 (ggf. unter Nutzung von Verbindung mit LibGDX) zurückzugreifen, um eine möglichst große Verfügbarkeit bei größtmöglicher Möglichkeit zur Weiterentwicklung bereitzustellen.}
 \faktorEintrag{Entwurfsmuster}{
-Es sind keine speziellen Entwurfsmuster vorgegeben.}{Wir sind im Einsatz von Entwurfsmustern nicht beschränkt, weshalb hohe Flexibilität bei geringer Veränderlichkeit gegeben ist.}{Entwurfsmuster können (und sollten) dort eingesetzt werden, wo sie die Struktur der Software (z.\,B. durch Kapselung von Komponenten wie der Persistenz über das DAO-Pattern\footnote{Glossar-Begriff}) verbessern. Stehen mehrere mögliche Entwurfsmuster zur Auswahl, können wir uns für das entscheiden, von der unserer Meinung nach die Software am meisten profitiert. Auch auf die Umsetzung von Entwurfsmustern in Frameworks können wir in diesem Zusammenhang zurückgreifen, sofern sie einen Mehrwert für die Software mit sich bringen.}
+Es sind keine speziellen Entwurfsmuster vorgegeben.}{Wir sind im Einsatz von Entwurfsmustern nicht beschränkt, weshalb hohe Flexibilität bei geringer Veränderlichkeit gegeben ist.}{Entwurfsmuster können (und sollten) dort eingesetzt werden, wo sie die Struktur der Software (z.\,B. durch Kapselung von Komponenten wie der Persistenz über das DAO-Pattern\footnote{Glossar-Begriff}) verbessern. Stehen mehrere mögliche Entwurfsmuster zur Auswahl, können wir uns für das entscheiden, von der unserer Meinung nach, die Software am meisten profitiert. Auch auf die Umsetzung von Entwurfsmustern in Frameworks können wir in diesem Zusammenhang zurückgreifen, sofern sie einen Mehrwert für die Software mit sich bringen.}
 \multicolumn{3}{|l|}{\faktor{Rahmenwerke (Frameworks)}} \\\nobreakhline
 Die Nutzung von LibGDX oder FXGL ist vorgegeben. Ansonsten kann auf beliebige Frameworks zurückgegriffen werden.  & In der Nutzung von einem der beiden genannten Frameworks besteht keine Veränderlichkeit und nur die Flexibilität der Wahl zwischen den beiden. Ansonsten ist bei der Einbindung von Frameworks höchste Flexibilität gegeben. & Die Struktur der Software muss sich an dem gewählten Spiel-Framework orientieren, um deren Funktionalität bestmöglich nutzen zu können. Weitere Funktionalitäten wie die Persistenz oder die Netzwerkkommuniaktion können mithilfe von Frameworks implementiert werden -- hier bietet sich eine entsprechende Kapselung an, um bei Nutzung eines Frameworks den Einfluss auf die restlichen Komponenten möglichst gering zu halten.\\ \hline
 %\multicolumn{3}{|l|}{\faktorart{Architekturtechnologie}} \\\nobreakhline
@@ -355,7 +371,7 @@ Die Nutzung von LibGDX oder FXGL ist vorgegeben. Ansonsten kann auf beliebige Fr
 \faktorEintrag{Desktop-Anwendung}{Die Software soll als Desktop-Anwendung bereitgestellt werden.}{Dies ist eine vom Kunden gestellte Anforderung, die nicht verändert wird. Eine zusätzliche Bereitstellung als Mobil- oder Browser-Anwendung kann jedoch als \enquote{begeisternder Faktor} im Sinne des Kano-Modells\footnote{Zitat} für eine erhöhte Kundinnenzufriedenheit sorgen, weshalb wir bei der (Über-)Erfüllung dieser Anforderung eine gewisse Flexibilität haben.}{Es ist ein Desktop-Modul vorzusehen, das über eine JVM ausgeführt werden kann. Bei Verzicht auf ein separates Server-Modul muss dieses auch die Server-Funktionalität beinhalten. Über die Auslagerung der nicht-plattformspezifischen Eigenschaften in ein eigenes Modul \enquote{Core} können später relativ leicht Portierungen auf Android, iOS sowie HTML5 kompatible Browser vorgenommen werden.}
 
 \faktorEintrag{Verschiedene Schwierigkeitsgrade}
-{Das Spiel verschiedene Schwierigkeitsgrade aufweisen.}
+{Das Spiel soll verschiedene Schwierigkeitsgrade aufweisen.}
 {Diese Mindestanforderung sollte sich nicht verändern. Die Anzahl der Schwierigkeitsgrade ist allerdings nicht genau bestimmt -- es sollten lediglich mindestens ein \enquote{normaler} und ein für Testzwecke nutzbarer leichter Schwierigkeitsgrad vorhanden sein.}
 {Beim Starten des Spieles sollte es möglich sein, mindestens einen der genannten Schwierigkeitsgrade auswählen zu können. Die Berücksichtigung dieses Faktors sollte keinen zu großen Einfluss auf die Architektur haben und kann zum Beispiel durch Definition einer entsprechenden Klasse \enquote{Difficulty} oder die direkte Einbettung in die Spiellogik erfolgen.}
 
@@ -370,22 +386,22 @@ Die Nutzung von LibGDX oder FXGL ist vorgegeben. Ansonsten kann auf beliebige Fr
 {Es muss mindestens eine Gegnerklasse geben, die entsprechende Attribute für die Eigenschaften und Spezialeigenschaften aufweist, und die z.\,B. durch Vererbung oder unter Nutzung des Factory-Entwurfsmusters ausdifferenziert werden kann. }
 
 \faktorEintrag{Eigenschaften der Spielerin}
-{ Gemäß der Mindestanforderungen soll ein Spieler eine festgesetzte Anzahl an Leben haben. Zudem soll der Spieler über Ressourcen,wovon mindestens eine Geld sein soll. Mit diesen Ressourcen kann der Spieler Türme aufrüsten oder erwerben. Die Türme sollen vom Spieler aufgestellt entfernt und aufgerüstet werden können. Außerdem soll der Spieler im Duell im Multiplayer auch Angriffswellen auslösen können
+{ Gemäß der Mindestanforderungen soll ein Spieler eine festgesetzte Anzahl an Leben haben. Zudem soll der Spieler über mindestens eine Ressource verfügen, mit der Türme gekauft und aufgerüstet sowie (im Multiplayer-Modus) Angriffswellen ausgelöst werden können. %Mit diesen Ressourcen kann die Spielerin Türme aufrüsten oder erwerben.
 }
 {Diese Mindestanforderung sollte sich nicht verändern. Bei der genauen Umsetzung ist jedoch ein hohes Maß an Flexibilität gegeben.}
-{}
+{In der Player-Klasse jedes Spielers müssen Attribute für Leben und Ressourcen bereitgestellt werden.}
 
-\faktorEintrag{Spiel-Logik}
-{Gemäß der Mindestanforderungen soll das Spiel verschiedene Schwierigkeitsstufen haben, wobei die leichteste problemlos durchspielbar ist.
-}
-{Diese Mindestanforderung sollte sich nicht verändern. Bei der genauen Umsetzung ist jedoch ein hohes Maß an Flexibilität gegeben.}
-{}
+%\faktorEintrag{Spiel-Logik}
+%{Gemäß der Mindestanforderungen soll das Spiel verschiedene Schwierigkeitsstufen haben, wobei die %leichteste problemlos durchspielbar ist.
+%}
+%{Diese Mindestanforderung sollte sich nicht verändern. Bei der genauen Umsetzung ist jedoch ein hohes %Maß an Flexibilität gegeben.}
+%{}
 
 \faktorEintrag{Multiplayer-Modus}
 {Gemäß der Mindestanforderungen soll es ein Multiplayer-Modus enthalten in dem zwei Spieler parallel im selben Spiel agieren. Zudem ist im Multiplayer-Modus das auslösen von Angriffswellen beim Gegner möglich.
 }
 {Diese Mindestanforderung sollte sich nicht verändern. Bei der genauen Umsetzung ist jedoch ein hohes Maß an Flexibilität gegeben.}
-{}
+{Für die Umsetzung dieser Anforderung muss eine Architektur gewählt werden, die eine Netzwerkkommunikation zwischen den Rechnern der Spieler ermöglicht um die Angriffswelle beim Gegner auslösen zu können.}
 
 
 
@@ -405,15 +421,15 @@ Die Nutzung von LibGDX oder FXGL ist vorgegeben. Ansonsten kann auf beliebige Fr
 % \faktorEintrag{Verschiedene Modi}{In den Anforderungen sind die Modi \enquote{Vorlage bearbeiten}, \enquote{Diagramm bearbeiten} und \enquote{Analyse} vorgesehen.}{Dies ist eine Anforderung vom Kunden, auf deren Veränderlichkeit wir keinen Einfluss nehmen können.}{Die drei Modi sollen klar abgegrenzt sein aber jederzeit wechselbar sein, also kann ein Nutzer zunächst eine \enquote{Vorlage bearbeiten} in diesem Modi jedoch nichts auswerten können. Anschließend kann er den Modi wechseln in \enquote{Diagramm bearbeiten} oder \enquote{Analyse} }
 % \faktorEintrag{Export als PDF und GXL}{In den Anforderungen ist eine Möglichkeit zum Export als PDF und GXL vorgesehen.}{Der Export als PDF ist eine Kundenanforderung und somit haben wir hier keinen Einfluss drauf. Bei dem GXL Export handelt es sich um eine optionale Anforderung also können wir hier Einfluss nehmen.}{Es müssen Schnittstellen vorgesehen werden, die einen schnellen und einfachen Export eines Graphen in verschiedene grafische und Datenformate ermöglicht.}
 
-\faktorartEintrag{Benutzerschnittstelle}
-\faktorEintrag{Interaktionsmodell}
-{}
-{}
-{}
-\faktorEintrag{Funktionen der Benutzerschnittstelle}
-{}
-{}
-{}
+% \faktorartEintrag{Benutzerschnittstelle}
+% \faktorEintrag{Interaktionsmodell}
+% {}
+% {}
+% {}
+% \faktorEintrag{Funktionen der Benutzerschnittstelle}
+% {}
+% {}
+% {}
 % \faktorartEintrag{Performanz}
 % \faktorEintrag{Ausführungszeiten}{Es sind keine spezifischen Ausführungszeiten vorgegeben. Allerdings sollte das Programm für die Benutzer ausreichend schnell und flüssig bedienbar sein.}{Da es keine genauen Vorgaben gibt, ist dieser Aspekt relativ flexibel.}{Bei der Implementierung ist darauf zu achten, dass alle Funktionen schnell genug ausgeführt werden, um eine flüssige Bedienung zu gewährleisten.}
 % \faktorEintrag{Speicherbedarf}{Der Speicherbedarf des Programms ist nicht spezifisch vorgegeben. Jedoch muss das Programm auf allen herkömmlichenn PCs laufen.}{Da der verfügbare Speicher heutzutage in der Regel sehr groß ist, ist dieser Aspekt sehr flexibel.}{}
@@ -554,29 +570,55 @@ In diesem Abschnitt erläutern wir die Probleme, die wir auf Basis der im vorher
 % \strategie{Wichtige Funktionen zuerst Implementieren(alternative)}{Wir implementieren die wichtigen Funktionen, die sich wahrscheinlich nicht ändern werden, zuerst und wenden uns dann den ausgefalleneren Funktionen zu.}%iwie Datenkapselung hinzufügen?
 %}
 
-\issueCard{Plattformunabhängige Entwicklung}
+\issueCard{Abhängigkeiten zwischen Modell und View}
 {
-%Blah
-}
-{
-\\
+Eine (zu große Abhängigkeit) zwischen den Spieldaten und ihrer Darstellung erschwert das Testen und beschränkt die Anpassbarkeit der Software. Aus diesem Grund sollten die entsprechenden Komponenten gekapselt werden.
 }{
-\strategie{Bündelung der Kern-Funktionalität in \enquote{Core}-Modul (ausgewählt)\label{strat:Core-Modul}}
-{Im LibGDX-Framework wird der Großteil eines Spieles in einem Modul \enquote{Core} programmiert, auf den weitere Module (wie in unserem Fall das \enquote{Desktop}-Modul) zurückgreifen. Diese plattformspezifischen Module weisen jeweils eine eigene Hauptklasse auf und können ggf. auf die jeweiligen Besonderheiten (wie zum Beispiel die Bildschirmgröße oder Unterstützung bestimmter Funktionalitäten wie der Netzwerkkommunikation) angepasst werden.  Dieses Vorgehen reduziert Redundanz erleichtert es uns, später die Unterstützung weiterer Zielplattformen hinzuzufügen.}
-\strategie{Programmierung eines eigenen Moduls für jede Plattform (alternativ)}{Alternativ könnte die Funktionalität der Software in jedes plattformspezifische Modul integriert werden. Dies schafft jedoch erhebliche Redundanzen, weshalb wir uns gegen diese Strategie entschieden haben.}
+% T3.1: Datenbanken\\
+% P1.3: Protokollierung in Datenbank\\
+O1.1: Time-To-Market\\
+O2.1: Anzahl Entwickler\\
+O2.3: Fehlendes Know-How\\
+T2.2: Entwurfsmuster\\
+ T3.1: Datenbanken\\
+}{
+\strategie{Einsatz des Modell-View-Control-Patterns (MVC, ausgewählt)\label{strat:MVC}}{Das MVC-Entwurfsmuster kapselt das Datenmodell, seine Visualisierung und die Businesslogik in eigene Komponenten. Hierdurch können unerwünschte Abhängigkeiten vermieden und die Komponenten unabhängig voneinander entwickelt werden. Aufgrund der relativ einfachen Umsetzbarkeit, des Zeitdrucks sowie zur Risikominimierung (siehe Strategie \ref{strat:ECS}) haben wir uns letztlich für dieses Entwurfsmuster entschieden.} %Der Controller greift dabei auf das Modell zu, aktualisiert dieses und gibt Änderungen an die View weiter. Eingaben der Benutzerin über das über die View bereitgestellte Interface werden an den Controller oder zum Daten weitergegeben
+\strategie{Einsatz des Entity-Component-Patterns (alternativ)\label{strat:ECS}}
+{Eine Alternative zum MVC stellt ein sogenantes \enquote{Entity Component System} (ECS), das Daten und Spiellogik über die Nutzung von sogenannten Komponenten kapselt. Jede Komponente stellt dabei genau eine Funktionalität (z.\,B. Bewegung, Angreifen oder Kollision, aber etwa auch die Verwaltung von Lebenspunkten) für eine \textit{Entität} zur Verfügung, die über entsprechende Systeme wie z.\,B. ein Kampfsystem in die Spiellogik Einfluss findet. Wenngleich ein ECS viele Vorteile gegenüber dem MVC-Pattern aufzuweisen scheint, haben wir uns aus zeitlichen Gründen und zur Minimierung von Risiken (geringe Erfahrung der Beteiligten sowie unsichere Kompatibilität mit relationalen Datenbanken) gegen dieses Architekturmuster entschieden.}
 }
+
+
+% \issueCard{Plattformunabhängige Entwicklung}
+% {
+% %Blah
+% Das Spiel kann,
+% }
+% {
+% O2.3: Fehlendes Know-How\\
+% O3.1: Systembau (Build)\\
+% T2.1: Implementierungssprache\\
+% T2.3: Rahmenwerke (Frameworks)\\
+% }{
+% \strategie{Bündelung der Kern-Funktionalität in \enquote{Core}-Komponente (ausgewählt)\label{strat:Core-Komponente}}
+% {Im LibGDX-Framework wird der Großteil eines Spieles in einem Modul \enquote{Core} programmiert, auf den weitere Module (wie in unserem Fall das \enquote{Desktop}-Komponente) zurückgreifen. Diese plattformspezifischen Module weisen jeweils eine eigene Hauptklasse auf und können ggf. auf die jeweiligen Besonderheiten (wie zum Beispiel die Bildschirmgröße oder Unterstützung bestimmter Funktionalitäten wie der Netzwerkkommunikation) angepasst werden.  Dieses Vorgehen reduziert Redundanz und erleichtert es uns, später die Unterstützung weiterer Zielplattformen hinzuzufügen.}
+% \strategie{Programmierung eines eigenen Moduls für jede Plattform (alternativ)}{Alternativ könnte die Funktionalität der Software in jedes plattformspezifische Modul integriert werden. Dies schafft jedoch erhebliche Redundanzen, weshalb wir uns gegen diese Strategie entschieden haben.}
+% }
 
 \issueCard{Umsetzung der Netzwerkkommunikation}
 {
+Es ist zwingend erforderlich eine Netzwerk-Komponente in die Architektur aufzunehmen.
 %Der Betrachter eines Diagramms kann sich das Protokoll ansehen, um die Erstellung des Diagramms nachzuvollziehen. Da im Protokoll aber unter anderem die Relokation von Symptomen aufgezeichnet wird, kann die Datei so groß werden, dass es schwer wird, sie sinnvoll auszuwerten.
 }
 {
-P1.3: Protokollierung in Datenbank\\
-P1.5: Veränderlichkeit von grafischen Elementen\\
-P1.11: Verschiedene Modi\\
+T1.2: Netzwerk\\
+T3.2: TCP/IP\\
+P1.6: Multiplayer-Modus\\
 }{
 \strategie{Nutzung des Frameworks kryonet in Verbindung mit TCP und UDP (ausgewählt)\label{strat:kryonet}}
-{%Blah.
+{Da Netzwerkprogrammierung innerhalb eines Projektes eine durchaus g"angige T"atigkeit ist, macht es nicht gro{\ss}artig Sinn das Rad jedes Mal neu zu erfinden. So kann durch das Verwenden einer gut entwickelten Bibliothek eine Menge \begin{it}Boilerplate Code\end{it} eingespart und das Programmieren selbst angenehmer gemacht werden.
+}
+\strategie{Nutzung von Sockets aus der Java-Standard-Bibliothek (alternativ)\label{strat:javasockets}}
+{Sollte das Verwenden eines Frameworks innerhalb der gew"ahlten Architektur nicht m"oglich seien, ob nun durch fehlende oder unpassende Schnittstellen, oder keinen Sinn machen, so kann notfalls auch auf die Sockets aus der Standard-Bibliothek zur"uckgegriffen werden. Damit lassen sich theoretisch genau die selben L"osungen umsetzen, jedoch erfordert dies dann selbstverst"andlich mehr Aufwand.
 }
 }
 
@@ -587,15 +629,14 @@ LibGDX unterstützt sowohl die Erstellung von zweidimensionalen als auch von dre
 }
 {
 O1.1: Time-to-Market\\
-O1.1: Architektur-Abgabe\\
+O1.2: Architektur-Abgabe\\
 O2.1: Anzahl Entwickler\\
 O2.2: Finanzielle Mittel\\
 T1.3: Hauptspeicher\\
-T1.5: Grafikkarte\\
 T2.3: Rahmenwerke (Frameworks)\\
 P1.1: Desktop-Anwendung\\
-P3.1: Hardwarebudget\\
-P3.2: Softwarelizenzbudget (für verwendete Software)\\
+P2.1: Hardwarebudget\\
+P2.2: Softwarelizenzbudget (für verwendete Software)\\
 }{
 \strategie{Nutzung von 2D-Grafik (ausgewählt)\label{strat:2D}}
 {Wir nutzen für die Umsetzung zweidimensionale Grafik. Hierzu ziehen wir die entsprechenden Komponenten aus LibGDX heran, die zweidimensionale Grafikelemente rendern können, sowie passende Assets. Insbesondere greifen wir bei der Umsetzung der Spielwelt auf eine sogenannte \enquote{Tiled Map} zurück, mit der sich aus einer geringen Anzahl von Feldern komplexe Spielwelten zusammensetzen lassen, und verwalten alle Elemente über einen Szenengraph, der eine Hierarchie der Teile einer \enquote{Szene}, d.\,h. der Elemente eines zu rendernden Bildes, definiert und somit zum Beispiel das Benutzerinterface logisch vom Spielgeschehen trennt.}
@@ -628,29 +669,34 @@ P3.2: Softwarelizenzbudget (für verwendete Software)\\
 % \strategie{Erstellen eines Vertrags für die Zusammenarbeit in der Gruppe(alternativ)}{Alle Mitglieder der Gruppe einigen sich gemeinschaftlich auf regelmäßige Termine für Treffen in welchen organisatorisches zu Absprachen und Strukturierung des Projekts besprochen wird. Zudem wird die Vorgehensweisen im Fall von Meinungsverschiedenheiten und nicht ausreichende Mitarbeit am Projekt schriftlich festgehalten und von jedem unterschrieben.}
 % }
 
-\issueCard{Abhängigkeit von Frameworks}{Für die Umsetzung der Software werden wir uns auf ein Framework zu Graphvisualisierung verlassen müssen, da es zu aufwändig ist, diese Funktionalität vollständig selbst zu implementieren. Auch für die Realisierung der Interaktionen mit der Datenbank werden wir auf ein Framework (voraussichtlich JPA) zurückgreifen (müssen), um die Protokollierung der Interaktionen gewährleisten zu können. 
+\issueCard{Abhängigkeit von Frameworks}{
+Eine zu große Abhängigkeit von Frameworks kann die Flexibilität bei der Architekturbeschreibung einschränken und zukünftige Erweiterungen behindern.
+% Für die Umsetzung der Software werden wir uns auf ein Framework zu Graphvisualisierung verlassen müssen, da es zu aufwändig ist, diese Funktionalität vollständig selbst zu implementieren. Auch für die Realisierung der Interaktionen mit der Datenbank werden wir auf ein Framework (voraussichtlich JPA) zurückgreifen (müssen), um die Protokollierung der Interaktionen gewährleisten zu können. 
 
-Bei der Benutzung von Frameworks muss dabei darauf geachtet werden, die Abhängigkeit so groß wie nötig und so gering wie möglich zu halten, um die Anpassbarkeit 
+% Bei der Benutzung von Frameworks muss dabei darauf geachtet werden, die Abhängigkeit so groß wie nötig und so gering wie möglich zu halten, um die Anpassbarkeit 
 
-Im Voraus lässt sich jedoch noch nicht vollständig abschätzen, ob ein einmal gewähltes Framework unsere Anforderungen wirklich vollständig erfüllen kann oder ob während der Implementierungsphase ein Punkt erreicht wird, an dem das gewählte Framework nicht mehr für unsere Zwecke zu nutzen ist oder z.\,B. gegen ein anderes ausgetauscht werden muss. 
+% Im Voraus lässt sich jedoch noch nicht vollständig abschätzen, ob ein einmal gewähltes Framework unsere Anforderungen wirklich vollständig erfüllen kann oder ob während der Implementierungsphase ein Punkt erreicht wird, an dem das gewählte Framework nicht mehr für unsere Zwecke zu nutzen ist oder z.\,B. gegen ein anderes ausgetauscht werden muss. 
 
-Zudem ist eine zu große Abhängigkeit von Frameworks nicht wünschenswert, da diese die Möglichkeiten und das Weiterentwicklungspotential unser Software u.\,U. einschränken können und zusätzlichen Overhead, sowohl in Bezug auf die Performance als auch auf die benötigten Ressourcen, verursachen können.}{
+% Zudem ist eine zu große Abhängigkeit von Frameworks nicht wünschenswert, da diese die Möglichkeiten und das Weiterentwicklungspotential unser Software u.\,U. einschränken können und zusätzlichen Overhead, sowohl in Bezug auf die Performance als auch auf die benötigten Ressourcen, verursachen können.
+}{
 O1.1: Time-To-Market\\
-T1.2: Hauptspeicher\\
-T1.2: Plattenspeicher\\
+T1.3: Hauptspeicher\\
 T2.2: Entwurfsmuster\\
 T2.3: Rahmenwerke (Frameworks)\\
-P1.3: Datenbanken\\
-P1.3: Protokollierung in Datenbank\\
+T3.1: Datenbanken\\
 }{
 
-\strategie{Kapselung von Funktionalitäten/Definition von Schnittstellen (ausgewählt)}
+\strategie{Kapselung von Funktionalitäten/Definition von Schnittstellen (ausgewählt)\label{strat:Kapselung}}
 {Um zu vermeiden, dass sie einen zu großen Einfluss auf die Gesamtarchtitektur erhalten, werden Frameworks (sofern es möglich ist) möglichst stark gekapselt bzw. ihre Funktionalität durch die Definition von Schnittstellen abstrahiert. So können andere Programmteile ohne genaue Kenntnis des betreffenden Frameworks entwickelt werden (etwa für die Datenbankfunktionalität oder die Netzwerkkommunikation) und ein Framework zu einem späteren Zeitpunkt leichter ausgetauscht werden.
 }
-\strategie{Abhängigkeit von Frameworks so stark wie möglich reduzieren (alternativ)}
-{Um eine zu starke Abhängigkeit von einem Framework zu vermeiden, werden wir bei der Modularisierung darauf achten, die Kopplung der auf einem Framework basierenden Module zum Rest der Software möglichst gering zu halten. Dies würde im schlimmsten Fall den Austausch des Frameworks ermöglichen und erhöht im Allgemeinen die Möglichkeit, die Software später weiterentwickeln zu können.}
+% \strategie{Abhängigkeit von Frameworks so stark wie möglich reduzieren (alternativ)}
+% % {Um eine zu starke Abhängigkeit von einem Framework zu vermeiden, werden wir bei der Modularisierung darauf achten, die Kopplung der auf einem Framework basierenden Module zum Rest der Software möglichst gering zu halten. Dies würde im schlimmsten Fall den Austausch des Frameworks ermöglichen und erhöht im Allgemeinen die Möglichkeit, die Software später weiterentwickeln zu können.}
+% {}
 \strategie{Funktionalitäten selbst implementieren (alternativ)}
-{An den Stellen, an denen wir merken, dass ein Framework nicht ausreichend ist, werden wir die notwendigen Funktionen selbst implementieren müssen. Hierfür ist es wichtig, ein Framework zu verwenden, das zwar einerseits selbst bereits viele Funktionen mitbringt, gleichzeitig jedoch auch die notwendige Anpassungsfähigkeit an unsere Bedürfnisse aufweist.}
+{
+Als Alternativstrategie kann versucht werden, möglichst wenig auf Frameworks zurückzugreifen und Funktionalitäten nach Möglichkeit selbst zu implementieren. Hierbei kann es allerdings Probleme geben, wenn sich entweder unsere Expertise als nicht ausreichend erweist oder wir unter Zeitdruck geraten. Daher sollte nach Möglichkeit auf bereits bestehende Lösungen zurückgegriffen werden. Wenn wir merken sollten, dass eine Komponente unserer Software doch eher durch eine eigens angepasste Lösung 
+% An den Stellen, an denen wir merken, dass ein Framework nicht ausreichend ist, werden wir die notwendigen Funktionen selbst implementieren müssen. Hierfür ist es wichtig, ein Framework zu verwenden, das zwar einerseits selbst bereits viele Funktionen mitbringt, gleichzeitig jedoch auch die notwendige Anpassungsfähigkeit an unsere Bedürfnisse aufweist.
+}
 }
 
 %Der Abgabetermin des Projektes ist festgelegt und nicht verhandelbar. Dies kann unter Umständen den %Erfolg des Projektes gefährden, sollten wir etwa für die Implementierung zu viel Zeit benötigen und %aus diesem Grund eine unfertige Software abgeben.}{
@@ -690,7 +736,7 @@ P1.3: Protokollierung in Datenbank\\
 %}
 
 \issueCard{Vorgegebene Technologien}{Wir müssen uns für eines von zwei Frameworks für die Umsetzung unseres Spieles entscheiden: Entweder für LibGDX oder FXGL.}{
-% T3.1: Datenbanken\\
+T2.3 Rahmenwerke (Frameworks)\\
 % P1.3: Protokollierung in Datenbank\\
 }{
 \strategie{Nutzung von LibGDX (ausgewählt)}{Wir nutzen LibGDX als wesentliches Framework für die Erstellung unseres Spieles. Dies hat zur Folge, dass wir unsere Struktur stark an die von LibGDX anpassen werden und einige unserer Klassen direkt von LibGDX-Klassen (wie den Klassen \texttt{Game} oder \texttt{Screen}) erben. }
@@ -702,14 +748,34 @@ P1.3: Protokollierung in Datenbank\\
 Zur Umsetzung der Datenbankfunktionalität bietet es sich an, auf ein Framework zurückzugreifen, das die Java Persistence API (JPA) implementiert, wie zum Beispiel Hibernate. Über eine Konfigurationsdatei kann sodann ein SQL-\enquote{Dialekt} sowie eine entsprechende (in unserem Fall eingebettete) Datenbank angegeben werden, die mit den passenden Einstellungen automatisch die passenden Tabellen initialisiert. 
 
 Neben dem Zugriff über einen sogenannten Session-Manager auf die Datenbank, über den Java-Objekte ohne weiteres Zutun auf Datenbank-Entitäten abgebildet werden, bietet die JPA auch die Möglichkeit,  sogenannte \enquote{Named Queries} zu definieren, mit denen sich die Mindestanforderung der Nutzung von SQL-ähnlichen Befehlen erfüllen lässt.}{
-% T3.1: Datenbanken\\
+T3.1: Datenbanken\\
 % P1.3: Protokollierung in Datenbank\\
 }{
-\strategie{Nutzung von Hibernate und in Verbindung mit Derby DB (ausgewählt)}
-{% Blah.
+\strategie{Nutzung von Hibernate in Verbindung mit Derby DB (ausgewählt)}
+{Aus Gr"unden der Bequemlichkeit und der Mindestanforderung, dass es min. 2 SQL-"ahnliche Abfragen geben muss, entschieden wir uns bereits fr"uh f"ur die Verwendung einer Technologie, die mindestens so m"achtig ist wie die \textit{Java Persistance API} (JPA). Hibernate galt nach kurzer Recherche dabei als Paradebeispiel. Die Wahl f"ur Apache Derby ergab sich haupts"achlich aus der SWP2-Erfahrung aus dem letzten Semester und der Tatsache, dass dies auch in Java implementiert wurde und Anbindungen notfalls selbst implementiert werden k"onnten.
 }
-\strategie{???}
-{%Blah.
+\strategie{Nutzung des DAO-Patterns (\textit{Data Access Object})}{
+Mit DAO setzt sich zwischen eine gew"unschte Klasse und die Datenbank eine Art "Ubersetzungseinheit, die einen abstrakten Zugriff auf Datenbanktabellen erm"oglicht.
+}
+\strategie{Nutzung der von Java bereitgestellten Standard-SQL-Bibliothek (alternativ)}
+{Diese Variante bietet sehr viele Nachteile, insbesondere was die Abhängigkeit von einer Form von SQL-System angeht -- die bei dieser Strategie verfassten Queries müssten genau der SQL-"ahnlichen Sprache entsprechen, welche die gew"ahlte Datenbank auch versteht. Somit w"aren die Anfragen hartkodiert und das nachtr"agliche Austauschen eines Datenbanksystems w"are nur mit hohem Aufwand m"oglich.
+}
+}
+
+\issueCard{Definition von Turm-, Gegner- und Wellentypen}
+{
+Gemäß der Anforderungen müssen wir verschiedene Typen von Türmen und Gegnern definieren können, die sich in ihren Eigenschaften voneinander unterscheiden
+}
+{
+P1.3: Türme/Turmeigenschaften\\
+P1.4: Verschiedene Gegner-Typen\\
+}{
+\strategie{Nutzung des Factory-Patterns (ausgewählt)}
+{
+Die Strategie, für die wir für uns bei diesem Problem entschieden haben, ist die Nutzung des sogenannten Factory-Patterns \cite{Gamma:1995:DPE:186897}. Hierbei definieren wir pro Objekt-Art eine Klasse, die der Erzeugung von neuen Objekten dient und bei der man zwischen mittels eines Enum-Objektes zwischen verschiedenen Typen differenzieren kann. Je nach Argument erhält man dann ein passendes Objekt, wie zum Beispiel einen leicht oder stark gepanzerten Gegner oder einen Turm, der verlangsamt, zurück. Wenngleich die alternative Strategie, stattdessen auf die Datenbank zurückzugreifen, gerade in Hinsicht auf Erweiterbarkeit und Anpassbarkeit durch andere Entwicklerinnen mehr Vorteile bietet, haben wir aufgrund ihrer verlässlicheren und einfacheren Umsetzbarkeit dieser Strategie den Vorzug gegeben. 
+}
+\strategie{Management von Einheitstypen über die Datenbank (alternativ)}
+{Gerade in Hinblick auf zukünftige Erweiterungsmöglichkeiten käme auch in Betracht, Typen Türmen, Gegnern und Wellen über die Datenbank zu verwalten. Die Datenbank würde bei dieser Vorgehensweise beim ersten Starten des Spiels entsprechend mit den verschiedenen Typen von Objekten inititialisiert werden, die dann während des Spieles abgerufen werden können. Ein erheblicher Nachteil dann w"are nur, dass Probleme mit der Datenbank in einem unspielbaren Spiel enden w"urden.
 }
 }
 
@@ -720,20 +786,20 @@ Neben dem Zugriff über einen sogenannten Session-Manager auf die Datenbank, üb
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{Bilder/Komponentendiagramm.pdf}
+    \includegraphics[width=\textwidth]{Bilder/KonzeptionelleSicht.pdf}
     \caption{Konzeptionelle Sicht des Spiels \enquote{Exmatrikulator TD}}
     \label{fig:Komponentendiagramm}
 \end{figure}
 
-Wie \autoref{fig:Komponentendiagramm} zu entnehmen ist, ziehen wir zur Realisierung unseres Spiels \enquote{Exmatrikulator TD} wie in Strategie \ref{strat:Core-Modul} beschrieben zwei Komponenten heran: Eine Komponente \enquote{Core}, die das eigentliche Spiel umsetzt, und eine Komponente \enquote{Desktop}, die das Implementieren von plattformspezifischen Funktionen ermöglicht, im Wesentlichen jedoch der Bereitstellung eines entsprechenden \enquote{Launchers} dient. Diese Struktur der Software ermöglicht es uns, das Spiel später auf zusätzliche Plattformen wie Android oder iOS zu portieren, indem wir entsprechende Komponenten nach dem Vorbild des Desktop-Moduls hinzufügen (siehe hierzu auch \autoref{sec:evolution} zur Evolution der Software). Diese Struktur ergibt sich auch zu einem wesentliche Teil aus der Strategie XYZ \enquote{Nutzung von LibGDX}, da dies die Standard-Struktur eines Projektes ist, das mit diesem Framework erstellt wird.
+Wie \autoref{fig:Komponentendiagramm} zu entnehmen ist, ziehen wir zur Realisierung unseres Spiels \enquote{Exmatrikulator TD} wie in Strategie \ref{strat:Core-Komponente} beschrieben zwei Komponenten heran: Eine Komponente \enquote{Core}, die das eigentliche Spiel umsetzt, und eine Komponente \enquote{Desktop}, die das Implementieren von plattformspezifischen Funktionen ermöglicht, im Wesentlichen jedoch der Bereitstellung eines entsprechenden \enquote{Launchers} dient. Diese Struktur der Software ermöglicht es uns, das Spiel später auf zusätzliche Plattformen wie Android oder iOS zu portieren, indem wir entsprechende Komponenten nach dem Vorbild des Desktop-Moduls hinzufügen (siehe hierzu auch \autoref{sec:evolution} zur Evolution der Software). Diese Struktur ergibt sich auch zu einem wesentliche Teil aus der Strategie XYZ \enquote{Nutzung von LibGDX}, da dies die Standard-Struktur eines Projektes ist, das mit diesem Framework erstellt wird.
 
 Die \enquote{Core}-Komponente ist folglich das Herz unserer Software und ist in weitere Komponenten ausdifferenziert, die jeweils eine bestimmte Aufgabe innerhalb des Spieles übernehmen:
 
 \begin{itemize}
-    \item Die Komponente \textbf{User Interface} stellt die grafische Benutzeroberfläche zur Verfügung, mit der die Benutzerin interagiert und verwaltet zudem die verschiedenen \enquote{Bildschirme} (Screens), die der Benutzerin angezeigt werden, wie zum Beispiel Menüs oder den eigentlichen Spielbeschirm, nimmt Eingaben und Spielzüge entgegen und reicht sie an das \textbf{Game Logic}-Modul weiter, dessen Zustand es zur Darstellung des Spieles rendert. Die Realisierung als eigene Komponente ergibt sich aus der Strategie XYZ \enquote{Kapselung der Benutzerschnittstelle}.
-    \item Die Komponente \textbf{Game Logic} dient der Verarbeitung von Spielzügen und zur Berechnung des aktuellen Spielzustandes. Es greift auf die Komponente \enquote{Model} zu, das die Spielwelt sowie die verschiedenen Turm- und Einheiten-Typen beinhaltet. In einem Multiplayer-Spiel kann unsere Software sowohl als Client als auch als Server auftreten (Strategie XYZ). Im ersteren Fall sendet die Game-Logic-Komponente Spielzüge über die Komponente \enquote{Communication} an den Server, um diese zunächst von diesem überprüfen zu lassen. Tritt die Instanz von \enquote{Exmatrikulator TD} als Server auf, wird diese Überprüfung ebenfalls durch die Game-Logic-Komponente übernommen, da diese den Zustand des Spieles kennt und somit verifizieren kann, ob ein Spielzug \enquote{legal} ist. Unter Nutzung der Komponente \enquote{Persistence} kann der aktuelle Spielzustand abgespeichert und wieder geladen werden.
-    \item Die Komponente \textbf{Communication} dient der Realisierung der Netzwerkkommunikation stellt sowohl Client- als auch Server-Funktionalität zur Verfügung (vgl. Strategie \ref{strat:kryonet}). Die Realisierung als eigene Komponente dient der Abstraktion der Netzwerkschnittstelle und ermöglicht es uns, diese Komponente weitgehend unabhängig von anderen Teilen des Programmes zu realisieren (Strategie XYZ). Dies erleichtert nicht nur ggf. einen späteren Austausch des verwendeten Frameworks, sondern verringert auch dessen Einfluss auf den Rest der Architektur (Strategie XYZ). Zudem kann durch eine Modularisierung der Software nicht nur bei dieser Komponente arbeitsteilig vorgegangen werden (Strategie Blah).
-    \item Die Komponente \textbf{Persistence} schließlich dient der Realisierung der Datenhaltung und stellt eine Schnittstelle zu einer eingebetteten Datenbank zur Verfügung. Die Persistence-Komponente abstrahiert dabei vom verwendeten Datenbank-System und erleichtert die Interaktion mit dieser Komponente.
+    \item Die Komponente \textbf{View} stellt die grafische Benutzeroberfläche zur Verfügung, mit der die Benutzerin interagiert und verwaltet zudem die verschiedenen \enquote{Bildschirme} (Screens), die der Benutzerin angezeigt werden, wie zum Beispiel Menüs oder den eigentlichen Spielbeschirm sowie die grafische Repräsentation der Gegner und Türme. Die View nimmt Eingaben und Spielzüge entgegen und reicht sie an das \textbf{Controller}-Modul weiter, dessen Zustand es zur Darstellung des Spieles rendert. Die Realisierung als eigene Komponente ergibt sich aus den Strategien XYZ \enquote{Kapselung der Benutzerschnittstelle} und ZXY \enquote{Trennung von Datenmodell und grafischer Darstellung}.
+    \item Die Komponente \textbf{Controller} dient der Verarbeitung von Benutzereingaben und insbesondere zur Verarbeitung von getätigten Spielzügen und Berechnung des aktuellen Spielzustandes. Es greift auf die Komponente \enquote{Model} zu, das die Spielwelt sowie die verschiedenen Turm- und Einheiten-Typen beinhaltet. In einem Multiplayer-Spiel kann unsere Software sowohl als Client als auch als Server auftreten (Strategie XYZ, \enquote{Kombinierung von Client und Server}). Im ersteren Fall sendet die Game-Logic-Komponente Spielzüge über die Komponente \enquote{Communication} an den Server, der diese verarbeitet, überprüft und (falls es sich um einen legalen Spielzug gehandelt hat) zur Anpassung des Spielzustandes nutzt. Nach Verarbeitung der Anfrage sendet der Server eine passende Antwort, die Informationen über den Erfolg der Anfrage sowie über die konkreten Änderungen am Spielzustand beinhaltet. Die Spielzüge der Spielerin, die die Serverinstanz nutzt, werden wie im Einzelspielermodus direkt an den Controller zur Prüfung weitergegeben. Unter Nutzung der Komponente \enquote{Persistence} wird letztlich der aktuelle Spielzustand auf eine Datenbank abgebildet und kann abgespeichert und wieder geladen werden.
+    \item Die Komponente \textbf{Communication} dient der Realisierung der Netzwerkkommunikation stellt sowohl Client- als auch Server-Funktionalität zur Verfügung (vgl. Strategie \ref{strat:kryonet}). Die Realisierung als eigene Komponente dient der Abstraktion der Netzwerkschnittstelle und ermöglicht es uns, diese Komponente weitgehend unabhängig von anderen Teilen des Programmes zu realisieren (Strategie XYZ). Dies erleichtert nicht nur ggf. einen späteren Austausch des verwendeten Frameworks, sondern verringert auch dessen Einfluss auf den Rest der Architektur (Strategie XYZ). Zudem kann durch eine Modularisierung der Software (nicht nur bei dieser Komponente) arbeitsteilig vorgegangen werden (Strategie Blah).
+    \item Die Komponente \textbf{Persistence} schließlich dient der Realisierung der Datenhaltung und stellt eine Schnittstelle zu einer eingebetteten Datenbank zur Verfügung. Die Persistence-Komponente abstrahiert dabei vom verwendeten Datenbank-System und erleichtert die Interaktion mit dieser Komponente gemäß Strategie XYZ. 
 \end{itemize}
 
 %In \autoref{fig:Komponentendiagramm} ist die konzeptionelle Sicht unserer Software dargestellt. Die gesamte Anwendung läuft auf einem lokalen System, das sich in die Anwendung selbst und die über eine Apache Derby realisierte relationale Datenbank unterteilen lässt. In der Anwendung gibt es drei Komponenten, die das grafische Benutzerinterface, die Befehle zur Bearbeitung des Diagramms sowie einen Persistenz-Komponenten zur Interaktion mit der Datenbank gliedert.
@@ -751,12 +817,16 @@ Die \enquote{Core}-Komponente ist folglich das Herz unserer Software und ist in 
 
 \label{sec:modulsicht}
 
+In diesem Abschnitt gehen wir darauf ein, wie die Komponenten der \enquote{Exmatrikulator TD} zunächst auf Pakete abgebildet werden und wie die geforderten Produkteigenschaften letztlich in einzelnen Modulen umgesetzt werden sollen. Dabei gehen wir Schritt für Schritt vor und erläutern zuerst die Struktur einzelner 
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{Bilder/Paketdiagramm.pdf}
+    \includegraphics[width=\textwidth]{Bilder/Modulsicht.pdf}
     \caption{Modulsicht des Spiels \enquote{Exmatrikulator TD}}
     \label{fig:Paketdiagramm}
 \end{figure}
+
+
 
 \subsection{Konkretisierung Desktop}
 
@@ -765,25 +835,122 @@ Die \enquote{Core}-Komponente ist folglich das Herz unserer Software und ist in 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.5\textwidth]{Bilder/Desktop-Modul.pdf}
-    \caption{Kokretisierung des Desktop-Moduls}
+    \caption{Konkretisierung des Desktop-Moduls}
     \label{fig:desktopModul}
 \end{figure}
 
-
+Das Paket \enquote{Desktop} beinhaltet lediglich ein Modul, den \texttt{DesktopLauncher}. Dieser stellt über eine \textbf{public static void main(String[] args}-Methode den Einstiegspunkt in unsere Software in Desktop- bzw. JVM-Umgebungen dar. Der DesktopLauncher import die Klasse \texttt{ExmatrikulatorTD} aus dem Core-Paket, erzeugt ein \textit{ExmatrikulatorTD}-Objekt und übergibt dieses an ein vom LibGDX-Framework bereitgestelltes \texttt{LwjglApplication}-Objekt, das mit den System-Schnittstellen interagiert. Die eigentliche Funktionalität des Spieles findet sich -- wie bereits erwähnt -- im Core-Paket, das im nachfolgenden Abschnitt ausführlich erläutert wird.
 
 \subsection{Konkretisierung Core}
 \label{subsec:core}
 
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=.5\textwidth]{Bilder/Desktop-Modul.pdf}
-    \caption{Kokretisierung des Core-Moduls}
+    \includegraphics[width=.75\textwidth]{Bilder/CorePaket.pdf}
+    \caption{Konkretisierung der Core-Komponente}
     \label{fig:coreModul}
 \end{figure}
 
-Das Core-Modul besteht aus den Paketen \textbf{Communication}, \textbf{Model}, \textbf{UserInterface}, \textbf{GameLogic} und \textbf{Persistence}, die im Folgenden näher erläutert werden.
+Das Core-Paket (siehe \autoref{fig:coreModul}) besteht aus den Paketen \textbf{Communication}, \textbf{Model}, \textbf{View}, \textbf{Controller} und \textbf{Persistence}, die eine Abbildung der im letzten Abschnitt vorgestellten Komponenten darstellen. Zusätzlich findet sich im Core-Paket noch ein \textbf{Util}-Paket, das Hilfsklassen beinhaltet sowie die bereits im letzten Abschnitt erwähnte Klasse \texttt{ExmatrikulatorTD}.
+
+\texttt{ExmatrikulatorTD} erbt von der Klasse \texttt{Game} des LibGDX-Frameworks und stellt uns darüber nicht nur eine Schnittstelle für die Darstellung des Spieles und das Anzeigen seiner verschiedenen Bildschirme (\texttt{Screen}s), sondern auch den sogenannten \enquote{Game Loop} zur Verfügung, der in einer Endlosschleife die aktuell vorhandenen grafischen Elemente \texttt{render}t, die in der Regel über die \texttt{Screen}-Objekte selbst verwaltet werden.
+
+In unserer Architektur erzeugt unser \texttt{ExmatrikulatorTD}-Objekt nach dessen Erstellung ein \texttt{MainController}-Objekt und übergibt diesem Verwaltung der Geschäftslogik und der Bildschirme. Dies korrespondiert direkt mit der von uns gewählten Strategie \ref{strat:MVC} und der Nutzung des MVC-Patterns. Wie den in \autoref{fig:coreModul} eingezeichneten Abhängigkeiten zu entnehmen ist, stellt das \texttt{Controller}-Paket den Dreh- und Angelpunkt unserer Architektur dar, weshalb wir uns im nachfolgenden Unterabschnitt der Konkretisierung dieses Paketes widmen werden.
+
+\subsubsection{Konkretisierung des Controller-Pakets}
+%Abb noch in arbeit
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{Bilder/KlassendiagramController.pdf}
+    \caption{Konkretisierung des Controller-Pakets}
+    \label{fig:contrPak}
+\end{figure}
+
+Das Controller-Paket übernimmt die allgemeine Verwaltung der Software über das Modul \texttt{MainController} und realisiert die eigentliche Spiellogik. Neben der \texttt{MainController}-Klasse beinhaltet es ein Unterpaket \texttt{GameLogic}, in dem die Schnittstelle und die Klassen für die Controller der Spiellogik zu finden sind sowie ein Paket \texttt{factories}, in dem \enquote{Factory}-Klassen für die Erstellung von Türmen, Gegnern und Gegnerwellen zu finden sind. 
+
+Das \texttt{MainController}-Modul ist der Dreh- und Angelpunkt für die Verwaltung von Bildschirmen (\texttt{Screens}) und die Verarbeitung von Eingaben über das grafische Benutzerinterface. Es verfügt über Methoden, um Bildschirme zu aktivieren (z.\,B. durch \texttt{public void showMenuScreen()}), die Netzwerkkommunikation zu initialisieren (z.\,B. durch \texttt{public void createClient()} und \texttt{public void connectToServer(String host)}) und neue Spiele zu starten (im Einzelspielermodus mit \texttt{public void createNewSinglePlayerGame ()}) oder Spielstände zu laden (z.\,B. durch \texttt{public void loadSinglePlayerGame (Gamestate gamestate)}). Wird ein Spiel gestartet, gibt der \texttt{MainController} die Kontrolle weitgehend an einen \textit{LogicController} ab, der die Verwaltung des Spielbildschirms und des Spielzustandes übernimmt.
+
+Über einen sogenannten \texttt{AssetManager}, der vom LibGdx-Framework zur Verfügung gestellt wird, verwaltet er zudem die grafischen Ressourcen, aber auch die Audio-Dateien und Schriftarten, die vom Spiel genutzt werden. 
+
+\textbf{Paket Gamelogic}
+
+Dieses Paket beinhaltet Klassen, die den Spielzustand und seine grafische Repräsentation verwalten. Sie stellt zunächst das Interface \texttt{LogicController} bereit, das eine Schnittstelle bietet, über die der \texttt{GameServer} eingegangene Spielzüge an den Controller der Server-Instanz und der \texttt{GameClient} Antworten des Servers an den lokalen Controller weiterleiten kann. Das Interface wird von der Hauptklasse \texttt{GameLogicController} implementiert, die einerseits der Controller für Einzelspieler-Partien und andererseits die Klasse ist, von der die server- beziehungsweise clientspezifischen Controller erben.
+
+Um auf die Server-Verbindung während des Spieles zugreifen zu können, verfügt das Paket über einen expliziten \texttt{ServerGameLogicController}, der vom allgemeinen \texttt{GameLogicController} erbt und dessen Konstruktor zusätzlich eine \texttt{GameServer}-Objekt entgegennimmt. Auf der Client-Seite gibt es analog hierzu einen \texttt{ClientGameLogicController}, dessen Konstruktor ein \texttt{GameClient}-Objekt entgegennimmt, über dessen Schnittstelle die Prüfung von Spielzügen an den Server delegiert wird. Zu diesem Zweck überschreibt der \texttt{ClientGameLogicController} die allgemeinen Methoden für die Ausführung von Spielzügen, die die folgenden Aktionen durchführen:
+
+\begin{itemize}
+    \item \texttt{public boolean buildTower (Tower tower, Coordinates coordinates)} baut einen neuen Turm an anzugebenden Koordinaten auf dem Spielfeld.\footnote{Wie auch dem Datenmodell zu entnehmen ist, handelt es sich dabei nicht um pixelbezogene x- und y-Koordinaten, sondern um Felder wie auf einem Schachbrett.} Diese Methode -- wie auch die nachfolgenden drei -- gibt \texttt{true} zurück, wenn der Spielzug legal beziehungsweise erfolgreich war
+
+    \item \texttt{public boolean sellTower (Tower tower)} verkauft einen Turm, indem er (bei Erhöhung des Ressourcenbestandes der jeweiligen Spielerin) aus dem Spiel entfernt wird
+
+    \item \texttt{public boolean upgradeTower (Tower tower)} rüstet einen angegebenen Tower auf die nächste Stufe auf
+    
+    \item \texttt{public boolean sendEnemy (Enemy enemy)} schickt einen Gegner an die andere Spielerin
+\end{itemize}
+
+Gibt der Server nach der Ausführung eine positive Antwort (beziehungsweise \texttt{Response}), erfolgt über den \texttt{GameClient} und die \texttt{LogicController}-Schnittstelle auch lokal die Durchführung des Spielzuges, die zur Aktualisierung des Spielzustandes führt.\footnote{Hierfür ist es allerdings erforderlich, dass die entsprechenden Request- beziehungsweise Response-Listener in \texttt{GameClient} und \texttt{GameServer} mit dem jeweiligen LogicController initialisiert wurden.}
+
+Im Singleplayer-Modus übernimmt der allgemeine \texttt{GameLogicController} die Verwaltung des Spielzustandes und führt sämtliche Spielzüge lokal aus. Neben der Ausführung von Spielzügen berechnet der \texttt{GameLogicController} fortwährend im Rahmen des \enquote{Game Loops} (konkret innerhalb der Methode \texttt{public void update(float deltaTime)}) den aktuellen Spielzustand und bewegt beispielsweise über die Methode \texttt{void applyMovement (float deltaTime)} die Einheiten über den Bildschirm oder führt über \texttt{void makeAttacks (float deltaTime)} Angriffe aus. Da der Controller sowohl das \texttt{Model} als auch die \texttt{View} kennt, kann er folglich sowohl den Datenbestand aktualisieren als auch die grafische Darstellung manipulieren. Diese Trennung gemäß MVC-Pattern (Strategie \ref{strat:MVC}) bietet den großen Vorteil, dass die Spiellogik vollkommen unabhängig von der letztlichen grafischen Umsetzung erfolgt, was zum einen ein wesentlich einfacheres Testen und zum anderen ein arbeitsteiliges Vorgehen ermöglicht. Die Abbildung von Türmen und Gegnern des Spielzustandes auf ihre grafische Repräsentation erfolgt dabei im Controller durch die Nutzung von \texttt{HashMap}s, durch die ein sehr effizienter ($\mathcal{O}(1)$) Zugriff von einem Element im Spielzustand auf das jeweils korrespondierende \texttt{GameObject} möglich wird.
+
+\textbf{Paket Factories}
+
+Dieses Paket enthält Module, mit denen sich die verschiedenen Turm, Gegner- und Wellen-Arten erzeugen lassen. Dabei kommt das sogenante Factory-Pattern zum Einsatz (siehe Strategie XYZ), das die Erstellung der jeweiligen Objekte auf entsprechende Methoden abstrahiert, innerhalb derer die Erzeugung definiert wird. Nach außen hin bieten die Factories jeweils eine allgemeine \enquote{createNewObject}-Methode, die ein Objekt einer jeweils definierten  Aufzählungsklasse erwartet, die die verschiedenen Typen von Einheiten, Türmen und Wellen nach außen kommuniziert. Die \texttt{TowerFactory} bietet beispielsweise (aktuell) die Typen \texttt{SLOW\_TOWER, REGULAR\_TOWER, CORRUPTION\_TOWER, EXPLOSIVE\_TOWER} und  \texttt{AURA\_TOWER}. Je nach übergegebenem Objekt kann in der Methode \texttt{public void createNewTower (TowerType towerType)} die passende Erstellungsmethode aufgerufen werden, im Falle es \texttt{SLOW\_TOWER} etwa die Methode \texttt{private Tower createSlowTower ()}. 
+
+\clearpage
+
+\subsubsection{Konkretisierung des View-Pakets}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{Bilder/KlassendiagramView.pdf}
+    \caption{Konkretisierung des View-Pakets}
+    \label{fig:viewPak}
+\end{figure}
+Das \texttt{View}-Paket ist untergliedert in die Teilpakete beziehungsweise Module \texttt{Screens} und \texttt{Gameobjects}. Im \texttt{Screens}-Paket werden alle interaktiven Menuelemente gemanagt und im \texttt{Gameobjects}-Paket werden die einzelnen interaktiven Spielobjekte (Türme und Gegner) verwaltet.
 
 
+
+%Abb so weit fertig, upload erfolgt später
+\subsubsection{Konkretisierung des Model-Pakets}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Bilder/KlassendiagramModel.pdf}
+    \caption{Konkretisierung des Model-Pakets}
+    \label{fig:modPak}
+\end{figure}
+
+Das \texttt{Model}-Paket beinhaltet die grundlegende Datenstruktur für die einzelnen Spielobjekte.
+Das Paket ist in zwei weitere untergeordnete Pakete aufgeteilt, \texttt{Enemy} und \texttt{Tower}, welche die spezifischen Strukturen für die Türme und die Gegner beinhaltet.
+
+\subsubsection{Konkretisierung des Communication-Pakets}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth, angle=270]{Bilder/KlassenDiagrammCommunication.pdf}
+    \caption{Konkretisierung des Communication-Pakets}
+    \label{fig:comPak}
+\end{figure}
+Das \texttt{Communication}-Paket verwaltet die Client-Server Kommunikation. Das Paket beinhaltet zwei weitere Pakete, \texttt{server} und \texttt{client}, über die Client und Server spezifische Aktionen erfolgen.
+\subsubsection{Konkretisierung des Persistence-Pakets}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Bilder/KlassendiagrammPersistence.pdf}
+    \caption{Konkretisierung des Persistence-Pakets}
+    \label{fig:persPak}
+\end{figure}
+Das \texttt{Persistence}-Paket stellt über das DAO-Pattern eine Schnittstelle zur Interaktion mit der Datenbank zur Verfügung. Über ein Dao-Interface werden dabei die sogenannte CRUD-Operationen (Create, Retrieve, Update, Delete) bereitgestellt, die das Persistieren, Löschen, Aktualisieren und Abrufen von Java-Objekten beziehungsweise den mit ihnen korrespondierenden Datenbank-Einträgen ermöglichen. Zu jeder relevanten Klasse des \texttt{Model}-Paketes gibt es dabei eine entsprechende Dao-Klasse, die diese Operationen für die jeweiligen Objekttypen ermöglicht.
+
+%Abb so weit fertig, upload erfolgt später
+\subsubsection{Konkretisierung des Util-Pakets}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Bilder/KlassendiagrammUtils.pdf}
+    \caption{Konkretisierung des Utils-Pakets}
+    \label{fig:utilPak}
+\end{figure}
+
+Das Util-Paket stellt vor allem Module mit Konstanten für die Anwendungslogik sowie Bezeichnungen für Assets zur Verfügung. Die Klasse \texttt{HibernateUtils} stellt eine Session-Factory zur Verfügung, über die die Transaktionen mit der Datenbank realisiert werden.
+
+%Abb so weit fertig, upload erfolgt später
 
 %Einfach gesagt lässt sich die Anwendung in 4 Aufgabenbereiche und in unserem Fall in Pakete aufteilen. 
 %Die \textbf{graphische Benutzeroberfläche} ({\it graphical user interface} oder GUI) ermöglicht es dem Nutzer entweder Einstellungen zum Programm selbst zu verändern oder mit dem \textbf{Graphen} zu interagieren. Letzteres erfolgt über die Ausführung von \textbf{Befehlen} ({\it Commands}). Ein Command verursacht eine Veränderung am Graphen, welcher dann widerum neu über die GUI dargestellt wird. Der Kunde ist vor allem daran interessiert die Interaktion mit dem Graphen zu protokollieren, d.h. zu verfolgen, welche Befehle wie ausgeführt werden. Dies ist die Aufabe der \textbf{Persistance}, welche die Commands im gewünschten Format in eine beliebige Datenbank speichert. Das Persistance-Framework ermöglicht es Klassen wie Entitäten im Sinne einer Datenbank zu behandeln und erlaubt es uns unabhängig vom Datenbankmanagementsystem Anfragen zu schreiben.
@@ -888,17 +1055,27 @@ Das Core-Modul besteht aus den Paketen \textbf{Communication}, \textbf{Model}, \
     \label{fig:Datensicht}
 \end{figure}
 
+Unser Datenmodell ist in \autoref{fig:Datensicht} dargestellt. Kern unseres Datenmodells ist der \texttt{GameState}, über den alle spielrelevanten Informationen abgerufen werden können. Dazu gehören die Spieler-Klasse, mit der Türme und Gegner-Wellen assoziiert sind. Türme und Gegner verfügen über zahlreiche Attribute, mit denen sich verschiedene Turm- und Gegner-Arten modellieren lassen. Aura-Arten, Angriffstypen, Rüstungstypen werden dabei ebenso wie die verschiedenen Schwierigkeitsgrade als \textit{Enumerables} modelliert. Über Spielprofile werden Informationen wie Highscores sowie Speicherstände gespeichert.
+
+Die Darstellung in \autoref{fig:Datensicht} entspricht dabei auch der Abbildung auf die Datenbank. Die genaue Modellierung der Relationen sowie die Benennung der Tabellen und Verweise lässt sich die Annotationen in der Schnittstellenbeschreibung entnehmen.
+
+\subsection{Konkretisiertes Transportmodell}
+\label{subsec:datenmodell}
+
+Wie in \autoref{fig:comPak} auf Seite \pageref{fig:comPak} dargestellt wird, nutzen wir für die Kommuniaktion zwischen Client und Server Request- und Response-Objekte, die mit den Operationen des GameControllers korrespondieren und beim Empfangen entsprechende Operationen des jeweiligen Controllers auslösen. Diese Funktionalität wird über passende Listener realisiert, die dem Server- beziehungsweise Client-Objekt aus der Kryonet-Bibliothek hinzufügt werden.
+
+
 \clearpage
 
 \section{Ausführungssicht}
 
 \label{sec:ausfuehrung}
 
-In \autoref{fig:GUI-Paket} ist unsere Software in der Ausführugssicht dargestellt. Da es sich um eine Desktop-Anwendung handelt und nicht um ein verteiltes System, ähnelt die Darstellung sehr stark der konzeptionellen Sicht (vgl. \autoref{fig:Komponentendiagramm}). Wie sich \autoref{fig:GUI-Paket} entnehmen lässt, laufen auf dem Ausführungssystem zwei Prozesse parallel: Ein \texttt{main}-Prozess, der die Funktionen aus den in der Paketsicht umsetzt, und ein Datenbank-Prozess, über den die Speicherung des Protokolls verwirklicht wird. Zwischen diesen beiden Prozessen findet ein lokaler Datenaustausch statt, bei dem das \texttt{Persistance}-Paket die Schnittstelle zur Datenbank bereitstellt.
+In \autoref{fig:GUI-Paket} ist unsere Software in der Ausführugssicht dargestellt. Wie sich \autoref{fig:GUI-Paket} entnehmen lässt, laufen auf beiden Ausführungssystemen zwei Prozesse parallel: Ein \texttt{GameClient}-Prozess, der die Funktionen aus der Paketsicht umsetzt, und ein Datenbank-Prozess, über den die Speicherung des GameState verwirklicht wird. Zwischen den beiden PCs findet ein Datenaustausch über TCP/IP statt. Das \texttt{Persistence}-Paket stellt die Schnittstelle vom Core-Modul zur Datenbank bereit.
 
 \begin{figure}[H]
     \centering
-    \includegraphics{Bilder/ausfuehrungssicht.pdf}
+    \includegraphics[width=\textwidth]{Bilder/ausfuehrungssicht.jpg}
     \caption{Ausführungssicht}
     \label{fig:GUI-Paket}
 \end{figure}
@@ -918,36 +1095,58 @@ In \autoref{fig:GUI-Paket} ist unsere Software in der Ausführugssicht dargestel
 \sectionmark{Zusammenhänge AF u. Architektur}
 \label{sec:zusammenheange}
 
-In diesem Abschnitt erläutern wir anhand von UML-Squenzdiagrammen, wie die einzelnen Elemente unserer Software bei deren Ausführung zusammenwirken. Hierzu betrachten wir die zwei wesentlichen Anwendungsfälle unserer Software: Das Starten und Spielen eines Single- sowie eines Multiplayer-Spiels, letzteres inklusive des Hostens einer Session als Server. Diese Anwendungsfälle sind in \autoref{fig:usecases} als UML-Usecase-Diagramm dargestellt.
+In diesem Abschnitt erläutern wir anhand von UML-Squenzdiagrammen, wie die einzelnen Elemente unserer Software bei deren Ausführung zusammenwirken. Hierzu betrachten wir die zwei wesentlichen Anwendungsfälle unserer Software: Das Starten und Spielen eines Single- sowie eines Multiplayer-Spiels, letzteres inklusive des Hostens einer Session als Server. %Diese Anwendungsfälle sind in \autoref{fig:usecases} als UML-Usecase-Diagramm dargestellt.
 
-\begin{figure}[H]
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{Bilder/SyndromansatzSWP.pdf}
+%     \caption{UML-Anwendungsfall-Diagramm (noch durch ein tatsächliches Diagramm zu ersetzen)}
+%     \label{fig:usecases}
+% \end{figure}
+% \clearpage
+
+% \begin{landscape}
+
+\subsection{Erstellen eines Verlangsamungs-Turms des Clientspielers}
+
+\subsubsection{Beschreibung des Anwendungsfalls}
+
+Ein Spieler möchte einen Verlangsamungs-Turm erstellen.Dazu klickt er an die entsprechende Stelle auf der Karte und wählt den gewünschten Turm aus. Das Geld wird dabei vom Konto des Spielers abgebucht und, falls genug vorhanden ist, der Turm plaziert. 
+
+\subsubsection{Umsetzung in Exmatrikulator TD}
+
+Die Umsetzung dieses Anwendungsfalls ist in \autoref{fig:SyndromansatzSWP} beschrieben. Zunächst wird vom GameLogicController des Clients uber den GameClient und GameServer auf den GameLogicController des Servers zugegriffen. Hier wird überprüft, ob der Spieler genug Geld hat (und dieses eventuell eingezogen) und ob die Position des Turms frei ist. Danach wird der Turm vom ServerGameLogicController erstellt und der GameClient wird Synchronisiert.
+
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{Bilder/SyndromansatzSWP.pdf}
-    \caption{UML-Anwendungsfall-Diagramm (noch durch ein tatsächliches Diagramm zu ersetzen)}
-    \label{fig:usecases}
-\end{figure}
-\clearpage
-
-\subsection{Hinzufügen von zwei oder mehr Knoten und Verbindung durch eine Kante}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{Bilder/SyndromansatzSWP.pdf}
+    \includegraphics[width=\textwidth]{Bilder/sequence_build_slow_tower.png}
     \caption{Sequenzdiagramm 1}
     \label{fig:SyndromansatzSWP}
 \end{figure}
-Der Benutzer befindet sich bereits im Ersteller-Modus und möchte zunächst ein Symptom in eine bereits erstellte Vorlage einfügen. Hierfür klickt der Benutzer auf den Button \enquote{Symptom hinzufügen}, dann muss nur noch eine Bezeichnung für das Symptom vom Benutzer eingegeben werden. Anschließend wiederholt der Benutzer den Prozess, da er insgesamt zwei Symptome einfügen möchte. Nachdem es dem Benutzer gelungen ist, zwei Symptome einzufügen, möchte er die beiden Symptome mittels einer Relation verbinden. Dafür muss er auf den Button \enquote{Relation hinzufügen} klicken und dazu angeben, welche der beiden Symptome er verbinden möchte. Zudem muss er noch die Farbe und Stärke angeben und um welche Art von Relation es sich handelt. Im Anschluss wird das Dokument gespeichert.
-\newpage
 
-\subsection{Ändern der Farbe einer Kante sowie Löschen eines Knotens}
+% Hierfür klickt der Benutzer auf den Button \enquote{Symptom hinzufügen}, dann muss nur noch eine Bezeichnung für das Symptom vom Benutzer eingegeben werden. Anschließend wiederholt der Benutzer den Prozess, da er insgesamt zwei Symptome einfügen möchte. Nachdem es dem Benutzer gelungen ist, zwei Symptome einzufügen, möchte er die beiden Symptome mittels einer Relation verbinden. Dafür muss er auf den Button \enquote{Relation hinzufügen} klicken und dazu angeben, welche der beiden Symptome er verbinden möchte. Zudem muss er noch die Farbe und Stärke angeben und um welche Art von Relation es sich handelt. Im Anschluss wird das Dokument gespeichert.
+\clearpage
+% \end{landscape}
+
+
+
+\subsection {Senden einer zusätzlichen Angriffswelle des ServerSpielers}
+
+\subsubsection{Beschreibung des Anwendungsfalls}
+
+Der Spieler möchte seinem Gegner das Leben schwer machen und schickt ihm einen zusätzlichen Gegner. Dazu wählt er  aus dem dafür vorgesehenen Drop-Down-Menü einen aus. Falls ihm genug Recourcen zur Verfügung stehen, wird dieser der nächsten Angriffswelle des Gegenspielers hinzugefügt.
+
+\subsubsection{Umsetzung in Exmatrikulator TD}
+
+Die Umsetzung dieses Anwendungsfalls ist in \autoref{fig:SyndromansatzSWP2} beschrieben.
+Der GameLogicController des Servers prüft zunächst, ob der Spieler die benötigten Recourcen besitzt. Falls dem so ist, werden diese eingezogen und der Gegner über den Gamestate der Angriffswelle hinzugefügt. Außerdem wird der CLient wieder synchronisiert.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{Bilder/SyndromansatzSWP2.pdf}
+    \includegraphics[width=\textwidth]{Bilder/sequence_send_wave.png}
     \caption{Sequenzdiagramm 2}
     \label{fig:SyndromansatzSWP2}
 \end{figure}
-Wieder befindet sich der Benutzer im Ersteller-Modus und möchte erst ein Symptom löschen und danach die Farbe einer Relation ändern. Nun muss der Benutzer den Button \enquote{Symptom entfernen} drücken und das nicht mehr benötigte Symptom auswählen. Um die Farbe einer Relation zu ändern, muss der Benutzer zunächst mit der rechten Maustaste auf die Relation klicken und \enquote{Farbe ändern} wählen. Jetzt muss der Benutzer nur noch die gewünschte Farbe auswählen. Danach wird das Dokument erneut gespeichert.
 \newpage
 
 
@@ -979,29 +1178,18 @@ In diesem Abschnitt wird beschrieben, welche Änderungen an der Architektur vorz
 
 \subsection{Bereitstellung für als Android-, iOS- und HTML5-Version}
 
-Durch Nuzung von LibGdx lässt sich unser Spiel relativ leicht auf andere Plattformen portieren: Ein jeweiliges plattformspezifisches Modul (in dieser Archtitekturbeschreibung das Modul \enquote{Desktop}) greift im Wesentlichen auf den Inhalt des Core-Moduls zu und setzt das dort implementierte Spiel mit plattformspezifisch um.
+Durch Nuzung von LibGdx lässt sich unser Spiel relativ leicht auf andere Plattformen portieren: Ein jeweiliges plattformspezifisches Modul (in dieser Archtitekturbeschreibung das Modul \enquote{Desktop}) greift im Wesentlichen auf den Inhalt der Core-Komponente zu und setzt das dort implementierte Spiel mit plattformspezifisch um.
 
 Die bestehende Architektur sollte sich folglich relativ leicht um weitere Plattformen, namentlich Android, iOS und HTML5, erweitern lassen, wobei hierbei auf die Spezifika der Zielplattformen (wie etwa die unterschiedlichen Bildschirmgrößen) Rücksicht genommen werden muss. Da die Kryonet-Bibliothek jedoch nicht mit iOS kompatibel ist, muss für diese Plattform auf eine andere Netzwerk-Bibliothek zurückgegriffen werden. 
 
 Gerade bei der browserbasierten HTML5-Version sollte zudem eine andere Client-Server-Architektur diskutiert werden, die die Funktionalität des Servers auf einen dezidierten Server verlagert. 
 
 \subsection{Mehrsprachigkeit der GUI}
+Um nicht nur deutschsprachigen Nutzern den Spielspa{\ss} zu erm"oglichen, sollen nachtr"aglich Sprachpakete installierbar sein, sodass die grafische Oberfläche in der gewünschten Sprache erscheint. 
+Hierzu müsste eine Schnittstelle geschaffen werden, die das Einlesen von Dateien im geeigneten Format erlaubt. Diese könnten anschließend z. B. der eingebetteten Datenbank gespeichert werden, was eine Erweiterung des Persistance-Paketes bedeuten würde. Bei Wechsel der Sprache könnten die Strings für die Felder in der GUI dann für einen schnelleren Abruf entweder in den jeweiligen Menü-Elementen selbst oder in einer Datenstruktur wie einer  Hashmap gespeichert werden.
 
 \subsection{Bereitstellung eines Map-Editors}
-
-% \subsection{Sprachpakete}
-
-% Nachträglich soll die Möglichkeit bestehen, zusätzliche Sprachpakete zu installieren, sodass die grafische Oberfläche in der gewünschten Sprache erscheint und z.\,B. der Einsatz in international geprägten Umfeldern möglich wird. Hierzu müsste eine Schnittstelle geschaffen werden, die das Einlesen von Dateien im geeigneten Format erlaubt. Diese könnten anschließend z. B. der eingebetteten Datenbank gespeichert werden, was eine Erweiterung des Persistance-Paketes bedeuten würde. Bei Wechsel der Sprache könnten die Strings für die Felder in der GUI dann für einen schnelleren Abruf entweder in den jeweiligen Menü-Elementen selbst oder in einer Datenstruktur wie einer  Hashmap gespeichert werden.
-
-% \subsection{Kollaboratives Arbeiten}
-
-% Gerade im Kontext von Gruppenarbeiten ist die kollaboratives Arbeiten -- d.\,h. dem Bearbeiten desselben Diagramms auf mehreren Rechnern, die über ein lokales Netzwerk oder das Internet verbunden sind -- ein interessanter Anwendungsfall, um den unsere Software ergänzt werden könnte. Hierfür wäre es notwendig, eine Netzwerkschnittelle zu implementieren, die in Abhängigkeit von der hierfür gewählten Architektur entweder eine Verbindung zu einem Server oder einem anderen Client-Programm herstellt. 
-
-% Auch die Bereitstellung als Webanwendung, die ein browserbasiertes, gemeinsames Bearbeiten eines Diagramms ermöglicht, wäre zur Abdeckung dieses Anwendungsfalls denkbar, würde allerdings vermutlich die Wahl einer Architektur erfordern, die sich in ihrer grundlegenden Struktur fundamental von der in diesem Dokument dargelegten unterscheidet und auf einem Framework wie Java EE basiert.
-
-% \subsection{Zusätzliche Visualisierungsmöglickeiten}
-
-% Neben der Darstellung des Diagramms durch unseren Graph Editor wäre es auch denkbar, weitere Visualisierungsmöglichkeiten anzubieten, um gerade bei komplexeren Diagrammen und Wirkungszusammenhängen die Übersichtlichkeit zu bewahren. Hierfür bieten sich beispielsweise die von Danny Holten \cite{Holten2006} publizierten Algorithmen für Kantenbündelung an, die eine kreisförmige Anordnung der Knoten ermöglichen (siehe \autoref{fig:kantenbuendelung}) und so die Stärke des Einflusses der verschiedenen Sphären aufeinander abbilden können. Das von uns gewählte Datenmodell sollte es dabei erlauben, nach bzw. während der Bearbeitung eine ensprechende Visualisierung generieren zu lassen; zur Aufnahme dieser Funktionalität sollte es folglich nur notwendig sein, ein neues Modul einzuführen, das die zu implementierenden, verschiedenen Visualisierungsformen auf Basis eines Syndrom-Objektes bereitstellt und als grafisches Element (ggf. als neues Fenster) in die GUI eingebunden wird.
+Da mit der Auslieferung nur die hartkodierten Maps zur Verf"ugung stehen, soll es m"oglich seien nachtr"aglich Maps selbst zu erstellen und mit Mitspielern zu teilen. Dies kann z.B. mittels dem \begin{it}Tiled Map Editor\end{it} geschehen, womit bereits die Maps, welche mit der Anwendung ausgeliefert werden, kreiert wurden. Dementsprechend m"usste nur noch eine Schnittstelle innerhalb der Anwendung geschaffen werden, welche das nachtr"agliche Einbinden von Maps erlaubt.
 
 % \begin{figure}[H]
 %     \centering
