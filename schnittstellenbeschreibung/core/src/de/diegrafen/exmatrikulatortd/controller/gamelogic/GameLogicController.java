@@ -8,7 +8,11 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
+
+import java.util.HashMap;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -24,9 +28,13 @@ public class GameLogicController implements LogicController {
 
     private Profile profile;
 
-    GameStateDao gameStateDao;
+    private GameStateDao gameStateDao;
 
-    SaveStateDao saveStateDao;
+    private SaveStateDao saveStateDao;
+
+    private HashMap<Tower, TowerObject> towerMapping;
+
+    private HashMap<Enemy, EnemyObject> enemyMapping;
 
     public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;

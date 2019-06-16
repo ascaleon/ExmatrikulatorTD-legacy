@@ -18,6 +18,8 @@ public class GameClient extends Connector implements ClientInterface {
 
     private boolean connected;
 
+    private LogicController logicController;
+
     /**
      * Erzeugt einen neuen GameClient
      */
@@ -57,7 +59,7 @@ public class GameClient extends Connector implements ClientInterface {
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
     public boolean connect (String host) {
-        //client.connect(5000, host, tcpPort, udpPort);
+        //client.connect(5000, host, TCP_PORT, UDP_PORT);
         return false;
     }
 
@@ -66,23 +68,27 @@ public class GameClient extends Connector implements ClientInterface {
         client.close();
     }
 
+    public void attachResponseListeners (LogicController logicController) {
+
+    }
+
     public void attachBuildResponseListener (LogicController logicController) {
 
     }
 
-    public void attachSellResponseListener (LogicController logicController) {
+    private void attachSellResponseListener (LogicController logicController) {
 
     }
 
-    public void attachSendEnemyResponseListener (LogicController logicController) {
+    private void attachSendEnemyResponseListener (LogicController logicController) {
 
     }
 
-    public void attachUpgradeResponseListener (LogicController logicController) {
+    private void attachUpgradeResponseListener (LogicController logicController) {
 
     }
 
-    public void attachGetServerStateResponseListener (LogicController logicController) {
+    private void attachGetServerStateResponseListener (LogicController logicController) {
 
     }
 

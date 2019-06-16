@@ -23,20 +23,24 @@ public abstract class BaseObject implements GameObject {
 
     private String name;
 
-    private BaseModel baseModel;
-
-    public BaseObject(final BaseModel baseModel) {
+    public BaseObject(String name, String assetsName, float xPosition, float yPosition) {
 
     }
 
-    public abstract void update(float deltaTime);
+    public void update(float deltaTime) {
 
-    public abstract void draw(SpriteBatch spriteBatch);
+    }
+
+    public void draw(SpriteBatch spriteBatch) {
+
+    }
 
     private void initializeSprite () {
 
     }
 
-    public abstract void dispose();
+    public void dispose() {
+
+    };
 
 }

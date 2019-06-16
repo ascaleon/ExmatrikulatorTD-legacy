@@ -66,10 +66,10 @@ public class Tower extends BaseModel {
     private transient float timeSinceLastSearch;
 
     /**
-     * Variable, die angibt, wie lange der letzte Angriff zurückliegt. Wird für die Wiederherstellung eines
-     * laufenden Spiels in der Datenbank gespeichert.
+     * Variable, die angibt, wie lange der Turm noch warten muss, bis er das nächste Mal angreifen darf.
+     * Wird für die Wiederherstellung eines laufenden Spiels in der Datenbank gespeichert.
      */
-    private float timeSinceLastAttack;
+    private float cooldown;
 
     private String assetsName;
 

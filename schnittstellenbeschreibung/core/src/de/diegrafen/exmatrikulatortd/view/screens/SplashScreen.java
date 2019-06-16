@@ -1,9 +1,5 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
-import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 /**
@@ -30,7 +26,7 @@ public class SplashScreen extends BaseScreen {
     @Override
     public void update(float delta) {
         if (getMainController().areAssetsLoaded()) {
-            getMainController().setMenuScreen();
+            getMainController().showMenuScreen();
         }
     }
 

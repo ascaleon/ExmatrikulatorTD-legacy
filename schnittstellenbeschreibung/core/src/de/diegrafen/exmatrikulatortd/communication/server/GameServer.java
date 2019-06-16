@@ -29,12 +29,6 @@ public class GameServer extends Connector {
         this.server = new Server();
         this.connected = false;
         registerObjects(server.getKryo());
-
-        attachBuildRequestListener();
-        attachSellRequestListener();
-        attachSendEnemyRequestListener();
-        attachUpgradeRequestListener();
-        attachGetServerStateRequestListener();
     }
 
 
@@ -53,23 +47,27 @@ public class GameServer extends Connector {
 
     }
 
-    private void attachBuildRequestListener () {
+    public void attachRequestListeners (LogicController logicController) {
 
     }
 
-    private void attachSellRequestListener () {
+    private void attachBuildRequestListener (LogicController logicController) {
 
     }
 
-    private void attachSendEnemyRequestListener () {
+    private void attachSellRequestListener (LogicController logicController) {
 
     }
 
-    private void attachUpgradeRequestListener () {
+    private void attachSendEnemyRequestListener (LogicController logicController) {
 
     }
 
-    private void attachGetServerStateRequestListener () {
+    private void attachUpgradeRequestListener (LogicController logicController) {
+
+    }
+
+    private void attachGetServerStateRequestListener (LogicController logicController) {
 
     }
 

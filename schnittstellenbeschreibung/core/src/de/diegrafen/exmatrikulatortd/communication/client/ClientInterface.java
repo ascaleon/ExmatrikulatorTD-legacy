@@ -31,14 +31,4 @@ public interface ClientInterface {
 
     void shutdown ();
 
-    void attachBuildResponseListener (LogicController logicController);
-
-    void attachSellResponseListener (LogicController logicController);
-
-    void attachSendEnemyResponseListener (LogicController logicController);
-
-    void attachUpgradeResponseListener (LogicController logicController);
-
-    void attachGetServerStateResponseListener (LogicController logicController);
-
 }

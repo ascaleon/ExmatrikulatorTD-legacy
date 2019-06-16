@@ -20,7 +20,7 @@ public class EndScreen extends BaseScreen {
     @Override
     public void init() {
         //System.out.println("Das hier ist der Endbildschirm!");
-        //getMainController().setMenuScreen();
+        //getMainController().showMenuScreen();
     }
 
 

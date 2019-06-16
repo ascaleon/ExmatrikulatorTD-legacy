@@ -9,8 +9,8 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
  */
 public class EnemyObject extends BaseObject {
 
-    public EnemyObject(Enemy enemy) {
-        super(enemy);
+    public EnemyObject(String name, String assetsName, float xPosition, float yPosition) {
+        super(name, assetsName, xPosition, yPosition);
     }
 
     @Override

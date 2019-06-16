@@ -135,6 +135,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
     }
 
+    private void reinitializeGameScreen () {
+
+    }
+
     @Override
     public void addTower(TowerObject towerObject) {
         towers.add(towerObject);

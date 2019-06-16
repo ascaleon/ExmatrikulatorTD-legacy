@@ -6,7 +6,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 12:01
  */
-public class WaveFactory {
+public final class WaveFactory {
 
     private WaveFactory () {
 

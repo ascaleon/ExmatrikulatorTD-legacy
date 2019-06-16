@@ -10,23 +10,10 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class TowerObject extends BaseObject {
 
-    public TowerObject(Tower tower) {
-        super(tower);
+    public TowerObject(String name, String assetsName, float xPosition, float yPosition) {
+        super(name, assetsName, xPosition, yPosition);
     }
 
-    @Override
-    public void update(float deltaTime) {
 
-    }
-
-    @Override
-    public void draw(SpriteBatch spriteBatch) {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
 
 }

@@ -48,7 +48,7 @@ public class MainController {
         this.highScoreDao = new HighscoreDao();
     }
 
-    public void setSplashScreen () {
+    public void showSplashScreen() {
         game.setScreen(splashScreen);
     }
 
@@ -59,7 +59,7 @@ public class MainController {
         return true;
     }
 
-    public void setMenuScreen() {
+    public void showMenuScreen() {
         game.setScreen(menuScreen);
     }
 

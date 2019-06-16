@@ -8,9 +8,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  */
 public interface GameObject {
 
-    public void update(float deltaTime);
+    void update(float deltaTime);
 
-    public void draw(SpriteBatch spriteBatch);
+    void draw(SpriteBatch spriteBatch);
 
-    public void dispose();
+    void dispose();
 }

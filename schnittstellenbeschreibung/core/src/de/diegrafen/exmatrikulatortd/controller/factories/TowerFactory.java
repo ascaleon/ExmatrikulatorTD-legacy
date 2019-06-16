@@ -38,7 +38,7 @@ public final class TowerFactory {
         return null;
     }
 
-    private Tower createAuraTower (Aura AuraType) {
+    private Tower createAuraTower () {
         return null;
     }
 }
