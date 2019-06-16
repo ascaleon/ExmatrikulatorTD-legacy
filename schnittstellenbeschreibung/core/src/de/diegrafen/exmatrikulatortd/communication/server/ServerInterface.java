@@ -10,11 +10,28 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public interface ServerInterface {
 
-    boolean buildTower (Tower tower, Coordinates coordinates);
+    /**
+     * Sendet eine BuildResponse an den Client
+     * @param tower Der zu bauende Turm
+     * @param coordinates Die Koordinaten des Turms
+     */
+    void buildTower (Tower tower, Coordinates coordinates);
 
-    boolean sellTower (Tower tower);
+    /**
+     * Sendet eine SellResponse an den Client
+     * @param tower Der zu bauende Turm
+     */
+    void sellTower (Tower tower);
 
-    boolean upgradeTower (Tower tower);
+    /**
+     * Sendet eine UpgradeResponse an den Client
+     * @param tower Der aufzurüstende Turm
+     */
+    void upgradeTower (Tower tower);
 
-    boolean sendEnemy (Enemy enemy);
+    /**
+     * Sendet eine SendEnemyResponse an den Client
+     * @param enemy Der zu sendende Gegner
+     */
+    void sendEnemy (Enemy enemy);
 }

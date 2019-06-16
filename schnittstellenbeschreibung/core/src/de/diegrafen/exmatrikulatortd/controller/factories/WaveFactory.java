@@ -40,33 +40,57 @@ public final class WaveFactory {
 
 
     /**
-     * 
-     * @return
+     * Erzeugt eine Welle von normalen Gegnern
+     * @return Die erzeugte Welle
      */
     private Wave createRegularWave ( ) {
         return null;
     }
 
+    /**
+     * Erzeugt eine Welle von schwer gapanzerten Gegnern
+     * @return Die erzeugte Welle
+     */
     private Wave createHeavyWave () {
         return null;
     }
 
+    /**
+     * Erzeugt eine Welle von schwer schnellen Gegnern
+     * @return Die erzeugte Welle
+     */
     private Wave createFastWave () {
         return null;
     }
 
+    /**
+     * Erzeugt eine Welle von normalen und schwer gapanzerten Gegnern
+     * @return Die erzeugte Welle
+     */
     private Wave createRegularAndHeavyWave () {
         return null;
     }
 
+    /**
+     * Erzeugt eine Welle von normalen und schnellen Gegnern
+     * @return Die erzeugte Welle
+     */
     private Wave createRegularAndFastWave () {
         return null;
     }
 
+    /**
+     * Erzeugt eine Welle von schwer gepanzerten und schnellen Gegnern
+     * @return Die erzeugte Welle
+     */
     private Wave createHeavyAndFastWave () {
         return null;
     }
 
+    /**
+     * Erzeugt eine Boss-Welle
+     * @return Die erzeugte Welle
+     */
     private Wave createBossWave () {
         return null;
     }
