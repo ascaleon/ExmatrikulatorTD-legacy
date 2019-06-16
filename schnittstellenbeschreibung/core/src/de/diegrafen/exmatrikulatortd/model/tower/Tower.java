@@ -11,6 +11,9 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
+ *
+ * Über diese Klasse werden sämtliche Türme in unserem Spiel abgebildet.
+ *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 13.06.2019 21:58
  */
@@ -18,6 +21,14 @@ import java.util.List;
 @Table(name = "Towers")
 public class Tower extends BaseModel {
 
+    /**
+     * Die eindeutige Serialisierungs-ID
+     */
+    static final long serialVersionUID = 9304847294042L;
+
+    /**
+     * Der Name des Turmes
+     */
     private String towerName;
 
     /**
@@ -30,32 +41,65 @@ public class Tower extends BaseModel {
      */
     private float attackRange;
 
+    /**
+     * Der Angriffstyp des Turmes
+     */
     @Enumerated(EnumType.STRING)
     private AttackType attackType;
 
+    /**
+     * Der Aura-Typ des Turmes
+     */
     @Enumerated(EnumType.STRING)
     private Aura aura;
 
+    /**
+     * Die Aura-Reichweite des Turmes
+     */
     private float auraRange;
 
+    /**
+     * Die Kosten für das Bauen des Turmes
+     */
     private int price;
 
+    /**
+     * Die Anzahl der Ressourcen, die man für den Verkauf des Turmes erhält
+     */
     private int sellPrice;
 
+    /**
+     * Die Kosten für das Aufrüsten des Turmes
+     */
     private int upgradePrice;
 
+    /**
+     * Die Ausbaustufe des Turmes
+     */
     private int upgradeLevel;
 
+    /**
+     * Die Position des Turmes auf der Spielkarte
+     */
     @OneToOne(mappedBy = "tower")
     private Coordinates position;
 
+    /**
+     * Der Spieler, dem der Turm gehört
+     */
     @ManyToOne
     @JoinColumn(name="player_id")
     private Player owner;
 
+    /**
+     * Das aktuelle Angriffsziel des Turmes
+     */
     @OneToOne
     private Enemy currentTarget;
 
+    /**
+     * Die Buffs, über die der Turm aktuell verfügt
+     */
     @OneToMany(mappedBy="tower", orphanRemoval=true)
     private List<Buff> buffs;
 
@@ -71,11 +115,18 @@ public class Tower extends BaseModel {
      */
     private float cooldown;
 
+    /**
+     * Die Bezeichnung der Assets, die mit der grafischen Darstellung des Turmes assoziiert sind
+     */
     private String assetsName;
 
+    /**
+     * Default-Konstruktur. Wird von JPA vorausgesetzt.
+     */
     public Tower () {
 
     }
+
 
     public int getAttackDamage() {
         return attackDamage;

@@ -31,10 +31,6 @@ public abstract class BaseScreen implements Screen {
         ui = new Stage(new ScreenViewport());
     }
 
-//    public BaseScreen(GameController gameController, Gamestate gameState) {
-//
-//    }
-
     public BaseScreen () {
         ui = new Stage(new ScreenViewport());
     }

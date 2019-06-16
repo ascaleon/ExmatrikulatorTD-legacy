@@ -3,7 +3,7 @@ package de.diegrafen.exmatrikulatortd.model.tower;
 /**
  *
  * Die verschiedenen Aura-Typen, die ein Turm haben kann. Eine Aura kann entweder Gegner verlangsamen (@code{SLOW_AURA}),
- * die Angriffsgeschindigkeit befreundeter Türme erhöhen (@code{SLOW_AURA}) oder die Rüstung von Gegnern reduzieren
+ * die Angriffsgeschindigkeit befreundeter Türme erhöhen (@code{HASTE_AURA}) oder die Rüstung von Gegnern reduzieren
  * (@code{CORRUPTION_AURA}).
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>

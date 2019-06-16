@@ -7,6 +7,12 @@ import de.diegrafen.exmatrikulatortd.model.Player;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ *
+ * Über diese Klasse werden sämtliche Gegner in unserem Spiel abgebildet.
+ *
+ * @author Jan Romann <jan.romann@uni-bremen.de>
+ */
 @Entity
 @Table(name = "Enemies")
 public class Enemy extends BaseModel {
@@ -38,11 +44,13 @@ public class Enemy extends BaseModel {
 
     private int sendPrice;
 
-    private boolean isDead;
+    private boolean dead;
 
     private boolean reachedTarget;
 
     private int wayPointIndex;
+
+    private float armor;
 
     @Enumerated(EnumType.ORDINAL)
     private ArmorType armorType;

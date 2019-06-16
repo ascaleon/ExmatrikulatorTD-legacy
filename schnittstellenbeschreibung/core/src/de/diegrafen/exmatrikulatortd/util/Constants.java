@@ -1,6 +1,9 @@
 package de.diegrafen.exmatrikulatortd.util;
 
 /**
+ *
+ * Definiert globale Konstanten, die von anderen Modulen genutzt werden können
+ *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 20:04
  */
