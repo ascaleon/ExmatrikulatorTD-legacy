@@ -110,9 +110,9 @@ public class PlayScreen extends AbstractScreen {
     }
 
     /**
-     * Called when the screen should render itself.
+     * Wird aufgerufen, wenn der Screen rendern soll. Dies passiert normalerweise zu einer festgelegten Framerate.
      *
-     * @param delta The time in seconds since the last render.
+     * @param delta In welchem zeitlichen abstand gerendert werden soll.
      */
     @Override
     public void render(float delta) {

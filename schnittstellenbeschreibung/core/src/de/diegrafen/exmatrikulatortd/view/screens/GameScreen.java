@@ -26,38 +26,74 @@ import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactor
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 14.06.2019 02:12
+ *
+ * Der GameScreen wird während des aktuellen Spiels angezeigt.
  */
 public class GameScreen extends BaseScreen implements GameView {
 
+    /**
+     * Der GameLogicController.
+     */
     private GameLogicController gameLogicController;
 
+    /**
+     * Der aktuelle Spielstand.
+     */
     private Gamestate gameState;
 
+    /**
+     * Der Spielstand für die Datenbankimplementierung.
+     */
     private GameStateDao gameStateDao;
 
-    private Gamestate gamestate;
-
+    /**
+     * Ist das aktuelle Spiel Single oder Multiplayer.
+     */
     private boolean multiPlayer;
 
+    /**
+     * Das Spielobjekt.
+     */
     private ExmatrikulatorTD game;
 
+    /**
+     * Die Karte, auf der die Türme plaziert werden und Gegner laufen.
+     */
     private TiledMap map;
 
+    /**
+     * Der renderer zeichnet die Karte.
+     */
     private OrthogonalTiledMapRenderer mapRenderer;
 
+    /**
+     * Eine Liste der Gegner.
+     */
     private List<EnemyObject> enemies;
 
+    /**
+     * Eine Liste der Türme.
+     */
     private List<TowerObject> towers;
 
+    /**
+     * Die Sprites und Texturen
+     */
     SpriteBatch batch;
     Texture img;
 
+    /**
+     * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
+     * @param mainController Der Maincontrroller.
+     * @param playerProfile Das Spielerprofil.
+     */
     public GameScreen(MainController mainController, Profile playerProfile) {
         super(mainController);
         this.gameState = new Gamestate();
         this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
         gameLogicController.setGameScreen(this);
     }
+
 
     public GameScreen(MainController mainController, Profile playerProfile, Gamestate gamestate) {
         this(mainController, playerProfile);
@@ -91,6 +127,9 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
 
+    /**
+     * Die Initialisierung erstellt den SpriteBatch und lädt Texturen.
+     */
     @Override
     public void init () {
         batch = new SpriteBatch();
@@ -99,6 +138,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
     }
 
+    /**
+     *  Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
+     *  @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
+     */
     @Override
     public void update (float deltaTime) {
         Gdx.gl.glClearColor(1, 0, 0, 1);
@@ -120,6 +163,9 @@ public class GameScreen extends BaseScreen implements GameView {
 
     }
 
+    /**
+     * Die nicht mehr benötigten Recourccen werden freigegeben.
+     */
     @Override
     public void dispose() {
         super.dispose();
@@ -127,6 +173,9 @@ public class GameScreen extends BaseScreen implements GameView {
     	img.dispose();
     }
 
+    /**
+     * Lädt die Karte.
+     */
     private void loadMap (String mapPath) {
 
     }
