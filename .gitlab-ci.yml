@@ -1,25 +1,15 @@
-image: java:8-jdk
+image: openjdk:8-jdk
 
 stages:
-- build
-- deploy
+  - build
+  - test
 
-desktop:
+build:
   stage: build
   script:
-  - ./gradlew desktop:dist
-  artifacts:
-    expire_in: 31d
-    paths:
-    - exmatrikulatortd/desktop/build/libs/
-
-pages:
-  stage: deploy
-  image: alpine:latest
+    - ./exmatrikulatortd/gradlew clean build
+    
+unitTests:
+  stage: test
   script:
-  - mv html/build/dist/ public/
-  artifacts:
-    paths:
-    - public/
-  only:
-  - master
+    - ./exmatrikulatortd/gradlew test
