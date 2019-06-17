@@ -1,41 +1,25 @@
 image: java:8-jdk
 
 stages:
-  - build
-  - test
-  - deploy
+- build
+- deploy
 
-before_script:
-#  - echo `pwd` # debug
-#  - echo "$CI_BUILD_NAME, $CI_BUILD_REF_NAME $CI_BUILD_STAGE" # debug
-  - cd exmatrikulatortd/
-  - export GRADLE_USER_HOME=`pwd`/.gradle
-
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
-
-build:
+desktop:
   stage: build
   script:
-    - ./gradlew assemble
+  - ./gradlew desktop:dist
+  artifacts:
+    expire_in: 31d
+    paths:
+    - exmatrikulatortd/desktop/build/libs/
+
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+  - mv html/build/dist/ public/
   artifacts:
     paths:
-      - build/libs/*.jar
-    expire_in: 1 week
+    - public/
   only:
-    - master
-
-test:
-  stage: test
-  script:
-    - ./gradlew check
-
-deploy:
-  stage: deploy
-  script:
-    - ./deploy
-
-after_script:
-  - echo "End CI"
+  - master
