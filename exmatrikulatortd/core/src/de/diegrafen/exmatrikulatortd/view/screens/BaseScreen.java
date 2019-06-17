@@ -89,7 +89,9 @@ public abstract class BaseScreen implements Screen {
     /**
      * Der Screen wird initialisiert.
      */
-    public void init() { }
+    public void init() {
+        camera = new OrthographicCamera();
+    }
 
     /**
      * Wird immer nach einem Bestimmten Zeitabstand aufgerufen und der Bildinhalt wird neu gerendert.
@@ -185,5 +187,9 @@ public abstract class BaseScreen implements Screen {
 
     public void setSpriteBatch(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
     }
 }

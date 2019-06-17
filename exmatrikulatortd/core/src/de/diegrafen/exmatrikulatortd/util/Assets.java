@@ -9,6 +9,9 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public class Assets {
 
+    public static final String REGULAR_TOWER_ASSETS = "badlogic.jpg";
+
+    public static final String REGULAR_ENEMY_ASSETS = "badlogic.jpg";
 
 
 

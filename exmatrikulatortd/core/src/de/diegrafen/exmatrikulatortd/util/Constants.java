@@ -20,7 +20,9 @@ public class Constants {
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
      */
-    private static final float SEARCH_TARGET_INTERVAL = 0.75f;
+    public static final float SEARCH_TARGET_INTERVAL = 0.75f;
+
+    public static final int TILE_SIZE = 64;
 
     public static float X_POS = 0;
 

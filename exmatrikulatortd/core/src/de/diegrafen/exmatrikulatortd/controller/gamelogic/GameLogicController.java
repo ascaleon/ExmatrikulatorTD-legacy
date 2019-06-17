@@ -2,11 +2,15 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
@@ -14,7 +18,11 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 import java.util.HashMap;
+import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
+import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
@@ -56,6 +64,8 @@ public class GameLogicController implements LogicController {
      */
     private SaveStateDao saveStateDao;
 
+    private EnemyDao enemyDao;
+
     /**
      * Bildet Turm-Objekte auf ihre grafische Repräsentation ab
      */
@@ -66,14 +76,18 @@ public class GameLogicController implements LogicController {
      */
     private HashMap<Enemy, EnemyObject> enemyMapping;
 
+    private Player localPlayer;
+
     public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
         this.gamestate = gamestate;
         this.profile = profile;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
+        this.enemyDao = new EnemyDao();
         gameStateDao.create(gamestate);
         enemyMapping = new HashMap<Enemy, EnemyObject>();
+        towerMapping = new HashMap<Tower, TowerObject>();
     }
 
     @Override
@@ -104,7 +118,6 @@ public class GameLogicController implements LogicController {
      */
     void applyMovement (float deltaTime) {
         for (Enemy enemy : gamestate.getEnemies()) {
-            //enemy.moveInxDirection(deltaTime);
             enemy.moveInTargetDirection(deltaTime);
             EnemyObject enemyObject = enemyMapping.get(enemy);
             enemyObject.setNewPosition(enemy.getxPosition(), enemy.getyPosition());
@@ -162,18 +175,56 @@ public class GameLogicController implements LogicController {
         gamestate.addEnemy(enemy);
         EnemyObject enemyObject = new EnemyObject(enemy);
         gameScreen.addEnemy(enemyObject);
+        enemyDao.create(enemy);
         enemyMapping.put(enemy, enemyObject);
         System.out.println("Enemy added!");
         System.out.println(enemyMapping.toString());
     }
 
+    public void addTower (Tower tower) {
+        //tower.setOwner(localPlayer);
+        //localPlayer.addTower(tower);
+        tower.setGamestate(gamestate);
+        gamestate.addTower(tower);
+        TowerObject towerObject = new TowerObject(tower);
+        gameScreen.addTower(towerObject);
+        towerMapping.put(tower, towerObject);
+        System.out.println("Tower added!");
+        System.out.println(towerMapping.toString());
+    }
+
     /**
      * Baut einen neuen Turm
      *
-     * @param tower       Der zu bauende Turm
+     * @param towerType       Der zu bauende Turm
      * @param coordinates Die Koordinaten des Turmes
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
+    public boolean buildTower(TowerType towerType, Coordinates coordinates) {
+
+        boolean wasSuccessful;
+
+        //if (gamestate.checkCoordinates(coordinates)) {
+        if (true) {
+            Tower tower = createNewTower(towerType);
+            System.out.println(coordinates.toString());
+            tower.setPosition(coordinates);
+            //gamestate.addTower(tower);
+            addTower(tower);
+            wasSuccessful = true;
+        } else {
+            wasSuccessful = false;
+        }
+
+        return wasSuccessful;
+    }
+
+    public void buildRegularTower(int screenX, int screenY) {
+        Coordinates coordinates = new Coordinates(screenX / TILE_SIZE, screenY / TILE_SIZE);
+        buildTower(REGULAR_TOWER, coordinates);
+
+    }
+
     @Override
     public boolean buildTower(Tower tower, Coordinates coordinates) {
         return false;

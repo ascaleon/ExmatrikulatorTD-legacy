@@ -92,8 +92,12 @@ public class Player extends BaseModel {
         this.attackingEnemies = new ArrayList<Enemy>();
     }
 
-    public void addEnemy(Enemy attackingEnemy) {
+    public void addEnemy (Enemy attackingEnemy) {
         this.attackingEnemies.add(attackingEnemy);
+    }
+
+    public void addTower (Tower tower) {
+        towers.add(tower);
     }
 
     public List<Coordinates> getWayPoints() {

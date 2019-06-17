@@ -90,7 +90,7 @@ public class Enemy extends BaseModel {
      * @param assetsName Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
      */
     public Enemy (String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int resourcesForKill,
-                  int sendPrice, String assetsName, Player attackedPlayer, float xPosition, float yPosition) {
+                  int sendPrice, String assetsName, float xPosition, float yPosition) {
         this.name = name;
         this.baseSpeed = baseSpeed;
         this.currentSpeed = baseSpeed;
@@ -100,7 +100,6 @@ public class Enemy extends BaseModel {
         this.resourcesForKill = resourcesForKill;
         this.sendPrice = sendPrice;
         this.assetsName = assetsName;
-        this.attackedPlayer = attackedPlayer;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
 
@@ -146,8 +145,8 @@ public class Enemy extends BaseModel {
     public void moveInTargetDirection (float deltaTime) {
         targetyPosition = Y_POS;
         targetxPosition = X_POS;
-        System.out.println(targetyPosition - yPosition);
-        System.out.println(targetxPosition - xPosition);
+        //System.out.println(targetyPosition - yPosition);
+        //System.out.println(targetxPosition - xPosition);
         if (Math.abs(targetyPosition - yPosition)  > 1 & Math.abs(targetxPosition - xPosition) > 1) {
             float angle = (float) Math
                     .atan2(targetyPosition - yPosition, targetxPosition - xPosition);

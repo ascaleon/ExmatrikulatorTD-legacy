@@ -24,6 +24,13 @@ public class TowerObject extends BaseObject {
         super(name, assetsName, xPosition, yPosition);
     }
 
+
+    public TowerObject(Tower tower) {
+        super(tower.getTowerName(), tower.getAssetsName());
+        setNewPosition(tower.getxPosition(), tower.getyPosition());
+        System.out.println("Turm erzeugt!");
+    }
+
     /**
      * Update-Methode. Aktualisiert den Zustand des Objektes
      *
@@ -42,6 +49,7 @@ public class TowerObject extends BaseObject {
     @Override
     public void draw(SpriteBatch spriteBatch) {
         super.draw(spriteBatch);
+        spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
     }
 
     /**

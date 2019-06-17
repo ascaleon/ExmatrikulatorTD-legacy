@@ -84,6 +84,7 @@ public class Gamestate extends BaseModel {
      */
     public Gamestate (List<Player> players, Difficulty difficulty) {
 
+
     }
 
     /**
@@ -91,6 +92,7 @@ public class Gamestate extends BaseModel {
      */
     public Gamestate() {
         enemies = new ArrayList<Enemy>();
+        towers = new ArrayList<Tower>();
     }
 
     public void addEnemy (EnemyType enemyType) {
@@ -111,5 +113,17 @@ public class Gamestate extends BaseModel {
 
     public List<Enemy> getEnemies() {
         return enemies;
+    }
+
+    public int getLocalPlayerNumber() {
+        return localPlayerNumber;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void addTower(Tower tower) {
+        towers.add(tower);
     }
 }

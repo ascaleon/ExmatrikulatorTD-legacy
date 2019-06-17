@@ -8,18 +8,23 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
+import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
@@ -27,6 +32,13 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.badlogic.gdx.Input.Buttons.LEFT;
+import static com.badlogic.gdx.Input.Buttons.RIGHT;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.*;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
+import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setX;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setY;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
@@ -67,12 +79,12 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Die Karte, auf der die Türme plaziert werden und Gegner laufen.
      */
-    private TiledMap map;
+    private TiledMap tiledMap;
 
     /**
      * Der renderer zeichnet die Karte.
      */
-    private OrthogonalTiledMapRenderer mapRenderer;
+    private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
     /**
      * Eine Liste der Gegner.
@@ -83,6 +95,8 @@ public class GameScreen extends BaseScreen implements GameView {
      * Eine Liste der Türme.
      */
     private List<TowerObject> towers;
+
+    private InputProcessor inputProcessor;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
@@ -140,15 +154,14 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void init () {
+        super.init();
         enemies = new ArrayList<EnemyObject>();
+        towers = new ArrayList<TowerObject>();
         Player player = new Player();
-        Enemy enemy = new Enemy("Gegner 1", 10, 100, 1, 50, 50, "badlogic.jpg", player, 0, 0);
-        gameLogicController.addEnemy(enemy);
-        //addEnemy(new EnemyObject("Gegner 1", "badlogic.jpg", 0, 0));
-        //img = new Texture("badlogic.jpg");
+        gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
         //getSessionFactory();
         InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
-        multiplexer.addProcessor(new InputProcessor() {
+        inputProcessor = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
                 return false;
@@ -171,12 +184,28 @@ public class GameScreen extends BaseScreen implements GameView {
 
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                setX(screenX);
-                setY(Gdx.graphics.getHeight() -screenY);
 
-                System.out.println("xPos:" + screenX);
-                System.out.println("yPos:" + screenY);
-                return true;
+                screenY = Gdx.graphics.getHeight() - screenY;
+
+                if (button == LEFT) {
+                    setX(screenX);
+                    setY(screenY);
+
+                    return true;
+                } else if (button == RIGHT) {
+                    System.out.println("Rechtsklick!");
+                    //Tower tower = createNewTower(SLOW_TOWER);
+                    //gameLogicController.buildTower(tower, new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE));
+                    gameLogicController.buildRegularTower(screenX, screenY);
+                    //Coordinates coordinates = new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE);
+                    //gameLogicController.buildTower(REGULAR_TOWER, coordinates);
+                    return true;
+                }
+
+                //System.out.println("xPos:" + screenX);
+                //System.out.println("yPos:" + screenY);
+
+                return false;
             }
 
             @Override
@@ -193,7 +222,13 @@ public class GameScreen extends BaseScreen implements GameView {
             public boolean scrolled(int amount) {
                 return false;
             }
-        });
+        };
+
+        multiplexer.addProcessor(inputProcessor);
+
+        loadMap("prototypeMap.tmx");
+
+
 
     }
 
@@ -206,6 +241,7 @@ public class GameScreen extends BaseScreen implements GameView {
         getSpriteBatch().begin();
         //batch.draw(img, 0, 0);
         //System.out.println("Game Loop!");
+        //orthogonalTiledMapRenderer.render();
         gameLogicController.update(deltaTime);
         if (enemies != null) {
             for (EnemyObject enemy : enemies) {
@@ -215,7 +251,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
         if (towers != null) {
             for (TowerObject tower : towers) {
-                tower.update(deltaTime);
+                //tower.update(deltaTime);
+                tower.draw(getSpriteBatch());
             }
         }
         getSpriteBatch().end();
@@ -235,7 +272,10 @@ public class GameScreen extends BaseScreen implements GameView {
      * Lädt die Karte.
      */
     private void loadMap (String mapPath) {
-
+        tiledMap = new TmxMapLoader().load(mapPath);
+        orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        getCamera().update();
+        orthogonalTiledMapRenderer.setView(getCamera());
     }
 
     private void initializeUserInterface () {

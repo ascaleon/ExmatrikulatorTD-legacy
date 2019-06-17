@@ -2,6 +2,8 @@ package de.diegrafen.exmatrikulatortd.controller.factories;
 
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
+import static de.diegrafen.exmatrikulatortd.util.Assets.REGULAR_ENEMY_ASSETS;
+
 /**
  *
  * Factory für Gegner
@@ -30,8 +32,28 @@ public final class EnemyFactory {
      * @param enemyType Der Typ des Gegners
      * @return Der erzeugte Gegner
      */
-    public static Enemy createEnemy (EnemyType enemyType) {
-        return null;
+    public static Enemy createNewEnemy (EnemyType enemyType) {
+
+        Enemy enemy;
+
+        switch (enemyType) {
+            case REGULAR_ENEMY:
+                enemy = createRegularEnemy();
+                break;
+            case HEAVY_ENEMY:
+                enemy = createHeavyEnemy();
+                break;
+            case FAST_ENEMY:
+                enemy = createFastEnemy();
+                break;
+            case BOSS_ENEMY:
+                enemy = createBossEnemy();
+                break;
+            default:
+                enemy = createRegularEnemy();
+        }
+
+        return enemy;
     }
 
 
@@ -39,15 +61,15 @@ public final class EnemyFactory {
      * Erzeugt einen normalen Gegner
      * @return Der erzeugte normale Gegner
      */
-    private Enemy createRegularEnemy () {
-        return null;
+    private static Enemy createRegularEnemy () {
+        return new Enemy("Regular Enemy", 10, 100, 1, 50, 50, REGULAR_ENEMY_ASSETS, 0, 0);
     }
 
     /**
      * Erzeugt einen gepanzerten Gegner
      * @return Der erzeugte gepanzerte Gegner
      */
-    private Enemy createHeavyEnemy () {
+    private static Enemy createHeavyEnemy () {
         return null;
     }
 
@@ -55,7 +77,7 @@ public final class EnemyFactory {
      * Erzeugt einen schnellen Gegner
      * @return Der erzeugte schnelle Gegner
      */
-    private Enemy createFastEnemy () {
+    private static Enemy createFastEnemy () {
         return null;
     }
 
@@ -63,7 +85,7 @@ public final class EnemyFactory {
      * Erzeugt einen Boss-Gegner
      * @return Der erzeugte Boss-Gegner
      */
-    private Enemy createBossEnemy () {
+    private static Enemy createBossEnemy () {
         return null;
     }
 

@@ -38,7 +38,7 @@ public class EnemyObject extends BaseObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        setxPosition(getxPosition() + movementSpeed * deltaTime);
+        //setxPosition(getxPosition() + movementSpeed * deltaTime);
     }
 
     /**

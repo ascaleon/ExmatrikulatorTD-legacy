@@ -58,6 +58,17 @@ public abstract class BaseObject implements GameObject {
     }
 
     /**
+     * Konstruktor für Spiel-Objekte
+     * @param name Der Name des Spielobjektes
+     * @param assetsName Die mit dem Objekt assoziierten Assets
+     */
+    BaseObject(String name, String assetsName) {
+        this.name = name;
+        currentSprite = new Texture(assetsName);
+
+    }
+
+    /**
      * Update-Methode. Aktualisiert den Zustand des Objektes
      * @param deltaTime Die Zeit zwischen zwei Frames
      */

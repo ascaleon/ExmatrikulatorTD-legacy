@@ -9,7 +9,10 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
  *
@@ -135,6 +138,36 @@ public class Tower extends BaseModel {
 
     }
 
+    /**
+     * Konstruktor für die Erzeugung eines neuen Turms über eine TowerFactory.
+     * @param towerName
+     * @param attackDamage
+     * @param attackRange
+     * @param attackType
+     * @param aura
+     * @param auraRange
+     * @param price
+     * @param sellPrice
+     * @param upgradePrice
+     * @param upgradeLevel
+     * @param assetsName
+     */
+    public Tower(String towerName, int attackDamage, float attackRange, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
+        this.towerName = towerName;
+        this.attackDamage = attackDamage;
+        this.attackRange = attackRange;
+        this.attackType = attackType;
+        this.aura = aura;
+        this.auraRange = auraRange;
+        this.price = price;
+        this.sellPrice = sellPrice;
+        this.upgradePrice = upgradePrice;
+        this.upgradeLevel = upgradeLevel;
+        this.buffs = new ArrayList<Buff>();
+        this.timeSinceLastSearch = 5f;
+        this.cooldown = 0;
+        this.assetsName = assetsName;
+    }
 
     public int getAttackDamage() {
         return attackDamage;
@@ -144,4 +177,39 @@ public class Tower extends BaseModel {
         this.attackDamage = attackDamage;
     }
 
+    public Player getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    public Gamestate getGamestate() {
+        return gamestate;
+    }
+
+    public void setGamestate(Gamestate gamestate) {
+        this.gamestate = gamestate;
+    }
+
+    public void setPosition(Coordinates position) {
+        this.position = position;
+    }
+
+    public String getTowerName() {
+        return towerName;
+    }
+
+    public String getAssetsName() {
+        return assetsName;
+    }
+
+    public int getxPosition() {
+        return position.getXCoordinate() * TILE_SIZE;
+    }
+
+    public int getyPosition() {
+        return position.getYCoordinate() * TILE_SIZE;
+    }
 }
