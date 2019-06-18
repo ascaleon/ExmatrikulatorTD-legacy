@@ -44,9 +44,11 @@ public class Enemy extends BaseModel {
     @JoinColumn(name="player_id")
     private Player attackedPlayer;
 
-    private float xPosition;
+    private float xSpawnPosition, ySpawnPosition;
 
-    private float yPosition;
+    private float xPosition, yPosition;
+
+    private float endXPosition = 400, endYPosition = 200;
 
     private int amountOfDamageToPlayer;
 
@@ -69,9 +71,9 @@ public class Enemy extends BaseModel {
 
     private String name;
 
-    private float targetxPosition = 400f;
+    private float targetxPosition = 0;
 
-    private float targetyPosition = 200f;
+    private float targetyPosition = 0;
 
     public Enemy () {
 
@@ -142,6 +144,10 @@ public class Enemy extends BaseModel {
         xPosition = xPosition + currentSpeed * deltaTime;
     }
 
+    /**
+     * TODO: In GameLogicController verschieben
+     * @param deltaTime
+     */
     public void moveInTargetDirection (float deltaTime) {
         targetyPosition = Y_POS;
         targetxPosition = X_POS;
@@ -155,5 +161,27 @@ public class Enemy extends BaseModel {
         }
     }
 
+    public float getxSpawnPosition() {
+        return xSpawnPosition;
+    }
 
+    public float getySpawnPosition() {
+        return ySpawnPosition;
+    }
+
+    public float getEndXPosition() {
+        return endXPosition;
+    }
+
+    public float getEndYPosition() {
+        return endYPosition;
+    }
+
+    public Player getAttackedPlayer() {
+        return attackedPlayer;
+    }
+
+    public int getAmountOfDamageToPlayer() {
+        return amountOfDamageToPlayer;
+    }
 }

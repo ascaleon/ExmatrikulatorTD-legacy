@@ -4,27 +4,19 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
@@ -36,12 +28,9 @@ import static com.badlogic.gdx.Input.Buttons.LEFT;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.*;
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setX;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setY;
-import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -185,13 +174,15 @@ public class GameScreen extends BaseScreen implements GameView {
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
+                boolean returnvalue = false;
+
                 screenY = Gdx.graphics.getHeight() - screenY;
 
                 if (button == LEFT) {
                     setX(screenX);
                     setY(screenY);
 
-                    return true;
+                    returnvalue = true;
                 } else if (button == RIGHT) {
                     System.out.println("Rechtsklick!");
                     //Tower tower = createNewTower(SLOW_TOWER);
@@ -199,13 +190,13 @@ public class GameScreen extends BaseScreen implements GameView {
                     gameLogicController.buildRegularTower(screenX, screenY);
                     //Coordinates coordinates = new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE);
                     //gameLogicController.buildTower(REGULAR_TOWER, coordinates);
-                    return true;
+                    returnvalue = true;
                 }
 
-                //System.out.println("xPos:" + screenX);
-                //System.out.println("yPos:" + screenY);
+                System.out.println("xPos:" + screenX);
+                System.out.println("yPos:" + screenY);
 
-                return false;
+                return returnvalue;
             }
 
             @Override
@@ -226,7 +217,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         multiplexer.addProcessor(inputProcessor);
 
-        loadMap("prototypeMap.tmx");
+        loadMap(MAP_PATH);
 
 
 
@@ -304,6 +295,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
     @Override
     public void removeEnemy(EnemyObject enemyObject) {
+        enemies.remove(enemyObject);
         enemyObject.dispose();
     }
 }

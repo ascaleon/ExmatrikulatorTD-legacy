@@ -90,6 +90,7 @@ public class Player extends BaseModel {
      */
     public Player () {
         this.attackingEnemies = new ArrayList<Enemy>();
+        this.towers = new ArrayList<Tower>();
     }
 
     public void addEnemy (Enemy attackingEnemy) {
@@ -115,4 +116,23 @@ public class Player extends BaseModel {
 
     }
 
+    public int getMaxLives() {
+        return maxLives;
+    }
+
+    public void setMaxLives(int maxLives) {
+        this.maxLives = maxLives;
+    }
+
+    public int getCurrentLives() {
+        return currentLives;
+    }
+
+    public void setCurrentLives(int currentLives) {
+        this.currentLives = currentLives;
+    }
+
+    public void removeEnemy(Enemy enemy) {
+        attackingEnemies.remove(enemy);
+    }
 }

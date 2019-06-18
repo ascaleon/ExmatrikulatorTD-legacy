@@ -34,6 +34,14 @@ public class Gamestate extends BaseModel {
      */
     private String mapName;
 
+    private int mapWidth = 512;
+
+    private int numberOfColumns;
+
+    private int mapHeight = 512;
+
+    private int numberOfRows;
+
     /**
      * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
      */
@@ -83,16 +91,18 @@ public class Gamestate extends BaseModel {
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
     public Gamestate (List<Player> players, Difficulty difficulty) {
-
-
+        this.players = players;
+        this.difficulty = difficulty;
     }
 
     /**
      * Default-Konstruktor. Wird von JPA benötigt
      */
     public Gamestate() {
+        players = new ArrayList<Player>();
         enemies = new ArrayList<Enemy>();
         towers = new ArrayList<Tower>();
+        collisionMatrix = new ArrayList<Coordinates>();
     }
 
     public void addEnemy (EnemyType enemyType) {
@@ -125,5 +135,101 @@ public class Gamestate extends BaseModel {
 
     public void addTower(Tower tower) {
         towers.add(tower);
+    }
+
+    public void checkCoordinates (Coordinates coordinates) {
+        //collisionMatrix.get
+    }
+
+    public void removeEnemy(Enemy enemy) {
+        enemies.remove(enemy);
+    }
+
+    public void addPlayer (Player player) {
+        players.add(player);
+    }
+
+    public Player getPlayerByNumber (int playerNumber) {
+        return players.get(playerNumber);
+    }
+
+    public void setLocalPlayerNumber(int localPlayerNumber) {
+        this.localPlayerNumber = localPlayerNumber;
+    }
+
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public void setMapWidth(int mapWidth) {
+        this.mapWidth = mapWidth;
+    }
+
+    public int getNumberOfColumns() {
+        return numberOfColumns;
+    }
+
+    public void setNumberOfColumns(int numberOfColumns) {
+        this.numberOfColumns = numberOfColumns;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
+    public void setMapHeight(int mapHeight) {
+        this.mapHeight = mapHeight;
+    }
+
+    public int getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    public void setNumberOfRows(int numberOfRows) {
+        this.numberOfRows = numberOfRows;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public List<Coordinates> getCollisionMatrix() {
+        return collisionMatrix;
+    }
+
+    public void setCollisionMatrix(List<Coordinates> collisionMatrix) {
+        this.collisionMatrix = collisionMatrix;
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
+    }
+
+    public void setRoundNumber(int roundNumber) {
+        this.roundNumber = roundNumber;
+    }
+
+    public int getNumberOfRounds() {
+        return numberOfRounds;
+    }
+
+    public void setNumberOfRounds(int numberOfRounds) {
+        this.numberOfRounds = numberOfRounds;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void addCoordinatesToCollisionMatrix (Coordinates coordinates) {
+        collisionMatrix.add(coordinates);
+    }
+
+    public Coordinates getMapCellByListIndex (int listIndex) {
+        return collisionMatrix.get(listIndex);
     }
 }

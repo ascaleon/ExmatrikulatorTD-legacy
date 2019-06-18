@@ -82,6 +82,11 @@ public class Coordinates extends BaseModel {
         this.yCoordinate = yCoordinate;
     }
 
+    public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
+        this(xCoordinate, yCoordinate);
+        this.buildableByPlayer = buildableByPlayer;
+    }
+
     public int getXCoordinate() {
         return xCoordinate;
     }
@@ -96,5 +101,53 @@ public class Coordinates extends BaseModel {
 
     public void setYCoordinate(int yCoordinate) {
         this.yCoordinate = yCoordinate;
+    }
+
+    public int getxCoordinate() {
+        return xCoordinate;
+    }
+
+    public void setxCoordinate(int xCoordinate) {
+        this.xCoordinate = xCoordinate;
+    }
+
+    public int getyCoordinate() {
+        return yCoordinate;
+    }
+
+    public void setyCoordinate(int yCoordinate) {
+        this.yCoordinate = yCoordinate;
+    }
+
+    public Gamestate getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(Gamestate gameState) {
+        this.gameState = gameState;
+    }
+
+    public boolean isBuildable() {
+        return isBuildable;
+    }
+
+    public void setBuildable(boolean buildable) {
+        isBuildable = buildable;
+    }
+
+    public Tower getTower() {
+        return tower;
+    }
+
+    public void setTower(Tower tower) {
+        this.tower = tower;
+    }
+
+    public int getBuildableByPlayer() {
+        return buildableByPlayer;
+    }
+
+    public void setBuildableByPlayer(int buildableByPlayer) {
+        this.buildableByPlayer = buildableByPlayer;
     }
 }

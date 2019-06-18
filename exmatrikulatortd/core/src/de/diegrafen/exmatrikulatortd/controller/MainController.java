@@ -169,7 +169,7 @@ public class MainController {
      * Startet den GameServer
      */
     public void startServer() {
-
+        gameServer.startServer();
     }
 
     /**
@@ -177,7 +177,7 @@ public class MainController {
      * @param host Die IP-Adresse des Servers
      */
     public void connectToServer (String host) {
-
+        gameClient.connect(host);
     }
 
     /**

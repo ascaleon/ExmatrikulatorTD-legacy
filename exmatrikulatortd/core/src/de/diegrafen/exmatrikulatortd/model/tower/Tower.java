@@ -206,10 +206,10 @@ public class Tower extends BaseModel {
     }
 
     public int getxPosition() {
-        return position.getXCoordinate() * TILE_SIZE;
+        return (position.getXCoordinate() * TILE_SIZE) + TILE_SIZE / 2;
     }
 
     public int getyPosition() {
-        return position.getYCoordinate() * TILE_SIZE;
+        return position.getYCoordinate() * TILE_SIZE  + TILE_SIZE / 2;
     }
 }

@@ -54,7 +54,6 @@ public abstract class BaseObject implements GameObject {
         currentSprite = new Texture(assetsName);
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-
     }
 
     /**
@@ -95,7 +94,8 @@ public abstract class BaseObject implements GameObject {
      * Entfernt das Spielobjekt
      */
     public void dispose() {
-
+        currentSprite.dispose();
+        //textureAtlas.dispose();
     };
 
     public TextureAtlas getTextureAtlas() {
