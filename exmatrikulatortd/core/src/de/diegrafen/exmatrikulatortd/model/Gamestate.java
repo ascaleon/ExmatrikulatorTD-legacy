@@ -42,6 +42,8 @@ public class Gamestate extends BaseModel {
 
     private int numberOfRows;
 
+    private int tileSize = 64;
+
     /**
      * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
      */
@@ -231,5 +233,17 @@ public class Gamestate extends BaseModel {
 
     public Coordinates getMapCellByListIndex (int listIndex) {
         return collisionMatrix.get(listIndex);
+    }
+
+    public int getTileSize() {
+        return tileSize;
+    }
+
+    public void removeTower(Tower tower) {
+        towers.remove(tower);
+    }
+
+    public List<Tower> getTowers() {
+        return towers;
     }
 }

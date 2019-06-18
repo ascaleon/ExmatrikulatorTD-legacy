@@ -91,6 +91,11 @@ public class Player extends BaseModel {
     public Player () {
         this.attackingEnemies = new ArrayList<Enemy>();
         this.towers = new ArrayList<Tower>();
+        this.wayPoints = new ArrayList<Coordinates>();
+        wayPoints.add(new Coordinates(0,0));
+        wayPoints.add(new Coordinates(0,1));
+        wayPoints.add(new Coordinates(5,1));
+        wayPoints.add(new Coordinates(5,5));
     }
 
     public void addEnemy (Enemy attackingEnemy) {
@@ -107,6 +112,10 @@ public class Player extends BaseModel {
 
     public void setWayPoints(List<Coordinates> wayPoints) {
         this.wayPoints = wayPoints;
+    }
+
+    public Coordinates getWayPointByIndex (int index) {
+        return wayPoints.get(index);
     }
 
     /**
@@ -134,5 +143,29 @@ public class Player extends BaseModel {
 
     public void removeEnemy(Enemy enemy) {
         attackingEnemies.remove(enemy);
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
+    }
+
+    public int getResources() {
+        return resources;
+    }
+
+    public void setResources (int resources) {
+        this.resources = resources;
+    }
+
+    public void addToResources (int resources) {
+        this.resources += resources;
+    }
+
+    public void removeTower(Tower tower) {
+        towers.remove(tower);
     }
 }

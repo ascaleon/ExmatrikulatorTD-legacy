@@ -104,7 +104,7 @@ public class Enemy extends BaseModel {
         this.assetsName = assetsName;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-
+        this.wayPointIndex = 1;
     }
 
     private Coordinates getStartPosition () {
@@ -113,7 +113,7 @@ public class Enemy extends BaseModel {
 
     private Coordinates getEndPosition () {
         int size = attackedPlayer.getWayPoints().size();
-        return attackedPlayer.getWayPoints().get(size);
+        return attackedPlayer.getWayPoints().get(size - 1);
     }
 
     public void setAttackedPlayer(Player attackedPlayer) {
@@ -149,32 +149,50 @@ public class Enemy extends BaseModel {
      * @param deltaTime
      */
     public void moveInTargetDirection (float deltaTime) {
-        targetyPosition = Y_POS;
-        targetxPosition = X_POS;
-        //System.out.println(targetyPosition - yPosition);
-        //System.out.println(targetxPosition - xPosition);
-        if (Math.abs(targetyPosition - yPosition)  > 1 & Math.abs(targetxPosition - xPosition) > 1) {
+        //System.out.println(wayPointIndex);
+        Coordinates nextWayPoint = attackedPlayer.getWayPoints().get(wayPointIndex);
+        int tileSize = gameState.getTileSize();
+        targetxPosition = nextWayPoint.getXCoordinate() * tileSize + tileSize / 2;
+        //System.out.println("Current X: " + xPosition);
+        //System.out.println("Target X: " + targetxPosition);
+        targetyPosition = nextWayPoint.getYCoordinate() * tileSize + tileSize / 2;
+        //System.out.println("Current Y: " + yPosition);
+        //System.out.println("Target Y: " + targetyPosition);
+
+        //targetyPosition = Y_POS;
+        //targetxPosition = X_POS;
+        //System.out.println(targetyPosition);
+        //System.out.println(targetxPosition);
+        //if (Math.abs(targetyPosition - yPosition)  > 1 & Math.abs(targetxPosition - xPosition) > 1) {
             float angle = (float) Math
                     .atan2(targetyPosition - yPosition, targetxPosition - xPosition);
-            xPosition += (float) Math.cos(angle) * 125 * Gdx.graphics.getDeltaTime();
-            yPosition += (float) Math.sin(angle) * 125 * Gdx.graphics.getDeltaTime();
-        }
+            xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+            yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+        //}
     }
 
     public float getxSpawnPosition() {
-        return xSpawnPosition;
+        return getStartPosition().getxCoordinate() * gameState.getTileSize();
     }
 
     public float getySpawnPosition() {
-        return ySpawnPosition;
+        return getStartPosition().getyCoordinate() * gameState.getTileSize();
     }
 
-    public float getEndXPosition() {
-        return endXPosition;
+    public int getEndXPosition() {
+        return getEndPosition().getXCoordinate() * gameState.getTileSize();
     }
 
     public float getEndYPosition() {
-        return endYPosition;
+        return endYPosition * gameState.getTileSize();
+    }
+
+    public int getNextXPosition() {
+        return attackedPlayer.getWayPoints().get(wayPointIndex).getXCoordinate() * gameState.getTileSize();
+    }
+
+    public float getNextYPosition() {
+        return attackedPlayer.getWayPoints().get(wayPointIndex).getYCoordinate() * gameState.getTileSize();
     }
 
     public Player getAttackedPlayer() {
@@ -183,5 +201,50 @@ public class Enemy extends BaseModel {
 
     public int getAmountOfDamageToPlayer() {
         return amountOfDamageToPlayer;
+    }
+
+    public Gamestate getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(Gamestate gameState) {
+        this.gameState = gameState;
+    }
+
+    public float getTargetxPosition() {
+        return targetxPosition;
+    }
+
+    public void setTargetxPosition(float targetxPosition) {
+        this.targetxPosition = targetxPosition;
+    }
+
+    public float getTargetyPosition() {
+        return targetyPosition;
+    }
+
+    public void setTargetyPosition(float targetyPosition) {
+        this.targetyPosition = targetyPosition;
+    }
+
+    public int getWayPointIndex() {
+        return wayPointIndex;
+    }
+
+    public void setWayPointIndex(int wayPointIndex) {
+
+        this.wayPointIndex = wayPointIndex;
+    }
+
+    public void incrementWayPointIndex () {
+        wayPointIndex++;
+    }
+
+
+    public void setToStartPosition () {
+        Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
+        int tileSize = gameState.getTileSize();
+        xPosition = startCoordinates.getXCoordinate() * tileSize + tileSize / 2;
+        yPosition = startCoordinates.getYCoordinate() * tileSize + tileSize / 2;
     }
 }

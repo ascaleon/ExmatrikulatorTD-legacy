@@ -26,6 +26,17 @@ public class Constants {
 
     public static final int TILE_SIZE = 64;
 
+    public static final int[][] TEST_COLLISION_MAP = {
+            {-1,-1,0,0,0,0,0,0},
+            {0,-1,0,0,0,0,0,0},
+            {0,-1,0,0,0,0,0,0},
+            {0,-1,0,0,0,0,0,0},
+            {0,-1,0,0,0,0,0,0},
+            {0,-1,-1,-1,-1,0,0,0},
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0},
+    };
+
     public static float X_POS = 0;
 
     public static float Y_POS = 0;
@@ -37,6 +48,5 @@ public class Constants {
     public static void setY (float y) {
         Y_POS = y;
     }
-
 
 }

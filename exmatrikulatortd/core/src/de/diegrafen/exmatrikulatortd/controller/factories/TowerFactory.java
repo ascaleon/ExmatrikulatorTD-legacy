@@ -73,7 +73,7 @@ public final class TowerFactory {
      * @return Der erzeugte normalen Turm
      */
     private static Tower createRegularTower () {
-        System.out.println("Ohai!");
+        //System.out.println("Ohai!");
         return new Tower("Regular Tower", 5, 30, NORMAL, null, 0, 300, 150, 600, 1, REGULAR_TOWER_ASSETS);
     }
 

@@ -187,14 +187,16 @@ public class GameScreen extends BaseScreen implements GameView {
                     System.out.println("Rechtsklick!");
                     //Tower tower = createNewTower(SLOW_TOWER);
                     //gameLogicController.buildTower(tower, new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE));
-                    gameLogicController.buildRegularTower(screenX, screenY);
+                    if (!gameLogicController.buildRegularTower(screenX, screenY)) {
+                        gameLogicController.sellTower(screenX, screenY, 0);
+                    }
                     //Coordinates coordinates = new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE);
                     //gameLogicController.buildTower(REGULAR_TOWER, coordinates);
                     returnvalue = true;
                 }
 
-                System.out.println("xPos:" + screenX);
-                System.out.println("yPos:" + screenY);
+                //System.out.println("xPos:" + screenX);
+                //System.out.println("yPos:" + screenY);
 
                 return returnvalue;
             }
@@ -297,5 +299,9 @@ public class GameScreen extends BaseScreen implements GameView {
     public void removeEnemy(EnemyObject enemyObject) {
         enemies.remove(enemyObject);
         enemyObject.dispose();
+    }
+
+    public List<TowerObject> getTowers() {
+        return towers;
     }
 }

@@ -212,4 +212,16 @@ public class Tower extends BaseModel {
     public int getyPosition() {
         return position.getYCoordinate() * TILE_SIZE  + TILE_SIZE / 2;
     }
+
+    public int getSellPrice() {
+        return sellPrice;
+    }
+
+    public void setSellPrice(int sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+
+    public Coordinates getPosition() {
+        return position;
+    }
 }

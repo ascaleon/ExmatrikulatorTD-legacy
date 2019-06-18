@@ -62,7 +62,7 @@ public final class EnemyFactory {
      * @return Der erzeugte normale Gegner
      */
     private static Enemy createRegularEnemy () {
-        return new Enemy("Regular Enemy", 10, 100, 1, 50, 50, REGULAR_ENEMY_ASSETS, 0, 0);
+        return new Enemy("Regular Enemy", 25, 100, 1, 50, 50, REGULAR_ENEMY_ASSETS, 0, 0);
     }
 
     /**
