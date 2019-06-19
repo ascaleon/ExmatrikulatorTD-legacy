@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
+import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
 
 /**
  *
@@ -89,12 +90,17 @@ public class Gamestate extends BaseModel {
      */
     private boolean active;
 
+    private boolean newRound;
+
+    private float timeUntilNextRound;
+
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
     public Gamestate (List<Player> players, Difficulty difficulty) {
         this.players = players;
         this.difficulty = difficulty;
+        this.timeUntilNextRound = 0;
     }
 
     /**
@@ -105,6 +111,10 @@ public class Gamestate extends BaseModel {
         enemies = new ArrayList<Enemy>();
         towers = new ArrayList<Tower>();
         collisionMatrix = new ArrayList<Coordinates>();
+
+        this.newRound = true;
+        this.roundNumber = 0;
+        this.timeUntilNextRound = 0;
     }
 
     public void addEnemy (EnemyType enemyType) {
@@ -245,5 +255,49 @@ public class Gamestate extends BaseModel {
 
     public List<Tower> getTowers() {
         return towers;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
+
+    public void setTileSize(int tileSize) {
+        this.tileSize = tileSize;
+    }
+
+    public void setEnemies(List<Enemy> enemies) {
+        this.enemies = enemies;
+    }
+
+    public void setTowers(List<Tower> towers) {
+        this.towers = towers;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public boolean isNewRound() {
+        return newRound;
+    }
+
+    public void setNewRound(boolean newRound) {
+        this.newRound = newRound;
+    }
+
+    public float getTimeUntilNextRound() {
+        return timeUntilNextRound;
+    }
+
+    public void setTimeUntilNextRound(float timeUntilNextRound) {
+        this.timeUntilNextRound = timeUntilNextRound;
     }
 }

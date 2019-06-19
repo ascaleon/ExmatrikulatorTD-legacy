@@ -75,6 +75,8 @@ public class Enemy extends BaseModel {
 
     private float targetyPosition = 0;
 
+    private boolean respawning;
+
     public Enemy () {
 
     }
@@ -105,6 +107,8 @@ public class Enemy extends BaseModel {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.wayPointIndex = 1;
+
+        this.respawning = false;
     }
 
     private Coordinates getStartPosition () {
@@ -164,10 +168,9 @@ public class Enemy extends BaseModel {
         //System.out.println(targetyPosition);
         //System.out.println(targetxPosition);
         //if (Math.abs(targetyPosition - yPosition)  > 1 & Math.abs(targetxPosition - xPosition) > 1) {
-            float angle = (float) Math
-                    .atan2(targetyPosition - yPosition, targetxPosition - xPosition);
-            xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
-            yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
+        xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+        yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
         //}
     }
 
@@ -246,5 +249,13 @@ public class Enemy extends BaseModel {
         int tileSize = gameState.getTileSize();
         xPosition = startCoordinates.getXCoordinate() * tileSize + tileSize / 2;
         yPosition = startCoordinates.getYCoordinate() * tileSize + tileSize / 2;
+    }
+
+    public boolean isRespawning() {
+        return respawning;
+    }
+
+    public void setRespawning(boolean respawning) {
+        this.respawning = respawning;
     }
 }

@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import com.badlogic.gdx.Gdx;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
@@ -22,10 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TEST_COLLISION_MAP;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
+import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_SPAWNS;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
@@ -97,6 +101,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void update(float deltaTime) {
         //applyPlayerDamage();
+        spawnWave();
         applyMovement(deltaTime);
     }
 
@@ -130,10 +135,16 @@ public class GameLogicController implements LogicController {
             }
             if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
                 applyDamage(enemy);
+                //addEnemy(createNewEnemy(REGULAR_ENEMY));
+                if (enemy.isRespawning()) {
+                    enemy.setWayPointIndex(0);
+                    enemy.setToStartPosition();
+                    addEnemy(enemy);
+                }
                 //System.out.println("Hello?");
                 break;
             }
-            enemy.moveInTargetDirection(deltaTime);
+            enemy.moveInTargetDirection(Gdx.graphics.getDeltaTime()); //deltaTime);
             EnemyObject enemyObject = enemyMapping.get(enemy);
             enemyObject.setNewPosition(enemy.getxPosition(), enemy.getyPosition());
         }
@@ -197,7 +208,23 @@ public class GameLogicController implements LogicController {
      * Spawnt die nächste Angriffswelle
      */
     void spawnWave () {
+        if (gamestate.getTimeUntilNextRound() <= 0) {
+            for (Player player : gamestate.getPlayers()) {
+                if (player.getWaves().get(0).getEnemies().size() == 0) {
+                    System.out.println("Keine Gegner mehr! :(");
+                    player.setEnemiesSpawned(true);
+                }
 
+                if (!player.isEnemiesSpawned() && player.getTimeSinceLastSpawn() > TIME_BETWEEN_SPAWNS) {
+                    Enemy enemy = player.getWaves().get(0).getEnemies().get(0);
+                    player.getWaves().get(0).getEnemies().remove(0);
+                    addEnemy(enemy);
+                    player.setTimeSinceLastSpawn(0);
+                } else {
+                    player.setTimeSinceLastSpawn(player.getTimeSinceLastSpawn() + Gdx.graphics.getDeltaTime());
+                }
+            }
+        }
     }
 
     /**

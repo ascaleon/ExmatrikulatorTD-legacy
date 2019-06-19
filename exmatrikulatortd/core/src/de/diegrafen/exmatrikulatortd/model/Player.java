@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
@@ -7,6 +8,8 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.createWave;
 
 /**
  * Die Spielerklasse. Verwaltet die Informationen über den Spieler wie Name, Anzahl der Leben und die erzielten Punkte
@@ -85,6 +88,10 @@ public class Player extends BaseModel {
     )
     private List<Coordinates> wayPoints;
 
+    private float timeSinceLastSpawn;
+
+    private boolean enemiesSpawned;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -92,10 +99,18 @@ public class Player extends BaseModel {
         this.attackingEnemies = new ArrayList<Enemy>();
         this.towers = new ArrayList<Tower>();
         this.wayPoints = new ArrayList<Coordinates>();
+        this.waves = new ArrayList<Wave>();
+
+        this.timeSinceLastSpawn = 0;
+        this.enemiesSpawned = false;
+
+        waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
+
         wayPoints.add(new Coordinates(0,0));
         wayPoints.add(new Coordinates(0,1));
         wayPoints.add(new Coordinates(5,1));
         wayPoints.add(new Coordinates(5,5));
+        wayPoints.add(new Coordinates(7,5));
     }
 
     public void addEnemy (Enemy attackingEnemy) {
@@ -167,5 +182,69 @@ public class Player extends BaseModel {
 
     public void removeTower(Tower tower) {
         towers.remove(tower);
+    }
+
+    public float getTimeSinceLastSpawn() {
+        return timeSinceLastSpawn;
+    }
+
+    public void setTimeSinceLastSpawn(float timeSinceLastSpawn) {
+        this.timeSinceLastSpawn = timeSinceLastSpawn;
+    }
+
+    public Gamestate getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(Gamestate gameState) {
+        this.gameState = gameState;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public List<Tower> getTowers() {
+        return towers;
+    }
+
+    public void setTowers(List<Tower> towers) {
+        this.towers = towers;
+    }
+
+    public List<Wave> getWaves() {
+        return waves;
+    }
+
+    public void setWaves(List<Wave> waves) {
+        this.waves = waves;
+    }
+
+    public List<Enemy> getAttackingEnemies() {
+        return attackingEnemies;
+    }
+
+    public void setAttackingEnemies(List<Enemy> attackingEnemies) {
+        this.attackingEnemies = attackingEnemies;
+    }
+
+    public boolean isEnemiesSpawned() {
+        return enemiesSpawned;
+    }
+
+    public void setEnemiesSpawned(boolean enemiesSpawned) {
+        this.enemiesSpawned = enemiesSpawned;
     }
 }

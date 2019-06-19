@@ -15,7 +15,7 @@ public class Constants {
 
     public static final int TCP_PORT = 9002;
 
-    public static final float TIME_BETWEEN_SPAWNS = 0.5f;
+    public static final float TIME_BETWEEN_SPAWNS = 1f;
 
     public static final float TIME_BETWEEN_ROUNDS = 20f;
 
@@ -32,9 +32,9 @@ public class Constants {
             {0,-1,0,0,0,0,0,0},
             {0,-1,0,0,0,0,0,0},
             {0,-1,0,0,0,0,0,0},
-            {0,-1,-1,-1,-1,0,0,0},
-            {0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0},
+            {0,-1,-1,-1,-1,-1,0,0},
+            {0,0,0,0,0,-1,0,0},
+            {0,0,0,0,0,-1,0,0},
     };
 
     public static float X_POS = 0;

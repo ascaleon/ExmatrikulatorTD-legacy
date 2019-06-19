@@ -5,6 +5,7 @@ import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,11 @@ public class Wave extends BaseModel {
     @JoinColumn(name="player_id")
     private Player player;
 
+    public Wave () {
+        this.enemies = new ArrayList<Enemy>();
+
+    }
+
     public List<Enemy> getEnemies() {
         return enemies;
     }
@@ -53,11 +59,26 @@ public class Wave extends BaseModel {
     }
 
     public void addEnemy (Enemy enemy) {
-
+        enemies.add(enemy);
     }
 
     public void removeEnemy (Enemy enemy) {
 
     }
 
+    public int getWaveNumber() {
+        return waveNumber;
+    }
+
+    public void setWaveNumber(int waveNumber) {
+        this.waveNumber = waveNumber;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
 }
