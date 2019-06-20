@@ -1,12 +1,7 @@
 package de.diegrafen.exmatrikulatortd.model.tower;
 
-import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Player;
-import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
+import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,7 +18,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
  */
 @Entity
 @Table(name = "Towers")
-public class Tower extends BaseModel {
+public class Tower extends ObservableModel {
 
     /**
      * Die eindeutige Serialisierungs-ID
@@ -33,7 +28,7 @@ public class Tower extends BaseModel {
     /**
      * Der Name des Turmes
      */
-    private String towerName;
+    private String name;
 
     /**
      * Der durch den Turm verursachte Schaden.
@@ -145,7 +140,7 @@ public class Tower extends BaseModel {
 
     /**
      * Konstruktor für die Erzeugung eines neuen Turms über eine TowerFactory.
-     * @param towerName
+     * @param name
      * @param attackDamage
      * @param attackRange
      * @param attackType
@@ -157,8 +152,10 @@ public class Tower extends BaseModel {
      * @param upgradeLevel
      * @param assetsName
      */
-    public Tower(String towerName, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
-        this.towerName = towerName;
+    public Tower(String name, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
+        super();
+
+        this.name = name;
         this.attackDamage = attackDamage;
         this.attackRange = attackRange;
         this.attackSpeed = attackSpeed;
@@ -203,20 +200,30 @@ public class Tower extends BaseModel {
         this.position = position;
     }
 
-    public String getTowerName() {
-        return towerName;
+    public String getName() {
+        return name;
     }
 
     public String getAssetsName() {
         return assetsName;
     }
 
-    public int getxPosition() {
-        return (position.getXCoordinate() * TILE_SIZE) + TILE_SIZE / 2;
+    public float getxPosition() {
+        return position.getXCoordinate() * position.getTileSize();
     }
 
-    public int getyPosition() {
-        return position.getYCoordinate() * TILE_SIZE  + TILE_SIZE / 2;
+    public float getyPosition() {
+        return position.getYCoordinate() * position.getTileSize();
+    }
+
+    @Override
+    public float getTargetxPosition() {
+        return position.getXCoordinate() * position.getTileSize();
+    }
+
+    @Override
+    public float getTargetyPosition() {
+        return position.getYCoordinate() * position.getTileSize();
     }
 
     public int getSellPrice() {
@@ -271,8 +278,8 @@ public class Tower extends BaseModel {
         this.attackSpeed = attackSpeed;
     }
 
-    public void setTowerName(String towerName) {
-        this.towerName = towerName;
+    public void setName(String towerName) {
+        this.name = towerName;
     }
 
     public AttackType getAttackType() {

@@ -114,13 +114,14 @@ public abstract class BaseScreen implements Screen {
      * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
     public void update(float deltaTime) {
+
     }
 
     /**
      * Eigene Zeichenanweisungen.
-     * @param delta Die Zeit in Sekunden seit dem letzten Frame.
+     * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
-    public void draw(float delta) {}
+    public void draw(float deltaTime) {}
 
     /**
      * Falls das Fenster mit dem Spiel in der Größe angepasst wird, so muss auch der Viewport angepasst werden.

@@ -17,7 +17,7 @@ public class Constants {
 
     public static final float TIME_BETWEEN_SPAWNS = 1f;
 
-    public static final float TIME_BETWEEN_ROUNDS = 20f;
+    public static final float TIME_BETWEEN_ROUNDS = 5f;
 
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.

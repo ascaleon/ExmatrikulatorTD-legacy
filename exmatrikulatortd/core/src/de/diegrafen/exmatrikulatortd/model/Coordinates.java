@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
+
 /**
  *
  * Repräsentiert Koordinaten auf dem Spielfeld. Dient zur Realisierung der Kollisionsmatrix des Spielfeldes und
@@ -74,6 +76,8 @@ public class Coordinates extends BaseModel {
      * Gibt an, welcher Spieler an der Koordinate bauen darf
      */
     private int buildableByPlayer;
+
+    private int tileSize = TILE_SIZE;
 
     /**
      * Default-Konstruktor. Wird von JPA benötigt.
@@ -193,6 +197,14 @@ public class Coordinates extends BaseModel {
 
     public void removeFromEnemiesOnCell(Enemy enemy) {
         enemiesInMapCell.remove(enemy);
+    }
+
+    public int getTileSize() {
+        return tileSize;
+    }
+
+    public void setTileSize(int tileSize) {
+        this.tileSize = tileSize;
     }
 
     @Override

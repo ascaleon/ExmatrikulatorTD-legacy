@@ -63,7 +63,7 @@ public final class EnemyFactory {
      * @return Der erzeugte normale Gegner
      */
     private static Enemy createRegularEnemy () {
-        return new Enemy("Regular Enemy", 100, 100, 1, 50, 50, REGULAR_ENEMY_ASSETS, 0, 0);
+        return new Enemy("Regular Enemy", 175, 100, 1, 50, 50, REGULAR_ENEMY_ASSETS, 0, 0);
     }
 
     /**
@@ -71,7 +71,7 @@ public final class EnemyFactory {
      * @return Der erzeugte gepanzerte Gegner
      */
     private static Enemy createHeavyEnemy () {
-        return new Enemy("Heavy Enemy", 100, 150, 2, 100, 100, HEAVY_ENEMY_ASSETS, 0, 0);
+        return new Enemy("Heavy Enemy", 175, 150, 2, 100, 100, HEAVY_ENEMY_ASSETS, 0, 0);
     }
 
 

@@ -94,13 +94,15 @@ public class Gamestate extends BaseModel {
 
     private float timeUntilNextRound;
 
+    private boolean roundEnded;
+
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
     public Gamestate (List<Player> players, Difficulty difficulty) {
         this.players = players;
         this.difficulty = difficulty;
-        this.timeUntilNextRound = 0;
+        this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
     }
 
     /**
@@ -114,16 +116,13 @@ public class Gamestate extends BaseModel {
 
         this.newRound = true;
         this.roundNumber = 0;
-        this.timeUntilNextRound = 0;
-    }
-
-    public void addEnemy (EnemyType enemyType) {
-
+        this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
+        this.roundEnded = true;
+        this.numberOfRounds = 3;
     }
 
     public void addEnemy (Enemy enemy) {
         enemies.add(enemy);
-
     }
 
     public void addEnemy (Enemy enemy, Player player) {
@@ -299,5 +298,13 @@ public class Gamestate extends BaseModel {
 
     public void setTimeUntilNextRound(float timeUntilNextRound) {
         this.timeUntilNextRound = timeUntilNextRound;
+    }
+
+    public boolean isRoundEnded() {
+        return roundEnded;
+    }
+
+    public void setRoundEnded(boolean roundEnded) {
+        this.roundEnded = roundEnded;
     }
 }

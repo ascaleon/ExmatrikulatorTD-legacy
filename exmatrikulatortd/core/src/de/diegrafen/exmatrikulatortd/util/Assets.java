@@ -19,7 +19,4 @@ public class Assets {
 
     //public static final String REGULAR_ENEMY_TEXTURE = "sprites/objects/enemies/Lorenzo.png";
 
-
-
-
 }

@@ -15,13 +15,20 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.BaseObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
@@ -78,12 +85,14 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Eine Liste der Gegner.
      */
-    private List<EnemyObject> enemies;
+    //private List<EnemyObject> enemies;
 
     /**
      * Eine Liste der Türme.
      */
-    private List<TowerObject> towers;
+    //private List<TowerObject> towers;
+
+    private List<GameObject> gameObjects;
 
     private InputProcessor inputProcessor;
 
@@ -144,8 +153,9 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void init () {
         super.init();
-        enemies = new ArrayList<EnemyObject>();
-        towers = new ArrayList<TowerObject>();
+        //enemies = new ArrayList<EnemyObject>();
+        //towers = new ArrayList<TowerObject>();
+        this.gameObjects = new LinkedList<>();
         Player player = new Player();
         gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
         //getSessionFactory();
@@ -226,30 +236,42 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
+     *
+     * Aktua
+     *
      *  Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
      *  @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
     @Override
     public void update (float deltaTime) {
-        getSpriteBatch().begin();
-        //batch.draw(img, 0, 0);
-        //System.out.println("Game Loop!");
-        //orthogonalTiledMapRenderer.render();
         gameLogicController.update(deltaTime);
-        if (enemies != null) {
-            for (EnemyObject enemy : enemies) {
-                enemy.draw(getSpriteBatch());
+    }
+
+    /**
+     * Eigene Zeichenanweisungen.
+     *
+     * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
+     */
+    @Override
+    public void draw(float deltaTime) {
+        super.draw(deltaTime);
+        getSpriteBatch().begin();
+
+        List<GameObject> objectsToRemove = new ArrayList<>();
+
+        if (gameObjects != null) {
+            for (GameObject gameObject : gameObjects) {
+                if (gameObject.isRemoved()) {
+                    objectsToRemove.add(gameObject);
+                } else {
+                    gameObject.draw(getSpriteBatch());
+                }
             }
         }
 
-        if (towers != null) {
-            for (TowerObject tower : towers) {
-                //tower.update(deltaTime);
-                tower.draw(getSpriteBatch());
-            }
-        }
+        objectsToRemove.forEach(this::removeGameObject);
+
         getSpriteBatch().end();
-
     }
 
     /**
@@ -258,7 +280,6 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void dispose() {
         super.dispose();
-    	//img.dispose();
     }
 
     /**
@@ -279,29 +300,42 @@ public class GameScreen extends BaseScreen implements GameView {
 
     }
 
-    @Override
-    public void addTower(TowerObject towerObject) {
-        towers.add(towerObject);
+    public void addTower (Observable observable) {
+        gameObjects.add(new TowerObject(observable));
     }
 
     @Override
+    public void addEnemy(Observable observable) {
+        gameObjects.add(new EnemyObject(observable));
+    }
+
+    public void addTower(TowerObject towerObject) {
+        gameObjects.add(towerObject);
+    }
+
     public void removeTower(TowerObject towerObject) {
-        towers.remove(towerObject);
+        gameObjects.remove(towerObject);
         towerObject.dispose();
     }
 
-    @Override
     public void addEnemy(EnemyObject enemyObject) {
-        enemies.add(enemyObject);
+        gameObjects.add(enemyObject);
+    }
+
+    public void removeEnemy(EnemyObject enemyObject) {
+        gameObjects.remove(enemyObject);
+        enemyObject.dispose();
+    }
+
+    private void removeGameObject (GameObject gameObject) {
+        gameObjects.remove(gameObject);
+        gameObject.dispose();
     }
 
     @Override
-    public void removeEnemy(EnemyObject enemyObject) {
-        enemies.remove(enemyObject);
-        //enemyObject.dispose();
-    }
-
-    public List<TowerObject> getTowers() {
-        return towers;
+    public void addObservable(Observable observable) {
+        if (observable instanceof Tower) {
+            System.out.println("Well.");
+        }
     }
 }

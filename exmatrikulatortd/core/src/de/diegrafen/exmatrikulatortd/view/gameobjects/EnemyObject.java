@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 /**
@@ -37,8 +38,8 @@ public class EnemyObject extends BaseObject {
         super(name, assetsName, xPosition, yPosition);
     }
 
-    public EnemyObject(Enemy enemy) {
-        super(enemy.getName(), enemy.getAssetsName(), enemy.getxPosition(), enemy.getyPosition());
+    public EnemyObject(Observable observable) {
+        super(observable);
 
         walkSheet = new Texture(Gdx.files.internal("sprites/objects/enemies/HazMatHarry1@64x64.png"));
 
@@ -68,12 +69,9 @@ public class EnemyObject extends BaseObject {
 
     /**
      * Update-Methode. Aktualisiert den Zustand des Objektes
-     *
-     * @param deltaTime Die Zeit zwischen zwei Frames
      */
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
+    public void update() {
+        super.update();
         //setxPosition(getxPosition() + movementSpeed * deltaTime);
     }
 
@@ -83,7 +81,7 @@ public class EnemyObject extends BaseObject {
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
     @Override
-    public void draw(SpriteBatch spriteBatch) {
+    public void draw (SpriteBatch spriteBatch) {
         super.draw(spriteBatch);
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);

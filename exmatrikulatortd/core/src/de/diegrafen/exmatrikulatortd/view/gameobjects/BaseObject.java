@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
+import de.diegrafen.exmatrikulatortd.model.Observable;
 
 /**
  *
@@ -16,6 +17,8 @@ import de.diegrafen.exmatrikulatortd.model.BaseModel;
  * @version 15.06.2019 05:03
  */
 public abstract class BaseObject implements GameObject {
+
+    private Observable observable;
 
     /**
      * Die Texturen des Objektes
@@ -38,9 +41,33 @@ public abstract class BaseObject implements GameObject {
     private float yPosition;
 
     /**
+     * Die X-Ziel-Position
+     */
+    private float xTargetPosition;
+
+    /**
+     * Die Y-Ziel-Position
+     */
+    private float yTargetPosition;
+
+    /**
      * Der Name des Spielobjektes
      */
     private String name;
+
+    private boolean removed;
+
+    BaseObject (Observable observable) {
+        this.observable = observable;
+        this.name = observable.getName();
+        this.currentSprite = new Texture(observable.getAssetsName());
+        this.xPosition = observable.getxPosition();
+        this.yPosition = observable.getyPosition();
+        this.xTargetPosition = observable.getTargetxPosition();
+        this.yTargetPosition = observable.getTargetyPosition();
+        this.removed = false;
+        observable.registerObserver(this);
+    }
 
     /**
      * Konstruktor für Spiel-Objekte
@@ -51,35 +78,30 @@ public abstract class BaseObject implements GameObject {
      */
     BaseObject(String name, String assetsName, float xPosition, float yPosition) {
         this.name = name;
-        currentSprite = new Texture(assetsName);
+        this.currentSprite = new Texture(assetsName);
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-    }
-
-    /**
-     * Konstruktor für Spiel-Objekte
-     * @param name Der Name des Spielobjektes
-     * @param assetsName Die mit dem Objekt assoziierten Assets
-     */
-    BaseObject(String name, String assetsName) {
-        this.name = name;
-        currentSprite = new Texture(assetsName);
-
+        this.removed = false;
     }
 
     /**
      * Update-Methode. Aktualisiert den Zustand des Objektes
-     * @param deltaTime Die Zeit zwischen zwei Frames
      */
-    public void update(float deltaTime) {
-
+    @Override
+    public void update() {
+        if (observable.isRemoved()) {
+            setRemoved(true);
+        } else {
+            setxPosition(observable.getxPosition());
+            setyPosition(observable.getyPosition());
+        }
     }
 
     /**
      * Zeichnet das Objekt auf dem Bildschirm
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
-    public void draw(SpriteBatch spriteBatch) {
+    public void draw (SpriteBatch spriteBatch) {
 
     }
 
@@ -141,5 +163,15 @@ public abstract class BaseObject implements GameObject {
     public void setNewPosition (float xPosition, float yPosition) {
         this.xPosition = xPosition - currentSprite.getWidth() / 2;
         this.yPosition = yPosition - currentSprite.getHeight() / 2;
+    }
+
+    @Override
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+        System.out.println("Set removed: " + removed);
     }
 }

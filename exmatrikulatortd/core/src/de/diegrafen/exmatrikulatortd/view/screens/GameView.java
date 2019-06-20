@@ -1,7 +1,9 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
+import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
@@ -12,12 +14,18 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
  */
 public interface GameView {
 
-    public void addTower (TowerObject towerObject);
+    void addObservable (Observable observable);
 
-    public void removeTower (TowerObject towerObject);
+    void addTower (Observable observable);
 
-    public void addEnemy (EnemyObject enemyObject);
+    void addEnemy (Observable observable);
 
-    public void removeEnemy (EnemyObject enemyObject);
+    //void addTower (TowerObject towerObject);
+
+    //void removeTower (TowerObject towerObject);
+
+    //void addEnemy (EnemyObject enemyObject);
+
+    //void removeEnemy (EnemyObject enemyObject);
 
 }

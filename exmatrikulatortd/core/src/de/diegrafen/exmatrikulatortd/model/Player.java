@@ -96,14 +96,16 @@ public class Player extends BaseModel {
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
     public Player () {
-        this.attackingEnemies = new ArrayList<Enemy>();
-        this.towers = new ArrayList<Tower>();
-        this.wayPoints = new ArrayList<Coordinates>();
-        this.waves = new ArrayList<Wave>();
+        this.attackingEnemies = new ArrayList<>();
+        this.towers = new ArrayList<>();
+        this.wayPoints = new ArrayList<>();
+        this.waves = new ArrayList<>();
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
 
+        waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
+        waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
         waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
 
         wayPoints.add(new Coordinates(0,0));

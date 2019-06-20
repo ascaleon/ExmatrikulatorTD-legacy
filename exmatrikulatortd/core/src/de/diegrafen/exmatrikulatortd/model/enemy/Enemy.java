@@ -1,17 +1,11 @@
 package de.diegrafen.exmatrikulatortd.model.enemy;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.List;
-
-import static de.diegrafen.exmatrikulatortd.util.Constants.X_POS;
-import static de.diegrafen.exmatrikulatortd.util.Constants.Y_POS;
 
 /**
  *
@@ -21,7 +15,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.Y_POS;
  */
 @Entity
 @Table(name = "Enemies")
-public class Enemy extends BaseModel {
+public class Enemy extends ObservableModel {
 
     static final long serialVersionUID = 21268121294890L;
 
@@ -44,8 +38,6 @@ public class Enemy extends BaseModel {
     @JoinColumn(name="player_id")
     private Player attackedPlayer;
 
-    private float xSpawnPosition, ySpawnPosition;
-
     private float xPosition, yPosition;
 
     private float endXPosition = 400, endYPosition = 200;
@@ -55,6 +47,8 @@ public class Enemy extends BaseModel {
     private int resourcesForKill;
 
     private int sendPrice;
+
+    private float xVelocity, yVelocity;
 
     private boolean dead;
 
@@ -99,6 +93,8 @@ public class Enemy extends BaseModel {
      */
     public Enemy (String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int resourcesForKill,
                   int sendPrice, String assetsName, float xPosition, float yPosition) {
+        super();
+
         this.name = name;
         this.baseSpeed = baseSpeed;
         this.currentSpeed = baseSpeed;
@@ -110,9 +106,9 @@ public class Enemy extends BaseModel {
         this.assetsName = assetsName;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-        this.wayPointIndex = 1;
+        this.wayPointIndex = 0;
 
-        this.respawning = true;
+        this.respawning = false;
     }
 
     private Coordinates getStartPosition () {
@@ -149,25 +145,16 @@ public class Enemy extends BaseModel {
      * @param deltaTime
      */
     public void moveInTargetDirection (float deltaTime) {
-        //System.out.println(wayPointIndex);
         Coordinates nextWayPoint = attackedPlayer.getWayPoints().get(wayPointIndex);
         int tileSize = gameState.getTileSize();
-        targetxPosition = nextWayPoint.getXCoordinate() * tileSize + tileSize / 2;
-        //System.out.println("Current X: " + xPosition);
-        //System.out.println("Target X: " + targetxPosition);
-        targetyPosition = nextWayPoint.getYCoordinate() * tileSize + tileSize / 2;
-        //System.out.println("Current Y: " + yPosition);
-        //System.out.println("Target Y: " + targetyPosition);
+        targetxPosition = nextWayPoint.getXCoordinate() * tileSize;// + tileSize / 2;
+        targetyPosition = nextWayPoint.getYCoordinate() * tileSize;// + tileSize / 2;
 
-        //targetyPosition = Y_POS;
-        //targetxPosition = X_POS;
-        //System.out.println(targetyPosition);
-        //System.out.println(targetxPosition);
-        //if (Math.abs(targetyPosition - yPosition)  > 1 & Math.abs(targetxPosition - xPosition) > 1) {
         float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
         xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
         yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
-        //}
+
+        notifyObserver();
     }
 
     public float getxSpawnPosition() {
@@ -243,16 +230,13 @@ public class Enemy extends BaseModel {
     public void setToStartPosition () {
         Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
         int tileSize = gameState.getTileSize();
-        xPosition = startCoordinates.getXCoordinate() * tileSize + tileSize / 2;
-        yPosition = startCoordinates.getYCoordinate() * tileSize + tileSize / 2;
+        xPosition = startCoordinates.getXCoordinate() * tileSize;// + tileSize / 2;
+        yPosition = startCoordinates.getYCoordinate() * tileSize;// + tileSize / 2;
+        notifyObserver();
     }
 
     public boolean isRespawning() {
         return respawning;
-    }
-
-    public void setRespawning(boolean respawning) {
-        this.respawning = respawning;
     }
 
     public Coordinates getCurrentMapCell() {
@@ -271,5 +255,8 @@ public class Enemy extends BaseModel {
         this.currentHitPoints = currentHitPoints;
     }
 
-
+    @Override
+    public String toString () {
+        return this.name;
+    }
 }
