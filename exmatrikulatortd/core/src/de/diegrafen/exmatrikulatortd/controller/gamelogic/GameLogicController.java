@@ -19,17 +19,13 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TEST_COLLISION_MAP;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_SPAWNS;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
@@ -103,6 +99,7 @@ public class GameLogicController implements LogicController {
         //applyPlayerDamage();
         spawnWave();
         applyMovement(deltaTime);
+        makeAttacks(deltaTime);
     }
 
     /**
@@ -144,7 +141,21 @@ public class GameLogicController implements LogicController {
                 //System.out.println("Hello?");
                 break;
             }
+
             enemy.moveInTargetDirection(Gdx.graphics.getDeltaTime()); //deltaTime);
+
+            if (enemy.getCurrentMapCell() != null) {
+                enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
+            }
+            Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
+            enemy.setCurrentMapCell(newCell);
+            newCell.addToEnemiesOnCell(enemy);
+
+            //System.out.println("xIndex: " + newCell.getxCoordinate());
+
+            //System.out.println("yIndex: " + newCell.getyCoordinate());
+
+
             EnemyObject enemyObject = enemyMapping.get(enemy);
             enemyObject.setNewPosition(enemy.getxPosition(), enemy.getyPosition());
         }
@@ -155,7 +166,75 @@ public class GameLogicController implements LogicController {
      * @param deltaTime
      */
     void makeAttacks (float deltaTime) {
+        for (Tower tower : gamestate.getTowers()) {
+            if (tower.getCooldown() > 0) {
+                tower.setCooldown(tower.getCooldown() - Gdx.graphics.getDeltaTime());
+            }
+            Enemy newTarget = null;
+            if (!targetInRange(tower)) {
+                tower.setCurrentTarget(null);
+                float timeSinceLastSearch = tower.getTimeSinceLastSearch();
+                if (timeSinceLastSearch >= SEARCH_TARGET_INTERVAL) {
+                    List<Coordinates> visited = new LinkedList<Coordinates>();
+                    Coordinates startCoordinates = tower.getPosition();
+                    LinkedList<Coordinates> cellsToVisit = new LinkedList<Coordinates>();
+                    newTarget = searchTarget(startCoordinates, visited, cellsToVisit, tower);
+                    tower.setCurrentTarget(newTarget);
+                    tower.setTimeSinceLastSearch(0);
+                } else {
 
+                    tower.setTimeSinceLastSearch(timeSinceLastSearch + Gdx.graphics.getDeltaTime());
+                }
+            }
+
+            if (tower.getCurrentTarget() != null) {
+                letTowerAttack(tower);
+            }
+
+        }
+    }
+
+    private void letTowerAttack(Tower tower) {
+        Enemy enemy = tower.getCurrentTarget();
+        if (tower.getCooldown() <= 0) {
+            System.out.println("Hallo?");
+            enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getAttackDamage());
+            tower.setCooldown(tower.getAttackSpeed());
+        }
+        System.out.println("Current Hitpoints: " + enemy.getCurrentHitPoints());
+
+        if (enemy.getCurrentHitPoints() <= 0) {
+            removeEnemy(enemy);
+            tower.setCurrentTarget(null);
+        }
+    }
+
+    private Enemy searchTarget(Coordinates startCoordinates, List<Coordinates> visited, LinkedList<Coordinates> cellsToVisit, Tower tower) {
+
+        Enemy enemyToReturn = null;
+
+        visited.add(startCoordinates);
+        cellsToVisit.push(startCoordinates);
+
+        while (!cellsToVisit.isEmpty()) {
+            Coordinates currentCell = cellsToVisit.pop();
+
+            List<Enemy> enemiesInCell = currentCell.getEnemiesInMapCell();
+            if (!enemiesInCell.isEmpty()) {
+                enemyToReturn = enemiesInCell.get(0);
+                break;
+            }
+            for (Coordinates neighbour : currentCell.getNeighbours()) {
+                if (!visited.contains(neighbour)) {
+                    visited.add(neighbour);
+                    if (isCellInRangeOfTower(tower, neighbour)) {
+                        cellsToVisit.push(neighbour);
+                    }
+                }
+            }
+        }
+
+        return enemyToReturn;
     }
 
     /**
@@ -183,6 +262,7 @@ public class GameLogicController implements LogicController {
 
     private void removeEnemy(Enemy enemy) {
         enemy.getAttackedPlayer().removeEnemy(enemy);
+        enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
         gamestate.removeEnemy(enemy);
         gameScreen.removeEnemy(enemyMapping.get(enemy));
         enemyMapping.remove(enemy);
@@ -204,6 +284,32 @@ public class GameLogicController implements LogicController {
         return (float) Point2D.distance(x1, y1, x2, y2);
     }
 
+    private boolean isCellInRangeOfTower (Tower tower, Coordinates coordinates) {
+
+        Coordinates towerCoordinates = tower.getPosition();
+
+        float x1 = towerCoordinates.getXCoordinate() * TILE_SIZE;
+        float x2 = coordinates.getXCoordinate() * TILE_SIZE;
+        float y1 = towerCoordinates.getXCoordinate() * TILE_SIZE;
+        float y2 = coordinates.getYCoordinate() * TILE_SIZE;
+        float distance = (float) Point2D.distance(x1, y1, x2, y2);
+        //System.out.println(distance);
+        return tower.getAttackRange() >= distance;
+    }
+
+    private boolean targetInRange(Tower tower) {
+
+        Enemy target = tower.getCurrentTarget();
+
+        if (target != null) {
+            //System.out.println(target.getName());
+        }
+
+        return target != null && isCellInRangeOfTower(tower, target.getCurrentMapCell());
+
+
+    }
+
     /**
      * Spawnt die nächste Angriffswelle
      */
@@ -211,7 +317,7 @@ public class GameLogicController implements LogicController {
         if (gamestate.getTimeUntilNextRound() <= 0) {
             for (Player player : gamestate.getPlayers()) {
                 if (player.getWaves().get(0).getEnemies().size() == 0) {
-                    System.out.println("Keine Gegner mehr! :(");
+                    //System.out.println("Keine Gegner mehr! :(");
                     player.setEnemiesSpawned(true);
                 }
 
@@ -245,13 +351,49 @@ public class GameLogicController implements LogicController {
      * Initialisiert die Kollisionsmatrix der Map
      */
     void initializeCollisionMap (int[][] collisionMap) {
-        gamestate.setNumberOfColumns(gamestate.getMapHeight() / TILE_SIZE);
-        gamestate.setNumberOfRows(gamestate.getMapWidth() / TILE_SIZE);
-        for (int i = 0; i < gamestate.getNumberOfColumns(); i++) {
-            for (int j = 0; j < gamestate.getNumberOfRows(); j++) {
+
+        int numberOfColumns = gamestate.getMapHeight() / TILE_SIZE;
+        int numberOfRows = gamestate.getMapWidth() / TILE_SIZE;
+
+        gamestate.setNumberOfColumns(numberOfColumns);
+        gamestate.setNumberOfRows(numberOfRows);
+        for (int i = 0; i < numberOfColumns; i++) {
+            for (int j = 0; j < numberOfRows; j++) {
                 addGameMapTile(i, j, collisionMap[i][j]);
             }
         }
+
+        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
+
+            int mapCellXCoordinate = mapCell.getxCoordinate();
+            int mapCellYCoordinate = mapCell.getyCoordinate();
+
+            System.out.println("Zelle:");
+            System.out.println(mapCell.toString());
+            int numberOfCols = gamestate.getNumberOfColumns();
+            if (mapCellXCoordinate > 0) {
+
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate - 1) + mapCellYCoordinate));
+            }
+            if (mapCellXCoordinate < numberOfColumns - 1 ) {
+                //mapCell.addNeighbour(getMapCellByXandY(mapCellXCoordinate + 1, mapCellYCoordinate));
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate + 1)+ mapCellYCoordinate));
+            }
+            if (mapCellYCoordinate > 0) {
+                //mapCell.addNeighbour(getMapCellByXandY(mapCellXCoordinate, mapCellYCoordinate - 1));
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate - 1));
+            }
+            if (mapCellYCoordinate < numberOfColumns - 1 ) {
+                //mapCell.addNeighbour(getMapCellByXandY(mapCellXCoordinate , mapCellYCoordinate + 1));
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate + 1));
+            }
+
+            System.out.println("Nachbarn:");
+            for (Coordinates cell : mapCell.getNeighbours()) {
+                System.out.println(cell.toString());
+            }
+        }
+
     }
 
     private void addGameMapTile (int xCoordinate, int yCoordinate, int buildableByPlayer) {
@@ -286,8 +428,8 @@ public class GameLogicController implements LogicController {
 
         enemyDao.create(enemy);
         enemyMapping.put(enemy, enemyObject);
-        System.out.println("Enemy added!");
-        System.out.println(enemyMapping.toString());
+        //System.out.println("Enemy added!");
+        //System.out.println(enemyMapping.toString());
     }
 
     public void addTower (Tower tower, int xPosition, int yPosition) {
@@ -297,6 +439,8 @@ public class GameLogicController implements LogicController {
         owningPlayer.addTower(tower);
 
         Coordinates coordinates = getMapCellByXandY(xPosition, yPosition);
+        //System.out.println("xPosition: " + coordinates.getxCoordinate());
+        //System.out.println("yPosition: " + coordinates.getyCoordinate());
         tower.setPosition(coordinates);
         coordinates.setTower(tower);
 
@@ -308,7 +452,7 @@ public class GameLogicController implements LogicController {
         towerMapping.put(tower, towerObject);
 
         System.out.println("Tower added!");
-        System.out.println(towerMapping.toString());
+        //System.out.println(towerMapping.toString());
     }
 
     /**
@@ -350,9 +494,9 @@ public class GameLogicController implements LogicController {
 
         int yIndex = yPosition / gamestate.getTileSize();
 
-        System.out.println("xIndex: " + xIndex);
+        //System.out.println("xIndex: " + xIndex);
 
-        System.out.println("yIndex: " + yIndex);
+        //System.out.println("yIndex: " + yIndex);
 
         if (xIndex >= gamestate.getNumberOfColumns() ||
                 yIndex >= gamestate.getNumberOfRows()) {
@@ -363,6 +507,10 @@ public class GameLogicController implements LogicController {
         Coordinates mapCell;
 
         mapCell = getMapCellByXandY(xPosition, yPosition);
+
+        //System.out.println("xIndex: " + mapCell.getxCoordinate());
+
+        //System.out.println("yIndex: " + mapCell.getyCoordinate());
 
         if (mapCell.getTower() != null) {
             isBuildable = false;

@@ -77,6 +77,10 @@ public class Enemy extends BaseModel {
 
     private boolean respawning;
 
+    @ManyToOne
+    @JoinColumn(name="mapcell_id")
+    private Coordinates currentMapCell;
+
     public Enemy () {
 
     }
@@ -108,7 +112,7 @@ public class Enemy extends BaseModel {
         this.yPosition = yPosition;
         this.wayPointIndex = 1;
 
-        this.respawning = false;
+        this.respawning = true;
     }
 
     private Coordinates getStartPosition () {
@@ -138,14 +142,6 @@ public class Enemy extends BaseModel {
 
     public String getName() {
         return name;
-    }
-
-    public void moveInxDirection () {
-        xPosition = xPosition + currentSpeed;
-    }
-
-    public void moveInxDirection (float deltaTime) {
-        xPosition = xPosition + currentSpeed * deltaTime;
     }
 
     /**
@@ -258,4 +254,22 @@ public class Enemy extends BaseModel {
     public void setRespawning(boolean respawning) {
         this.respawning = respawning;
     }
+
+    public Coordinates getCurrentMapCell() {
+        return currentMapCell;
+    }
+
+    public void setCurrentMapCell(Coordinates currentMapCell) {
+        this.currentMapCell = currentMapCell;
+    }
+
+    public float getCurrentHitPoints() {
+        return currentHitPoints;
+    }
+
+    public void setCurrentHitPoints(float currentHitPoints) {
+        this.currentHitPoints = currentHitPoints;
+    }
+
+
 }

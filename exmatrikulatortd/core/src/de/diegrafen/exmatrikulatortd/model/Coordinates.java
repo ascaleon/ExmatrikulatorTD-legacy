@@ -1,9 +1,12 @@
 package de.diegrafen.exmatrikulatortd.model;
 
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import javax.persistence.*;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -60,6 +63,13 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
+    @OneToMany(mappedBy="currentMapCell")
+    private List<Enemy> enemiesInMapCell;
+
+    @ManyToMany
+    private List<Coordinates> neighbours;
+
+
     /**
      * Gibt an, welcher Spieler an der Koordinate bauen darf
      */
@@ -80,6 +90,8 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
+        this.enemiesInMapCell = new ArrayList<Enemy>();
+        this.neighbours = new ArrayList<Coordinates>();
     }
 
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
@@ -149,5 +161,42 @@ public class Coordinates extends BaseModel {
 
     public void setBuildableByPlayer(int buildableByPlayer) {
         this.buildableByPlayer = buildableByPlayer;
+    }
+
+    public List<Enemy> getEnemiesInMapCell() {
+        return enemiesInMapCell;
+    }
+
+    public void setEnemiesInMapCell(List<Enemy> enemiesInMapCell) {
+        this.enemiesInMapCell = enemiesInMapCell;
+    }
+
+    public List<Coordinates> getNeighbours() {
+        return neighbours;
+    }
+
+    public void setNeighbours (List<Coordinates> neighbours) {
+        this.neighbours = neighbours;
+    }
+
+    public void addNeighbour (Coordinates neighbour) {
+        this.neighbours.add(neighbour);
+    }
+
+    public void removeNeighbour (Coordinates neighbour) {
+        this.neighbours.remove(neighbour);
+    }
+
+    public void addToEnemiesOnCell(Enemy enemy) {
+        enemiesInMapCell.add(enemy);
+    }
+
+    public void removeFromEnemiesOnCell(Enemy enemy) {
+        enemiesInMapCell.remove(enemy);
+    }
+
+    @Override
+    public String toString () {
+        return "xPosition: " + xCoordinate + ", yPosition: " + yCoordinate;
     }
 }

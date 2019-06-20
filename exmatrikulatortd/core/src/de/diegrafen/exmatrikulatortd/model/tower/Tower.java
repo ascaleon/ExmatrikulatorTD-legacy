@@ -46,6 +46,11 @@ public class Tower extends BaseModel {
     private float attackRange;
 
     /**
+     * Die Angriffsgeschwindigkeit des Turms.
+     */
+    private float attackSpeed;
+
+    /**
      * Der Angriffstyp des Turmes
      */
     @Enumerated(EnumType.STRING)
@@ -118,7 +123,7 @@ public class Tower extends BaseModel {
      * Variable, die den Zeitpunkt des letzten Suchens nach einem Gegner abspeichert. Wird nicht in der Datenbank
      * gespeichert.
      */
-    private transient float timeSinceLastSearch;
+    private transient float timeSinceLastSearch = 0;
 
     /**
      * Variable, die angibt, wie lange der Turm noch warten muss, bis er das nächste Mal angreifen darf.
@@ -152,10 +157,11 @@ public class Tower extends BaseModel {
      * @param upgradeLevel
      * @param assetsName
      */
-    public Tower(String towerName, int attackDamage, float attackRange, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
+    public Tower(String towerName, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
         this.towerName = towerName;
         this.attackDamage = attackDamage;
         this.attackRange = attackRange;
+        this.attackSpeed = attackSpeed;
         this.attackType = attackType;
         this.aura = aura;
         this.auraRange = auraRange;
@@ -223,5 +229,109 @@ public class Tower extends BaseModel {
 
     public Coordinates getPosition() {
         return position;
+    }
+
+    public float getTimeSinceLastSearch() {
+        return timeSinceLastSearch;
+    }
+
+    public void setTimeSinceLastSearch(float timeSinceLastSearch) {
+        this.timeSinceLastSearch = timeSinceLastSearch;
+    }
+
+    public Enemy getCurrentTarget() {
+        return currentTarget;
+    }
+
+    public void setCurrentTarget(Enemy currentTarget) {
+        this.currentTarget = currentTarget;
+    }
+
+    public float getAttackRange() {
+        return attackRange;
+    }
+
+    public void setAttackRange(float attackRange) {
+        this.attackRange = attackRange;
+    }
+
+    public float getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(float cooldown) {
+        this.cooldown = cooldown;
+    }
+
+    public float getAttackSpeed() {
+        return attackSpeed;
+    }
+
+    public void setAttackSpeed(float attackSpeed) {
+        this.attackSpeed = attackSpeed;
+    }
+
+    public void setTowerName(String towerName) {
+        this.towerName = towerName;
+    }
+
+    public AttackType getAttackType() {
+        return attackType;
+    }
+
+    public void setAttackType(AttackType attackType) {
+        this.attackType = attackType;
+    }
+
+    public Aura getAura() {
+        return aura;
+    }
+
+    public void setAura(Aura aura) {
+        this.aura = aura;
+    }
+
+    public float getAuraRange() {
+        return auraRange;
+    }
+
+    public void setAuraRange(float auraRange) {
+        this.auraRange = auraRange;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getUpgradePrice() {
+        return upgradePrice;
+    }
+
+    public void setUpgradePrice(int upgradePrice) {
+        this.upgradePrice = upgradePrice;
+    }
+
+    public int getUpgradeLevel() {
+        return upgradeLevel;
+    }
+
+    public void setUpgradeLevel(int upgradeLevel) {
+        this.upgradeLevel = upgradeLevel;
+    }
+
+    public List<Buff> getBuffs() {
+        return buffs;
+    }
+
+    public void setBuffs(List<Buff> buffs) {
+        this.buffs = buffs;
+    }
+
+    public void setAssetsName(String assetsName) {
+        this.assetsName = assetsName;
     }
 }

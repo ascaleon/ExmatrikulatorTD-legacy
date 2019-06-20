@@ -9,6 +9,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.NORMAL;
 import static de.diegrafen.exmatrikulatortd.util.Assets.REGULAR_TOWER_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
  *
@@ -74,7 +75,7 @@ public final class TowerFactory {
      */
     private static Tower createRegularTower () {
         //System.out.println("Ohai!");
-        return new Tower("Regular Tower", 5, 30, NORMAL, null, 0, 300, 150, 600, 1, REGULAR_TOWER_ASSETS);
+        return new Tower("Regular Tower", 10, 2 * TILE_SIZE, 3, NORMAL, null, 0, 300, 150, 600, 1, REGULAR_TOWER_ASSETS);
     }
 
     /**

@@ -298,7 +298,7 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void removeEnemy(EnemyObject enemyObject) {
         enemies.remove(enemyObject);
-        enemyObject.dispose();
+        //enemyObject.dispose();
     }
 
     public List<TowerObject> getTowers() {

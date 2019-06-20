@@ -28,7 +28,7 @@ public class TowerObject extends BaseObject {
     public TowerObject(Tower tower) {
         super(tower.getTowerName(), tower.getAssetsName());
         setNewPosition(tower.getxPosition(), tower.getyPosition());
-        System.out.println("Turm erzeugt!");
+        //System.out.println("Turm erzeugt!");
     }
 
     /**

@@ -122,6 +122,7 @@ public final class WaveFactory {
     private static Wave createRegularAndHeavyWave () {
         Wave wave = new Wave();
         List<Enemy> waveEnemies = new ArrayList<Enemy>();
+        //waveEnemies.add(createNewEnemy(REGULAR_ENEMY));
         for (int i = 0; i < enemiesPerWave / 2; i++) {
             waveEnemies.add(createNewEnemy(REGULAR_ENEMY));
         }

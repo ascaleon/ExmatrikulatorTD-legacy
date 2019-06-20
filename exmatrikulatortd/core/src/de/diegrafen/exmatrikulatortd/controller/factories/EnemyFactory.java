@@ -71,7 +71,7 @@ public final class EnemyFactory {
      * @return Der erzeugte gepanzerte Gegner
      */
     private static Enemy createHeavyEnemy () {
-        return new Enemy("Heavy Enemy", 60, 150, 2, 100, 100, HEAVY_ENEMY_ASSETS, 0, 0);
+        return new Enemy("Heavy Enemy", 100, 150, 2, 100, 100, HEAVY_ENEMY_ASSETS, 0, 0);
     }
 
 
