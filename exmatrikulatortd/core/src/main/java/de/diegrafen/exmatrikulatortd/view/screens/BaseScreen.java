@@ -52,6 +52,7 @@ public abstract class BaseScreen implements Screen {
      * @param mainController Der MainController für den Screen.
      */
     public BaseScreen (MainController mainController, Game game) {
+        this.camera = new OrthographicCamera();
         this.spriteBatch = new SpriteBatch();
         this.mainController = mainController;
         this.game = game;
@@ -76,11 +77,11 @@ public abstract class BaseScreen implements Screen {
 
         // Map the controller
         InputMultiplexer input = new InputMultiplexer();
-        input.addProcessor(ui);
+        //input.addProcessor(ui);
 
         // Add an input processor to toggle debug mode via F3.
         //input.addProcessor(new DebugProcessor(ui, gameController));
-        Gdx.input.setInputProcessor(input);
+        //Gdx.input.setInputProcessor(input);
 
         // Screen-specific initialization
         init();
@@ -90,7 +91,8 @@ public abstract class BaseScreen implements Screen {
      * Der Screen wird initialisiert.
      */
     public void init() {
-        camera = new OrthographicCamera();
+        //camera = new OrthographicCamera();
+        //camera.setToOrtho(false, 800, 480);
     }
 
     /**
@@ -99,7 +101,7 @@ public abstract class BaseScreen implements Screen {
      */
     @Override
     public void render(float deltaTime) {
-        Gdx.gl.glClearColor(255, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(deltaTime);
         draw(deltaTime);

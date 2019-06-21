@@ -10,6 +10,7 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
@@ -85,19 +86,20 @@ public class GameLogicController implements LogicController {
 
     @Override
     public void update(float deltaTime) {
-
-        if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
-            determineNewRound();
-            if (gamestate.isRoundEnded()) {
-                gamestate.setRoundEnded(false);
-                System.out.println("Runde zuende!");
-                startNewRound();
+        if (!determineGameOver()) {
+            if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
+                determineNewRound();
+                if (gamestate.isRoundEnded()) {
+                    gamestate.setRoundEnded(false);
+                    System.out.println("Runde zuende!");
+                    startNewRound();
+                }
             }
+            //applyPlayerDamage();
+            spawnWave(deltaTime);
+            applyMovement(deltaTime);
+            makeAttacks(deltaTime);
         }
-        //applyPlayerDamage();
-        spawnWave(deltaTime);
-        applyMovement(deltaTime);
-        makeAttacks(deltaTime);
     }
 
     /**
@@ -123,12 +125,11 @@ public class GameLogicController implements LogicController {
      */
     void applyMovement (float deltaTime) {
         for (Enemy enemy : gamestate.getEnemies()) {
-            if (Math.floor(getDistanceToNextPoint(enemy)) == 0) {
+            if (Math.floor(getDistanceToNextPoint(enemy)) <= 3) {
                 enemy.incrementWayPointIndex();
             }
             if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
                 applyDamage(enemy);
-                //addEnemy(createNewEnemy(REGULAR_ENEMY));
                 if (enemy.isRespawning()) {
                     enemy.setRemoved(false);
                     enemy.setWayPointIndex(0);
@@ -154,11 +155,15 @@ public class GameLogicController implements LogicController {
      * @param deltaTime
      */
     private void makeAttacks (float deltaTime) {
+
         for (Tower tower : gamestate.getTowers()) {
+
             if (tower.getCooldown() > 0) {
                 tower.setCooldown(tower.getCooldown() - deltaTime);
             }
+
             Enemy newTarget;
+
             if (!targetInRange(tower)) {
                 tower.setCurrentTarget(null);
                 float timeSinceLastSearch = tower.getTimeSinceLastSearch();
@@ -170,7 +175,6 @@ public class GameLogicController implements LogicController {
                     tower.setCurrentTarget(newTarget);
                     tower.setTimeSinceLastSearch(0);
                 } else {
-
                     tower.setTimeSinceLastSearch(timeSinceLastSearch + deltaTime);
                 }
             }
@@ -178,11 +182,10 @@ public class GameLogicController implements LogicController {
             if (tower.getCurrentTarget() != null) {
                 letTowerAttack(tower);
             }
-
         }
     }
 
-    private void letTowerAttack(Tower tower) {
+    private void letTowerAttack (Tower tower) {
         Enemy enemy = tower.getCurrentTarget();
         if (tower.getCooldown() <= 0) {
             enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getAttackDamage());
@@ -329,6 +332,17 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    private boolean determineGameOver() {
+        boolean gameOver = true;
+        for (Player player : gamestate.getPlayers()) {
+            if (!player.getWaves().isEmpty()) {
+                gameOver = false;
+            }
+        }
+        gamestate.setGameOver(gameOver);
+        return gameOver;
+    }
+
     /**
      * Startet eine neue Runde
      */
@@ -347,13 +361,14 @@ public class GameLogicController implements LogicController {
      */
     void initializeCollisionMap (int[][] collisionMap) {
 
-        int numberOfColumns = gamestate.getMapHeight() / TILE_SIZE;
-        int numberOfRows = gamestate.getMapWidth() / TILE_SIZE;
+        int numberOfColumns = gamestate.getNumberOfColumns(); //gamestate.getMapHeight() / TILE_SIZE;
+        int numberOfRows = gamestate.getNumberOfRows(); //gamestate.getMapWidth() / TILE_SIZE;
 
-        gamestate.setNumberOfColumns(numberOfColumns);
-        gamestate.setNumberOfRows(numberOfRows);
+        //gamestate.setNumberOfColumns(numberOfColumns);
+        //gamestate.setNumberOfRows(numberOfRows);
         for (int i = 0; i < numberOfColumns; i++) {
             for (int j = 0; j < numberOfRows; j++) {
+                System.out.println("Column: " + i + ", Row: " + j);
                 addGameMapTile(i, j, collisionMap[i][j]);
             }
         }
@@ -368,7 +383,7 @@ public class GameLogicController implements LogicController {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate - 1) + mapCellYCoordinate));
             }
             if (mapCellXCoordinate < numberOfColumns - 1 ) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate + 1)+ mapCellYCoordinate));
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate + 1) + mapCellYCoordinate));
             }
             if (mapCellYCoordinate > 0) {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate - 1));
@@ -418,6 +433,8 @@ public class GameLogicController implements LogicController {
         owningPlayer.addTower(tower);
 
         Coordinates coordinates = getMapCellByXandY(xPosition, yPosition);
+
+        System.out.println(coordinates.toString());
 
         tower.setPosition(coordinates);
         coordinates.setTower(tower);

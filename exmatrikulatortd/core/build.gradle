@@ -8,11 +8,19 @@ sourceCompatibility = 1.8
 sourceSets {
     main {
         java {
-            srcDirs= ["src/"]
+            srcDirs= ["src/main/java"]
         }
         resources {
             srcDir 'assets'
         }
+    }
+    test {
+        java {
+            srcDirs = [ "src/test/java/" ]
+        }
+        //resources {
+        //    srcDirs = [ "src/test/res/" ]
+        //}
     }
 }
 

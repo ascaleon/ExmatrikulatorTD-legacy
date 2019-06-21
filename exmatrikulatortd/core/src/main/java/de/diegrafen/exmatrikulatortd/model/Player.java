@@ -108,11 +108,15 @@ public class Player extends BaseModel {
         waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
         waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
 
-        wayPoints.add(new Coordinates(0,0));
-        wayPoints.add(new Coordinates(0,1));
-        wayPoints.add(new Coordinates(5,1));
-        wayPoints.add(new Coordinates(5,5));
-        wayPoints.add(new Coordinates(7,5));
+        wayPoints.add(new Coordinates(0,20-14));
+        wayPoints.add(new Coordinates(3,20-14));
+        wayPoints.add(new Coordinates(3,20-17));
+        wayPoints.add(new Coordinates(17,20-17));
+        wayPoints.add(new Coordinates(17,20-13));
+        wayPoints.add(new Coordinates(10,20-13));
+        wayPoints.add(new Coordinates(10,20-4));
+        wayPoints.add(new Coordinates(17,20-4));
+        wayPoints.add(new Coordinates(17,20-2));
     }
 
     public void addEnemy (Enemy attackingEnemy) {

@@ -1,12 +1,10 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -83,18 +81,19 @@ public class GameScreen extends BaseScreen implements GameView {
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
     /**
-     * Eine Liste der Gegner.
+     * Eine Liste aller Spielobjekte
      */
-    //private List<EnemyObject> enemies;
-
-    /**
-     * Eine Liste der Türme.
-     */
-    //private List<TowerObject> towers;
-
     private List<GameObject> gameObjects;
 
     private InputProcessor inputProcessor;
+
+    private boolean keyDownDown = false;
+
+    private boolean keyUpDown = false;
+
+    private boolean keyRightDown = false;
+
+    private boolean keyLeftDown = false;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
@@ -153,21 +152,59 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void init () {
         super.init();
-        //enemies = new ArrayList<EnemyObject>();
-        //towers = new ArrayList<TowerObject>();
+
+        float width = Gdx.graphics.getWidth();
+        float height = Gdx.graphics.getHeight();
+
         this.gameObjects = new LinkedList<>();
         Player player = new Player();
         gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
         //getSessionFactory();
+
+        getCamera().setToOrtho(false, width, height);
+        getCamera().update();
+        tiledMap = new TmxMapLoader().load(MAP_PATH);
+        orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        Gdx.input.setInputProcessor(new InputMultiplexer());
+
         InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         inputProcessor = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
+                if(keycode == Input.Keys.LEFT)
+                    //getCamera().translate(-32,0);
+                    keyLeftDown = true;
+                if(keycode == Input.Keys.RIGHT)
+                    //getCamera().translate(32,0);
+                    keyRightDown = true;
+                if(keycode == Input.Keys.UP)
+                    //getCamera().translate(0,32);
+                    keyUpDown = true;
+                if(keycode == Input.Keys.DOWN)
+                    //getCamera().translate(0,-32);
+                    keyDownDown = true;
+                //if(keycode == Input.Keys.NUM_1)
+                    //tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
+                //if(keycode == Input.Keys.NUM_2)
+                    //tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
                 return false;
             }
 
             @Override
             public boolean keyUp(int keycode) {
+                if(keycode == Input.Keys.LEFT)
+                    //getCamera().translate(-32,0);
+                    keyLeftDown = false;
+                if(keycode == Input.Keys.RIGHT)
+                    //getCamera().translate(32,0);
+                    keyRightDown = false;
+                if(keycode == Input.Keys.UP)
+                    //getCamera().translate(0,32);
+                    keyUpDown = false;
+                if(keycode == Input.Keys.DOWN)
+                    //getCamera().translate(0,-32);
+                    keyDownDown = false;
                 return false;
             }
 
@@ -186,29 +223,26 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 boolean returnvalue = false;
 
+                //screenY = Gdx.graphics.getHeight() - screenY;
+
+                Vector3 clickCoordinates = new Vector3(screenX,screenY,0);
+                Vector3 position = getCamera().unproject(clickCoordinates);
+
                 screenY = Gdx.graphics.getHeight() - screenY;
 
-                if (button == LEFT) {
-                    setX(screenX);
-                    setY(screenY);
+                System.out.println("xPosition: " + screenX);
+                System.out.println("yPosition: " + screenY);
 
+                if (button == LEFT) {
                     returnvalue = true;
                 } else if (button == RIGHT) {
-                    System.out.println("Rechtsklick!");
-                    //Tower tower = createNewTower(SLOW_TOWER);
-                    //gameLogicController.buildTower(tower, new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE));
-                    if (!gameLogicController.buildRegularTower(screenX, screenY)) {
-                        gameLogicController.sellTower(screenX, screenY, 0);
+                    if (!gameLogicController.buildRegularTower((int) position.x, (int) position.y)) {
+                        gameLogicController.sellTower((int) position.x, (int) position.y, 0);
                     }
-                    //Coordinates coordinates = new Coordinates((int) screenX / TILE_SIZE, (int) screenY / TILE_SIZE);
-                    //gameLogicController.buildTower(REGULAR_TOWER, coordinates);
                     returnvalue = true;
                 }
 
-                //System.out.println("xPos:" + screenX);
-                //System.out.println("yPos:" + screenY);
-
-                return returnvalue;
+               return returnvalue;
             }
 
             @Override
@@ -255,6 +289,27 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void draw(float deltaTime) {
         super.draw(deltaTime);
+
+        float translateValue = 5;
+
+        if(keyLeftDown)
+            getCamera().translate(-translateValue,0);
+        if(keyRightDown)
+            getCamera().translate(translateValue,0);
+        if(keyUpDown)
+            getCamera().translate(0,translateValue);
+        if(keyDownDown)
+            getCamera().translate(0,-translateValue);
+
+        //Gdx.gl.glClearColor(1, 0, 0, 1);
+        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        getCamera().update();
+        orthogonalTiledMapRenderer.setView(getCamera());
+        orthogonalTiledMapRenderer.render();
+
+        getSpriteBatch().setProjectionMatrix(getCamera().combined);
+
         getSpriteBatch().begin();
 
         List<GameObject> objectsToRemove = new ArrayList<>();

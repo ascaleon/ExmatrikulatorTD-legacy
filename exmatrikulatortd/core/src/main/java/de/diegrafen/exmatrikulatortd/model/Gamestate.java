@@ -30,20 +30,20 @@ public class Gamestate extends BaseModel {
      */
     static final long serialVersionUID = 48546846516547L;
 
+    private int tileSize = 64;
+
     /**
      * Der Name der Map
      */
     private String mapName;
 
-    private int mapWidth = 512;
+    private int mapWidth = 20 * tileSize;
 
-    private int numberOfColumns;
+    private int numberOfColumns = 20;
 
-    private int mapHeight = 512;
+    private int mapHeight = 20 * tileSize;
 
-    private int numberOfRows;
-
-    private int tileSize = 64;
+    private int numberOfRows = 20;
 
     /**
      * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
@@ -90,6 +90,8 @@ public class Gamestate extends BaseModel {
      */
     private boolean active;
 
+    private boolean gameOver;
+
     private boolean newRound;
 
     private float timeUntilNextRound;
@@ -119,6 +121,7 @@ public class Gamestate extends BaseModel {
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.roundEnded = true;
         this.numberOfRounds = 3;
+        this.gameOver = false;
     }
 
     public void addEnemy (Enemy enemy) {
@@ -306,5 +309,13 @@ public class Gamestate extends BaseModel {
 
     public void setRoundEnded(boolean roundEnded) {
         this.roundEnded = roundEnded;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 }
