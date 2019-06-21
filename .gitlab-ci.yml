@@ -5,9 +5,7 @@ variables:
 
 
 before_script:
-  - export GRADLE_USER_HOME=`pwd`/.gradle
   - cd exmatrikulatortd/
-  - chmod +x ./gradlew
 
 
 stages:
@@ -17,7 +15,7 @@ stages:
 build:
   stage: build
   script:
-    - gradlew desktop:run
+  - gradle build
     
 unitTests:
   stage: test
