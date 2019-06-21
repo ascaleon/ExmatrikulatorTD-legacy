@@ -7,7 +7,7 @@ stages:
 build:
   stage: build
   script:
-    - cd /exmatrikulatortd
+    - cd exmatrikulatortd/
     - gradlew desktop:run
     
 unitTests:
