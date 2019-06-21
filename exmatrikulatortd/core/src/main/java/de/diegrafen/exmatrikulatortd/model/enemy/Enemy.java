@@ -1,0 +1,262 @@
+package de.diegrafen.exmatrikulatortd.model.enemy;
+
+import com.badlogic.gdx.Gdx;
+import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
+
+import javax.persistence.*;
+import java.util.List;
+
+/**
+ *
+ * Über diese Klasse werden sämtliche Gegner in unserem Spiel abgebildet.
+ *
+ * @author Jan Romann <jan.romann@uni-bremen.de>
+ */
+@Entity
+@Table(name = "Enemies")
+public class Enemy extends ObservableModel {
+
+    static final long serialVersionUID = 21268121294890L;
+
+    private float baseSpeed;
+
+    private float currentSpeed;
+
+    private float maxHitPoints;
+
+    private float currentHitPoints;
+
+    @OneToMany(mappedBy="enemy", orphanRemoval=true)
+    private List<Debuff> debuffs;
+
+    @ManyToOne
+    @JoinColumn(name="gamestate_id")
+    private Gamestate gameState;
+
+    @ManyToOne
+    @JoinColumn(name="player_id")
+    private Player attackedPlayer;
+
+    private float xPosition, yPosition;
+
+    private float endXPosition = 400, endYPosition = 200;
+
+    private int amountOfDamageToPlayer;
+
+    private int resourcesForKill;
+
+    private int sendPrice;
+
+    private float xVelocity, yVelocity;
+
+    private boolean dead;
+
+    private boolean reachedTarget;
+
+    private int wayPointIndex;
+
+    private float armor;
+
+    @Enumerated(EnumType.ORDINAL)
+    private ArmorType armorType;
+
+    private String assetsName;
+
+    private String name;
+
+    private float targetxPosition = 0;
+
+    private float targetyPosition = 0;
+
+    private boolean respawning;
+
+    @ManyToOne
+    @JoinColumn(name="mapcell_id")
+    private Coordinates currentMapCell;
+
+    public Enemy () {
+
+    }
+
+    /**
+     * Standardkonstruktor für die Klasse Enemy. Legt noch keine assoziierte Spielerin, Position oder EnemyObject fest
+     * und bestimmt nicht den Zustand des Gegners in Bezug auf aktuelle Lebenspunkte oder Geschwindigkeit.
+     *
+     * @param name Der Name des Gegners
+     * @param baseSpeed Die Standardbewegungsgeschwindigkeit des Gegners.
+     * @param maxHitPoints Die maximalen Lebenspunkte des Gegners.
+     * @param amountOfDamageToPlayer Die Höhe des Schadens, die der Gegner der Spielerin zufügt, sobald er das Ziel erreicht.
+     * @param resourcesForKill Die Anzahl der Ressourcen, die die Spielerin für das Ausschalten des Gegners erhält.
+     * @param sendPrice Die Kosten für das Versenden eines solchen Gegners im Multiplayer-Modus.
+     * @param assetsName Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
+     */
+    public Enemy (String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int resourcesForKill,
+                  int sendPrice, String assetsName, float xPosition, float yPosition) {
+        super();
+
+        this.name = name;
+        this.baseSpeed = baseSpeed;
+        this.currentSpeed = baseSpeed;
+        this.maxHitPoints = maxHitPoints;
+        this.currentHitPoints = maxHitPoints;
+        this.amountOfDamageToPlayer = amountOfDamageToPlayer;
+        this.resourcesForKill = resourcesForKill;
+        this.sendPrice = sendPrice;
+        this.assetsName = assetsName;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.wayPointIndex = 0;
+
+        this.respawning = false;
+    }
+
+    private Coordinates getStartPosition () {
+        return attackedPlayer.getWayPoints().get(0);
+    }
+
+    private Coordinates getEndPosition () {
+        int size = attackedPlayer.getWayPoints().size();
+        return attackedPlayer.getWayPoints().get(size - 1);
+    }
+
+    public void setAttackedPlayer(Player attackedPlayer) {
+        this.attackedPlayer = attackedPlayer;
+    }
+
+    public float getxPosition() {
+        return xPosition;
+    }
+
+    public float getyPosition() {
+        return yPosition;
+    }
+
+    public String getAssetsName() {
+        return assetsName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * TODO: In GameLogicController verschieben
+     * @param deltaTime
+     */
+    public void moveInTargetDirection (float deltaTime) {
+        Coordinates nextWayPoint = attackedPlayer.getWayPoints().get(wayPointIndex);
+        int tileSize = gameState.getTileSize();
+        targetxPosition = nextWayPoint.getXCoordinate() * tileSize;// + tileSize / 2;
+        targetyPosition = nextWayPoint.getYCoordinate() * tileSize;// + tileSize / 2;
+
+        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
+        xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+        yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+
+        notifyObserver();
+    }
+
+    public float getxSpawnPosition() {
+        return getStartPosition().getxCoordinate() * gameState.getTileSize();
+    }
+
+    public float getySpawnPosition() {
+        return getStartPosition().getyCoordinate() * gameState.getTileSize();
+    }
+
+    public int getEndXPosition() {
+        return getEndPosition().getXCoordinate() * gameState.getTileSize();
+    }
+
+    public float getEndYPosition() {
+        return endYPosition * gameState.getTileSize();
+    }
+
+    public int getNextXPosition() {
+        return attackedPlayer.getWayPoints().get(wayPointIndex).getXCoordinate() * gameState.getTileSize();
+    }
+
+    public float getNextYPosition() {
+        return attackedPlayer.getWayPoints().get(wayPointIndex).getYCoordinate() * gameState.getTileSize();
+    }
+
+    public Player getAttackedPlayer() {
+        return attackedPlayer;
+    }
+
+    public int getAmountOfDamageToPlayer() {
+        return amountOfDamageToPlayer;
+    }
+
+    public Gamestate getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(Gamestate gameState) {
+        this.gameState = gameState;
+    }
+
+    public float getTargetxPosition() {
+        return targetxPosition;
+    }
+
+    public void setTargetxPosition(float targetxPosition) {
+        this.targetxPosition = targetxPosition;
+    }
+
+    public float getTargetyPosition() {
+        return targetyPosition;
+    }
+
+    public void setTargetyPosition(float targetyPosition) {
+        this.targetyPosition = targetyPosition;
+    }
+
+    public int getWayPointIndex() {
+        return wayPointIndex;
+    }
+
+    public void setWayPointIndex(int wayPointIndex) {
+
+        this.wayPointIndex = wayPointIndex;
+    }
+
+    public void incrementWayPointIndex () {
+        wayPointIndex++;
+    }
+
+
+    public void setToStartPosition () {
+        Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
+        int tileSize = gameState.getTileSize();
+        xPosition = startCoordinates.getXCoordinate() * tileSize;// + tileSize / 2;
+        yPosition = startCoordinates.getYCoordinate() * tileSize;// + tileSize / 2;
+        notifyObserver();
+    }
+
+    public boolean isRespawning() {
+        return respawning;
+    }
+
+    public Coordinates getCurrentMapCell() {
+        return currentMapCell;
+    }
+
+    public void setCurrentMapCell(Coordinates currentMapCell) {
+        this.currentMapCell = currentMapCell;
+    }
+
+    public float getCurrentHitPoints() {
+        return currentHitPoints;
+    }
+
+    public void setCurrentHitPoints(float currentHitPoints) {
+        this.currentHitPoints = currentHitPoints;
+    }
+
+    @Override
+    public String toString () {
+        return this.name;
+    }
+}
