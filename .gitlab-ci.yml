@@ -16,7 +16,7 @@ build:
   stage: build
   script:
     - cd exmatrikulatortd/
-    - gradlew desktop:run
+    - ./gradlew desktop:run
     
 unitTests:
   stage: test
