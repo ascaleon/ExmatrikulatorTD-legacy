@@ -85,11 +85,10 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      * @param t Das Objekt, für das der Datenbank-Eintrag erstellt werden soll
      */
     @Override
-    public void create(final T t) throws Exception {
+    public void create(final T t) {
         if (t == null) {
             throw new IllegalArgumentException();
         }
-        //assertNotNull(t);
         openCurrentSessionwithTransaction().persist(t);
         closeCurrentSessionwithTransaction();
     }
@@ -99,11 +98,10 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      * @param t Das Objekt, dessen Datenbankeintrag aktualisiert werden soll
      */
     @Override
-    public void update(final T t) throws Exception {
+    public void update(final T t) {
         if (t == null) {
             throw new IllegalArgumentException();
         }
-        //assertNotNull(t);
         final Long id = t.getId();
         if(id <= 0) throw new IllegalArgumentException("The id of the parameter must not be zero!");
         else {
