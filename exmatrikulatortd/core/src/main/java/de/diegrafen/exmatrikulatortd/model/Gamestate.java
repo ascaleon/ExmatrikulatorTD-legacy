@@ -54,19 +54,19 @@ public class Gamestate extends BaseModel {
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
      */
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
     private List<Player> players;
 
     /**
      * Die Kollisionsmatrix, mit der bestimmt wird, ob ein Turm an einer bestimmten Stelle auf dem Spielfeld gebaut werden kann
      */
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
     private List<Coordinates> collisionMatrix;
 
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
     private List<Enemy> enemies;
 
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
     private List<Tower> towers;
 
     /**

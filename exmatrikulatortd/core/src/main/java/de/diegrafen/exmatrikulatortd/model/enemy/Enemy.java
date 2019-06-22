@@ -27,7 +27,7 @@ public class Enemy extends ObservableModel {
 
     private float currentHitPoints;
 
-    @OneToMany(mappedBy="enemy", orphanRemoval=true)
+    @OneToMany(mappedBy="enemy", cascade=CascadeType.ALL, orphanRemoval=true)
     private List<Debuff> debuffs;
 
     @ManyToOne

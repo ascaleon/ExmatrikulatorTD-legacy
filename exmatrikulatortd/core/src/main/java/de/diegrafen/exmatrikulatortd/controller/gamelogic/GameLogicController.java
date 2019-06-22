@@ -145,6 +145,7 @@ public class GameLogicController implements LogicController {
                 enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
             }
             Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
+            System.out.println(newCell.toString());
             enemy.setCurrentMapCell(newCell);
             newCell.addToEnemiesOnCell(enemy);
         }
@@ -418,31 +419,29 @@ public class GameLogicController implements LogicController {
         attackedPlayer.addEnemy(enemy);
         enemy.setAttackedPlayer(attackedPlayer);
         gamestate.addEnemy(enemy);
+        gameStateDao.update(gamestate);
         enemy.setGameState(gamestate);
         enemy.setToStartPosition();
 
         gameScreen.addEnemy(enemy);
 
-        enemyDao.create(enemy);
+        //enemyDao.create(enemy);
     }
 
     public void addTower (Tower tower, int xPosition, int yPosition) {
-
         Player owningPlayer = gamestate.getPlayerByNumber(0);
         tower.setOwner(owningPlayer);
         owningPlayer.addTower(tower);
 
         Coordinates coordinates = getMapCellByXandY(xPosition, yPosition);
-
-        System.out.println(coordinates.toString());
-
         tower.setPosition(coordinates);
         coordinates.setTower(tower);
 
         tower.setGamestate(gamestate);
         gamestate.addTower(tower);
-
         gameScreen.addTower(tower);
+
+        gameStateDao.update(gamestate);
     }
 
     /**
