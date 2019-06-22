@@ -27,7 +27,7 @@ public class Enemy extends ObservableModel {
 
     private float currentHitPoints;
 
-    @OneToMany(mappedBy="enemy", cascade=CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(mappedBy="enemy", orphanRemoval=true)
     private List<Debuff> debuffs;
 
     @ManyToOne
@@ -70,6 +70,10 @@ public class Enemy extends ObservableModel {
     private float targetyPosition = 0;
 
     private boolean respawning;
+
+    @ManyToOne
+    @JoinColumn(name="wave_id")
+    private Wave wave;
 
     @ManyToOne
     @JoinColumn(name="mapcell_id")
@@ -258,5 +262,9 @@ public class Enemy extends ObservableModel {
     @Override
     public String toString () {
         return this.name;
+    }
+
+    public void setWave (Wave wave) {
+        this.wave = wave;
     }
 }

@@ -78,14 +78,15 @@ public class GameLogicController implements LogicController {
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
         this.enemyDao = new EnemyDao();
-        gameStateDao.create(gamestate);
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
+        gameStateDao.create(gamestate);
         initializeCollisionMap(TEST_COLLISION_MAP);
     }
 
     @Override
     public void update(float deltaTime) {
+        //if (false) {
         if (!determineGameOver()) {
             if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
                 determineNewRound();
@@ -144,8 +145,9 @@ public class GameLogicController implements LogicController {
             if (enemy.getCurrentMapCell() != null) {
                 enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
             }
+            System.out.println("X-Position: " + enemy.getxPosition());
+            System.out.println("Y-Position: " + enemy.getyPosition());
             Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
-            System.out.println(newCell.toString());
             enemy.setCurrentMapCell(newCell);
             newCell.addToEnemiesOnCell(enemy);
         }
@@ -252,9 +254,15 @@ public class GameLogicController implements LogicController {
 
     private void removeEnemy(Enemy enemy) {
         enemy.getAttackedPlayer().removeEnemy(enemy);
+        enemy.setAttackedPlayer(null);
         enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
+        enemy.setCurrentMapCell(null);
         gamestate.removeEnemy(enemy);
+        enemy.setGameState(null);
+
         enemy.setRemoved(true);
+
+        gameStateDao.update(gamestate);
     }
 
     private float getDistanceToEndpoint (Enemy enemy) {
@@ -394,6 +402,8 @@ public class GameLogicController implements LogicController {
             }
         }
 
+        gameStateDao.update(gamestate);
+
     }
 
     private void addGameMapTile (int xCoordinate, int yCoordinate, int buildableByPlayer) {
@@ -405,13 +415,12 @@ public class GameLogicController implements LogicController {
         int xCoordinate = xPosition / TILE_SIZE;
         int yCoordinate = yPosition / TILE_SIZE;
 
+        System.out.println("x-Koordinate: " + xCoordinate);
+        System.out.println("y-Koordinate: " + yCoordinate);
+
         int xIndex = gamestate.getNumberOfColumns() * xCoordinate;
 
         return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
-    }
-
-    public void addEnemy (EnemyFactory.EnemyType enemyType) {
-
     }
 
     public void addEnemy (Enemy enemy) {
@@ -419,12 +428,11 @@ public class GameLogicController implements LogicController {
         attackedPlayer.addEnemy(enemy);
         enemy.setAttackedPlayer(attackedPlayer);
         gamestate.addEnemy(enemy);
-        gameStateDao.update(gamestate);
         enemy.setGameState(gamestate);
         enemy.setToStartPosition();
-
         gameScreen.addEnemy(enemy);
 
+        gameStateDao.update(gamestate);
         //enemyDao.create(enemy);
     }
 
@@ -456,11 +464,7 @@ public class GameLogicController implements LogicController {
         boolean wasSuccessful;
 
         if (checkCoordinates(xPosition, yPosition, playerNumber)) {
-            //if (true) {
-                //Tower tower = createNewTower(towerType, xPosition, yPosition);
                 Tower tower = createNewTower(towerType);
-                //System.out.println(coordinates.toString());
-
                 addTower(tower, xPosition, yPosition);
                 wasSuccessful = true;
             } else {
@@ -606,42 +610,6 @@ public class GameLogicController implements LogicController {
     public void exitGame (boolean saveBeforeExit) {
         mainController.setEndScreen(gamestate);
     }
-
-
-
-
-
-
-    /**
-     * Baut einen neuen Turm
-     *
-     * @param towerType       Der zu bauende Turm
-     * @param coordinates Die Koordinaten des Turmes
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
-     */
-    public boolean buildTower(TowerType towerType, Coordinates coordinates) {
-
-        return true;
-
-//        boolean wasSuccessful;
-//
-//        //if (gamestate.checkCoordinates(coordinates)) {
-//        if (true) {
-//            //Tower tower = createNewTower(towerType, xPosition, yPosition);
-//            Tower tower = createNewTower(towerType);
-//            System.out.println(coordinates.toString());
-//            tower.setPosition(coordinates);
-//            //gamestate.addTower(tower);
-//            addTower(tower, 0, 0);
-//            wasSuccessful = true;
-//        } else {
-//            wasSuccessful = false;
-//        }
-//
-//        return wasSuccessful;
-    }
-
-
 
     @Override
     public boolean buildTower(Tower tower, Coordinates coordinates) {

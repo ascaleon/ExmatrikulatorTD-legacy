@@ -34,7 +34,7 @@ public class Wave extends BaseModel {
      */
     @OneToMany(
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            mappedBy = "wave"
     )
     private List<Enemy> enemies;
 

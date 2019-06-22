@@ -91,6 +91,9 @@ public abstract class BaseObject implements GameObject {
     public void update() {
         if (observable.isRemoved()) {
             setRemoved(true);
+            observable.removeObserver(this);
+            observable = null;
+            dispose();
         } else {
             setxPosition(observable.getxPosition());
             setyPosition(observable.getyPosition());
