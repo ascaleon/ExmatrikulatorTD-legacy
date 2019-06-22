@@ -175,6 +175,5 @@ public abstract class BaseObject implements GameObject {
 
     public void setRemoved(boolean removed) {
         this.removed = removed;
-        System.out.println("Set removed: " + removed);
     }
 }

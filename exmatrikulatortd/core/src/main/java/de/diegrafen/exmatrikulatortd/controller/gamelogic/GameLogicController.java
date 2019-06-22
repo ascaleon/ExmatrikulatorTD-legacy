@@ -15,6 +15,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
+import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
@@ -70,6 +71,8 @@ public class GameLogicController implements LogicController {
 
     private EnemyDao enemyDao;
 
+    private TowerDao towerDao;
+
 
     public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
@@ -78,6 +81,7 @@ public class GameLogicController implements LogicController {
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
         this.enemyDao = new EnemyDao();
+        this.towerDao = new TowerDao();
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
         gameStateDao.create(gamestate);
@@ -86,7 +90,6 @@ public class GameLogicController implements LogicController {
 
     @Override
     public void update(float deltaTime) {
-        //if (false) {
         if (!determineGameOver()) {
             if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
                 determineNewRound();
@@ -145,8 +148,7 @@ public class GameLogicController implements LogicController {
             if (enemy.getCurrentMapCell() != null) {
                 enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
             }
-            System.out.println("X-Position: " + enemy.getxPosition());
-            System.out.println("Y-Position: " + enemy.getyPosition());
+
             Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
             enemy.setCurrentMapCell(newCell);
             newCell.addToEnemiesOnCell(enemy);
@@ -261,8 +263,6 @@ public class GameLogicController implements LogicController {
         enemy.setGameState(null);
 
         enemy.setRemoved(true);
-
-        gameStateDao.update(gamestate);
     }
 
     private float getDistanceToEndpoint (Enemy enemy) {
@@ -338,6 +338,7 @@ public class GameLogicController implements LogicController {
         if (gamestate.getEnemies().isEmpty() && !gamestate.isNewRound()) {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
+            gameStateDao.update(gamestate);
         }
     }
 
@@ -376,7 +377,7 @@ public class GameLogicController implements LogicController {
         //gamestate.setNumberOfColumns(numberOfColumns);
         //gamestate.setNumberOfRows(numberOfRows);
         for (int i = 0; i < numberOfColumns; i++) {
-            for (int j = 0; j < numberOfRows; j++) {
+            for (int j = 0; j < numberOfRows; j++) {git
                 System.out.println("Column: " + i + ", Row: " + j);
                 addGameMapTile(i, j, collisionMap[i][j]);
             }
@@ -415,12 +416,19 @@ public class GameLogicController implements LogicController {
         int xCoordinate = xPosition / TILE_SIZE;
         int yCoordinate = yPosition / TILE_SIZE;
 
-        System.out.println("x-Koordinate: " + xCoordinate);
-        System.out.println("y-Koordinate: " + yCoordinate);
+        //System.out.println("x-Koordinate: " + xCoordinate);
+        //System.out.println("y-Koordinate: " + yCoordinate);
 
         int xIndex = gamestate.getNumberOfColumns() * xCoordinate;
 
-        return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
+        try {
+            return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return gamestate.getMapCellByListIndex(50);
+        }
+
+
     }
 
     public void addEnemy (Enemy enemy) {
@@ -432,8 +440,7 @@ public class GameLogicController implements LogicController {
         enemy.setToStartPosition();
         gameScreen.addEnemy(enemy);
 
-        gameStateDao.update(gamestate);
-        //enemyDao.create(enemy);
+        //enemyDao.update(enemy);
     }
 
     public void addTower (Tower tower, int xPosition, int yPosition) {
@@ -449,7 +456,7 @@ public class GameLogicController implements LogicController {
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
 
-        gameStateDao.update(gamestate);
+        //towerDao.create(tower);
     }
 
     /**
@@ -548,9 +555,6 @@ public class GameLogicController implements LogicController {
         tower.getPosition().setTower(null);
         gamestate.getTowers().remove(tower);
         tower.setRemoved(true);
-        System.out.println("removeTower");
-        //gameScreen.getTowers().remove(towerMapping.get(tower));
-        //towerMapping.remove(tower);
     }
 
     /**

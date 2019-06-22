@@ -159,7 +159,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         this.gameObjects = new LinkedList<>();
         Player player = new Player();
-        gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
+        //gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
 
         getCamera().setToOrtho(false, width, height);
         getCamera().update();

@@ -233,7 +233,7 @@ public class Enemy extends ObservableModel {
 
     public void setToStartPosition () {
         Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
-        int tileSize = gameState.getTileSize();
+        int tileSize = gameState.getTileSize();<
         xPosition = startCoordinates.getXCoordinate() * tileSize;// + tileSize / 2;
         yPosition = startCoordinates.getYCoordinate() * tileSize;// + tileSize / 2;
         notifyObserver();

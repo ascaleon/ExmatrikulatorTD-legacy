@@ -105,8 +105,8 @@ public class Player extends BaseModel {
         this.enemiesSpawned = false;
 
         waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
-        //waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
-        //waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
+        waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
+        waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
 
         wayPoints.add(new Coordinates(0,20-14));
         wayPoints.add(new Coordinates(3,20-14));
