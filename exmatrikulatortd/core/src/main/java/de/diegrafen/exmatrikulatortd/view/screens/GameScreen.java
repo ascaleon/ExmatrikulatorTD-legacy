@@ -168,9 +168,6 @@ public class GameScreen extends BaseScreen implements GameView {
         this.gameObjects = new LinkedList<>();
 
         getCamera().setToOrtho(false, width, height);
-        tiledMap = new TmxMapLoader().load(MAP_PATH);
-
-        initializeMap(tiledMap);
 
         Gdx.input.setInputProcessor(new InputMultiplexer());
 
@@ -344,12 +341,11 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Lädt die Karte.
      */
-    private void initializeMap (TiledMap tiledMap) {
+    public void loadMap (String mapPath) {
+        tiledMap = new TmxMapLoader().load(mapPath);
         MapProperties mapProperties = tiledMap.getProperties();
         mapWidth = mapProperties.get("width", Integer.class) * mapProperties.get("tilewidth", Integer.class);
         mapHeight = mapProperties.get("height", Integer.class) * mapProperties.get("tileheight", Integer.class);
-    public void loadMap (String mapPath) {
-        tiledMap = new TmxMapLoader().load(mapPath);
         orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         getCamera().update();
         orthogonalTiledMapRenderer.setView(getCamera());

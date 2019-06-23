@@ -19,6 +19,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
+import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
@@ -429,9 +430,6 @@ public class GameLogicController implements LogicController {
         int xIndex = gamestate.getNumberOfColumns() * xCoordinate;
 
         return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
-    }
-
-
     }
 
     public void addEnemy (Enemy enemy) {
