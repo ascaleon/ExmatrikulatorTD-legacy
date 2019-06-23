@@ -105,6 +105,7 @@ public class GameScreen extends BaseScreen implements GameView {
         this.gameState = new Gamestate();
         this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
         gameLogicController.setGameScreen(this);
+        gameLogicController.initializeCollisionMap(MAP_PATH);
     }
 
 
@@ -163,8 +164,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
         getCamera().setToOrtho(false, width, height);
         getCamera().update();
-        tiledMap = new TmxMapLoader().load(MAP_PATH);
-        orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        //tiledMap = new TmxMapLoader().load(MAP_PATH);
+        //orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         Gdx.input.setInputProcessor(new InputMultiplexer());
 
@@ -263,7 +264,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         multiplexer.addProcessor(inputProcessor);
 
-        loadMap(MAP_PATH);
+        //loadMap(MAP_PATH);
 
 
 
@@ -305,8 +306,10 @@ public class GameScreen extends BaseScreen implements GameView {
         //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         getCamera().update();
-        orthogonalTiledMapRenderer.setView(getCamera());
-        orthogonalTiledMapRenderer.render();
+        if (orthogonalTiledMapRenderer != null) {
+            orthogonalTiledMapRenderer.setView(getCamera());
+            orthogonalTiledMapRenderer.render();
+        }
 
         getSpriteBatch().setProjectionMatrix(getCamera().combined);
 
@@ -340,7 +343,7 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Lädt die Karte.
      */
-    private void loadMap (String mapPath) {
+    public void loadMap (String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
         orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         getCamera().update();

@@ -1,6 +1,10 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
@@ -26,6 +30,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.En
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
@@ -70,7 +75,6 @@ public class GameLogicController implements LogicController {
 
     private EnemyDao enemyDao;
 
-
     public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
         this.gamestate = gamestate;
@@ -81,7 +85,6 @@ public class GameLogicController implements LogicController {
         gameStateDao.create(gamestate);
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
-        initializeCollisionMap(TEST_COLLISION_MAP);
     }
 
     @Override
@@ -359,17 +362,25 @@ public class GameLogicController implements LogicController {
     /**
      * Initialisiert die Kollisionsmatrix der Map
      */
-    void initializeCollisionMap (int[][] collisionMap) {
+    //void initializeCollisionMap (int[][] collisionMap) {
+    public void initializeCollisionMap (String mapPath) {
 
-        int numberOfColumns = gamestate.getNumberOfColumns(); //gamestate.getMapHeight() / TILE_SIZE;
-        int numberOfRows = gamestate.getNumberOfRows(); //gamestate.getMapWidth() / TILE_SIZE;
+        TiledMap tiledMap = new TmxMapLoader().load(mapPath);
 
-        //gamestate.setNumberOfColumns(numberOfColumns);
-        //gamestate.setNumberOfRows(numberOfRows);
+        gameScreen.loadMap(mapPath);
+
+        TiledMapTileLayer tiledMapTileLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Kollisionsmatrix");
+
+        int numberOfColumns = tiledMapTileLayer.getWidth();
+        int numberOfRows = tiledMapTileLayer.getHeight();
+
+        gamestate.setNumberOfColumns(numberOfColumns);
+        gamestate.setNumberOfRows(numberOfRows);
+
         for (int i = 0; i < numberOfColumns; i++) {
             for (int j = 0; j < numberOfRows; j++) {
-                System.out.println("Column: " + i + ", Row: " + j);
-                addGameMapTile(i, j, collisionMap[i][j]);
+                int buildableByPlayer = (int) tiledMapTileLayer.getCell(i,j).getTile().getProperties().get("buildableByPlayer");
+                addGameMapTile(i, j, buildableByPlayer);
             }
         }
 
