@@ -1,5 +1,6 @@
 ## Hibernate/Derby
 
+/core/assets/derby.log
 /core/assets/TowerwarsDB/
 /core/out/production/resources/TowerwarsDB/*
 /core/out/
