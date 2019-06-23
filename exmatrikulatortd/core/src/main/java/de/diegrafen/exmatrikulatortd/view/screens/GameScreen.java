@@ -36,6 +36,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.cr
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setX;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setY;
+import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -158,8 +159,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         this.gameObjects = new LinkedList<>();
         Player player = new Player();
-        gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
-        //getSessionFactory();
+        //gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
 
         getCamera().setToOrtho(false, width, height);
         getCamera().update();

@@ -86,7 +86,9 @@ public final class WaveFactory {
     private static Wave createRegularWave ( ) {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
-            wave.addEnemy(createNewEnemy(REGULAR_ENEMY));
+            Enemy enemy = createNewEnemy(REGULAR_ENEMY);
+            wave.addEnemy(enemy);
+            enemy.setWave(wave);
         }
         return wave;
     }
@@ -98,7 +100,9 @@ public final class WaveFactory {
     private static Wave createHeavyWave () {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
-            wave.addEnemy(createNewEnemy(HEAVY_ENEMY));
+            Enemy enemy = createNewEnemy(HEAVY_ENEMY);
+            wave.addEnemy(enemy);
+            enemy.setWave(wave);
         }
         return wave;
     }
@@ -110,7 +114,9 @@ public final class WaveFactory {
     private static Wave createFastWave () {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
-            wave.addEnemy(createNewEnemy(REGULAR_ENEMY));
+            Enemy enemy = createNewEnemy(REGULAR_ENEMY);
+            wave.addEnemy(enemy);
+            enemy.setWave(wave);
         }
         return wave;
     }
@@ -121,13 +127,12 @@ public final class WaveFactory {
      */
     private static Wave createRegularAndHeavyWave () {
         Wave wave = new Wave();
-        List<Enemy> waveEnemies = new ArrayList<Enemy>();
-        //waveEnemies.add(createNewEnemy(REGULAR_ENEMY));
+        List<Enemy> waveEnemies = new ArrayList<>();
         for (int i = 0; i < enemiesPerWave / 2; i++) {
-            waveEnemies.add(createNewEnemy(REGULAR_ENEMY));
+            addEnemyToWaveEnemies(REGULAR_ENEMY, waveEnemies, wave);
         }
         for (int i = 0; i < enemiesPerWave / 2; i++) {
-            waveEnemies.add(createNewEnemy(HEAVY_ENEMY));
+            addEnemyToWaveEnemies(HEAVY_ENEMY, waveEnemies, wave);
         }
         Collections.shuffle(waveEnemies);
         wave.setEnemies(waveEnemies);
@@ -140,12 +145,15 @@ public final class WaveFactory {
      */
     private static Wave createRegularAndFastWave () {
         Wave wave = new Wave();
+        List<Enemy> waveEnemies = new ArrayList<>();
         for (int i = 0; i < enemiesPerWave / 2; i++) {
-            wave.addEnemy(createNewEnemy(REGULAR_ENEMY));
+            addEnemyToWaveEnemies(REGULAR_ENEMY, waveEnemies, wave);
         }
         for (int i = 0; i < enemiesPerWave / 2; i++) {
-            wave.addEnemy(createNewEnemy(FAST_ENEMY));
+            addEnemyToWaveEnemies(FAST_ENEMY, waveEnemies, wave);
         }
+        Collections.shuffle(waveEnemies);
+        wave.setEnemies(waveEnemies);
         return wave;
     }
 
@@ -170,8 +178,16 @@ public final class WaveFactory {
      */
     private static Wave createBossWave () {
         Wave wave = new Wave();
-        wave.addEnemy(createNewEnemy(BOSS_ENEMY));
+        Enemy enemy = createNewEnemy(BOSS_ENEMY);
+        wave.addEnemy(enemy);
+        enemy.setWave(wave);
         return wave;
+    }
+
+    private static void addEnemyToWaveEnemies(EnemyFactory.EnemyType enemyType, List<Enemy> waveEnemies, Wave wave) {
+        Enemy enemy = createNewEnemy(enemyType);
+        waveEnemies.add(enemy);
+        enemy.setWave(wave);
     }
 
 }

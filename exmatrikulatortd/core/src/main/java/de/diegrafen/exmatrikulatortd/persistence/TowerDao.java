@@ -18,6 +18,6 @@ public class TowerDao extends BaseDao<Tower> {
      */
     @Override
     Class<Tower> getClazz() {
-        return null;
+        return Tower.class;
     }
 }

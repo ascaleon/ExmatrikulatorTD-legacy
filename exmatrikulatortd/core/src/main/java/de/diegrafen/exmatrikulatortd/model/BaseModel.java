@@ -31,4 +31,21 @@ public abstract class BaseModel implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
+    /**
+     * Setzt die Id des Objektes auf {@code 0}.
+     */
+    public void clearId() {
+        this.id = 0l;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(getClass().getSimpleName() +  " {id: %d}", id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.intValue();
+    }
 }
