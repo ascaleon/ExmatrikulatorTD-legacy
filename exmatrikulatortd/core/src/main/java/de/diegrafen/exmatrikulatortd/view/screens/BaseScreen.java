@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,6 +22,8 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  * Die Abstrakte Screen Klasse, die für alle Game-Screens verwendet wird.
  */
 public abstract class BaseScreen implements Screen {
+
+    private Viewport stageViewport;
 
     /**
      * Das Spielobjekt.
@@ -51,17 +54,24 @@ public abstract class BaseScreen implements Screen {
 
     private Viewport viewport;
 
+    private BitmapFont bitmapFont = new BitmapFont();
+
+    private OrthographicCamera stageCamera;
+
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
      */
     public BaseScreen (MainController mainController, Game game) {
         this.camera = new OrthographicCamera();
-        viewport = new ExtendViewport(800, 600, camera);
+        this.stageCamera = new OrthographicCamera();
+        viewport = new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
+        stageViewport = new ScreenViewport(stageCamera);
+
         this.spriteBatch = new SpriteBatch();
         this.mainController = mainController;
         this.game = game;
-        ui = new Stage(new ScreenViewport());
+        ui = new Stage(stageViewport);
     }
 
     /**
@@ -209,5 +219,13 @@ public abstract class BaseScreen implements Screen {
 
     public void setViewport(Viewport viewport) {
         this.viewport = viewport;
+    }
+
+    public Stage getUi() {
+        return ui;
+    }
+
+    public BitmapFont getBitmapFont() {
+        return bitmapFont;
     }
 }

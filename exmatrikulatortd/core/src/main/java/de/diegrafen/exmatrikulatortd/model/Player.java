@@ -4,6 +4,8 @@ import de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.Observer;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.cre
  */
 @Entity
 @Table(name = "Players")
-public class Player extends BaseModel {
+public class Player extends BaseModel implements Observable {
 
     /**
      * Die eindeutige Serialisierungs-ID
@@ -92,6 +94,8 @@ public class Player extends BaseModel {
 
     private boolean enemiesSpawned;
 
+    private transient List<Observer> observers;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -100,9 +104,13 @@ public class Player extends BaseModel {
         this.towers = new ArrayList<>();
         this.wayPoints = new ArrayList<>();
         this.waves = new ArrayList<>();
+        this.observers = new ArrayList<>();
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
+
+        this.currentLives = 25;
+        this.maxLives = 25;
 
         waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
         waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
@@ -160,6 +168,7 @@ public class Player extends BaseModel {
 
     public void setCurrentLives(int currentLives) {
         this.currentLives = currentLives;
+        notifyObserver();
     }
 
     public void removeEnemy(Enemy enemy) {
@@ -252,5 +261,22 @@ public class Player extends BaseModel {
 
     public void setEnemiesSpawned(boolean enemiesSpawned) {
         this.enemiesSpawned = enemiesSpawned;
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        this.observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObserver() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
     }
 }

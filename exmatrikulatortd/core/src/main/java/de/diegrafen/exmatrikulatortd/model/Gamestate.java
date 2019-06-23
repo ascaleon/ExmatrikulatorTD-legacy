@@ -5,6 +5,7 @@ import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -111,9 +112,9 @@ public class Gamestate extends BaseModel {
      * Default-Konstruktor. Wird von JPA benötigt
      */
     public Gamestate() {
-        players = new ArrayList<Player>();
-        enemies = new ArrayList<Enemy>();
-        towers = new ArrayList<Tower>();
+        players = new ArrayList<>();
+        enemies = new ArrayList<>();
+        towers = new ArrayList<>();
         collisionMatrix = new ArrayList<Coordinates>();
 
         this.newRound = true;

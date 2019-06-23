@@ -288,6 +288,10 @@ public class GameLogicController implements LogicController {
 
     private boolean isCellInRangeOfTower (Tower tower, Coordinates coordinates) {
 
+        if (coordinates == null) {
+            return false;
+        }
+
         Coordinates towerCoordinates = tower.getPosition();
 
         float x1 = towerCoordinates.getXCoordinate() * TILE_SIZE;

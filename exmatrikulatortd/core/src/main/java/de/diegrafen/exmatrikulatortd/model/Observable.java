@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
+import de.diegrafen.exmatrikulatortd.view.Observer;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 /**
@@ -8,24 +9,10 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
  */
 public interface Observable {
 
-    void registerObserver (GameObject gameObject);
+    void registerObserver (Observer observer);
 
-    void removeObserver (GameObject gameObject);
+    void removeObserver (Observer observer);
 
     void notifyObserver ();
-
-    String getName ();
-
-    String getAssetsName ();
-
-    float getxPosition ();
-
-    float getyPosition ();
-
-    float getTargetxPosition ();
-
-    float getTargetyPosition ();
-
-    boolean isRemoved ();
 
 }

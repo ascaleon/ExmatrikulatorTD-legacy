@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import de.diegrafen.exmatrikulatortd.model.Observable;
+import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 /**
@@ -38,8 +38,8 @@ public class EnemyObject extends BaseObject {
         super(name, assetsName, xPosition, yPosition);
     }
 
-    public EnemyObject(Observable observable) {
-        super(observable);
+    public EnemyObject(ObservableUnit observableUnit) {
+        super(observableUnit);
 
         walkSheet = new Texture(Gdx.files.internal("sprites/objects/enemies/HazMatHarry1@64x64.png"));
 

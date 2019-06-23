@@ -29,8 +29,6 @@ public class MenuScreen extends BaseScreen {
     Stage stage;
 
 
-
-
     public MenuScreen (MainController mainController, Game game) {
         super(mainController, game);
         stage = new Stage(new ScreenViewport());

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import de.diegrafen.exmatrikulatortd.model.Observable;
+import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
 /**
  *
@@ -18,7 +19,7 @@ import de.diegrafen.exmatrikulatortd.model.Observable;
  */
 public abstract class BaseObject implements GameObject {
 
-    private Observable observable;
+    private ObservableUnit observable;
 
     /**
      * Die Texturen des Objektes
@@ -57,7 +58,7 @@ public abstract class BaseObject implements GameObject {
 
     private boolean removed;
 
-    BaseObject (Observable observable) {
+    BaseObject (ObservableUnit observable) {
         this.observable = observable;
         this.name = observable.getName();
         this.currentSprite = new Texture(observable.getAssetsName());

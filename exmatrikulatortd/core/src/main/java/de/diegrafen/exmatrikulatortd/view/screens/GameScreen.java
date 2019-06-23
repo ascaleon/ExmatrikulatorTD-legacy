@@ -1,11 +1,15 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -13,17 +17,11 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicControl
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Observable;
-import de.diegrafen.exmatrikulatortd.model.Player;
-import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.BaseObject;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -39,10 +37,11 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.setX;
 import static de.diegrafen.exmatrikulatortd.util.Constants.setY;
 
 /**
- * @author Jan Romann <jan.romann@uni-bremen.de>
- * @version 14.06.2019 02:12
  *
  * Der GameScreen wird während des aktuellen Spiels angezeigt.
+ *
+ * @author Jan Romann <jan.romann@uni-bremen.de>
+ * @version 14.06.2019 02:12
  */
 public class GameScreen extends BaseScreen implements GameView {
 
@@ -57,7 +56,7 @@ public class GameScreen extends BaseScreen implements GameView {
     private Gamestate gameState;
 
     /**
-     * Der Spielstand für die Datenbankimplementierung.
+     * Das Database-Access-Objekt für die Durchführung von CRUD-Operationen
      */
     private GameStateDao gameStateDao;
 
@@ -72,28 +71,34 @@ public class GameScreen extends BaseScreen implements GameView {
     private ExmatrikulatorTD game;
 
     /**
-     * Die Karte, auf der die Türme plaziert werden und Gegner laufen.
+     * Die Karte, auf der die Türme plaziert werden, und sich die Gegner bewegen
      */
     private TiledMap tiledMap;
 
     /**
-     * Der renderer zeichnet die Karte.
+     * Rendert die tiledMap
      */
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
+    private List<Player> players;
 
+    private int localPlayerNumber = 0;
 
+    /**
+     * Die Breite der Karte in Pixeln
+     */
     private int mapWidth;
 
 
+    /**
+     * Die Höhe der Karte in Pixeln
+     */
     private int mapHeight;
 
     /**
      * Eine Liste aller Spielobjekte
      */
     private List<GameObject> gameObjects;
-
-    private InputProcessor inputProcessor;
 
     private boolean keyDownDown = false;
 
@@ -102,6 +107,14 @@ public class GameScreen extends BaseScreen implements GameView {
     private boolean keyRightDown = false;
 
     private boolean keyLeftDown = false;
+
+    private Label scoreLabel;
+
+    private Label resourcesLabel;
+
+    private Label livesLabel;
+
+    private float touchDownX, touchDownY;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
@@ -114,6 +127,8 @@ public class GameScreen extends BaseScreen implements GameView {
         this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
         gameLogicController.setGameScreen(this);
         gameLogicController.initializeCollisionMap(MAP_PATH);
+        this.players = gameState.getPlayers();
+        gameState.getPlayerByNumber(localPlayerNumber).registerObserver(this);
     }
 
 
@@ -172,29 +187,30 @@ public class GameScreen extends BaseScreen implements GameView {
         Gdx.input.setInputProcessor(new InputMultiplexer());
 
         InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
-        inputProcessor = new InputProcessor() {
+
+        InputProcessor inputProcessor = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
-                if(keycode == Input.Keys.LEFT)
+                if (keycode == Input.Keys.LEFT)
                     keyLeftDown = true;
-                if(keycode == Input.Keys.RIGHT)
+                if (keycode == Input.Keys.RIGHT)
                     keyRightDown = true;
-                if(keycode == Input.Keys.UP)
+                if (keycode == Input.Keys.UP)
                     keyUpDown = true;
-                if(keycode == Input.Keys.DOWN)
+                if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
                 return false;
             }
 
             @Override
             public boolean keyUp(int keycode) {
-                if(keycode == Input.Keys.LEFT)
+                if (keycode == Input.Keys.LEFT)
                     keyLeftDown = false;
-                if(keycode == Input.Keys.RIGHT)
+                if (keycode == Input.Keys.RIGHT)
                     keyRightDown = false;
-                if(keycode == Input.Keys.UP)
+                if (keycode == Input.Keys.UP)
                     keyUpDown = false;
-                if(keycode == Input.Keys.DOWN)
+                if (keycode == Input.Keys.DOWN)
                     keyDownDown = false;
                 return false;
             }
@@ -206,6 +222,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+                if (pointer == LEFT) {
+                    Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
+                    Vector3 position = getCamera().unproject(clickCoordinates);
+                    touchDownX = position.x;
+                    touchDownY = position.y;
+                }
+
                 return false;
             }
 
@@ -214,7 +238,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 boolean returnvalue = false;
 
-                Vector3 clickCoordinates = new Vector3(screenX,screenY,0);
+                Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
                 if (button == LEFT) {
@@ -226,11 +250,20 @@ public class GameScreen extends BaseScreen implements GameView {
                     returnvalue = true;
                 }
 
-               return returnvalue;
+                return returnvalue;
             }
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
+
+                Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = getCamera().unproject(clickCoordinates);
+
+                getCamera().position.x += touchDownX - position.x;// (position.x - touchDownX, position.y - touchDownY);
+                getCamera().position.y += touchDownY - position.y;//
+
+                resetCameraToBorders();
+
                 return false;
             }
 
@@ -246,11 +279,11 @@ public class GameScreen extends BaseScreen implements GameView {
         };
 
         multiplexer.addProcessor(inputProcessor);
+
+        initializeUserInterface();
     }
 
     /**
-     *
-     * Aktua
      *
      *  Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
      *  @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
@@ -258,6 +291,15 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void update (float deltaTime) {
         gameLogicController.update(deltaTime);
+    }
+
+    @Override
+    public void update() {
+        Player localPlayer = players.get(localPlayerNumber);
+
+        scoreLabel.setText(localPlayer.getScore());
+        livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
+        resourcesLabel.setText(localPlayer.getResources());
     }
 
     /**
@@ -271,37 +313,20 @@ public class GameScreen extends BaseScreen implements GameView {
 
         float translateValue = 5;
 
-        float cameraHalfWidth = getCamera().viewportWidth * .5f;
-        float cameraHalfHeight = getCamera().viewportHeight * .5f;
-
         if(keyLeftDown) {
             getCamera().translate(-translateValue,0);
-            float cameraLeft = getCamera().position.x - cameraHalfWidth;
-            if (cameraLeft < 0) {
-                getCamera().position.x = cameraHalfWidth;
-            }
         }
         if(keyRightDown) {
             getCamera().translate(translateValue,0);
-            float cameraRight = getCamera().position.x + cameraHalfWidth;
-            if (cameraRight > mapWidth) {
-                getCamera().position.x = mapWidth - cameraHalfWidth;
-            }
         }
         if(keyUpDown) {
             getCamera().translate(0,translateValue);
-            float cameraUp = getCamera().position.y + cameraHalfHeight;
-            if (cameraUp > mapHeight) {
-                getCamera().position.y = mapHeight - cameraHalfHeight;
-            }
         }
         if(keyDownDown) {
             getCamera().translate(0,-translateValue);
-            float cameraDown = getCamera().position.y - cameraHalfHeight;
-            if (cameraDown < 0) {
-                getCamera().position.y = cameraHalfHeight;
-            }
         }
+
+        resetCameraToBorders();
 
         getCamera().update();
         if (orthogonalTiledMapRenderer != null) {
@@ -336,10 +361,14 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void dispose() {
         super.dispose();
+        gameObjects.forEach(GameObject::dispose);
+        tiledMap.dispose();
     }
 
     /**
      * Lädt die Karte.
+     *
+     * @param mapPath Der Pfad zur .tmx-Datei, die die Karte beinhaltet
      */
     public void loadMap (String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
@@ -353,37 +382,81 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private void initializeUserInterface () {
 
+        final Stack mainUiStack = new Stack();
+        mainUiStack.setFillParent(true);
+
+        final Table defaultScreen = new Table();
+        defaultScreen.setFillParent(true);
+
+        final Table statsTable = new Table();
+        //statsTable.setBackground(background);
+        Label.LabelStyle infoLabelsStyle = new Label.LabelStyle();
+        infoLabelsStyle.font = getBitmapFont();
+        Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
+        scoreLabelStyle.font = getBitmapFont();
+        Label.LabelStyle liveLabelStyle = new Label.LabelStyle();
+        liveLabelStyle.font = getBitmapFont();
+
+        Player localPlayer = players.get(localPlayerNumber);
+
+        // score
+        statsTable.add(new Label("Score: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
+        statsTable.add(scoreLabel).left().align(RIGHT);
+
+        // money
+        statsTable.add(new Label("Money: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
+        statsTable.add(resourcesLabel).left().align(RIGHT);
+
+        // lives
+        statsTable.add(new Label("Lives: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
+        statsTable.add(livesLabel).left().align(RIGHT);
+
+        defaultScreen.add(statsTable).top().center().expandX().colspan(4);
+        defaultScreen.row();
+
+        defaultScreen.add().expand().colspan(3);
+        defaultScreen.row();
+
+        mainUiStack.add(defaultScreen);
+
+        getUi().addActor(mainUiStack);
     }
 
     private void reinitializeGameScreen () {
 
     }
 
-    public void addTower (Observable observable) {
-        gameObjects.add(new TowerObject(observable));
-    }
-
+    /**
+     * Generiert aus einem beobachtbarem Objekt ein neues Turm-Spielobjekt
+     *
+     * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
+     */
     @Override
-    public void addEnemy(Observable observable) {
-        gameObjects.add(new EnemyObject(observable));
+    public void addTower(ObservableUnit observableUnit) {
+        gameObjects.add(new TowerObject(observableUnit));
     }
 
-    public void addTower(TowerObject towerObject) {
-        gameObjects.add(towerObject);
+    /**
+     * Generiert aus einem beobachtbarem Objekt ein neues Gegner-Spielobjekt
+     *
+     * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
+     */
+    @Override
+    public void addEnemy(ObservableUnit observableUnit) {
+        gameObjects.add(new EnemyObject(observableUnit));
     }
 
-    public void removeTower(TowerObject towerObject) {
-        gameObjects.remove(towerObject);
-        towerObject.dispose();
-    }
-
-    public void addEnemy(EnemyObject enemyObject) {
-        gameObjects.add(enemyObject);
-    }
-
-    public void removeEnemy(EnemyObject enemyObject) {
-        gameObjects.remove(enemyObject);
-        enemyObject.dispose();
+    /**
+     * Generiert aus einem beobachtbarem Objekt ein neues Projektil-Spielobjekt
+     *
+     * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
+     */
+    @Override
+    public void addProjectile(ObservableUnit observableUnit) {
+        gameObjects.add(new ProjectileObject(observableUnit));
     }
 
     private void removeGameObject (GameObject gameObject) {
@@ -391,10 +464,30 @@ public class GameScreen extends BaseScreen implements GameView {
         gameObject.dispose();
     }
 
-    @Override
-    public void addObservable(Observable observable) {
-        if (observable instanceof Tower) {
-            System.out.println("Well.");
+    public void setPlayers (List<Player> players) {
+        this.players = players;
+    }
+
+    private void resetCameraToBorders () {
+        float cameraHalfWidth = getCamera().viewportWidth * .5f;
+        float cameraHalfHeight = getCamera().viewportHeight * .5f;
+
+        float cameraLeft = getCamera().position.x - cameraHalfWidth;
+        float cameraRight = getCamera().position.x + cameraHalfWidth;
+        float cameraUp = getCamera().position.y + cameraHalfHeight;
+        float cameraDown = getCamera().position.y - cameraHalfHeight;
+
+        if (cameraLeft < 0) {
+            getCamera().position.x = cameraHalfWidth;
+        }
+        if (cameraRight > mapWidth) {
+            getCamera().position.x = mapWidth - cameraHalfWidth;
+        }
+        if (cameraUp > mapHeight) {
+            getCamera().position.y = mapHeight - cameraHalfHeight;
+        }
+        if (cameraDown < 0) {
+            getCamera().position.y = cameraHalfHeight;
         }
     }
 }

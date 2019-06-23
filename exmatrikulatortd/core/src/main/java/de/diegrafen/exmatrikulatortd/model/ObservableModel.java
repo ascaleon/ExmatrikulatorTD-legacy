@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
+import de.diegrafen.exmatrikulatortd.view.Observer;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.MappedSuperclass;
@@ -11,9 +12,9 @@ import java.util.List;
  * @version 20.06.2019 16:28
  */
 @MappedSuperclass
-public abstract class ObservableModel extends BaseModel implements Observable  {
+public abstract class ObservableModel extends BaseModel implements ObservableUnit  {
 
-    private transient GameObject observer;
+    private transient Observer observer;
 
     private transient boolean removed;
 
@@ -22,14 +23,13 @@ public abstract class ObservableModel extends BaseModel implements Observable  {
     }
 
     @Override
-    public void registerObserver(GameObject observer) {
-        this.observer = observer;//observers.add(observer);
+    public void registerObserver(Observer observer) {
+        this.observer = observer;
     }
 
     @Override
-    public void removeObserver(GameObject gameObject) {
+    public void removeObserver(Observer observer) {
         this.observer = null;
-        //observers.remove(gameObject);
     }
 
     @Override
