@@ -30,7 +30,6 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.En
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
-import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
@@ -75,6 +74,11 @@ public class GameLogicController implements LogicController {
 
     private EnemyDao enemyDao;
 
+    private TowerDao towerDao;
+
+
+
+
     public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
         this.gamestate = gamestate;
@@ -82,10 +86,12 @@ public class GameLogicController implements LogicController {
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
         this.enemyDao = new EnemyDao();
-        gameStateDao.create(gamestate);
+        this.towerDao = new TowerDao();
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
+        gameStateDao.create(gamestate);
     }
+
 
     @Override
     public void update(float deltaTime) {
@@ -254,8 +260,12 @@ public class GameLogicController implements LogicController {
 
     private void removeEnemy(Enemy enemy) {
         enemy.getAttackedPlayer().removeEnemy(enemy);
+        enemy.setAttackedPlayer(null);
         enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
+        enemy.setCurrentMapCell(null);
         gamestate.removeEnemy(enemy);
+        enemy.setGameState(null);
+
         enemy.setRemoved(true);
     }
 
@@ -332,6 +342,7 @@ public class GameLogicController implements LogicController {
         if (gamestate.getEnemies().isEmpty() && !gamestate.isNewRound()) {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
+            gameStateDao.update(gamestate);
         }
     }
 
@@ -420,7 +431,6 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
     }
 
-    public void addEnemy (EnemyFactory.EnemyType enemyType) {
 
     }
 
@@ -431,28 +441,20 @@ public class GameLogicController implements LogicController {
         gamestate.addEnemy(enemy);
         enemy.setGameState(gamestate);
         enemy.setToStartPosition();
-
         gameScreen.addEnemy(enemy);
-
-        enemyDao.create(enemy);
     }
 
     public void addTower (Tower tower, int xPosition, int yPosition) {
-
         Player owningPlayer = gamestate.getPlayerByNumber(0);
         tower.setOwner(owningPlayer);
         owningPlayer.addTower(tower);
 
         Coordinates coordinates = getMapCellByXandY(xPosition, yPosition);
-
-        System.out.println(coordinates.toString());
-
         tower.setPosition(coordinates);
         coordinates.setTower(tower);
 
         tower.setGamestate(gamestate);
         gamestate.addTower(tower);
-
         gameScreen.addTower(tower);
     }
 
@@ -468,11 +470,7 @@ public class GameLogicController implements LogicController {
         boolean wasSuccessful;
 
         if (checkCoordinates(xPosition, yPosition, playerNumber)) {
-            //if (true) {
-                //Tower tower = createNewTower(towerType, xPosition, yPosition);
                 Tower tower = createNewTower(towerType);
-                //System.out.println(coordinates.toString());
-
                 addTower(tower, xPosition, yPosition);
                 wasSuccessful = true;
             } else {
@@ -556,9 +554,6 @@ public class GameLogicController implements LogicController {
         tower.getPosition().setTower(null);
         gamestate.getTowers().remove(tower);
         tower.setRemoved(true);
-        System.out.println("removeTower");
-        //gameScreen.getTowers().remove(towerMapping.get(tower));
-        //towerMapping.remove(tower);
     }
 
     /**
@@ -618,42 +613,6 @@ public class GameLogicController implements LogicController {
     public void exitGame (boolean saveBeforeExit) {
         mainController.setEndScreen(gamestate);
     }
-
-
-
-
-
-
-    /**
-     * Baut einen neuen Turm
-     *
-     * @param towerType       Der zu bauende Turm
-     * @param coordinates Die Koordinaten des Turmes
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
-     */
-    public boolean buildTower(TowerType towerType, Coordinates coordinates) {
-
-        return true;
-
-//        boolean wasSuccessful;
-//
-//        //if (gamestate.checkCoordinates(coordinates)) {
-//        if (true) {
-//            //Tower tower = createNewTower(towerType, xPosition, yPosition);
-//            Tower tower = createNewTower(towerType);
-//            System.out.println(coordinates.toString());
-//            tower.setPosition(coordinates);
-//            //gamestate.addTower(tower);
-//            addTower(tower, 0, 0);
-//            wasSuccessful = true;
-//        } else {
-//            wasSuccessful = false;
-//        }
-//
-//        return wasSuccessful;
-    }
-
-
 
     @Override
     public boolean buildTower(Tower tower, Coordinates coordinates) {

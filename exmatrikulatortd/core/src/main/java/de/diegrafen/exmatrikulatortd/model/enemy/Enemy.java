@@ -72,6 +72,10 @@ public class Enemy extends ObservableModel {
     private boolean respawning;
 
     @ManyToOne
+    @JoinColumn(name="wave_id")
+    private Wave wave;
+
+    @ManyToOne
     @JoinColumn(name="mapcell_id")
     private Coordinates currentMapCell;
 
@@ -258,5 +262,9 @@ public class Enemy extends ObservableModel {
     @Override
     public String toString () {
         return this.name;
+    }
+
+    public void setWave (Wave wave) {
+        this.wave = wave;
     }
 }

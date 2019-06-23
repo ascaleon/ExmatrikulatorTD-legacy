@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -80,6 +81,13 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
+
+
+    private int mapWidth;
+
+
+    private int mapHeight;
+
     /**
      * Eine Liste aller Spielobjekte
      */
@@ -158,14 +166,11 @@ public class GameScreen extends BaseScreen implements GameView {
         float height = Gdx.graphics.getHeight();
 
         this.gameObjects = new LinkedList<>();
-        Player player = new Player();
-        gameLogicController.addEnemy(createNewEnemy(REGULAR_ENEMY));
-        //getSessionFactory();
 
         getCamera().setToOrtho(false, width, height);
-        getCamera().update();
-        //tiledMap = new TmxMapLoader().load(MAP_PATH);
-        //orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        tiledMap = new TmxMapLoader().load(MAP_PATH);
+
+        initializeMap(tiledMap);
 
         Gdx.input.setInputProcessor(new InputMultiplexer());
 
@@ -174,37 +179,25 @@ public class GameScreen extends BaseScreen implements GameView {
             @Override
             public boolean keyDown(int keycode) {
                 if(keycode == Input.Keys.LEFT)
-                    //getCamera().translate(-32,0);
                     keyLeftDown = true;
                 if(keycode == Input.Keys.RIGHT)
-                    //getCamera().translate(32,0);
                     keyRightDown = true;
                 if(keycode == Input.Keys.UP)
-                    //getCamera().translate(0,32);
                     keyUpDown = true;
                 if(keycode == Input.Keys.DOWN)
-                    //getCamera().translate(0,-32);
                     keyDownDown = true;
-                //if(keycode == Input.Keys.NUM_1)
-                    //tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
-                //if(keycode == Input.Keys.NUM_2)
-                    //tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
                 return false;
             }
 
             @Override
             public boolean keyUp(int keycode) {
                 if(keycode == Input.Keys.LEFT)
-                    //getCamera().translate(-32,0);
                     keyLeftDown = false;
                 if(keycode == Input.Keys.RIGHT)
-                    //getCamera().translate(32,0);
                     keyRightDown = false;
                 if(keycode == Input.Keys.UP)
-                    //getCamera().translate(0,32);
                     keyUpDown = false;
                 if(keycode == Input.Keys.DOWN)
-                    //getCamera().translate(0,-32);
                     keyDownDown = false;
                 return false;
             }
@@ -224,15 +217,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 boolean returnvalue = false;
 
-                //screenY = Gdx.graphics.getHeight() - screenY;
-
                 Vector3 clickCoordinates = new Vector3(screenX,screenY,0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
-
-                screenY = Gdx.graphics.getHeight() - screenY;
-
-                System.out.println("xPosition: " + screenX);
-                System.out.println("yPosition: " + screenY);
 
                 if (button == LEFT) {
                     returnvalue = true;
@@ -263,11 +249,6 @@ public class GameScreen extends BaseScreen implements GameView {
         };
 
         multiplexer.addProcessor(inputProcessor);
-
-        //loadMap(MAP_PATH);
-
-
-
     }
 
     /**
@@ -293,18 +274,38 @@ public class GameScreen extends BaseScreen implements GameView {
 
         float translateValue = 5;
 
-        if(keyLeftDown)
-            getCamera().translate(-translateValue,0);
-        if(keyRightDown)
-            getCamera().translate(translateValue,0);
-        if(keyUpDown)
-            getCamera().translate(0,translateValue);
-        if(keyDownDown)
-            getCamera().translate(0,-translateValue);
+        float cameraHalfWidth = getCamera().viewportWidth * .5f;
+        float cameraHalfHeight = getCamera().viewportHeight * .5f;
 
-        //Gdx.gl.glClearColor(1, 0, 0, 1);
-        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if(keyLeftDown) {
+            getCamera().translate(-translateValue,0);
+            float cameraLeft = getCamera().position.x - cameraHalfWidth;
+            if (cameraLeft < 0) {
+                getCamera().position.x = cameraHalfWidth;
+            }
+        }
+        if(keyRightDown) {
+            getCamera().translate(translateValue,0);
+            float cameraRight = getCamera().position.x + cameraHalfWidth;
+            if (cameraRight > mapWidth) {
+                getCamera().position.x = mapWidth - cameraHalfWidth;
+            }
+        }
+        if(keyUpDown) {
+            getCamera().translate(0,translateValue);
+            float cameraUp = getCamera().position.y + cameraHalfHeight;
+            if (cameraUp > mapHeight) {
+                getCamera().position.y = mapHeight - cameraHalfHeight;
+            }
+        }
+        if(keyDownDown) {
+            getCamera().translate(0,-translateValue);
+            float cameraDown = getCamera().position.y - cameraHalfHeight;
+            if (cameraDown < 0) {
+                getCamera().position.y = cameraHalfHeight;
+            }
+        }
+
         getCamera().update();
         if (orthogonalTiledMapRenderer != null) {
             orthogonalTiledMapRenderer.setView(getCamera());
@@ -343,6 +344,10 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Lädt die Karte.
      */
+    private void initializeMap (TiledMap tiledMap) {
+        MapProperties mapProperties = tiledMap.getProperties();
+        mapWidth = mapProperties.get("width", Integer.class) * mapProperties.get("tilewidth", Integer.class);
+        mapHeight = mapProperties.get("height", Integer.class) * mapProperties.get("tileheight", Integer.class);
     public void loadMap (String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
         orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);

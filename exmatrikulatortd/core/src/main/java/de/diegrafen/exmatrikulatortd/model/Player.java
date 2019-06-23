@@ -64,19 +64,19 @@ public class Player extends BaseModel {
     /**
      * Die Türme des Spielers
      */
-    @OneToMany(mappedBy="owner")
+    @OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
     private List<Tower> towers;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy="player")
+    @OneToMany(mappedBy="player", cascade=CascadeType.ALL)
     private List<Wave> waves;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy="attackedPlayer")
+    @OneToMany(mappedBy="attackedPlayer", cascade=CascadeType.ALL)
     private List<Enemy> attackingEnemies;
 
     /**

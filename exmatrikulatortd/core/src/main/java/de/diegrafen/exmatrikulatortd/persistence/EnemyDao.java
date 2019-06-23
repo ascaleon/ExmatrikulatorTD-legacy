@@ -17,6 +17,6 @@ public class EnemyDao extends BaseDao<Enemy> {
      */
     @Override
     Class<Enemy> getClazz() {
-        return null;
+        return Enemy.class;
     }
 }
