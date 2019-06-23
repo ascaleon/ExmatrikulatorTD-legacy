@@ -38,15 +38,19 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      * @return Gibt die geöffnete Session zurück
      */
     public Session openCurrentSession() {
-        return null;
+        currentSession = getSessionFactory().openSession();
+        return currentSession;
     }
+
 
     /**
      * Öffnet die aktuelle Session mit einer begonnenen Transaktion
      * @return Gibt die geöffnete Session mit einer Transaktion zurück
      */
     public Session openCurrentSessionwithTransaction() {
-        return null;
+        currentSession = getSessionFactory().openSession();
+        currentTransaction = currentSession.beginTransaction();
+        return currentSession;
     }
 
     /**
@@ -60,7 +64,8 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      * Schließt die aktuelle Session
      */
     public void closeCurrentSessionwithTransaction() {
-
+        currentTransaction.commit();
+        currentSession.close();
     }
 
     /**
@@ -70,7 +75,9 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      */
     @Override
     public T retrieve(final Long id) {
-        return null;
+        T t = openCurrentSessionwithTransaction().get(getClazz(), id);
+        closeCurrentSessionwithTransaction();
+        return t;
     }
 
     /**
@@ -78,8 +85,12 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      * @param t Das Objekt, für das der Datenbank-Eintrag erstellt werden soll
      */
     @Override
-    public void create(final T t){
-
+    public void create(final T t) {
+        if (t == null) {
+            throw new IllegalArgumentException();
+        }
+        openCurrentSessionwithTransaction().persist(t);
+        closeCurrentSessionwithTransaction();
     }
 
     /**
@@ -88,7 +99,19 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      */
     @Override
     public void update(final T t) {
-
+        if (t == null) {
+            throw new IllegalArgumentException();
+        }
+        final Long id = t.getId();
+        if(id <= 0) throw new IllegalArgumentException("The id of the parameter must not be zero!");
+        else {
+            if (retrieve(id) != null) {
+                openCurrentSessionwithTransaction().update(t);
+                closeCurrentSessionwithTransaction();
+            } else {
+                throw new IllegalArgumentException("The specified object does not exist!");
+            }
+        }
     }
 
     /**
@@ -96,22 +119,42 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      * @param t Das zu löschende Objekt
      */
     @Override
-    public void delete(final T t) {
-
+    public synchronized void delete(final T t) {
+        if (t == null) {
+            throw new IllegalArgumentException();
+        }
+        //assertNotNull(t);
+        if (t.getId() > 0) {
+            final T entity = retrieve(t.getId());
+            if (entity != null) {
+                openCurrentSessionwithTransaction().delete(t);
+                closeCurrentSessionwithTransaction();
+            }
+            t.clearId();
+        }
+        else throw new IllegalArgumentException("The id of the parameter must not be zero!");
     }
 
     /**
      * Gibt eine Liste aller Objekte des mit dem DAO-OBjekt assoziierten Typs in der Datenbank zurück
      * @return Eine Liste aller Objekte des mit dem DAO-OBjekt assoziierten Typs in der Datenbank
      */
+    //@SuppressWarnings("unchecked")
     public List<T> findAll() {
-        return null;
+        openCurrentSession();
+        List<T> list = currentSession.createNamedQuery(getClazz().getSimpleName() + ".findAll", getClazz()).getResultList();
+        closeCurrentSession();
+        return list;
     }
+
 
     /**
      * Löscht alle Einträge des mit dem DAO-OBjekt assoziierten Typs in der Datenbank
      */
     public void deleteAll() {
-
+        List<T> entityList = findAll();
+        for (T t : entityList) {
+            delete(t);
+        }
     }
 }

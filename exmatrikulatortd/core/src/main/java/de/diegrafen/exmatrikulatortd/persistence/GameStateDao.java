@@ -17,6 +17,6 @@ public class GameStateDao extends BaseDao<Gamestate> {
      */
     @Override
     Class<Gamestate> getClazz() {
-        return null;
+        return Gamestate.class;
     }
 }
