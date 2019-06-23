@@ -73,6 +73,8 @@ public class GameLogicController implements LogicController {
 
     private TowerDao towerDao;
 
+    
+
 
     public GameLogicController (MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
@@ -377,7 +379,7 @@ public class GameLogicController implements LogicController {
         //gamestate.setNumberOfColumns(numberOfColumns);
         //gamestate.setNumberOfRows(numberOfRows);
         for (int i = 0; i < numberOfColumns; i++) {
-            for (int j = 0; j < numberOfRows; j++) {git
+            for (int j = 0; j < numberOfRows; j++) {
                 System.out.println("Column: " + i + ", Row: " + j);
                 addGameMapTile(i, j, collisionMap[i][j]);
             }
