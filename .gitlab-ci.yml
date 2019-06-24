@@ -16,6 +16,7 @@ build:
   stage: build
   script:
   - ./gradlew desktop:dist
+  - ls -R
   artifacts:
     paths:
       - exmatrikulatortd/desktop/build/libs/desktop.jar
