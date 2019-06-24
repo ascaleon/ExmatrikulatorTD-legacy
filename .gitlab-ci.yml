@@ -16,6 +16,9 @@ build:
   stage: build
   script:
   - ./gradlew desktop:dist
+  artifacts:
+    paths:
+      - desktop/build/libs/
     
 unitTests:
   stage: test
