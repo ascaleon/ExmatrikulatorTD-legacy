@@ -115,7 +115,7 @@ public class Gamestate extends BaseModel {
         players = new ArrayList<>();
         enemies = new ArrayList<>();
         towers = new ArrayList<>();
-        collisionMatrix = new ArrayList<Coordinates>();
+        collisionMatrix = new ArrayList<>();
 
         this.newRound = true;
         this.roundNumber = 0;
@@ -150,10 +150,6 @@ public class Gamestate extends BaseModel {
 
     public void addTower(Tower tower) {
         towers.add(tower);
-    }
-
-    public void checkCoordinates (Coordinates coordinates) {
-        //collisionMatrix.get
     }
 
     public void removeEnemy(Enemy enemy) {
