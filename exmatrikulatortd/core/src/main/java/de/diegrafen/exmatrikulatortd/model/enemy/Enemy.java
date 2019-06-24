@@ -44,7 +44,9 @@ public class Enemy extends ObservableModel {
 
     private int amountOfDamageToPlayer;
 
-    private int resourcesForKill;
+    private int bounty;
+
+    private int pointsGranted;
 
     private int sendPrice;
 
@@ -91,12 +93,12 @@ public class Enemy extends ObservableModel {
      * @param baseSpeed Die Standardbewegungsgeschwindigkeit des Gegners.
      * @param maxHitPoints Die maximalen Lebenspunkte des Gegners.
      * @param amountOfDamageToPlayer Die Höhe des Schadens, die der Gegner der Spielerin zufügt, sobald er das Ziel erreicht.
-     * @param resourcesForKill Die Anzahl der Ressourcen, die die Spielerin für das Ausschalten des Gegners erhält.
+     * @param bounty Die Anzahl der Ressourcen, die die Spielerin für das Ausschalten des Gegners erhält.
      * @param sendPrice Die Kosten für das Versenden eines solchen Gegners im Multiplayer-Modus.
      * @param assetsName Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
      */
-    public Enemy (String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int resourcesForKill,
-                  int sendPrice, String assetsName, float xPosition, float yPosition) {
+    public Enemy (String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int bounty,
+                  int sendPrice, String assetsName, float xPosition, float yPosition, int pointsGranted) {
         super();
 
         this.name = name;
@@ -105,7 +107,8 @@ public class Enemy extends ObservableModel {
         this.maxHitPoints = maxHitPoints;
         this.currentHitPoints = maxHitPoints;
         this.amountOfDamageToPlayer = amountOfDamageToPlayer;
-        this.resourcesForKill = resourcesForKill;
+        this.bounty = bounty;
+        this.pointsGranted = pointsGranted;
         this.sendPrice = sendPrice;
         this.assetsName = assetsName;
         this.xPosition = xPosition;
@@ -157,8 +160,6 @@ public class Enemy extends ObservableModel {
         float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
         xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
         yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
-
-        notifyObserver();
     }
 
     public float getxSpawnPosition() {
@@ -236,7 +237,6 @@ public class Enemy extends ObservableModel {
         int tileSize = gameState.getTileSize();
         xPosition = startCoordinates.getXCoordinate() * tileSize;// + tileSize / 2;
         yPosition = startCoordinates.getYCoordinate() * tileSize;// + tileSize / 2;
-        notifyObserver();
     }
 
     public boolean isRespawning() {
@@ -266,5 +266,13 @@ public class Enemy extends ObservableModel {
 
     public void setWave (Wave wave) {
         this.wave = wave;
+    }
+
+    public int getBounty() {
+        return bounty;
+    }
+
+    public int getPointsGranted() {
+        return pointsGranted;
     }
 }

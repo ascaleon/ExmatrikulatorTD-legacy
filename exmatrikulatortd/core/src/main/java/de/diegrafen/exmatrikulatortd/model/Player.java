@@ -111,6 +111,8 @@ public class Player extends BaseModel implements Observable {
 
         this.currentLives = 25;
         this.maxLives = 25;
+        this.resources = 1000;
+        this.score = 0;
 
         waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
         waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
@@ -193,6 +195,10 @@ public class Player extends BaseModel implements Observable {
 
     public void addToResources (int resources) {
         this.resources += resources;
+    }
+
+    public void addToScore (int score) {
+        this.score += score;
     }
 
     public void removeTower(Tower tower) {

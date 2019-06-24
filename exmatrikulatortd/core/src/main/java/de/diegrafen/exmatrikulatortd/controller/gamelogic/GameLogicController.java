@@ -150,6 +150,7 @@ public class GameLogicController implements LogicController {
             }
 
             enemy.moveInTargetDirection(deltaTime);
+            enemy.notifyObserver();
 
             if (enemy.getCurrentMapCell() != null) {
                 enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
@@ -203,6 +204,9 @@ public class GameLogicController implements LogicController {
         }
 
         if (enemy.getCurrentHitPoints() <= 0) {
+            tower.getOwner().addToResources(enemy.getBounty());
+            tower.getOwner().addToScore(enemy.getPointsGranted());
+            tower.getOwner().notifyObserver();
             removeEnemy(enemy);
             tower.setCurrentTarget(null);
         }
@@ -266,8 +270,8 @@ public class GameLogicController implements LogicController {
         enemy.setCurrentMapCell(null);
         gamestate.removeEnemy(enemy);
         enemy.setGameState(null);
-
         enemy.setRemoved(true);
+        enemy.notifyObserver();
     }
 
     private float getDistanceToEndpoint (Enemy enemy) {
@@ -319,10 +323,14 @@ public class GameLogicController implements LogicController {
             int roundNumber = gamestate.getRoundNumber();
 
             for (Player player : gamestate.getPlayers()) {
-                if (player.getWaves().get(roundNumber).getEnemies().size() == 0) {
+                List<Enemy> enemiesToSpawn = player.getWaves().get(roundNumber).getEnemies();
+                if (enemiesToSpawn.size() < roundNumber) {
                     player.setEnemiesSpawned(true);
                     // TODO: Mehrspieler*innen-Szenario berücksichtigen
                     gamestate.setNewRound(false);
+                    break;
+                } else if (enemiesToSpawn.isEmpty()) {
+                    player.setEnemiesSpawned(true);
                 }
 
                 if (!player.isEnemiesSpawned() && player.getTimeSinceLastSpawn() > TIME_BETWEEN_SPAWNS) {
@@ -444,6 +452,7 @@ public class GameLogicController implements LogicController {
         enemy.setGameState(gamestate);
         enemy.setToStartPosition();
         gameScreen.addEnemy(enemy);
+        enemy.notifyObserver();
     }
 
     public void addTower (Tower tower, int xPosition, int yPosition) {
@@ -463,24 +472,31 @@ public class GameLogicController implements LogicController {
     /**
      * Baut einen neuen Turm
      *
-     * @param towerType       Der zu bauende Turm
-     * @param coordinates Die Koordinaten des Turmes
+     * @param towerType Der Typ des zu bauenden Turms
+     * @param xPosition Die x-Koordinate des Turms
+     * @param yPosition Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, für die der Turm gebaut werden soll
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     public boolean buildTower(TowerType towerType, int xPosition, int yPosition, int playerNumber) {
 
-        boolean wasSuccessful;
+        boolean wasSuccessful = false;
 
         if (checkCoordinates(xPosition, yPosition, playerNumber)) {
-                Tower tower = createNewTower(towerType);
+            Tower tower = createNewTower(towerType);
+            int towerPrice = tower.getPrice();
+            Player player = gamestate.getPlayerByNumber(playerNumber);
+            int playerResources = player.getResources();
+            if (playerResources >= towerPrice) {
+                player.setResources(playerResources - towerPrice);
                 addTower(tower, xPosition, yPosition);
+                player.notifyObserver();
                 wasSuccessful = true;
-            } else {
-                wasSuccessful = false;
             }
-
-            return wasSuccessful;
         }
+
+        return wasSuccessful;
+    }
 
     public boolean buildRegularTower(final int mapX, final int mapY) {
         return buildTower(REGULAR_TOWER, mapX, mapY, 0);
@@ -543,7 +559,7 @@ public class GameLogicController implements LogicController {
             System.err.println("Du darfst diesen Turm nicht verkaufen!");
         } else {
             tower.getOwner().addToResources(tower.getSellPrice());
-            tower.setRemoved(true);
+            tower.getOwner().notifyObserver();
             removeTower(tower);
             wasSuccessful = true;
         }
@@ -552,10 +568,11 @@ public class GameLogicController implements LogicController {
     }
 
     private void removeTower(Tower tower) {
+        tower.setRemoved(true);
         tower.getOwner().removeTower(tower);
         tower.getPosition().setTower(null);
-        gamestate.getTowers().remove(tower);
         tower.setRemoved(true);
+        tower.notifyObserver();
     }
 
     /**
