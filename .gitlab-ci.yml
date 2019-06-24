@@ -15,7 +15,7 @@ stages:
 build:
   stage: build
   script:
-  - gradlew desktop:dist
+  - ./gradlew desktop:dist
     
 unitTests:
   stage: test
