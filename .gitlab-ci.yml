@@ -18,7 +18,7 @@ build:
   - ./gradlew desktop:dist
   artifacts:
     paths:
-      - desktop/build/libs/desktop.jar
+      - exmatrikulatortd/desktop/build/libs/desktop.jar
     
 unitTests:
   stage: test
