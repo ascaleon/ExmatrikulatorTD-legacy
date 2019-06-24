@@ -19,7 +19,7 @@ build:
   - ls -R
   artifacts:
     paths:
-      - exmatrikulatortd/desktop/build/libs/desktop.jar
+      - exmatrikulatortd/desktop/build/libs/*
     
 unitTests:
   stage: test
