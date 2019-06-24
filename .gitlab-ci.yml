@@ -15,9 +15,9 @@ stages:
 build:
   stage: build
   script:
-  - gradle build
+  - gradlew desktop:dist
     
 unitTests:
   stage: test
   script:
-    - ./exmatrikulatortd/gradlew test
+    - gradlew desktop:test
