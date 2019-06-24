@@ -30,11 +30,7 @@ import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
-import static de.diegrafen.exmatrikulatortd.util.Constants.setX;
-import static de.diegrafen.exmatrikulatortd.util.Constants.setY;
 
 /**
  *

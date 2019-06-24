@@ -9,8 +9,6 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public class Constants {
 
-    public static final int SPRITE_SIZE = 256;
-
     public static final int UDP_PORT = 9001;
 
     public static final int TCP_PORT = 9002;
@@ -25,17 +23,5 @@ public class Constants {
     public static final float SEARCH_TARGET_INTERVAL = 0.75f;
 
     public static final int TILE_SIZE = 64;
-
-    public static float X_POS = 0;
-
-    public static float Y_POS = 0;
-
-    public static void setX (float x) {
-        X_POS = x;
-    }
-
-    public static void setY (float y) {
-        Y_POS = y;
-    }
 
 }
