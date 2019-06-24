@@ -96,6 +96,7 @@ public class GameLogicController implements LogicController {
 
     @Override
     public void update(float deltaTime) {
+        // FIXME: Bestimmung, wann das Spiel zuende ist, fixen
         if (!determineGameOver()) {
             if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
                 determineNewRound();
@@ -323,14 +324,15 @@ public class GameLogicController implements LogicController {
             int roundNumber = gamestate.getRoundNumber();
 
             for (Player player : gamestate.getPlayers()) {
-                List<Enemy> enemiesToSpawn = player.getWaves().get(roundNumber).getEnemies();
-                if (enemiesToSpawn.size() < roundNumber) {
-                    player.setEnemiesSpawned(true);
+                List<Wave> waves = player.getWaves();
+                if (waves.size() <= roundNumber) {
                     // TODO: Mehrspieler*innen-Szenario berücksichtigen
+                    gamestate.setGameOver(true);
+                    break;
+                } else if (waves.get(roundNumber).getEnemies().isEmpty()) {
+                    player.setEnemiesSpawned(true);
                     gamestate.setNewRound(false);
                     break;
-                } else if (enemiesToSpawn.isEmpty()) {
-                    player.setEnemiesSpawned(true);
                 }
 
                 if (!player.isEnemiesSpawned() && player.getTimeSinceLastSpawn() > TIME_BETWEEN_SPAWNS) {
@@ -362,7 +364,7 @@ public class GameLogicController implements LogicController {
     private boolean determineGameOver() {
         boolean gameOver = true;
         for (Player player : gamestate.getPlayers()) {
-            if (!player.getWaves().isEmpty()) {
+            if (!(player.getWaves().size() <= gamestate.getRoundNumber())) {
                 gameOver = false;
             }
         }
