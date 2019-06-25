@@ -12,7 +12,6 @@ import static de.diegrafen.exmatrikulatortd.util.Assets.REGULAR_TOWER_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
- *
  * Factory für Turm-Objekte
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -23,7 +22,7 @@ public final class TowerFactory {
     /**
      * Versteckter Konstruktor
      */
-    private TowerFactory () {
+    private TowerFactory() {
 
     }
 
@@ -38,12 +37,13 @@ public final class TowerFactory {
 
     /**
      * Erzeugt einen neuen Gegner
+     *
      * @param towerType Der Typ des Turms
      * @return Der erzeugte Turm
      */
-    public static Tower createNewTower (TowerType towerType) {
+    public static Tower createNewTower(TowerType towerType) {
 
-        Tower tower;
+        Tower tower = null;
 
         switch (towerType) {
             case REGULAR_TOWER:
@@ -61,9 +61,6 @@ public final class TowerFactory {
             case CORRUPTION_TOWER:
                 tower = createCorruptionTower();
                 break;
-            default:
-                tower = createRegularTower();
-                break;
         }
 
         return tower;
@@ -71,18 +68,20 @@ public final class TowerFactory {
 
     /**
      * Erzeugt einen normalen Turm
+     *
      * @return Der erzeugte normalen Turm
      */
-    private static Tower createRegularTower () {
+    private static Tower createRegularTower() {
         //System.out.println("Ohai!");
         return new Tower("Regular Tower", 100, 2 * TILE_SIZE, 3, NORMAL, null, 0, 300, 150, 600, 1, REGULAR_TOWER_ASSETS);
     }
 
     /**
      * Erzeugt einen Verlangsamungsturm
+     *
      * @return Der erzeugte Verlangsamungsturm
      */
-    private static Tower createSlowTower () {
+    private static Tower createSlowTower() {
         Tower slowTower = new Tower();
         return null;
     }
@@ -90,25 +89,28 @@ public final class TowerFactory {
 
     /**
      * Erzeugt einen Corruption-Turm
+     *
      * @return Der erzeugte Corruption-Turm
      */
-    private static Tower createCorruptionTower () {
+    private static Tower createCorruptionTower() {
         return null;
     }
 
     /**
      * Erzeugt einen Explosiv-Turm
+     *
      * @return Der erzeugte Explosiv-Turm
      */
-    private static Tower createExplosiveTower () {
+    private static Tower createExplosiveTower() {
         return null;
     }
 
     /**
      * Erzeugt einen Aura-Turm
+     *
      * @return Der erzeugte Aura-Turm
      */
-    private static Tower createAuraTower () {
+    private static Tower createAuraTower() {
         return null;
     }
 }

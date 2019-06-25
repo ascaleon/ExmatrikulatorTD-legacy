@@ -11,9 +11,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.En
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 
 /**
- *
  * Factory für Gegner-Wellen
- *
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 12:01
@@ -26,7 +24,7 @@ public final class WaveFactory {
     /**
      * Versteckter Konstruktor
      */
-    private WaveFactory () {
+    private WaveFactory() {
 
     }
 
@@ -41,12 +39,13 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine neue Welle des angegebenen Typs
+     *
      * @param waveType Der Wellentyp
      * @return Die neue Welle
      */
-    public static Wave createWave (WaveType waveType) {
+    public static Wave createWave(WaveType waveType) {
 
-        Wave wave = new Wave();
+        Wave wave = null;
 
         switch (waveType) {
             case REGULAR_WAVE:
@@ -70,9 +69,6 @@ public final class WaveFactory {
             case BOSS_WAVE:
                 wave = createBossWave();
                 break;
-            default:
-                wave = createRegularWave();
-                break;
         }
 
         return wave;
@@ -81,9 +77,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Welle von normalen Gegnern
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createRegularWave ( ) {
+    private static Wave createRegularWave() {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
             Enemy enemy = createNewEnemy(REGULAR_ENEMY);
@@ -95,9 +92,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Welle von schwer gapanzerten Gegnern
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createHeavyWave () {
+    private static Wave createHeavyWave() {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
             Enemy enemy = createNewEnemy(HEAVY_ENEMY);
@@ -109,9 +107,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Welle von schwer schnellen Gegnern
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createFastWave () {
+    private static Wave createFastWave() {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
             Enemy enemy = createNewEnemy(REGULAR_ENEMY);
@@ -123,9 +122,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Welle von normalen und schwer gapanzerten Gegnern
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createRegularAndHeavyWave () {
+    private static Wave createRegularAndHeavyWave() {
         Wave wave = new Wave();
         List<Enemy> waveEnemies = new ArrayList<>();
         for (int i = 0; i < enemiesPerWave / 2; i++) {
@@ -141,9 +141,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Welle von normalen und schnellen Gegnern
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createRegularAndFastWave () {
+    private static Wave createRegularAndFastWave() {
         Wave wave = new Wave();
         List<Enemy> waveEnemies = new ArrayList<>();
         for (int i = 0; i < enemiesPerWave / 2; i++) {
@@ -159,9 +160,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Welle von schwer gepanzerten und schnellen Gegnern
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createHeavyAndFastWave () {
+    private static Wave createHeavyAndFastWave() {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave / 2; i++) {
             wave.addEnemy(createNewEnemy(REGULAR_ENEMY));
@@ -174,9 +176,10 @@ public final class WaveFactory {
 
     /**
      * Erzeugt eine Boss-Welle
+     *
      * @return Die erzeugte Welle
      */
-    private static Wave createBossWave () {
+    private static Wave createBossWave() {
         Wave wave = new Wave();
         Enemy enemy = createNewEnemy(BOSS_ENEMY);
         wave.addEnemy(enemy);

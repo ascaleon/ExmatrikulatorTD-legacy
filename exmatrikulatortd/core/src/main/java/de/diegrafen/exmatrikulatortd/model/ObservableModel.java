@@ -14,32 +14,27 @@ import java.util.List;
 @MappedSuperclass
 public abstract class ObservableModel extends BaseModel implements ObservableUnit  {
 
-    private transient Observer observer;
+    private transient List<Observer> observers;
 
     private transient boolean removed;
 
     public ObservableModel () {
-
+        this.observers = new LinkedList<>();
     }
 
     @Override
     public void registerObserver(Observer observer) {
-        this.observer = observer;
+        observers.add(observer);
     }
 
     @Override
     public void removeObserver(Observer observer) {
-        this.observer = null;
+        observers.remove(observer);
     }
 
     @Override
     public void notifyObserver() {
-        if (observer != null) {
-            observer.update();
-        }
-//        for (GameObject observer : observers) {
-//            observer.update();
-//        }
+        observers.forEach(Observer::update);
     }
 
     public boolean isRemoved() {

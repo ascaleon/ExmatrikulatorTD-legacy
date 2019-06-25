@@ -1,11 +1,20 @@
 package de.diegrafen.exmatrikulatortd.communication.server.responses;
 
+import java.util.Date;
+
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
- * @version 14.06.2019 05:06
+ * @version 25.06.2019 21:17
  */
 public abstract class Response {
 
-    java.util.Date timeSent;
+    private java.util.Date timeSent;
 
+    Response() {
+        timeSent = new java.util.Date();
+    }
+
+    public Date getTimeSent() {
+        return timeSent;
+    }
 }

@@ -34,4 +34,6 @@ public interface GameView extends Observer {
      */
     void addProjectile (ObservableUnit observable);
 
+    void displayErrorMessage (String message);
+
 }

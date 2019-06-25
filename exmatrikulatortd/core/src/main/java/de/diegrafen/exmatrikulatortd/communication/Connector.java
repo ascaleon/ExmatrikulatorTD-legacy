@@ -11,7 +11,7 @@ import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 13:49
  */
-public abstract class Connector {
+public abstract class Connector implements ConnectorInterface {
 
     /**
      * Registriert die Requests und Responses

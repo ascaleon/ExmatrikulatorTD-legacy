@@ -1,5 +1,7 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
+import de.diegrafen.exmatrikulatortd.communication.ConnectorInterface;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -10,15 +12,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 05:37
  */
-public interface ClientInterface {
-
-    boolean buildTower (Tower tower, Coordinates coordinates);
-
-    boolean sellTower (Tower tower);
-
-    boolean upgradeTower (Tower tower);
-
-    boolean sendEnemy (Enemy enemy);
+public interface ClientInterface extends ConnectorInterface {
 
     Gamestate refreshLocalGameState ();
 
@@ -28,7 +22,5 @@ public interface ClientInterface {
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
     boolean connect (String host);
-
-    void shutdown ();
 
 }

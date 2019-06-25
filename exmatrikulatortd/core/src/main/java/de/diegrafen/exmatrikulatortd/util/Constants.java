@@ -23,5 +23,4 @@ public class Constants {
     public static final float SEARCH_TARGET_INTERVAL = 0.75f;
 
     public static final int TILE_SIZE = 64;
-
 }

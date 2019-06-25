@@ -8,11 +8,38 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class SellResponse extends Response {
 
-    private boolean wasSuccessful;
+    private boolean successful;
 
-    private Tower newTower;
+    private int xPosition;
 
-    public SellResponse (boolean wasSuccessful, Tower newTower) {
+    private int yPosition;
 
+    private int playerNumber;
+
+    public SellResponse(boolean successful, int xPosition, int yPosition, int playerNumber) {
+        this.successful = successful;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.playerNumber = playerNumber;
+    }
+
+    public SellResponse(boolean successful) {
+        this.successful = successful;
+    }
+
+    public boolean wasSuccessful() {
+        return successful;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 }

@@ -7,6 +7,6 @@ package de.diegrafen.exmatrikulatortd.communication.client.requests;
 public class GetServerStateRequest extends Request{
 
     public GetServerStateRequest() {
-
+        super();
     }
 }
