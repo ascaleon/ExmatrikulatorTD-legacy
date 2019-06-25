@@ -1,8 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.server.responses;
 
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>

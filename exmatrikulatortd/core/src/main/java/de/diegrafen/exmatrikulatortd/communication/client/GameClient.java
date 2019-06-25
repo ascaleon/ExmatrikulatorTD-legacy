@@ -75,7 +75,7 @@ public class GameClient extends Connector implements ClientInterface {
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
-    public void upgradeTower (int xPosition, int yPosition, int playerNumber) {
+    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
         UpgradeRequest upgradeRequest = new UpgradeRequest(xPosition, yPosition, playerNumber);
         sendRequest(upgradeRequest);
     }
@@ -105,15 +105,18 @@ public class GameClient extends Connector implements ClientInterface {
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
     public boolean connect(String host) {
-        try{
+        try {
             client.connect(5000, host, tcpPort, udpPort);
-            if(client.isConnected()) connected=true;
+            if (client.isConnected()) {
+                connected = true;
+            }
             return true;
         } catch (final IOException e){
             e.printStackTrace();    // nur zum Debugging!
-            connected=false;
-            return false;
+            connected = false;
         }
+
+        return connected;
     }
 
     @Override
@@ -122,11 +125,11 @@ public class GameClient extends Connector implements ClientInterface {
         connected=false;
     }
 
-    public void attachResponseListeners (LogicController logicController) {
+    public void attachResponseListeners(LogicController logicController) {
         attachBuildResponseListener(logicController);
     }
 
-    private void attachBuildResponseListener (LogicController logicController) {
+    private void attachBuildResponseListener(LogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof BuildResponse) {
