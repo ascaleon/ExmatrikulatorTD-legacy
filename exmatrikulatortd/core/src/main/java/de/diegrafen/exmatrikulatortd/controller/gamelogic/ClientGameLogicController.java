@@ -2,6 +2,7 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Profile;
@@ -32,6 +33,7 @@ public class ClientGameLogicController extends GameLogicController {
     public ClientGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameClient gameClient) {
         super(mainController, gamestate, profile);
         this.gameClient = gameClient;
+        gameClient.attachResponseListeners(this);
     }
 
 
@@ -42,10 +44,10 @@ public class ClientGameLogicController extends GameLogicController {
      * @param coordinates Die Koordinaten des Turmes
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
-    @Override
-    public boolean buildTower(Tower tower, Coordinates coordinates) {
-        return super.buildTower(tower, coordinates);
-    }
+    //@Override
+    //public boolean buildTower(Tower tower, Coordinates coordinates) {
+    //return super.buildTower(tower, coordinates);
+    //}
 
     /**
      * Verkauft einen Turm
@@ -61,23 +63,24 @@ public class ClientGameLogicController extends GameLogicController {
     /**
      * Rüstet einen Turm auf
      *
-     * @param tower Der zu aufzurüstende Turm
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean upgradeTower(Tower tower) {
-        return super.upgradeTower(tower);
+    public boolean upgradeTower(int xPosition, int yPosition, int playerNumber) {
+        return super.upgradeTower(xPosition, yPosition, playerNumber);
     }
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemy Der zu schickende Gegner
-     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(Enemy enemy) {
-        return super.sendEnemy(enemy);
+    public boolean sendEnemy(EnemyFactory.EnemyType enemyType) {
+        return super.sendEnemy(enemyType);
     }
 
     /**
@@ -86,6 +89,8 @@ public class ClientGameLogicController extends GameLogicController {
     public void refreshLocalGameState () {
 
     }
+
+
 
     /**
      * Beendet das Spiel

@@ -11,6 +11,7 @@ public class UpgradeRequest extends Request {
     private Tower towerToUpgrade;
 
     public UpgradeRequest(Tower towerToUpgrade) {
+        super();
         this.towerToUpgrade = towerToUpgrade;
     }
 }

@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import de.diegrafen.exmatrikulatortd.view.Observer;
 
 /**
  *
@@ -10,14 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 05:13
  */
-public interface GameObject {
-
-
-    /**
-     * Update-Methode. Aktualisiert den Zustand des Objektes
-     * TODO: Name entspricht zu sehr der regulären Update-Methode
-     */
-    void update();
+public interface GameObject extends Observer {
 
     boolean isRemoved();
 

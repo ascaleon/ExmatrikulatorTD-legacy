@@ -15,9 +15,12 @@ stages:
 build:
   stage: build
   script:
-  - gradle build
+  - ./gradlew desktop:dist
+  artifacts:
+    paths:
+      - exmatrikulatortd/desktop/build/libs/*
     
 unitTests:
   stage: test
   script:
-    - ./exmatrikulatortd/gradlew test
+    - ./gradlew test

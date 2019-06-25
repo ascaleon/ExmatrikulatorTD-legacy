@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import de.diegrafen.exmatrikulatortd.model.Observable;
+import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
 /**
  *
@@ -18,7 +19,7 @@ import de.diegrafen.exmatrikulatortd.model.Observable;
  */
 public abstract class BaseObject implements GameObject {
 
-    private Observable observable;
+    private ObservableUnit observable;
 
     /**
      * Die Texturen des Objektes
@@ -57,7 +58,7 @@ public abstract class BaseObject implements GameObject {
 
     private boolean removed;
 
-    BaseObject (Observable observable) {
+    BaseObject (ObservableUnit observable) {
         this.observable = observable;
         this.name = observable.getName();
         this.currentSprite = new Texture(observable.getAssetsName());
@@ -91,6 +92,9 @@ public abstract class BaseObject implements GameObject {
     public void update() {
         if (observable.isRemoved()) {
             setRemoved(true);
+            observable.removeObserver(this);
+            observable = null;
+            dispose();
         } else {
             setxPosition(observable.getxPosition());
             setyPosition(observable.getyPosition());
@@ -172,6 +176,5 @@ public abstract class BaseObject implements GameObject {
 
     public void setRemoved(boolean removed) {
         this.removed = removed;
-        System.out.println("Set removed: " + removed);
     }
 }

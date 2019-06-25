@@ -11,6 +11,7 @@ public class SendEnemyRequest extends Request {
     private Enemy enemy;
 
     public SendEnemyRequest(Enemy enemy) {
+        super();
         this.enemy = enemy;
     }
 }

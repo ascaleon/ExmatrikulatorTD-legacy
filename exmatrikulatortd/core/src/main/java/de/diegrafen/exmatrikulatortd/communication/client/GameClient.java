@@ -5,7 +5,9 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
@@ -34,24 +36,43 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     @Override
-    //public boolean buildTower(Tower tower, Coordinates coordinates) {
     public void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
         client.sendTCP(new BuildRequest(towerType, xPosition, yPosition, playerNumber));
+    }
+
+    /**
+     * Verkauft einen Turm
+     *
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
+     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public void sellTower(int xPosition, int yPosition, int playerNumber) {
 
     }
 
+    /**
+     * Rüstet einen Turm auf
+     *
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
+     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     */
     @Override
-    public void sellTower(Tower tower) {
+    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
 
     }
 
+    /**
+     * Schickt einen Gegner zum gegnerischen Spieler
+     *
+     * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
+     */
     @Override
-    public void upgradeTower(Tower tower) {
-
-    }
-
-    @Override
-    public void sendEnemy(Enemy enemy) {
+    public void sendEnemy(EnemyFactory.EnemyType enemyType) {
 
     }
 
@@ -87,6 +108,8 @@ public class GameClient extends Connector implements ClientInterface {
 
                     if (response.wasSuccessful()) {
                         logicController.buildTower(response.getTowerType(), response.getxPosition(), response.getyPosition(), response.getPlayerNumber());
+                    } else {
+                        logicController.buildFailed();
                     }
                 }
             }

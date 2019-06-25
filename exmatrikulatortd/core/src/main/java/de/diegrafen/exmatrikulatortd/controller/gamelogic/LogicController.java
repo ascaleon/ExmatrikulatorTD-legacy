@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
@@ -22,12 +23,12 @@ public interface LogicController {
 
     /**
      * Baut einen neuen Turm
-     * @param tower Der zu bauende Turm
-     * @param coordinates Die Koordinaten des Turmes
+     * @param towerType
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
-    //boolean buildTower (Tower tower, Coordinates coordinates);
-
     boolean buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber);
 
     /**
@@ -42,13 +43,25 @@ public interface LogicController {
      * @param tower Der zu aufzurüstende Turm
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
-    boolean upgradeTower (Tower tower);
+    boolean upgradeTower (int xPosition, int yPosition, int playerNumber);
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      * @param enemy Der zu schickende Gegner
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
-    boolean sendEnemy (Enemy enemy);
+    boolean sendEnemy (EnemyFactory.EnemyType enemyType);
+
+    boolean checkIfCoordinatesAreBuildable (int xCoordinate, int yCoordinate, int playerNumber);
+
+    int getXCoordinateByPosition (float xPosition);
+
+    int getYCoordinateByPosition (float yPosition);
+
+    public void buildFailed();
+
+    public void sendFailed();
+
+    public void upgradeFailed();
 
 }

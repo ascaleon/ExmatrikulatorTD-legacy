@@ -5,6 +5,7 @@ import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -54,19 +55,19 @@ public class Gamestate extends BaseModel {
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
      */
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
     private List<Player> players;
 
     /**
      * Die Kollisionsmatrix, mit der bestimmt wird, ob ein Turm an einer bestimmten Stelle auf dem Spielfeld gebaut werden kann
      */
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
     private List<Coordinates> collisionMatrix;
 
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
     private List<Enemy> enemies;
 
-    @OneToMany(mappedBy="gameState")
+    @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
     private List<Tower> towers;
 
     /**
@@ -111,10 +112,10 @@ public class Gamestate extends BaseModel {
      * Default-Konstruktor. Wird von JPA benötigt
      */
     public Gamestate() {
-        players = new ArrayList<Player>();
-        enemies = new ArrayList<Enemy>();
-        towers = new ArrayList<Tower>();
-        collisionMatrix = new ArrayList<Coordinates>();
+        players = new ArrayList<>();
+        enemies = new ArrayList<>();
+        towers = new ArrayList<>();
+        collisionMatrix = new ArrayList<>();
 
         this.newRound = true;
         this.roundNumber = 0;
@@ -149,10 +150,6 @@ public class Gamestate extends BaseModel {
 
     public void addTower(Tower tower) {
         towers.add(tower);
-    }
-
-    public void checkCoordinates (Coordinates coordinates) {
-        //collisionMatrix.get
     }
 
     public void removeEnemy(Enemy enemy) {

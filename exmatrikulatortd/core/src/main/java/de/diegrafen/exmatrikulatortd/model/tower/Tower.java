@@ -30,6 +30,9 @@ public class Tower extends ObservableModel {
      */
     private String name;
 
+
+    private String descriptionText;
+
     /**
      * Der durch den Turm verursachte Schaden.
      */

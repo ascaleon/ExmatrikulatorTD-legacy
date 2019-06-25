@@ -8,10 +8,27 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class SellRequest {
 
-    private Tower tower;
+    private int xPosition;
 
-    public SellRequest (Tower tower) {
+    private int yPosition;
 
+    private int playerNumber;
+
+    public SellRequest(int xPosition, int yPosition, int playerNumber) {
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.playerNumber = playerNumber;
     }
 
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
 }

@@ -7,10 +7,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
@@ -19,6 +22,8 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  * Die Abstrakte Screen Klasse, die für alle Game-Screens verwendet wird.
  */
 public abstract class BaseScreen implements Screen {
+
+    private Viewport stageViewport;
 
     /**
      * Das Spielobjekt.
@@ -47,16 +52,26 @@ public abstract class BaseScreen implements Screen {
 
     private SpriteBatch spriteBatch;
 
+    private Viewport viewport;
+
+    private BitmapFont bitmapFont = new BitmapFont();
+
+    private OrthographicCamera stageCamera;
+
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
      */
     public BaseScreen (MainController mainController, Game game) {
         this.camera = new OrthographicCamera();
+        this.stageCamera = new OrthographicCamera();
+        viewport = new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
+        stageViewport = new ScreenViewport(stageCamera);
+
         this.spriteBatch = new SpriteBatch();
         this.mainController = mainController;
         this.game = game;
-        ui = new Stage(new ScreenViewport());
+        ui = new Stage(stageViewport);
     }
 
     /**
@@ -133,6 +148,8 @@ public abstract class BaseScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         //ui.getViewport().update(width, height);
+        viewport.update(width,height);
+        camera.update();
     }
 
     /**
@@ -194,5 +211,21 @@ public abstract class BaseScreen implements Screen {
 
     public OrthographicCamera getCamera() {
         return camera;
+    }
+
+    public Viewport getViewport() {
+        return viewport;
+    }
+
+    public void setViewport(Viewport viewport) {
+        this.viewport = viewport;
+    }
+
+    public Stage getUi() {
+        return ui;
+    }
+
+    public BitmapFont getBitmapFont() {
+        return bitmapFont;
     }
 }

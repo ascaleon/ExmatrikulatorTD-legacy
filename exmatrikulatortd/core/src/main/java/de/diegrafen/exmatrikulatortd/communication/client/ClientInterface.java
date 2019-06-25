@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
+import de.diegrafen.exmatrikulatortd.communication.ConnectorInterface;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
@@ -11,17 +12,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 05:37
  */
-public interface ClientInterface {
-
-    //boolean buildTower (Tower tower, Coordinates coordinates);
-
-    void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber);
-
-    void sellTower (Tower tower);
-
-    void upgradeTower (Tower tower);
-
-    void sendEnemy (Enemy enemy);
+public interface ClientInterface extends ConnectorInterface {
 
     Gamestate refreshLocalGameState ();
 

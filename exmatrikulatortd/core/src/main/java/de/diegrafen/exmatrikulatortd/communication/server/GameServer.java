@@ -4,7 +4,11 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.SellRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.SellResponse;
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 
@@ -85,6 +89,7 @@ public class GameServer extends Connector {
      */
     public void attachRequestListeners (LogicController logicController) {
         attachBuildRequestListener(logicController);
+        attachSellRequestListener(logicController);
     }
 
     /**
@@ -96,16 +101,13 @@ public class GameServer extends Connector {
             public void received (Connection connection, Object object) {
                 if (object instanceof BuildRequest) {
                     BuildRequest request = (BuildRequest) object;
-                    BuildResponse response;
-                    boolean successful = logicController.buildTower(request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber())
+                    boolean successful = logicController.buildTower(request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
 
                     if (successful) {
-                        response = new BuildResponse(successful, request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
                     } else {
-                        response = new BuildResponse(successful);
+                        connection.sendTCP(new BuildResponse(successful));
                     }
-
-                    connection.sendTCP(response);
                 }
             }
         });
@@ -116,7 +118,20 @@ public class GameServer extends Connector {
      * @param logicController Der zu assoziierende LogicController
      */
     private void attachSellRequestListener (LogicController logicController) {
+        server.addListener(new Listener() {
+            public void received (Connection connection, Object object) {
+                if (object instanceof SellRequest) {
+                    SellRequest request = (SellRequest) object;
+                    boolean successful = logicController.sellTower(request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
 
+                    if (successful) {
+                        server.sendToAllTCP(new SellResponse(successful, request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                    } else {
+                        connection.sendTCP(new SellResponse(successful));
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -151,7 +166,53 @@ public class GameServer extends Connector {
         return connected;
     }
 
-    public void setLogicController(LogicController logicController) {
-        this.logicController = logicController;
+    /**
+     * Baut einen neuen Turm
+     *
+     * @param towerType
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
+     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+        server.sendToAllTCP(new BuildResponse(true, towerType, xPosition, yPosition, playerNumber));
+    }
+
+    /**
+     * Verkauft einen Turm
+     *
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
+     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public void sellTower(int xPosition, int yPosition, int playerNumber) {
+        server.sendToAllTCP(new SellResponse(true, xPosition, yPosition, playerNumber));
+    }
+
+    /**
+     * Rüstet einen Turm auf
+     *
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
+     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
+
+    }
+
+    /**
+     * Schickt einen Gegner zum gegnerischen Spieler
+     *
+     * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public void sendEnemy(EnemyFactory.EnemyType enemyType) {
+
     }
 }

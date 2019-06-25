@@ -31,7 +31,7 @@ public class ServerGameLogicController extends GameLogicController {
     public ServerGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameServer gameServer) {
         super(mainController, gamestate, profile);
         this.gameServer = gameServer;
-        gameServer.setLogicController(this);
+        gameServer.attachRequestListeners(this);
     }
 
     /**

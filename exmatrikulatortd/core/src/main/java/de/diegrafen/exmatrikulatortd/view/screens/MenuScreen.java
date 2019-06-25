@@ -29,8 +29,6 @@ public class MenuScreen extends BaseScreen {
     Stage stage;
 
 
-
-
     public MenuScreen (MainController mainController, Game game) {
         super(mainController, game);
         stage = new Stage(new ScreenViewport());
@@ -39,7 +37,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void init () {
         super.init();
-        System.out.println("Dies ist der MenuScreen!");
+        //System.out.println("Dies ist der MenuScreen!");
         //font = new BitmapFont();
         //gameViewport = new FitViewport(800,480, getCamera());
         //Gdx.input.setInputProcessor(stage);
@@ -47,6 +45,10 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void show() {
+        System.out.println("Dies ist der MenuScreen!");
+
+        Gdx.input.setInputProcessor(stage);
+
         Table table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
@@ -90,7 +92,7 @@ public class MenuScreen extends BaseScreen {
             }
 
         });
-        getMainController().createNewSinglePlayerGame();
+        //getMainController().createNewSinglePlayerGame();
     }
 
     @Override

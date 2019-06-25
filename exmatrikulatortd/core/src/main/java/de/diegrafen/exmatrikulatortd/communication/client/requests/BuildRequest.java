@@ -21,6 +21,7 @@ public class BuildRequest extends Request {
     private int playerNumber;
 
     public BuildRequest(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+        super();
         this.towerType = towerType;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
