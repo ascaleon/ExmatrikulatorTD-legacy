@@ -144,9 +144,10 @@ public class GameScreen extends BaseScreen implements GameView {
         gameLogicController.setGameScreen(this);
     }
 
+    // TODO: Konstruktoren so anpassen, dass ein Spiel als Client tatsächlich geladen und fortgesetzt werden kann, bzw. in die LogicController verschieben
     public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient, Gamestate gamestate) {
         this(mainController, game, playerProfile, gameClient);
-        gamestate = gameClient.refreshLocalGameState();
+        gameClient.refreshLocalGameState();
         this.gameState = gamestate;
         this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
         gameLogicController.setGameScreen(this);
