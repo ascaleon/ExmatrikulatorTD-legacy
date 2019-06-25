@@ -13,6 +13,8 @@ public class SellResponse extends Response {
     private Tower newTower;
 
     public SellResponse (boolean wasSuccessful, Tower newTower) {
-
+        super();
+        this.wasSuccessful=wasSuccessful;
+        this.newTower=newTower;
     }
 }

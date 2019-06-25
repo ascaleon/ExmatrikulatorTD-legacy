@@ -14,7 +14,9 @@ public class BuildResponse extends Response {
     private Tower tower;
 
     public BuildResponse (boolean wasSuccessful, Tower tower) {
-
+        super();
+        this.wasSuccessful=wasSuccessful;
+        this.tower=tower;
     }
 
 }

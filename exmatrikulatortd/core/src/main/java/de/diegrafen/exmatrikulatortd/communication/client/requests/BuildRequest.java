@@ -14,6 +14,8 @@ public class BuildRequest extends Request {
     private Coordinates coordinates;
 
     public BuildRequest (Tower tower, Coordinates coordinates) {
-
+        super();
+        this.tower=tower;
+        this.coordinates=coordinates;
     }
 }

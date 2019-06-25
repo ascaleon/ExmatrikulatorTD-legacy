@@ -13,6 +13,8 @@ public class UpgradeResponse extends Response {
     private Tower newTower;
 
     public UpgradeResponse (boolean wasSuccessful, Tower newTower) {
-
+        super();
+        this.wasSuccessful=wasSuccessful;
+        this.newTower=newTower;
     }
 }

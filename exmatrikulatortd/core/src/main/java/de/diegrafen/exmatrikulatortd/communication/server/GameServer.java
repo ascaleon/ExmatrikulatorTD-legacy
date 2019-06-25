@@ -60,7 +60,7 @@ public class GameServer extends Connector {
     public boolean startServer() {
         try {
             server.bind(tcpPort, udpPort);
-        } catch (java.io.IOException e) {
+        } catch (final java.io.IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -72,7 +72,7 @@ public class GameServer extends Connector {
      * Beendet den Server
      */
     public void shutdown () {
-
+        server.close();
     }
 
     /**
