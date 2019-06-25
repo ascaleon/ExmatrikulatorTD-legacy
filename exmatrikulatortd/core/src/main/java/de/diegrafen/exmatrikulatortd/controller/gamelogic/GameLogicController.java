@@ -1,13 +1,10 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -30,7 +27,6 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.cr
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
- *
  * Der Standard-Spiellogik-Controller
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -79,8 +75,6 @@ public class GameLogicController implements LogicController {
     private TowerDao towerDao;
 
 
-
-
     public GameLogicController(MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
         this.gamestate = gamestate;
@@ -116,6 +110,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Wendet Auras auf die Objekte des Spiels an
+     *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     void applyAuras(float deltaTime) {
@@ -124,6 +119,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Wendet Buffs und Debuffs auf die Objekte des Spiels an
+     *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     void applyBuffsAndDebuffs(float deltaTime) {
@@ -133,6 +129,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Bewegt die Einheiten
+     *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     private void applyMovement(float deltaTime) {
@@ -165,6 +162,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Lässt die Türme angreifen
+     *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     private void makeAttacks(float deltaTime) {
@@ -248,7 +246,7 @@ public class GameLogicController implements LogicController {
     void applyPlayerDamage() {
         ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
         for (Enemy enemy : gamestate.getEnemies()) {
-            if (getDistanceToEndpoint(enemy) < TILE_SIZE / 2 ) {
+            if (getDistanceToEndpoint(enemy) < TILE_SIZE / 2) {
                 enemiesToRemove.add(enemy);
                 System.out.println("Damage applied!");
             }
@@ -388,6 +386,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Initialisiert die Kollisionsmatrix der Karte
+     *
      * @param mapPath Der Dateipfad der zu ladenden Karte
      */
     public void initializeCollisionMap(String mapPath) {
@@ -406,7 +405,7 @@ public class GameLogicController implements LogicController {
 
         for (int i = 0; i < numberOfColumns; i++) {
             for (int j = 0; j < numberOfRows; j++) {
-                int buildableByPlayer = (int) tiledMapTileLayer.getCell(i,j).getTile().getProperties().get("buildableByPlayer");
+                int buildableByPlayer = (int) tiledMapTileLayer.getCell(i, j).getTile().getProperties().get("buildableByPlayer");
                 addGameMapTile(i, j, buildableByPlayer);
             }
         }
@@ -420,13 +419,13 @@ public class GameLogicController implements LogicController {
             if (mapCellXCoordinate > 0) {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate - 1) + mapCellYCoordinate));
             }
-            if (mapCellXCoordinate < numberOfColumns - 1 ) {
+            if (mapCellXCoordinate < numberOfColumns - 1) {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate + 1) + mapCellYCoordinate));
             }
             if (mapCellYCoordinate > 0) {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate - 1));
             }
-            if (mapCellYCoordinate < numberOfColumns - 1 ) {
+            if (mapCellYCoordinate < numberOfColumns - 1) {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate + 1));
             }
         }
@@ -434,10 +433,10 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Fügt der im Spielzustand vorhandenen Karte ein neues Feld hinzu 
-     * 
-     * @param xCoordinate Die x-Koordinate des Feldes auf der Karte
-     * @param yCoordinate Die y-Koordinate des Feldes auf der Karte
+     * Fügt der im Spielzustand vorhandenen Karte ein neues Feld hinzu
+     *
+     * @param xCoordinate       Die x-Koordinate des Feldes auf der Karte
+     * @param yCoordinate       Die y-Koordinate des Feldes auf der Karte
      * @param buildableByPlayer Die Nummer der Spielerin, die auf dem Feld bauen darf. -1, wenn das Feld nicht bebaubar ist
      */
     private void addGameMapTile(int xCoordinate, int yCoordinate, int buildableByPlayer) {
@@ -447,6 +446,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Gibt die y-Koordinate zurück, die der angegebenen x-Position auf der Karte entspricht
+     *
      * @param xPosition Die x-Position, für die die x-Koordinate ermittelt werden soll
      * @return Die passende x-Koordinate
      */
@@ -456,6 +456,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Gibt die y-Koordinate zurück, die der angegebenen y-Position auf der Karte entspricht
+     *
      * @param yPosition Die y-Position, für die die y-Koordinate ermittelt werden soll
      * @return Die passende y-Koordinate
      */
@@ -605,7 +606,7 @@ public class GameLogicController implements LogicController {
      */
     @Override
     public boolean sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        
+
         boolean wasSuccessful = false;
 
         String errormessage = "";
@@ -614,7 +615,7 @@ public class GameLogicController implements LogicController {
 
         Tower tower = mapCell.getTower();
 
-        if (tower == null ) {
+        if (tower == null) {
             errormessage = "Hier gibt es keinen Turm zum Verkaufen!";
             System.err.println("Hier gibt es keinen Turm zum Verkaufen!");
         } else if (tower.getOwner().getPlayerNumber() != playerNumber) {
@@ -636,6 +637,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Entfernt einen Turm aus dem Spiel
+     *
      * @param tower Der zu entfernende Turm
      */
     private void removeTower(Tower tower) {
@@ -673,6 +675,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Gibt den Spielzustand zurück
+     *
      * @return Der aktuelle Spielzustand
      */
     public Gamestate getGamestate() {
@@ -681,6 +684,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Legt den Spielzustand fest
+     *
      * @param gamestate Der festzulegende Spielzustand
      */
     public void setGamestate(Gamestate gamestate) {
@@ -693,6 +697,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Beendet das Spiel
+     *
      * @param saveBeforeExit Gibt an, ob das Spiel vorher gespeichert werden soll
      */
     public void exitGame(boolean saveBeforeExit) {

@@ -8,11 +8,14 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
  */
 public class GetServerStateResponse extends Response {
 
-    Gamestate gamestate;
+    private Gamestate gamestate;
 
     public GetServerStateResponse(Gamestate gamestate) {
         super();
-        this.gamestate=gamestate;
+        this.gamestate = gamestate;
     }
 
+    public Gamestate getGamestate() {
+        return gamestate;
+    }
 }

@@ -8,13 +8,21 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class UpgradeResponse extends Response {
 
-    private boolean wasSuccessful;
+    private boolean successful;
 
     private Tower newTower;
 
-    public UpgradeResponse (boolean wasSuccessful, Tower newTower) {
+    public UpgradeResponse(boolean wasSuccessful, Tower newTower) {
         super();
-        this.wasSuccessful=wasSuccessful;
-        this.newTower=newTower;
+        this.successful = successful;
+        this.newTower = newTower;
+    }
+
+    public boolean wasSuccessful() {
+        return successful;
+    }
+
+    public Tower getNewTower() {
+        return newTower;
     }
 }

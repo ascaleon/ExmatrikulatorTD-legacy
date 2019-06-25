@@ -5,6 +5,7 @@ import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.Observer;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
  */
 @Entity
 @Table(name = "Gamestates")
-public class Gamestate extends BaseModel {
+public class Gamestate extends BaseModel implements Observable {
 
     /**
      * Die eindeutige Serialisierungs-ID
@@ -98,6 +99,8 @@ public class Gamestate extends BaseModel {
     private float timeUntilNextRound;
 
     private boolean roundEnded;
+
+    private transient List<Observer> observers;
 
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
@@ -314,5 +317,20 @@ public class Gamestate extends BaseModel {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObserver() {
+        observers.forEach(Observer::update);
     }
 }

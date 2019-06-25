@@ -33,7 +33,6 @@ import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
 /**
- *
  * Der GameScreen wird während des aktuellen Spiels angezeigt.
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -110,12 +109,15 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private Label livesLabel;
 
+    private Label roundsLabel;
+
     private float touchDownX, touchDownY;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
+     *
      * @param mainController Der Maincontrroller.
-     * @param playerProfile Das Spielerprofil.
+     * @param playerProfile  Das Spielerprofil.
      */
     public GameScreen(MainController mainController, Game game, Profile playerProfile) {
         super(mainController, game);
@@ -145,7 +147,7 @@ public class GameScreen extends BaseScreen implements GameView {
     public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient, Gamestate gamestate) {
         this(mainController, game, playerProfile, gameClient);
         gamestate = gameClient.refreshLocalGameState();
-        this.gameState =  gamestate;
+        this.gameState = gamestate;
         this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
         gameLogicController.setGameScreen(this);
     }
@@ -170,7 +172,7 @@ public class GameScreen extends BaseScreen implements GameView {
      * Die Initialisierung erstellt den SpriteBatch und lädt Texturen.
      */
     @Override
-    public void init () {
+    public void init() {
         super.init();
 
         float width = Gdx.graphics.getWidth();
@@ -249,9 +251,6 @@ public class GameScreen extends BaseScreen implements GameView {
                         // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
                         gameLogicController.sellTower(xCoordinate, yCoordinate, 0);
                     }
-                    //if (!gameLogicController.buildRegularTower((int) position.x, (int) position.y)) {
-
-                    //}
                     returnvalue = true;
                 }
 
@@ -289,12 +288,12 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
+     * Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
      *
-     *  Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
-     *  @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
+     * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
     @Override
-    public void update (float deltaTime) {
+    public void update(float deltaTime) {
         gameLogicController.update(deltaTime);
     }
 
@@ -318,17 +317,17 @@ public class GameScreen extends BaseScreen implements GameView {
 
         float translateValue = 5;
 
-        if(keyLeftDown) {
-            getCamera().translate(-translateValue,0);
+        if (keyLeftDown) {
+            getCamera().translate(-translateValue, 0);
         }
-        if(keyRightDown) {
-            getCamera().translate(translateValue,0);
+        if (keyRightDown) {
+            getCamera().translate(translateValue, 0);
         }
-        if(keyUpDown) {
-            getCamera().translate(0,translateValue);
+        if (keyUpDown) {
+            getCamera().translate(0, translateValue);
         }
-        if(keyDownDown) {
-            getCamera().translate(0,-translateValue);
+        if (keyDownDown) {
+            getCamera().translate(0, -translateValue);
         }
 
         resetCameraToBorders();
@@ -375,7 +374,7 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      * @param mapPath Der Pfad zur .tmx-Datei, die die Karte beinhaltet
      */
-    public void loadMap (String mapPath) {
+    public void loadMap(String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
         MapProperties mapProperties = tiledMap.getProperties();
         mapWidth = mapProperties.get("width", Integer.class) * mapProperties.get("tilewidth", Integer.class);
@@ -385,7 +384,7 @@ public class GameScreen extends BaseScreen implements GameView {
         orthogonalTiledMapRenderer.setView(getCamera());
     }
 
-    private void initializeUserInterface () {
+    private void initializeUserInterface() {
 
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
@@ -401,23 +400,30 @@ public class GameScreen extends BaseScreen implements GameView {
         scoreLabelStyle.font = getBitmapFont();
         Label.LabelStyle liveLabelStyle = new Label.LabelStyle();
         liveLabelStyle.font = getBitmapFont();
+        Label.LabelStyle roundLabelStyle = new Label.LabelStyle();
+        liveLabelStyle.font = getBitmapFont();
 
         Player localPlayer = players.get(localPlayerNumber);
 
         // score
-        statsTable.add(new Label("Score: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
         scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
         statsTable.add(scoreLabel).left().align(RIGHT);
 
         // money
-        statsTable.add(new Label("Money: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         statsTable.add(resourcesLabel).left().align(RIGHT);
 
         // lives
-        statsTable.add(new Label("Lives: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Leben: ", infoLabelsStyle)).left().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
+
+        // Rounds
+        statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        roundsLabel = new Label((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds(), liveLabelStyle);
+        statsTable.add(roundsLabel).left().align(RIGHT);
 
         defaultScreen.add(statsTable).top().center().expandX().colspan(4);
         defaultScreen.row();
@@ -430,7 +436,7 @@ public class GameScreen extends BaseScreen implements GameView {
         getUi().addActor(mainUiStack);
     }
 
-    private void reinitializeGameScreen () {
+    private void reinitializeGameScreen() {
 
     }
 
@@ -469,16 +475,16 @@ public class GameScreen extends BaseScreen implements GameView {
 
     }
 
-    private void removeGameObject (GameObject gameObject) {
+    private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
         gameObject.dispose();
     }
 
-    public void setPlayers (List<Player> players) {
+    public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
-    private void resetCameraToBorders () {
+    private void resetCameraToBorders() {
         float cameraHalfWidth = getCamera().viewportWidth * .5f;
         float cameraHalfHeight = getCamera().viewportHeight * .5f;
 
