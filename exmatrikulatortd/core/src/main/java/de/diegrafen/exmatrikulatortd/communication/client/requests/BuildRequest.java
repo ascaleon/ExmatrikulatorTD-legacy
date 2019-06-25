@@ -12,8 +12,6 @@ public class BuildRequest extends Request {
 
     private TowerFactory.TowerType towerType;
 
-    //private Coordinates coordinates;
-
     private int xPosition;
 
     private int yPosition;

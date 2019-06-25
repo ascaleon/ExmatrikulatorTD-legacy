@@ -8,10 +8,28 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class UpgradeRequest extends Request {
 
-    private Tower towerToUpgrade;
+    private int xPosition;
 
-    public UpgradeRequest(Tower towerToUpgrade) {
+    private int yPosition;
+
+    private int playerNumber;
+
+    public UpgradeRequest(int xPosition, int yPosition, int playerNumber) {
         super();
-        this.towerToUpgrade = towerToUpgrade;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.playerNumber = playerNumber;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 }

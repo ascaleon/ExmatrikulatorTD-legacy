@@ -6,6 +6,10 @@ package de.diegrafen.exmatrikulatortd.communication.server.responses;
  */
 public abstract class Response {
 
-    java.util.Date timeSent;
+    private java.util.Date timeSent;
+
+    Response () {
+        timeSent = new java.util.Date();
+    }
 
 }

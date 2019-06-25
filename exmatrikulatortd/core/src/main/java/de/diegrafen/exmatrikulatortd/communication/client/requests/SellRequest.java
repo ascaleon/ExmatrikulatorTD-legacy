@@ -6,7 +6,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 12:32
  */
-public class SellRequest {
+public class SellRequest extends Request{
 
     private int xPosition;
 
@@ -15,6 +15,7 @@ public class SellRequest {
     private int playerNumber;
 
     public SellRequest(int xPosition, int yPosition, int playerNumber) {
+        super();
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.playerNumber = playerNumber;
@@ -23,6 +24,7 @@ public class SellRequest {
     public int getxPosition() {
         return xPosition;
     }
+
 
     public int getyPosition() {
         return yPosition;

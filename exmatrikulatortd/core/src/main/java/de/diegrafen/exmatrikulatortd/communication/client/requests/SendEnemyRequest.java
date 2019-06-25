@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.client.requests;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 /**
@@ -8,10 +9,10 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
  */
 public class SendEnemyRequest extends Request {
 
-    private Enemy enemy;
+    private EnemyFactory.EnemyType enemyType;
 
-    public SendEnemyRequest(Enemy enemy) {
+    public SendEnemyRequest(EnemyFactory.EnemyType enemyType) {
         super();
-        this.enemy = enemy;
+        this.enemyType = enemyType;
     }
 }

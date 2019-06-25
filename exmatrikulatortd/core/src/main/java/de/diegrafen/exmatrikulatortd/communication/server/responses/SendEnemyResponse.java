@@ -15,7 +15,9 @@ public class SendEnemyResponse extends Response {
     private Enemy enemy;
 
     public SendEnemyResponse (boolean wasSuccessful, Enemy enemy) {
-
+        super();
+        this.wasSuccessful=wasSuccessful;
+        this.enemy=enemy;
     }
 
 }
