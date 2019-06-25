@@ -21,7 +21,7 @@ public class SendEnemyResponse extends Response {
     }
 
     public boolean wasSuccessful() {
-        return wasSuccessful;
+        return successful;
     }
 
     public Enemy getEnemy() {

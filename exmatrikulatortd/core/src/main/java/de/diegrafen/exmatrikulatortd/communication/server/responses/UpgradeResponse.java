@@ -12,7 +12,7 @@ public class UpgradeResponse extends Response {
 
     private Tower newTower;
 
-    public UpgradeResponse(boolean wasSuccessful, Tower newTower) {
+    public UpgradeResponse(boolean successful, Tower newTower) {
         super();
         this.successful = successful;
         this.newTower = newTower;
@@ -20,14 +20,6 @@ public class UpgradeResponse extends Response {
 
     public boolean wasSuccessful() {
         return successful;
-    }
-
-    public Tower getNewTower() {
-        return newTower;
-    }
-
-    public boolean wasSuccessful() {
-        return wasSuccessful;
     }
 
     public Tower getNewTower() {
