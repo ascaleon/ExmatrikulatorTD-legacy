@@ -3,6 +3,8 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 
@@ -32,6 +34,60 @@ public class ServerGameLogicController extends GameLogicController {
         super(mainController, gamestate, profile);
         this.gameServer = gameServer;
         gameServer.attachRequestListeners(this);
+    }
+
+    /**
+     * Baut einen neuen Turm
+     *
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xPosition    Die x-Koordinate des Turms
+     * @param yPosition    Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, für die der Turm gebaut werden soll
+     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public boolean buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+
+        boolean successful = super.buildTower(towerType, xPosition, yPosition, playerNumber);
+
+        if (successful) {
+            gameServer.buildTower(towerType, xPosition, yPosition, playerNumber);
+        }
+
+        return successful;
+
+    }
+
+    @Override
+    public boolean sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        // TODO: Methode nach Muster von buildTower implementieren
+        return super.sellTower(xCoordinate, yCoordinate, playerNumber);
+    }
+
+    /**
+     * Rüstet einen Turm auf
+     *
+     * @param xPosition
+     * @param yPosition
+     * @param playerNumber
+     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public boolean upgradeTower(int xPosition, int yPosition, int playerNumber) {
+        // TODO: Methode nach Muster von buildTower implementieren
+        return super.upgradeTower(xPosition, yPosition, playerNumber);
+    }
+
+    /**
+     * Schickt einen Gegner zum gegnerischen Spieler
+     *
+     * @param enemyType @return Wenn das Schicken erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public boolean sendEnemy(EnemyFactory.EnemyType enemyType) {
+        // TODO: Schauen, wie man diese Methode am besten implementieren kann.
+        //return super.sendEnemy(enemyType);
+        return false;
     }
 
     /**

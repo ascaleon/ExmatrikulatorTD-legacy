@@ -23,6 +23,4 @@ public interface ClientInterface extends ConnectorInterface {
      */
     boolean connect (String host);
 
-    void shutdown ();
-
 }

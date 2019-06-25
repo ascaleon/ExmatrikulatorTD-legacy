@@ -67,6 +67,8 @@ public class Enemy extends ObservableModel {
 
     private String name;
 
+    private String description;
+
     private float targetxPosition = 0;
 
     private float targetyPosition = 0;

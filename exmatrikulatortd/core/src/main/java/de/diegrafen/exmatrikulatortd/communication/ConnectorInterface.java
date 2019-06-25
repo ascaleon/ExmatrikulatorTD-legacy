@@ -37,4 +37,6 @@ public interface ConnectorInterface {
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     void sendEnemy (EnemyFactory.EnemyType enemyType);
+
+    void shutdown ();
 }

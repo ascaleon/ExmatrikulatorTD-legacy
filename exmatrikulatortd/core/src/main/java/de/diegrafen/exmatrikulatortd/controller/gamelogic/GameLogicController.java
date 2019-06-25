@@ -20,19 +20,14 @@ import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.EnemyObject;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.TowerObject;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 import java.awt.geom.Point2D;
 import java.util.*;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
-import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
  *
@@ -64,17 +59,23 @@ public class GameLogicController implements LogicController {
     private Profile profile;
 
     /**
-     * DAO-Objekt für CRUD-Operationen mit Spielzustand-Objekten
+     * DAO für CRUD-Operationen mit Spielzustand-Objekten
      */
     private GameStateDao gameStateDao;
 
     /**
-     * DAO-Objekt für CRUD-Operationen mit Spielstand-Objekten
+     * DAO für CRUD-Operationen mit Spielstand-Objekten
      */
     private SaveStateDao saveStateDao;
 
+    /**
+     * DAO für CRUD-Operationen mit Gegner-Objekten
+     */
     private EnemyDao enemyDao;
 
+    /**
+     * DAO für CRUD-Operationen mit Turm-Objekten
+     */
     private TowerDao towerDao;
 
 
@@ -115,7 +116,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Wendet Auras auf die Objekte des Spiels an
-     * @param deltaTime
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     void applyAuras (float deltaTime) {
 
@@ -123,7 +124,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Wendet Buffs und Debuffs auf die Objekte des Spiels an
-     * @param deltaTime
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     void applyBuffsAndDebuffs (float deltaTime) {
 
@@ -132,9 +133,9 @@ public class GameLogicController implements LogicController {
 
     /**
      * Bewegt die Einheiten
-     * @param deltaTime
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
-    void applyMovement (float deltaTime) {
+    private void applyMovement (float deltaTime) {
         for (Enemy enemy : gamestate.getEnemies()) {
             if (Math.floor(getDistanceToNextPoint(enemy)) <= 3) {
                 enemy.incrementWayPointIndex();
@@ -164,7 +165,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Lässt die Türme angreifen
-     * @param deltaTime
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     private void makeAttacks (float deltaTime) {
 
@@ -245,7 +246,7 @@ public class GameLogicController implements LogicController {
      * Fügt Spielern Schaden zu
      */
     void applyPlayerDamage () {
-        ArrayList<Enemy> enemiesToRemove = new ArrayList<Enemy>();
+        ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
         for (Enemy enemy : gamestate.getEnemies()) {
             if (getDistanceToEndpoint(enemy) < TILE_SIZE / 2 ) {
                 enemiesToRemove.add(enemy);
@@ -317,7 +318,7 @@ public class GameLogicController implements LogicController {
     /**
      * Spawnt die nächste Angriffswelle
      */
-    void spawnWave (float deltaTime) {
+    private void spawnWave (float deltaTime) {
         float timeUntilNextRound = gamestate.getTimeUntilNextRound();
         if (timeUntilNextRound <= 0) {
 
@@ -375,7 +376,7 @@ public class GameLogicController implements LogicController {
     /**
      * Startet eine neue Runde
      */
-    void startNewRound () {
+    private void startNewRound () {
         System.out.println("New round started!");
         gamestate.setNewRound(true);
         gamestate.setRoundEnded(false);
@@ -386,9 +387,9 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Initialisiert die Kollisionsmatrix der Map
+     * Initialisiert die Kollisionsmatrix der Karte
+     * @param mapPath Der Dateipfad der zu ladenden Karte
      */
-    //void initializeCollisionMap (int[][] collisionMap) {
     public void initializeCollisionMap (String mapPath) {
 
         TiledMap tiledMap = new TmxMapLoader().load(mapPath);
@@ -432,15 +433,32 @@ public class GameLogicController implements LogicController {
 
     }
 
+    /**
+     * Fügt der im Spielzustand vorhandenen Karte ein neues Feld hinzu 
+     * 
+     * @param xCoordinate Die x-Koordinate des Feldes auf der Karte
+     * @param yCoordinate Die y-Koordinate des Feldes auf der Karte
+     * @param buildableByPlayer Die Nummer der Spielerin, die auf dem Feld bauen darf. -1, wenn das Feld nicht bebaubar ist
+     */
     private void addGameMapTile (int xCoordinate, int yCoordinate, int buildableByPlayer) {
         Coordinates coordinates = new Coordinates(xCoordinate, yCoordinate, buildableByPlayer);
         gamestate.addCoordinatesToCollisionMatrix(coordinates);
     }
 
+    /**
+     * Gibt die y-Koordinate zurück, die der angegebenen x-Position auf der Karte entspricht
+     * @param xPosition Die x-Position, für die die x-Koordinate ermittelt werden soll
+     * @return Die passende x-Koordinate
+     */
     public int getXCoordinateByPosition (float xPosition) {
         return (int) xPosition / gamestate.getTileSize();
     }
 
+    /**
+     * Gibt die y-Koordinate zurück, die der angegebenen y-Position auf der Karte entspricht
+     * @param yPosition Die y-Position, für die die y-Koordinate ermittelt werden soll
+     * @return Die passende y-Koordinate
+     */
     public int getYCoordinateByPosition (float yPosition) {
         return (int) yPosition / gamestate.getTileSize();
     }
@@ -476,7 +494,7 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
     }
 
-    public void addEnemy (Enemy enemy) {
+    private void addEnemy (Enemy enemy) {
         Player attackedPlayer = gamestate.getPlayerByNumber(0);
         attackedPlayer.addEnemy(enemy);
         enemy.setAttackedPlayer(attackedPlayer);
@@ -487,21 +505,7 @@ public class GameLogicController implements LogicController {
         enemy.notifyObserver();
     }
 
-    public void addTower (Tower tower, float xPosition, float yPosition) {
-        Player owningPlayer = gamestate.getPlayerByNumber(0);
-        tower.setOwner(owningPlayer);
-        owningPlayer.addTower(tower);
-
-        Coordinates coordinates = getMapCellByXandY(xPosition, yPosition);
-        tower.setPosition(coordinates);
-        coordinates.setTower(tower);
-
-        tower.setGamestate(gamestate);
-        gamestate.addTower(tower);
-        gameScreen.addTower(tower);
-    }
-
-    public void addTower (Tower tower, int xPosition, int yPosition) {
+    private void addTower (Tower tower, int xPosition, int yPosition) {
         Player owningPlayer = gamestate.getPlayerByNumber(0);
         tower.setOwner(owningPlayer);
         owningPlayer.addTower(tower);
@@ -515,47 +519,28 @@ public class GameLogicController implements LogicController {
         gameScreen.addTower(tower);
     }
 
-    public boolean buildTower(TowerType towerType, float xPosition, float yPosition, int playerNumber) {
-
-        boolean wasSuccessful = false;
-
-        if (checkCoordinates(xPosition, yPosition, playerNumber)) {
-            Tower tower = createNewTower(towerType);
-            int towerPrice = tower.getPrice();
-            Player player = gamestate.getPlayerByNumber(playerNumber);
-            int playerResources = player.getResources();
-            if (playerResources >= towerPrice) {
-                player.setResources(playerResources - towerPrice);
-                addTower(tower, xPosition, yPosition);
-                player.notifyObserver();
-                wasSuccessful = true;
-            }
-        }
-
-        return wasSuccessful;
-    }
-
     /**
-     * Baut einen neuen Turm
+     * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
      *
-     * @param towerType Der Typ des zu bauenden Turms
-     * @param xPosition Die x-Koordinate des Turms
-     * @param yPosition Die y-Koordinate des Turms
-     * @param playerNumber Die Nummer der Spielerin, für die der Turm gebaut werden soll
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
-    public boolean buildTower(TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+    @Override
+    public boolean buildTower(TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber) {
 
         boolean wasSuccessful = false;
 
-        if (checkIfCoordinatesAreBuildable(xPosition, yPosition, playerNumber)) {
+        if (checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, playerNumber)) {
             Tower tower = createNewTower(towerType);
             int towerPrice = tower.getPrice();
             Player player = gamestate.getPlayerByNumber(playerNumber);
             int playerResources = player.getResources();
             if (playerResources >= towerPrice) {
                 player.setResources(playerResources - towerPrice);
-                addTower(tower, xPosition, yPosition);
+                addTower(tower, xCoordinate, yCoordinate);
                 player.notifyObserver();
                 wasSuccessful = true;
             }
@@ -564,17 +549,13 @@ public class GameLogicController implements LogicController {
         return wasSuccessful;
     }
 
-    public boolean buildRegularTower(final int mapX, final int mapY) {
-        return buildTower(REGULAR_TOWER, mapX, mapY, 0);
+    public void buildRegularTower(final int mapX, final int mapY) {
+        buildTower(REGULAR_TOWER, mapX, mapY, 0);
     }
 
     public boolean checkIfCoordinatesAreBuildable (int xCoordinate, int yCoordinate, int playerNumber) {
 
         boolean buildable = true;
-
-        System.out.println("xCoordinate: " + xCoordinate);
-
-        System.out.println("yCoordinate: " + yCoordinate);
 
         String errormessage = "";
 
@@ -608,67 +589,36 @@ public class GameLogicController implements LogicController {
         return buildable;
     }
 
-    public boolean checkCoordinates (float xPosition, float yPosition, int playerNumber) {
-
-        boolean isBuildable = true;
-
-        int xIndex = (int) xPosition / gamestate.getTileSize();
-
-        int yIndex = (int) yPosition / gamestate.getTileSize();
-
-        if (xIndex >= gamestate.getNumberOfColumns() ||
-                yIndex >= gamestate.getNumberOfRows()) {
-            System.err.println("Es nicht erlaubt, außerhalb des Spielfelds zu bauen!");
-           return false;
-        }
-
-        Coordinates mapCell = getMapCellByXandY(xPosition, yPosition);
-
-        if (mapCell.getTower() != null) {
-            isBuildable = false;
-        } else if (mapCell.getBuildableByPlayer() != playerNumber) {
-            isBuildable = false;
-        }
-
-        return isBuildable;
-    }
-
-    /**
-     * Verkauft einen Turm
-     *
-     * @param tower Der zu verkaufende Turm
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
-     */
-    public boolean sellTower(Tower tower) {
-        return false;
-    }
-
     public boolean hasCellTower (int xCoordinate, int yCoordinate) {
         Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
 
         return coordinates.getTower() != null;
     }
 
+    /**
+     * Verkauft einen Turm
+     *
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
+     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     */
     @Override
-    public boolean sellTower (int screenX, int screenY, int playerNumber) {
-
+    public boolean sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        
         boolean wasSuccessful = false;
 
-        if (screenX / gamestate.getTileSize() >= gamestate.getNumberOfColumns() ||
-                screenY / gamestate.getTileSize() >= gamestate.getNumberOfRows()
-        ) {
-            System.err.println("Du hast außerhalb des Spielfeldes geklickt!");
-            return false;
-        }
+        String errormessage = "";
 
-        Coordinates mapCell = getMapCellByXandY(screenX, screenY);
+        Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
 
         Tower tower = mapCell.getTower();
 
         if (tower == null ) {
+            errormessage = "Hier gibt es keinen Turm zum Verkaufen!";
             System.err.println("Hier gibt es keinen Turm zum Verkaufen!");
         } else if (tower.getOwner().getPlayerNumber() != playerNumber) {
-            System.err.println("Du darfst diesen Turm nicht verkaufen!");
+            errormessage = "Du darfst diesen Turm nicht verkaufen!";
         } else {
             tower.getOwner().addToResources(tower.getSellPrice());
             tower.getOwner().notifyObserver();
@@ -676,9 +626,18 @@ public class GameLogicController implements LogicController {
             wasSuccessful = true;
         }
 
+        if (!wasSuccessful) {
+            gameScreen.displayErrorMessage(errormessage);
+            System.err.println(errormessage);
+        }
+
         return wasSuccessful;
     }
 
+    /**
+     * Entfernt einen Turm aus dem Spiel
+     * @param tower Der zu entfernende Turm
+     */
     private void removeTower(Tower tower) {
         tower.setRemoved(true);
         tower.getOwner().removeTower(tower);
@@ -691,20 +650,21 @@ public class GameLogicController implements LogicController {
     /**
      * Rüstet einen Turm auf
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean upgradeTower(int xPosition, int yPosition, int playerNumber) {
+    public boolean upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
         return false;
     }
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType Der Typ des zu schickenden Gegners
+     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
     public boolean sendEnemy(EnemyFactory.EnemyType enemyType) {
@@ -713,7 +673,7 @@ public class GameLogicController implements LogicController {
 
     /**
      * Gibt den Spielzustand zurück
-     * @return
+     * @return Der aktuelle Spielzustand
      */
     public Gamestate getGamestate() {
         return gamestate;
@@ -725,14 +685,6 @@ public class GameLogicController implements LogicController {
      */
     public void setGamestate(Gamestate gamestate) {
         this.gamestate = gamestate;
-    }
-
-    /**
-     * Gibt
-     * @return
-     */
-    public GameScreen getGameScreen() {
-        return gameScreen;
     }
 
     public void setGameScreen(GameScreen gameScreen) {

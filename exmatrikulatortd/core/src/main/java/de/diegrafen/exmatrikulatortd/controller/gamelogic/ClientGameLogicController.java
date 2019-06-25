@@ -38,39 +38,16 @@ public class ClientGameLogicController extends GameLogicController {
 
 
     /**
-     * Baut einen neuen Turm
-     *
-     * @param tower       Der zu bauende Turm
-     * @param coordinates Die Koordinaten des Turmes
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
-     */
-    //@Override
-    //public boolean buildTower(Tower tower, Coordinates coordinates) {
-    //return super.buildTower(tower, coordinates);
-    //}
-
-    /**
-     * Verkauft einen Turm
-     *
-     * @param tower Der zu verkaufende Turm
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
-     */
-    @Override
-    public boolean sellTower(Tower tower) {
-        return super.sellTower(tower);
-    }
-
-    /**
      * Rüstet einen Turm auf
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean upgradeTower(int xPosition, int yPosition, int playerNumber) {
-        return super.upgradeTower(xPosition, yPosition, playerNumber);
+    public boolean upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        return super.upgradeTower(xCoordinate, yCoordinate, playerNumber);
     }
 
     /**

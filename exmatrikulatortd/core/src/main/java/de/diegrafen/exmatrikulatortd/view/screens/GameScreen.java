@@ -247,7 +247,7 @@ public class GameScreen extends BaseScreen implements GameView {
                         gameLogicController.buildRegularTower(xCoordinate, yCoordinate);
                     } else if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
                         // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
-                        gameLogicController.sellTower((int) position.x, (int) position.y, 0);
+                        gameLogicController.sellTower(xCoordinate, yCoordinate, 0);
                     }
                     //if (!gameLogicController.buildRegularTower((int) position.x, (int) position.y)) {
 
