@@ -10,6 +10,7 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
@@ -119,6 +120,7 @@ public class Gamestate extends BaseModel implements Observable {
         enemies = new ArrayList<>();
         towers = new ArrayList<>();
         collisionMatrix = new ArrayList<>();
+        this.observers = new LinkedList<>();
 
         this.newRound = true;
         this.roundNumber = 0;
