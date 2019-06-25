@@ -1,6 +1,11 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
@@ -29,23 +34,25 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     @Override
-    public boolean buildTower(Tower tower, Coordinates coordinates) {
-        return false;
+    //public boolean buildTower(Tower tower, Coordinates coordinates) {
+    public void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+        client.sendTCP(new BuildRequest(towerType, xPosition, yPosition, playerNumber));
+
     }
 
     @Override
-    public boolean sellTower(Tower tower) {
-        return false;
+    public void sellTower(Tower tower) {
+
     }
 
     @Override
-    public boolean upgradeTower(Tower tower) {
-        return false;
+    public void upgradeTower(Tower tower) {
+
     }
 
     @Override
-    public boolean sendEnemy(Enemy enemy) {
-        return false;
+    public void sendEnemy(Enemy enemy) {
+
     }
 
     @Override
@@ -69,11 +76,21 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     public void attachResponseListeners (LogicController logicController) {
-
+        attachBuildResponseListener(logicController);
     }
 
-    public void attachBuildResponseListener (LogicController logicController) {
+    private void attachBuildResponseListener (LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received (Connection connection, Object object) {
+                if (object instanceof BuildResponse) {
+                    BuildResponse response = (BuildResponse) object;
 
+                    if (response.wasSuccessful()) {
+                        logicController.buildTower(response.getTowerType(), response.getxPosition(), response.getyPosition(), response.getPlayerNumber());
+                    }
+                }
+            }
+        });
     }
 
     private void attachSellResponseListener (LogicController logicController) {

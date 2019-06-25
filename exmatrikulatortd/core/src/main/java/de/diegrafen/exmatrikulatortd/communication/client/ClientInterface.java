@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -12,13 +13,15 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public interface ClientInterface {
 
-    boolean buildTower (Tower tower, Coordinates coordinates);
+    //boolean buildTower (Tower tower, Coordinates coordinates);
 
-    boolean sellTower (Tower tower);
+    void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber);
 
-    boolean upgradeTower (Tower tower);
+    void sellTower (Tower tower);
 
-    boolean sendEnemy (Enemy enemy);
+    void upgradeTower (Tower tower);
+
+    void sendEnemy (Enemy enemy);
 
     Gamestate refreshLocalGameState ();
 

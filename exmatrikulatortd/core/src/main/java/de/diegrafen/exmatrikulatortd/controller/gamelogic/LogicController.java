@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
@@ -25,14 +26,16 @@ public interface LogicController {
      * @param coordinates Die Koordinaten des Turmes
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
-    boolean buildTower (Tower tower, Coordinates coordinates);
+    //boolean buildTower (Tower tower, Coordinates coordinates);
+
+    boolean buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber);
 
     /**
      * Verkauft einen Turm
      * @param tower Der zu verkaufende Turm
      * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
      */
-    boolean sellTower (Tower tower);
+    boolean sellTower (int xPosition, int yPosition, int playerNumber);
 
     /**
      * Rüstet einen Turm auf

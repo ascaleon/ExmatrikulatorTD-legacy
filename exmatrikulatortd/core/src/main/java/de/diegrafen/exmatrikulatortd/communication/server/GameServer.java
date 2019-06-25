@@ -1,6 +1,10 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 
@@ -80,7 +84,7 @@ public class GameServer extends Connector {
      * @param logicController Der zu assoziierende LogicController
      */
     public void attachRequestListeners (LogicController logicController) {
-
+        attachBuildRequestListener(logicController);
     }
 
     /**
@@ -88,7 +92,23 @@ public class GameServer extends Connector {
      * @param logicController Der zu assoziierende LogicController
      */
     private void attachBuildRequestListener (LogicController logicController) {
+        server.addListener(new Listener() {
+            public void received (Connection connection, Object object) {
+                if (object instanceof BuildRequest) {
+                    BuildRequest request = (BuildRequest) object;
+                    BuildResponse response;
+                    boolean successful = logicController.buildTower(request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber())
 
+                    if (successful) {
+                        response = new BuildResponse(successful, request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    } else {
+                        response = new BuildResponse(successful);
+                    }
+
+                    connection.sendTCP(response);
+                }
+            }
+        });
     }
 
     /**

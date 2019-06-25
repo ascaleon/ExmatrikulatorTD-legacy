@@ -506,12 +506,12 @@ public class GameLogicController implements LogicController {
      * @param tower Der zu verkaufende Turm
      * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
      */
-    @Override
     public boolean sellTower(Tower tower) {
         return false;
     }
 
-    public boolean sellTower(int screenX, int screenY, int playerNumber) {
+    @Override
+    public boolean sellTower (int screenX, int screenY, int playerNumber) {
 
         boolean wasSuccessful = false;
 
@@ -545,9 +545,6 @@ public class GameLogicController implements LogicController {
         tower.getPosition().setTower(null);
         gamestate.getTowers().remove(tower);
         tower.setRemoved(true);
-        System.out.println("removeTower");
-        //gameScreen.getTowers().remove(towerMapping.get(tower));
-        //towerMapping.remove(tower);
     }
 
     /**

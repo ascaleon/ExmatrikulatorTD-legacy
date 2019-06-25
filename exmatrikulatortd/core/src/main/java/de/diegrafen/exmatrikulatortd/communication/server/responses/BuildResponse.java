@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.server.responses;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -9,12 +10,45 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class BuildResponse extends Response {
 
-    private boolean wasSuccessful;
+    private boolean successful;
 
-    private Tower tower;
+    private TowerFactory.TowerType towerType;
 
-    public BuildResponse (boolean wasSuccessful, Tower tower) {
+    private int xPosition;
 
+    private int yPosition;
+
+    private int playerNumber;
+
+    public BuildResponse(boolean successful) {
+        this.successful = successful;
     }
 
+    public BuildResponse(boolean successful, TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+        this.successful = successful;
+        this.towerType = towerType;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.playerNumber = playerNumber;
+    }
+
+    public boolean wasSuccessful() {
+        return successful;
+    }
+
+    public TowerFactory.TowerType getTowerType() {
+        return towerType;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
 }
