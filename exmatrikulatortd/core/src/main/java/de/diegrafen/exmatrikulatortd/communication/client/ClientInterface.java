@@ -14,7 +14,10 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public interface ClientInterface extends ConnectorInterface {
 
-    Gamestate refreshLocalGameState ();
+    /**
+     * Fragt eine aktuelle Kopie des Server-Spielzustandes an
+     */
+    void refreshLocalGameState ();
 
     /**
      * Stellt die Verbindung zu einem Server her.

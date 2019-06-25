@@ -4,13 +4,15 @@ import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
+
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 12:31
  */
 public class BuildRequest extends Request {
 
-    private TowerFactory.TowerType towerType;
+    private TowerType towerType;
 
     private int xPosition;
 
@@ -18,7 +20,7 @@ public class BuildRequest extends Request {
 
     private int playerNumber;
 
-    public BuildRequest(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+    public BuildRequest(TowerType towerType, int xPosition, int yPosition, int playerNumber) {
         super();
         this.towerType = towerType;
         this.xPosition = xPosition;
@@ -26,7 +28,7 @@ public class BuildRequest extends Request {
         this.playerNumber = playerNumber;
     }
 
-    public TowerFactory.TowerType getTowerType() {
+    public TowerType getTowerType() {
         return towerType;
     }
 

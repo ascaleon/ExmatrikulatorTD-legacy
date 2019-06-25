@@ -10,19 +10,36 @@ public class UpgradeResponse extends Response {
 
     private boolean successful;
 
-    private Tower newTower;
+    private int xCoordinate;
 
-    public UpgradeResponse(boolean successful, Tower newTower) {
-        super();
+    private int yCoordinate;
+
+    private int playerNumber;
+
+    public UpgradeResponse(boolean successful, int xCoordinate, int yCoordinate, int playerNumber) {
         this.successful = successful;
-        this.newTower = newTower;
+        this.xCoordinate = xCoordinate;
+        this.yCoordinate = yCoordinate;
+        this.playerNumber = playerNumber;
+    }
+
+    public UpgradeResponse(boolean successful) {
+        this.successful = successful;
     }
 
     public boolean wasSuccessful() {
         return successful;
     }
 
-    public Tower getNewTower() {
-        return newTower;
+    public int getxCoordinate() {
+        return xCoordinate;
+    }
+
+    public int getyCoordinate() {
+        return yCoordinate;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 }
