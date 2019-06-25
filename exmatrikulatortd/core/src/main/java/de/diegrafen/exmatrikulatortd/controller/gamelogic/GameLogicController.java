@@ -27,7 +27,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.cr
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
- * Der Standard-Spiellogik-Controller
+ * Der Standard-Spiellogik-Controller.
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 01:24
@@ -103,6 +103,8 @@ public class GameLogicController implements LogicController {
             }
             //applyPlayerDamage();
             spawnWave(deltaTime);
+            applyAuras(deltaTime);
+            applyBuffsAndDebuffs(deltaTime);
             applyMovement(deltaTime);
             makeAttacks(deltaTime);
         }
@@ -113,7 +115,7 @@ public class GameLogicController implements LogicController {
      *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
-    void applyAuras(float deltaTime) {
+    private void applyAuras(float deltaTime) {
 
     }
 
@@ -122,7 +124,7 @@ public class GameLogicController implements LogicController {
      *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
-    void applyBuffsAndDebuffs(float deltaTime) {
+    private void applyBuffsAndDebuffs(float deltaTime) {
 
     }
 
@@ -243,7 +245,7 @@ public class GameLogicController implements LogicController {
     /**
      * Fügt Spielern Schaden zu
      */
-    void applyPlayerDamage() {
+    private void applyPlayerDamage() {
         ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
         for (Enemy enemy : gamestate.getEnemies()) {
             if (getDistanceToEndpoint(enemy) < TILE_SIZE / 2) {
@@ -356,6 +358,7 @@ public class GameLogicController implements LogicController {
         if (gamestate.getEnemies().isEmpty() && !gamestate.isNewRound()) {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
+            gamestate.notifyObserver();
             gameStateDao.update(gamestate);
         }
     }

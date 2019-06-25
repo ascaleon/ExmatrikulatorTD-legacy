@@ -5,38 +5,45 @@ import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
+
 public interface ConnectorInterface {
 
     /**
-     * Baut einen neuen Turm
-     * @param towerType
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
+     * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
+     *
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      */
-    void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber);
+    void buildTower(TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Verkauft einen Turm
-     * @param tower Der zu verkaufende Turm
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     *
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
-    void sellTower (int xPosition, int yPosition, int playerNumber);
+    void sellTower(int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Rüstet einen Turm auf
-     * @param tower Der zu aufzurüstende Turm
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     *
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
-    void upgradeTower (int xPosition, int yPosition, int playerNumber);
+    void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
-     * @param enemy Der zu schickende Gegner
-     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
+     *
+     * @param enemyType Der Typ des zu schickenden Gegners
      */
-    void sendEnemy (EnemyFactory.EnemyType enemyType);
+    void sendEnemy(EnemyType enemyType);
 
     void shutdown ();
 }

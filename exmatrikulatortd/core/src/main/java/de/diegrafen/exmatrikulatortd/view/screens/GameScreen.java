@@ -122,6 +122,7 @@ public class GameScreen extends BaseScreen implements GameView {
     public GameScreen(MainController mainController, Game game, Profile playerProfile) {
         super(mainController, game);
         this.gameState = new Gamestate();
+        gameState.registerObserver(this);
         this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
         gameLogicController.setGameScreen(this);
         gameLogicController.initializeCollisionMap(MAP_PATH);
@@ -144,9 +145,10 @@ public class GameScreen extends BaseScreen implements GameView {
         gameLogicController.setGameScreen(this);
     }
 
+    // TODO: Konstruktoren so anpassen, dass ein Spiel als Client tatsächlich geladen und fortgesetzt werden kann, bzw. in die LogicController verschieben
     public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient, Gamestate gamestate) {
         this(mainController, game, playerProfile, gameClient);
-        gamestate = gameClient.refreshLocalGameState();
+        gameClient.refreshLocalGameState();
         this.gameState = gamestate;
         this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
         gameLogicController.setGameScreen(this);
@@ -304,6 +306,7 @@ public class GameScreen extends BaseScreen implements GameView {
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
         resourcesLabel.setText(localPlayer.getResources());
+        roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
     }
 
     /**

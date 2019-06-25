@@ -4,13 +4,14 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
 
@@ -18,8 +19,15 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
 /**
+ *
+ * Diese Klasse realisiert die Netzwerkkommunikation für Client-Instanzen. Über die Implementierung der
+ * Schnittstellen ConnectorInterface bzw. ClientInterface kann ein LogicController Spielzüge an
+ * den Server senden. Antworten bzw. Nachrichten werden vom GameClient sodann an den LogicController
+ * zurückgegeben, um den lokalen Spielzustand an den des Servers anzugleichen.
+ *
  * @author Jan Romann <jan.romann@uni-bremen.de>
- * @version 15.06.2019 13:45
+ * @author Nick Michalek <michalek@uni-bremen.de>
+ * @version 25.06.2019 23:24
  */
 public class GameClient extends Connector implements ClientInterface {
 
@@ -43,47 +51,56 @@ public class GameClient extends Connector implements ClientInterface {
         udpPort = UDP_PORT;
     }
 
+    /**
+     * Sendet eine Anfrage an den Server
+     *
+     * @param request Die zu sendende Anfrage
+     */
     private void sendRequest(Request request) {
         client.sendTCP(request);
     }
 
+    /**
+     *
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
+     */
     @Override
-    public void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
-        sendRequest(new BuildRequest(towerType, xPosition, yPosition, playerNumber));
+    public void buildTower(TowerFactory.TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+        BuildRequest sellRequest = new BuildRequest(towerType, xCoordinate, yCoordinate, playerNumber);
+        sendRequest(sellRequest);
     }
 
     /**
      * Verkauft einen Turm
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     @Override
-    public void sellTower(int xPosition, int yPosition, int playerNumber) {
-        SellRequest sellRequest = new SellRequest(xPosition, yPosition, playerNumber);
+    public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        SellRequest sellRequest = new SellRequest(xCoordinate, yCoordinate, playerNumber);
         sendRequest(sellRequest);
     }
 
     /**
-     * Rüstet einen Turm auf
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     @Override
-    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
-        UpgradeRequest upgradeRequest = new UpgradeRequest(xPosition, yPosition, playerNumber);
+    public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        UpgradeRequest upgradeRequest = new UpgradeRequest(xCoordinate, yCoordinate, playerNumber);
         sendRequest(upgradeRequest);
     }
 
     /**
-     * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType Der Typ des zu schickenden Gegners
      */
     @Override
     public void sendEnemy(EnemyFactory.EnemyType enemyType) {
@@ -91,27 +108,28 @@ public class GameClient extends Connector implements ClientInterface {
         sendRequest(sendEnemyRequest);
     }
 
+    /**
+     * Fragt eine aktuelle Kopie des Server-Spielzustandes an
+     */
     @Override
-    public Gamestate refreshLocalGameState() {
-        GetServerStateRequest getServerStateRequest = new GetServerStateRequest();
-        sendRequest(getServerStateRequest);
-        return null;
+    public void refreshLocalGameState() {
+        sendRequest(new GetServerStateRequest());
     }
 
     /**
-     * Stellt die Verbindung
+     * Stellt die Verbindung zum Server her
      *
-     * @param host Die Hostadresse
+     * @param host Die Hostadresse des Servers
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
-    public boolean connect(String host) {
+    public boolean connect(final String host) {
         try {
             client.connect(5000, host, tcpPort, udpPort);
             if (client.isConnected()) {
                 connected = true;
             }
             return true;
-        } catch (final IOException e){
+        } catch (final IOException e) {
             e.printStackTrace();    // nur zum Debugging!
             connected = false;
         }
@@ -119,24 +137,42 @@ public class GameClient extends Connector implements ClientInterface {
         return connected;
     }
 
+    /**
+     * Schließt die Verbindung zum Server und beendet den Client.
+     */
     @Override
     public void shutdown() {
         client.close();
-        connected=false;
+        connected = false;
     }
 
-    public void attachResponseListeners(LogicController logicController) {
+    /**
+     *
+     * Fügt eine Reihe von Listenern zum Client hinzu, die darauf warten, dass eine Nachricht vom Server eintrifft
+     * und eine entsprechende Aktion beim zugewiesenen LogicController auslösen
+     *
+     * @param logicController Der LogicController, an den empfangene Antworten weitergeleitet werden
+     */
+    public void attachResponseListeners(final LogicController logicController) {
         attachBuildResponseListener(logicController);
+        attachGetServerStateResponseListener(logicController);
+        attachSellResponseListener(logicController);
+        attachSendEnemyResponseListener(logicController);
+        attachUpgradeResponseListener(logicController);
     }
 
-    private void attachBuildResponseListener(LogicController logicController) {
+    /**
+     *
+     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
+     */
+    private void attachBuildResponseListener(final LogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof BuildResponse) {
-                    BuildResponse response = (BuildResponse) object;
+                    final BuildResponse response = (BuildResponse) object;
 
                     if (response.wasSuccessful()) {
-                        logicController.buildTower(response.getTowerType(), response.getxPosition(), response.getyPosition(), response.getPlayerNumber());
+                        logicController.buildTower(response.getTowerType(), response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber());
                     } else {
                         logicController.buildFailed();
                     }
@@ -145,22 +181,88 @@ public class GameClient extends Connector implements ClientInterface {
         });
     }
 
-    private void attachSellResponseListener(LogicController logicController) {
+    /**
+     *
+     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
+     */
+    private void attachSellResponseListener(final LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof SellResponse) {
+                    final SellResponse response = (SellResponse) object;
 
+                    if (response.wasSuccessful()) {
+                        logicController.sellTower(response.getxCoordinate(),response.getyCoordinate(),response.getPlayerNumber());
+                    } //else {
+                        //logicController.sellFailed() ?
+                    //}
+                }
+            }
+        });
     }
 
-    private void attachSendEnemyResponseListener(LogicController logicController) {
+    /**
+     *
+     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
+     */
+    private void attachSendEnemyResponseListener(final LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof SendEnemyResponse) {
+                    final SendEnemyResponse response = (SendEnemyResponse) object;
 
+                    if(response.wasSuccessful()) {
+                        logicController.sendEnemy(response.getEnemyType());
+                    } else{
+                        logicController.sendFailed();
+                    }
+                }
+            }
+        });
     }
 
-    private void attachUpgradeResponseListener(LogicController logicController) {
+    /**
+     *
+     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
+     */
+    private void attachUpgradeResponseListener(final LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof UpgradeResponse) {
+                    final UpgradeResponse response = (UpgradeResponse) object;
 
+                    if (response.wasSuccessful()) {
+                        logicController.upgradeTower(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber());
+                    } else {
+                        logicController.upgradeFailed();
+                    }
+                }
+            }
+        });
     }
 
-    private void attachGetServerStateResponseListener(LogicController logicController) {
+    /**
+     *
+     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
+     */
+    private void attachGetServerStateResponseListener(final LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof GetServerStateResponse) {
+                    GetServerStateResponse response = (GetServerStateResponse) object;
 
+                    if (response.getGamestate() != null) {
+                        logicController.setGamestate(response.getGamestate());
+                    }
+                }
+            }
+        });
     }
 
+    /**
+     * Gibt an, ob der GameClient mit einem Server verbunden ist
+     * @return true, wenn der Client verbunden ist, ansonsten false.
+     */
     public boolean isConnected() {
         return connected;
     }

@@ -10,16 +10,16 @@ public class SellResponse extends Response {
 
     private boolean successful;
 
-    private int xPosition;
+    private int xCoordinate;
 
-    private int yPosition;
+    private int yCoordinate;
 
     private int playerNumber;
 
-    public SellResponse(boolean successful, int xPosition, int yPosition, int playerNumber) {
+    public SellResponse(boolean successful, int xCoordinate, int yCoordinate, int playerNumber) {
         this.successful = successful;
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
+        this.xCoordinate = xCoordinate;
+        this.yCoordinate = yCoordinate;
         this.playerNumber = playerNumber;
     }
 
@@ -31,12 +31,12 @@ public class SellResponse extends Response {
         return successful;
     }
 
-    public int getxPosition() {
-        return xPosition;
+    public int getxCoordinate() {
+        return xCoordinate;
     }
 
-    public int getyPosition() {
-        return yPosition;
+    public int getyCoordinate() {
+        return yCoordinate;
     }
 
     public int getPlayerNumber() {

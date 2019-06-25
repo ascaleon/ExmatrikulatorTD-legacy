@@ -25,7 +25,6 @@ public class SellRequest extends Request{
         return xPosition;
     }
 
-
     public int getyPosition() {
         return yPosition;
     }

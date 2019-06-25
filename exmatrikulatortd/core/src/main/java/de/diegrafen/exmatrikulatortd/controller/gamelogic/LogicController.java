@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -67,10 +68,14 @@ public interface LogicController {
 
     int getYCoordinateByPosition(float yPosition);
 
-    public void buildFailed();
+    void buildFailed();
 
-    public void sendFailed();
+    void sendFailed();
 
-    public void upgradeFailed();
+    void upgradeFailed();
+
+    void setGamestate(Gamestate gamestate);
+
+    Gamestate getGamestate();
 
 }
