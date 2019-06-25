@@ -21,11 +21,7 @@ public class SendEnemyResponse extends Response {
     }
 
     public boolean wasSuccessful() {
-<<<<<<< HEAD
         return wasSuccessful;
-=======
-        return successful;
->>>>>>> 3c3ec1e376ef1b2dedb6ce6ab647ca9bb5c9fcc1
     }
 
     public Enemy getEnemy() {
