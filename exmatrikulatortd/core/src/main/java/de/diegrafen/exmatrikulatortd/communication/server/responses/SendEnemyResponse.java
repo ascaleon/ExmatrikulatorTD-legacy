@@ -20,4 +20,11 @@ public class SendEnemyResponse extends Response {
         this.enemy=enemy;
     }
 
+    public boolean wasSuccessful() {
+        return wasSuccessful;
+    }
+
+    public Enemy getEnemy() {
+        return enemy;
+    }
 }

@@ -17,4 +17,12 @@ public class UpgradeResponse extends Response {
         this.wasSuccessful=wasSuccessful;
         this.newTower=newTower;
     }
+
+    public boolean wasSuccessful() {
+        return wasSuccessful;
+    }
+
+    public Tower getNewTower() {
+        return newTower;
+    }
 }

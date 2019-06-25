@@ -4,13 +4,14 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
 
@@ -93,8 +94,7 @@ public class GameClient extends Connector implements ClientInterface {
 
     @Override
     public Gamestate refreshLocalGameState() {
-        GetServerStateRequest getServerStateRequest = new GetServerStateRequest();
-        sendRequest(getServerStateRequest);
+        sendRequest(new GetServerStateRequest());
         return null;
     }
 
@@ -111,7 +111,7 @@ public class GameClient extends Connector implements ClientInterface {
                 connected = true;
             }
             return true;
-        } catch (final IOException e){
+        } catch (final IOException e) {
             e.printStackTrace();    // nur zum Debugging!
             connected = false;
         }
@@ -122,7 +122,7 @@ public class GameClient extends Connector implements ClientInterface {
     @Override
     public void shutdown() {
         client.close();
-        connected=false;
+        connected = false;
     }
 
     public void attachResponseListeners(LogicController logicController) {
@@ -133,7 +133,7 @@ public class GameClient extends Connector implements ClientInterface {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof BuildResponse) {
-                    BuildResponse response = (BuildResponse) object;
+                    final BuildResponse response = (BuildResponse) object;
 
                     if (response.wasSuccessful()) {
                         logicController.buildTower(response.getTowerType(), response.getxPosition(), response.getyPosition(), response.getPlayerNumber());
@@ -146,19 +146,68 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     private void attachSellResponseListener(LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof SellResponse) {
+                    final SellResponse response = (SellResponse) object;
 
+                    if (response.wasSuccessful()) {
+                        logicController.sellTower(response.getxPosition(),response.getyPosition(),response.getPlayerNumber());
+                    } else {
+                        //logicController.sellFailed() ?
+                    }
+                }
+            }
+        });
     }
 
     private void attachSendEnemyResponseListener(LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof SendEnemyResponse) {
+                    final SendEnemyResponse response = (SendEnemyResponse) object;
 
+                    if(response.wasSuccessful()) {
+                        logicController.sendEnemy(response.getEnemy());
+                    } else{
+                        logicController.sendFailed();
+                    }
+                }
+            }
+        });
     }
 
     private void attachUpgradeResponseListener(LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof UpgradeResponse) {
+                    final UpgradeResponse response = (UpgradeResponse) object;
 
+                    if (response.wasSuccessful()) {
+                        final Tower tower=response.getNewTower();
+                        logicController.upgradeTower(tower.getxPosition(),tower.getyPosition(),tower.getOwner().getPlayerNumber());
+                    } else {
+                        //logicController.sellFailed() ?
+                        logicController.upgradeFailed();
+                    }
+                }
+            }
+        });
     }
 
     private void attachGetServerStateResponseListener(LogicController logicController) {
+        client.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof GetServerStateResponse) {
+                    GetServerStateResponse response = (GetServerStateResponse) object;
 
+                    if (response.getGamestate() != null) {
+                        final Gamestate gamestate=response.getGamestate();
+                        // logicController...
+                    }
+                }
+            }
+        });
     }
 
     public boolean isConnected() {
