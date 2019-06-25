@@ -10,7 +10,6 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 /**
- *
  * Spiellogik-Controller für Multiplayer-Spiele als Client
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -25,10 +24,11 @@ public class ClientGameLogicController extends GameLogicController {
 
     /**
      * Konstruktor für den Spiellogik-Controller
+     *
      * @param mainController Der Haupt-Controller der Anwendung
-     * @param gamestate Der Spielzustand, mit dem der Controller initialisiert wird
-     * @param profile Das Spieler-Profil
-     * @param gameClient Der GameClient, über den die Netzwerkkommunikation abläuft
+     * @param gamestate      Der Spielzustand, mit dem der Controller initialisiert wird
+     * @param profile        Das Spieler-Profil
+     * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ClientGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameClient gameClient) {
         super(mainController, gamestate, profile);
@@ -63,17 +63,15 @@ public class ClientGameLogicController extends GameLogicController {
     /**
      * Holt den aktuellen Spielzustand vom Server
      */
-    public void refreshLocalGameState () {
+    public void refreshLocalGameState() {
 
     }
 
 
-
     /**
      * Beendet das Spiel
-     *
      */
-    public void exitGame () {
+    public void exitGame() {
         gameClient.shutdown();
         super.exitGame(false);
 

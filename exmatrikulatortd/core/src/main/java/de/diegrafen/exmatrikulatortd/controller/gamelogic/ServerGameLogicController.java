@@ -9,7 +9,6 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 
 /**
- *
  * Spiellogik-Controller für Multiplayer-Spiele als Server
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -25,10 +24,11 @@ public class ServerGameLogicController extends GameLogicController {
 
     /**
      * Konstruktor für den Spiellogik-Controller
+     *
      * @param mainController Der Haupt-Controller der Anwendung
-     * @param gamestate Der Spielzustand, mit dem der Controller initialisiert wird
-     * @param profile Das Spieler-Profil
-     * @param gameServer Der GameClient, über den die Netzwerkkommunikation abläuft
+     * @param gamestate      Der Spielzustand, mit dem der Controller initialisiert wird
+     * @param profile        Das Spieler-Profil
+     * @param gameServer     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ServerGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameServer gameServer) {
         super(mainController, gamestate, profile);
@@ -103,7 +103,7 @@ public class ServerGameLogicController extends GameLogicController {
     /**
      * Sendet den aktuellen Spielzustand zum Client
      */
-    public void sendServerStateToClient () {
+    public void sendServerStateToClient() {
 
     }
 

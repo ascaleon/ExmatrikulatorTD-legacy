@@ -281,8 +281,6 @@ public class Player extends BaseModel implements Observable {
 
     @Override
     public void notifyObserver() {
-        for (Observer observer : observers) {
-            observer.update();
-        }
+        observers.forEach(Observer::update);
     }
 }

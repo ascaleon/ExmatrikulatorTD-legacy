@@ -8,10 +8,14 @@ import java.util.Date;
  */
 public abstract class Request {
 
+
     private java.util.Date timeSent;
 
     Request () {
         this.timeSent = new Date();
     }
 
+    public Date getTimeSent() {
+        return timeSent;
+    }
 }
