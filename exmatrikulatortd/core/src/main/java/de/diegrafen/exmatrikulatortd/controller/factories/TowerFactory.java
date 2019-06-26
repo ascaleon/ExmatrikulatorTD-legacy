@@ -19,6 +19,16 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
  */
 public final class TowerFactory {
 
+    public static final int REGULAR_TOWER = 0;
+
+    public static final int SLOW_TOWER = 1;
+
+    public static final int CORRUPTION_TOWER = 2;
+
+    public static final int EXPLOSIVE_TOWER = 3;
+
+    public static final int AURA_TOWER = 4;
+
     /**
      * Versteckter Konstruktor
      */
@@ -27,21 +37,12 @@ public final class TowerFactory {
     }
 
     /**
-     * Die verschiedenen Turm-Typen
-     */
-    public enum TowerType {
-
-        SLOW_TOWER, REGULAR_TOWER, CORRUPTION_TOWER, EXPLOSIVE_TOWER, AURA_TOWER
-    }
-
-
-    /**
      * Erzeugt einen neuen Gegner
      *
      * @param towerType Der Typ des Turms
      * @return Der erzeugte Turm
      */
-    public static Tower createNewTower(TowerType towerType) {
+    public static Tower createNewTower(int towerType) {
 
         Tower tower = null;
 

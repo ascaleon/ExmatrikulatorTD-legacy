@@ -18,7 +18,7 @@ public interface ConnectorInterface {
      * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      */
-    void buildTower(TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber);
+    void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Verkauft einen Turm
@@ -43,7 +43,7 @@ public interface ConnectorInterface {
      *
      * @param enemyType Der Typ des zu schickenden Gegners
      */
-    void sendEnemy(EnemyType enemyType);
+    void sendEnemy(int enemyType);
 
     void shutdown ();
 }

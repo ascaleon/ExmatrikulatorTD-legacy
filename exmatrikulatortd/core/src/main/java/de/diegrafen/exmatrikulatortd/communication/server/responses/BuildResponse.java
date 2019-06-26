@@ -12,7 +12,7 @@ public class BuildResponse extends Response {
 
     private boolean successful;
 
-    private TowerType towerType;
+    private int towerType;
 
     private int xCoordinate;
 
@@ -20,7 +20,7 @@ public class BuildResponse extends Response {
 
     private int playerNumber;
 
-    public BuildResponse(boolean successful, TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+    public BuildResponse(boolean successful, int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         this.successful = successful;
         this.towerType = towerType;
         this.xCoordinate = xCoordinate;
@@ -36,7 +36,7 @@ public class BuildResponse extends Response {
         return successful;
     }
 
-    public TowerType getTowerType() {
+    public int getTowerType() {
         return towerType;
     }
 

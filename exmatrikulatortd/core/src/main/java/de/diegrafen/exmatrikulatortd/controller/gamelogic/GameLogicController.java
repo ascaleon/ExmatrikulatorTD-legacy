@@ -4,8 +4,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
@@ -22,7 +20,7 @@ import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 import java.awt.geom.Point2D;
 import java.util.*;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.TowerType.REGULAR_TOWER;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
@@ -533,7 +531,7 @@ public class GameLogicController implements LogicController {
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean buildTower(TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+    public boolean buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
 
         boolean wasSuccessful = false;
 
@@ -672,7 +670,7 @@ public class GameLogicController implements LogicController {
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(EnemyFactory.EnemyType enemyType) {
+    public boolean sendEnemy(int enemyType) {
         return false;
     }
 

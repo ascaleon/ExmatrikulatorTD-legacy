@@ -11,14 +11,14 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
  */
 public class SendEnemyRequest extends Request {
 
-    private EnemyType enemyType;
+    private int enemyType;
 
-    public SendEnemyRequest(EnemyType enemyType) {
+    public SendEnemyRequest(int enemyType) {
         super();
         this.enemyType = enemyType;
     }
 
-    public EnemyType getEnemyType() {
+    public int getEnemyType() {
         return enemyType;
     }
 }

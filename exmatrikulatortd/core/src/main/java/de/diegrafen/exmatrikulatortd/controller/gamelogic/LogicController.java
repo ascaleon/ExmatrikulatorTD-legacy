@@ -32,7 +32,7 @@ public interface LogicController {
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
-    boolean buildTower(TowerFactory.TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber);
+    boolean buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Verkauft einen Turm
@@ -60,7 +60,7 @@ public interface LogicController {
      * @param enemyType Der Typ des zu schickenden Gegners
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
-    boolean sendEnemy(EnemyFactory.EnemyType enemyType);
+    boolean sendEnemy(int enemyType);
 
     boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber);
 

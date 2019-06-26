@@ -12,7 +12,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
  */
 public class BuildRequest extends Request {
 
-    private TowerType towerType;
+    private int towerType;
 
     private int xPosition;
 
@@ -20,7 +20,7 @@ public class BuildRequest extends Request {
 
     private int playerNumber;
 
-    public BuildRequest(TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+    public BuildRequest(int towerType, int xPosition, int yPosition, int playerNumber) {
         super();
         this.towerType = towerType;
         this.xPosition = xPosition;
@@ -28,7 +28,7 @@ public class BuildRequest extends Request {
         this.playerNumber = playerNumber;
     }
 
-    public TowerType getTowerType() {
+    public int getTowerType() {
         return towerType;
     }
 

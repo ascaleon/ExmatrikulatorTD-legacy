@@ -56,7 +56,7 @@ public class ClientGameLogicController extends GameLogicController {
      * @param enemyType @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(EnemyFactory.EnemyType enemyType) {
+    public boolean sendEnemy(int enemyType) {
         return super.sendEnemy(enemyType);
     }
 

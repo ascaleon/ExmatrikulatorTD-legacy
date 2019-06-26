@@ -2,7 +2,6 @@ package de.diegrafen.exmatrikulatortd.communication.server.responses;
 
 import de.diegrafen.exmatrikulatortd.communication.client.requests.SendEnemyRequest;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -14,9 +13,9 @@ public class SendEnemyResponse extends Response {
 
     private boolean successful;
 
-    private EnemyType enemyType;
+    private int enemyType;
 
-    public SendEnemyResponse(boolean successful, EnemyType enemyType) {
+    public SendEnemyResponse(boolean successful, int enemyType) {
         super();
         this.successful = successful;
         this.enemyType = enemyType;
@@ -30,7 +29,7 @@ public class SendEnemyResponse extends Response {
         return successful;
     }
 
-    public EnemyType getEnemyType() {
+    public int getEnemyType() {
         return enemyType;
     }
 }
