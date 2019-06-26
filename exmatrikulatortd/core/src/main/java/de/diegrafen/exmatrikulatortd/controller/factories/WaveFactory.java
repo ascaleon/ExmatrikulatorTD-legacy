@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.*;
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
 
 /**
  * Factory für Gegner-Wellen
@@ -20,6 +19,20 @@ public final class WaveFactory {
 
     private static int enemiesPerWave = 10;
 
+    public static final int REGULAR_WAVE = 0;
+
+    public static final int HEAVY_WAVE = 1;
+
+    public static final int FAST_WAVE = 2;
+
+    public static final int REGULAR_AND_HEAVY_WAVE = 3;
+
+    public static final int REGULAR_AND_FAST_WAVE = 4;
+
+    public static final int HEAVY_AND_FAST_WAVE = 5;
+
+    public static final int BOSS_WAVE = 6;
+
 
     /**
      * Versteckter Konstruktor
@@ -29,21 +42,12 @@ public final class WaveFactory {
     }
 
     /**
-     * Die verschiedenen Wellentypen
-     */
-    public enum WaveType {
-
-        REGULAR_WAVE, HEAVY_WAVE, FAST_WAVE, REGULAR_AND_HEAVY_WAVE, REGULAR_AND_FAST_WAVE, HEAVY_AND_FAST_WAVE,
-        BOSS_WAVE
-    }
-
-    /**
      * Erzeugt eine neue Welle des angegebenen Typs
      *
      * @param waveType Der Wellentyp
      * @return Die neue Welle
      */
-    public static Wave createWave(WaveType waveType) {
+    public static Wave createWave(int waveType) {
 
         Wave wave = null;
 
@@ -187,7 +191,7 @@ public final class WaveFactory {
         return wave;
     }
 
-    private static void addEnemyToWaveEnemies(EnemyFactory.EnemyType enemyType, List<Enemy> waveEnemies, Wave wave) {
+    private static void addEnemyToWaveEnemies(int enemyType, List<Enemy> waveEnemies, Wave wave) {
         Enemy enemy = createNewEnemy(enemyType);
         waveEnemies.add(enemy);
         enemy.setWave(wave);

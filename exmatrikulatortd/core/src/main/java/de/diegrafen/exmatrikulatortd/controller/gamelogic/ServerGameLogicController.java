@@ -46,7 +46,7 @@ public class ServerGameLogicController extends GameLogicController {
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+    public boolean buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
 
         boolean successful = super.buildTower(towerType, xPosition, yPosition, playerNumber);
 
@@ -84,7 +84,7 @@ public class ServerGameLogicController extends GameLogicController {
      * @param enemyType @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(EnemyFactory.EnemyType enemyType) {
+    public boolean sendEnemy(int enemyType) {
         // TODO: Schauen, wie man diese Methode am besten implementieren kann.
         //return super.sendEnemy(enemyType);
         return false;

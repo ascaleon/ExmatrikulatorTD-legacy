@@ -68,7 +68,7 @@ public class GameClient extends Connector implements ClientInterface {
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      */
     @Override
-    public void buildTower(TowerFactory.TowerType towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+    public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         BuildRequest sellRequest = new BuildRequest(towerType, xCoordinate, yCoordinate, playerNumber);
         sendRequest(sellRequest);
     }
@@ -103,7 +103,7 @@ public class GameClient extends Connector implements ClientInterface {
      * @param enemyType Der Typ des zu schickenden Gegners
      */
     @Override
-    public void sendEnemy(EnemyFactory.EnemyType enemyType) {
+    public void sendEnemy(int enemyType) {
         SendEnemyRequest sendEnemyRequest = new SendEnemyRequest(enemyType);
         sendRequest(sendEnemyRequest);
     }

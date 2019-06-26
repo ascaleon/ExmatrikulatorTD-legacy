@@ -13,6 +13,14 @@ import static de.diegrafen.exmatrikulatortd.util.Assets.HEAVY_ENEMY_ASSETS;
  */
 public final class EnemyFactory {
 
+    public static final int REGULAR_ENEMY = 0;
+
+    public static final int HEAVY_ENEMY = 1;
+
+    public static final int FAST_ENEMY = 2;
+
+    public static final int BOSS_ENEMY = 3;
+
     /**
      * Versteckter Konstruktor
      */
@@ -21,19 +29,12 @@ public final class EnemyFactory {
     }
 
     /**
-     * Die verschiedenen Gegner-Typen (normal, gepanzert, schnell, Boss)
-     */
-    public enum EnemyType {
-        REGULAR_ENEMY, HEAVY_ENEMY, FAST_ENEMY, BOSS_ENEMY
-    }
-
-    /**
      * Erzeugt einen neuen Gegner
      *
      * @param enemyType Der Typ des Gegners
      * @return Der erzeugte Gegner
      */
-    public static Enemy createNewEnemy(EnemyType enemyType) {
+    public static Enemy createNewEnemy(int enemyType) {
 
         Enemy enemy = null;
 

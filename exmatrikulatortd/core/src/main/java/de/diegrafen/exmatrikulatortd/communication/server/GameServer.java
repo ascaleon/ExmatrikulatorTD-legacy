@@ -213,7 +213,7 @@ public class GameServer extends Connector {
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
-    public void buildTower(TowerFactory.TowerType towerType, int xPosition, int yPosition, int playerNumber) {
+    public void buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
         server.sendToAllTCP(new BuildResponse(true, towerType, xPosition, yPosition, playerNumber));
     }
 
@@ -249,7 +249,7 @@ public class GameServer extends Connector {
      * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public void sendEnemy(EnemyFactory.EnemyType enemyType) {
+    public void sendEnemy(int enemyType) {
 
     }
 }
