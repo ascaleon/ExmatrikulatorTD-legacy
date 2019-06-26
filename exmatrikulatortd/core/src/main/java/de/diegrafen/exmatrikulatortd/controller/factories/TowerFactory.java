@@ -7,8 +7,11 @@ import de.diegrafen.exmatrikulatortd.model.tower.Aura;
 import de.diegrafen.exmatrikulatortd.model.tower.Buff;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
-import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.NORMAL;
-import static de.diegrafen.exmatrikulatortd.util.Assets.REGULAR_TOWER_ASSETS;
+import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.*;
+import static de.diegrafen.exmatrikulatortd.model.tower.Aura.CORRUPTION_AURA;
+import static de.diegrafen.exmatrikulatortd.model.tower.Aura.HASTE_AURA;
+import static de.diegrafen.exmatrikulatortd.model.tower.Aura.SLOW_AURA;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
@@ -21,13 +24,23 @@ public final class TowerFactory {
 
     public static final int REGULAR_TOWER = 0;
 
+    public static final String REGULAR_TOWER_DESCRIPTION = "Your friendly neighbourhood Standardturm.";
+
     public static final int SLOW_TOWER = 1;
+
+    public static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner durch extrem lange Ladezeiten und Abstürze.";
 
     public static final int CORRUPTION_TOWER = 2;
 
+    public static final String CORRUPTION_TOWER_DESCRIPTION = "Lädt keine Vorlesungsfolien hoch und nimmt Studierenden so die Deckung.";
+
     public static final int EXPLOSIVE_TOWER = 3;
 
+    public static final String EXPLOSIVE_TOWER_DESCRIPTION = "Zwingt mehrere Studierende zur Gruppenarbeit.";
+
     public static final int AURA_TOWER = 4;
+
+    public static final String AURA_TOWER_DESCRIPTION = "Motiviert andere Lehrende in der Umgebung, mehr Stoff in der Prüfung dranzunehmen.";
 
     /**
      * Versteckter Konstruktor
@@ -73,8 +86,7 @@ public final class TowerFactory {
      * @return Der erzeugte normalen Turm
      */
     private static Tower createRegularTower() {
-        //System.out.println("Ohai!");
-        return new Tower("Regular Tower", 100, 2 * TILE_SIZE, 3, NORMAL, null, 0, 300, 150, 600, 1, REGULAR_TOWER_ASSETS);
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, 2 * TILE_SIZE, 3, NORMAL, null, 0, 300, 150, 600, 1, REGULAR_TOWER_ASSETS);
     }
 
     /**
@@ -83,8 +95,7 @@ public final class TowerFactory {
      * @return Der erzeugte Verlangsamungsturm
      */
     private static Tower createSlowTower() {
-        Tower slowTower = new Tower();
-        return null;
+        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100, 2 * TILE_SIZE, 3, FROST, SLOW_AURA, 0, 300, 150, 600, 1, SLOW_TOWER_ASSETS);
     }
 
 
@@ -94,7 +105,7 @@ public final class TowerFactory {
      * @return Der erzeugte Corruption-Turm
      */
     private static Tower createCorruptionTower() {
-        return null;
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, UNHOLY, CORRUPTION_AURA, 0, 300, 150, 600, 1, CORRUPTION_TOWER_ASSETS);
     }
 
     /**
@@ -103,7 +114,7 @@ public final class TowerFactory {
      * @return Der erzeugte Explosiv-Turm
      */
     private static Tower createExplosiveTower() {
-        return null;
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, null, 0, 300, 150, 600, 1, EXPLOSIVE_TOWER_ASSETS);
     }
 
     /**
@@ -112,6 +123,6 @@ public final class TowerFactory {
      * @return Der erzeugte Aura-Turm
      */
     private static Tower createAuraTower() {
-        return null;
+        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100, 2 * TILE_SIZE, 3, PIERCING, HASTE_AURA, 4 * TILE_SIZE, 300, 150, 600, 1, AURA_TOWER_ASSETS);
     }
 }
