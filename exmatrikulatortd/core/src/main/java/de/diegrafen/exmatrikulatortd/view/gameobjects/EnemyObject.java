@@ -61,7 +61,7 @@ public class EnemyObject extends BaseObject {
         }
 
         // Initialize the Animation with the frame interval and array of frames
-        walkAnimation = new Animation<TextureRegion>(0.025f, walkFrames);
+        walkAnimation = new Animation<>(0.025f, walkFrames);
 
         // Reset the elapsed animation time to 0
         stateTime = 0f;
@@ -85,8 +85,8 @@ public class EnemyObject extends BaseObject {
         super.draw(spriteBatch);
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
-        //spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
-        spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
+        spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
+        //spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
     }
 
     /**
