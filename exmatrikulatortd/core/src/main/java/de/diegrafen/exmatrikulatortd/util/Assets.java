@@ -19,6 +19,8 @@ public class Assets {
 
     public static final String AURA_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 
+    public static final String REGULAR_ENEMY_ASSETS = "sprites/objects/enemies/Lorenzo@64x64.png";
+
     public static final String HEAVY_ENEMY_ASSETS = "sprites/objects/enemies/Vincenzo@64x64.png";
 
     public static final String MAP_PATH = "sprites/gamemap/prototypeMap.tmx";

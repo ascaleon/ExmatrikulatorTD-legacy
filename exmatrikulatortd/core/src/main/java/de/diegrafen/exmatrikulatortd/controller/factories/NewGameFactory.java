@@ -5,5 +5,5 @@ public final class NewGameFactory {
     private NewGameFactory() {
     }
 
-    
+
 }
