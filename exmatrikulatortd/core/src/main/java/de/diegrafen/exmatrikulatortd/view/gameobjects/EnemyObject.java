@@ -18,7 +18,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 public class EnemyObject extends BaseObject {
 
     // Constant rows and columns of the sprite sheet
-    private static final int FRAME_COLS = 4, FRAME_ROWS = 4;
+    private static final int FRAME_COLS = 3, FRAME_ROWS = 4;
 
     // Objects used
     Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
@@ -41,27 +41,27 @@ public class EnemyObject extends BaseObject {
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
 
-        walkSheet = new Texture(Gdx.files.internal("sprites/objects/enemies/HazMatHarry1@64x64.png"));
+        walkSheet = getCurrentSprite();
 
         TextureRegion[][] tmp = TextureRegion.split(walkSheet,
-                walkSheet.getWidth() / FRAME_ROWS,
-                walkSheet.getHeight() / FRAME_COLS);
+                walkSheet.getWidth() / FRAME_COLS,
+                walkSheet.getHeight() / FRAME_ROWS);
 
         //System.out.println(walkSheet.getWidth());
         //System.out.println(walkSheet.getHeight());
 
         // Place the regions into a 1D array in the correct order, starting from the top
         // left, going across first. The Animation constructor requires a 1D array.
-        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * 1];//[FRAME_COLS * FRAME_ROWS];
+        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < FRAME_ROWS; i++) {
             for (int j = 0; j < FRAME_COLS; j++) {
                 walkFrames[index++] = tmp[i][j];
             }
         }
 
         // Initialize the Animation with the frame interval and array of frames
-        walkAnimation = new Animation<TextureRegion>(0.025f, walkFrames);
+        walkAnimation = new Animation<TextureRegion>(0.25f, walkFrames);
 
         // Reset the elapsed animation time to 0
         stateTime = 0f;
@@ -85,8 +85,8 @@ public class EnemyObject extends BaseObject {
         super.draw(spriteBatch);
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
-        //spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
-        spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
+        spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
+        //spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
     }
 
     /**
