@@ -7,9 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -413,6 +411,11 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(new Label("Lives: ", infoLabelsStyle)).left().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
+
+        final Table towerSelect = new Table();
+        towerSelect.add(new TextButton("Tower 1", null, null));
+        towerSelect.add(new TextButton("Tower 2", null, null));
+        defaultScreen.add(towerSelect);
 
         defaultScreen.add(statsTable).top().center().expandX().colspan(4);
         defaultScreen.row();
