@@ -9,6 +9,8 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public class Constants {
 
+    public static final String GAME_TITLE = "Exmatrikulator TD";
+
     public static final int UDP_PORT = 9001;
 
     public static final int TCP_PORT = 9002;

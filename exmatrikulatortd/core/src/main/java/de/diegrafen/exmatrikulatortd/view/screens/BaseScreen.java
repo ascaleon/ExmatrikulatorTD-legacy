@@ -23,6 +23,9 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  */
 public abstract class BaseScreen implements Screen {
 
+    /**
+     *
+     */
     private Viewport stageViewport;
 
     /**
@@ -227,5 +230,9 @@ public abstract class BaseScreen implements Screen {
 
     public BitmapFont getBitmapFont() {
         return bitmapFont;
+    }
+
+    public Viewport getStageViewport() {
+        return stageViewport;
     }
 }

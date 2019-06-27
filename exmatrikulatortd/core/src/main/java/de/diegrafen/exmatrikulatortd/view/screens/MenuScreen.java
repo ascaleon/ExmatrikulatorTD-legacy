@@ -2,12 +2,16 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -28,14 +32,20 @@ public class MenuScreen extends BaseScreen {
 
     Stage stage;
 
+    private Table mainMenuTable;
 
-    public MenuScreen (MainController mainController, Game game) {
+    private Table preferencesMenuTable;
+
+    private Table selectGameModeTable;
+
+
+    public MenuScreen(MainController mainController, Game game) {
         super(mainController, game);
         stage = new Stage(new ScreenViewport());
     }
 
     @Override
-    public void init () {
+    public void init() {
         super.init();
         //System.out.println("Dies ist der MenuScreen!");
         //font = new BitmapFont();
@@ -49,50 +59,124 @@ public class MenuScreen extends BaseScreen {
 
         Gdx.input.setInputProcessor(stage);
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.setDebug(true);
-        stage.addActor(table);
+        Stack menuStack = new Stack();
+        menuStack.setFillParent(true);
 
-        // temporary until we have asset manager in
+        createMainMenuTable(menuStack);
+        createPreferenceMenuTable(menuStack);
+        createSelectGameModeTable(menuStack);
+
+        stage.addActor(menuStack);
+    }
+
+    private void createMainMenuTable(Stack menuStack) {
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = createBasicSkin();
+        mainMenuTable = new Table();
+        TextButton newGame = new TextButton("Neues Spiel", skin);
+        TextButton selectProfile = new TextButton("Profil auswählen", skin);
+        TextButton highScores = new TextButton("Highscores", skin);
+        TextButton preferences = new TextButton("Einstellungen", skin);
+        TextButton exit = new TextButton("Spiel verlassen", skin);
 
-        //create buttons
-        TextButton newGame = new TextButton("New Game", skin);
-        TextButton preferences = new TextButton("Preferences", skin);
-        TextButton exit = new TextButton("Exit", skin);
-
-        //add buttons to table
-        table.add(newGame).fillX().uniformX();
-        table.row().pad(10, 0, 10, 0);
-        table.add(preferences).fillX().uniformX();
-        table.row();
-        table.add(exit).fillX().uniformX();
-
-        // create button listeners
-        exit.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
-            }
-        });
+        mainMenuTable.setFillParent(true);
+        //table.setDebug(true);
+        menuStack.addActor(mainMenuTable);
+        mainMenuTable.add(newGame).fillX().uniformX();
+        mainMenuTable.row().pad(10, 0, 10, 0);
+        mainMenuTable.add(selectProfile).fillX().uniformX();
+        mainMenuTable.row();
+        mainMenuTable.add(highScores).fillX().uniformX();
+        mainMenuTable.row().pad(10, 0, 10, 0);
+        mainMenuTable.add(preferences).fillX().uniformX();
+        mainMenuTable.row();
+        mainMenuTable.add(exit).fillX().uniformX();
 
         newGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().createNewSinglePlayerGame();
+                showSetSelectGameModeMenu();
             }
         });
 
         preferences.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //parent.changeScreen(Box2DTutorial.PREFERENCES);
-                //getMainController().createNewSinglePlayerGame();
+                // FIXME: Irgendwie bleibt der Button aktiv, nachdem man draufgeklickt hat
+                showPreferencesMenu();
             }
-
         });
-        //getMainController().createNewSinglePlayerGame();
+
+        exit.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+            }
+        });
+    }
+
+    private void createPreferenceMenuTable(Stack menuStack) {
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = createBasicSkin();
+        preferencesMenuTable = new Table();
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        preferencesMenuTable.setFillParent(true);
+        preferencesMenuTable.setVisible(false);
+        //table.setDebug(true);
+        menuStack.addActor(preferencesMenuTable);
+        preferencesMenuTable.add(backButton).fillX().uniformX();
+        preferencesMenuTable.row().pad(10, 0, 10, 0);
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showMainMenu();
+                backButton.setChecked(false);
+            }
+        });
+    }
+
+    private void createSelectGameModeTable(Stack menuStack) {
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = createBasicSkin();
+        selectGameModeTable = new Table();
+        TextButton newSinglePlayerGameButton = new TextButton("Singleplayer", skin);
+        TextButton newMultiPlayerGameButton = new TextButton("Multiplayer", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        selectGameModeTable.setFillParent(true);
+        selectGameModeTable.setVisible(false);
+        selectGameModeTable.setDebug(true);
+        menuStack.addActor(selectGameModeTable);
+        selectGameModeTable.add(newSinglePlayerGameButton).fillX().uniformX();
+        selectGameModeTable.row().pad(10, 0, 10, 0);
+        selectGameModeTable.add(newMultiPlayerGameButton).fillX().uniformX();
+        selectGameModeTable.row();
+        selectGameModeTable.add(backButton).fillX().uniformX();
+        selectGameModeTable.row().pad(10, 0, 10, 0);
+
+        newSinglePlayerGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().createNewSinglePlayerGame();
+            }
+        });
+
+        newMultiPlayerGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("Multiplayer!");
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showMainMenu();
+                backButton.setChecked(false);
+            }
+        });
     }
 
     @Override
@@ -108,16 +192,51 @@ public class MenuScreen extends BaseScreen {
 
     }
 
-    private void createMainMenu () {
+    private void createSaveGameMenu() {
 
     }
 
-    private void createSaveGameMenu () {
+    private void createNewSinglePlayerGameMenu() {
 
     }
 
-    private void createNewSinglePlayerGameMenu () {
+    private void showMainMenu() {
+        mainMenuTable.setVisible(true);
+        preferencesMenuTable.setVisible(false);
+        selectGameModeTable.setVisible(false);
+    }
 
+    private void showPreferencesMenu() {
+        mainMenuTable.setVisible(false);
+        preferencesMenuTable.setVisible(true);
+        selectGameModeTable.setVisible(false);
+    }
+
+    private void showSetSelectGameModeMenu() {
+        mainMenuTable.setVisible(false);
+        preferencesMenuTable.setVisible(false);
+        selectGameModeTable.setVisible(true);
+    }
+
+    private Skin createBasicSkin() {
+        BitmapFont bitmapFont = getBitmapFont();
+        Skin skin = new Skin();
+        skin.add("default", bitmapFont);
+
+        Pixmap pixmap = new Pixmap(Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 10, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("background", new Texture(pixmap));
+
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.up = skin.newDrawable("background", Color.GRAY);
+        textButtonStyle.down = skin.newDrawable("background", Color.DARK_GRAY);
+        textButtonStyle.checked = skin.newDrawable("background", Color.DARK_GRAY);
+        textButtonStyle.over = skin.newDrawable("background", Color.LIGHT_GRAY);
+        textButtonStyle.font = skin.getFont("default");
+        skin.add("default", textButtonStyle);
+
+        return skin;
     }
 
     @Override
