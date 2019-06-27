@@ -116,6 +116,9 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createPreferenceMenuTable(Stack menuStack) {
+
+        // TODO: Einstellungsmöglichkeiten für Bildschirmgröße etc. hinzufügen
+
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         //Skin skin = createBasicSkin();
         preferencesMenuTable = new Table();
