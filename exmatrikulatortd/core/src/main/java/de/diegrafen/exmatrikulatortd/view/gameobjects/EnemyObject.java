@@ -18,11 +18,24 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 public class EnemyObject extends BaseObject {
 
     // Constant rows and columns of the sprite sheet
-    private static final int FRAME_COLS = 4, FRAME_ROWS = 4;
+    private static final int FRAME_COLS = 3, FRAME_ROWS = 4;
 
     // Objects used
     Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
+
     Texture walkSheet;
+
+    private Animation<TextureRegion> standing;
+
+    private Animation<TextureRegion> runLeft;
+
+    private Animation<TextureRegion> runRight;
+
+    private Animation<TextureRegion> runUp;
+
+    private Animation<TextureRegion> runDown;
+
+    private Animation<TextureRegion> die;
 
     // A variable for tracking elapsed time for the animation
     float stateTime;
@@ -41,27 +54,39 @@ public class EnemyObject extends BaseObject {
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
 
-        walkSheet = new Texture(Gdx.files.internal("sprites/objects/enemies/HazMatHarry1@64x64.png"));
+        //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
+
+        //runLeft = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runLeft"), Animation.PlayMode.LOOP);
+
+        //runRight = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runRight"), Animation.PlayMode.LOOP);
+
+        //runUp = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runUp"), Animation.PlayMode.LOOP);
+
+        //runDown = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runDown"), Animation.PlayMode.LOOP);
+
+        //die = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "die"), Animation.PlayMode.LOOP);
+
+        walkSheet = getCurrentSprite();
 
         TextureRegion[][] tmp = TextureRegion.split(walkSheet,
-                walkSheet.getWidth() / FRAME_ROWS,
-                walkSheet.getHeight() / FRAME_COLS);
+                walkSheet.getWidth() / FRAME_COLS,
+                walkSheet.getHeight() / FRAME_ROWS);
 
         //System.out.println(walkSheet.getWidth());
         //System.out.println(walkSheet.getHeight());
 
         // Place the regions into a 1D array in the correct order, starting from the top
         // left, going across first. The Animation constructor requires a 1D array.
-        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * 1];//[FRAME_COLS * FRAME_ROWS];
+        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < FRAME_ROWS; i++) {
             for (int j = 0; j < FRAME_COLS; j++) {
                 walkFrames[index++] = tmp[i][j];
             }
         }
 
         // Initialize the Animation with the frame interval and array of frames
-        walkAnimation = new Animation<>(0.025f, walkFrames);
+        walkAnimation = new Animation<TextureRegion>(0.25f, walkFrames);
 
         // Reset the elapsed animation time to 0
         stateTime = 0f;

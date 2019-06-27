@@ -56,11 +56,14 @@ public abstract class BaseObject implements GameObject {
      */
     private String name;
 
+    private String assetsName;
+
     private boolean removed;
 
     BaseObject (ObservableUnit observable) {
         this.observable = observable;
         this.name = observable.getName();
+        this.assetsName = observable.getAssetsName();
         this.currentSprite = new Texture(observable.getAssetsName());
         this.xPosition = observable.getxPosition();
         this.yPosition = observable.getyPosition();
@@ -176,5 +179,9 @@ public abstract class BaseObject implements GameObject {
 
     public void setRemoved(boolean removed) {
         this.removed = removed;
+    }
+
+    public String getAssetsName() {
+        return assetsName;
     }
 }
