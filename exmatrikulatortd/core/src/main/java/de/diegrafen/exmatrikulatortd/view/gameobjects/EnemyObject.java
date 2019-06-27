@@ -22,7 +22,20 @@ public class EnemyObject extends BaseObject {
 
     // Objects used
     Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
+
     Texture walkSheet;
+
+    private Animation<TextureRegion> standing;
+
+    private Animation<TextureRegion> runLeft;
+
+    private Animation<TextureRegion> runRight;
+
+    private Animation<TextureRegion> runUp;
+
+    private Animation<TextureRegion> runDown;
+
+    private Animation<TextureRegion> die;
 
     // A variable for tracking elapsed time for the animation
     float stateTime;
@@ -40,6 +53,18 @@ public class EnemyObject extends BaseObject {
 
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
+
+        //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
+
+        //runLeft = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runLeft"), Animation.PlayMode.LOOP);
+
+        //runRight = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runRight"), Animation.PlayMode.LOOP);
+
+        //runUp = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runUp"), Animation.PlayMode.LOOP);
+
+        //runDown = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runDown"), Animation.PlayMode.LOOP);
+
+        //die = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "die"), Animation.PlayMode.LOOP);
 
         walkSheet = getCurrentSprite();
 
