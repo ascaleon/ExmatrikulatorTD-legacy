@@ -14,6 +14,8 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
@@ -58,6 +60,14 @@ public class GameClient extends Connector implements ClientInterface {
      */
     private void sendRequest(Request request) {
         client.sendTCP(request);
+    }
+
+    /**
+     * Gibt eine Liste von InetAddresses zurueck, die entdeckte Server im lokalen Netzwerk enthaelt.
+     * @return @code{List<InetAddress>} mit gefundenen Servern
+     */
+    private List<InetAddress> discoverLocalServers(){
+        return client.discoverHosts(udpPort,5000);
     }
 
     /**
