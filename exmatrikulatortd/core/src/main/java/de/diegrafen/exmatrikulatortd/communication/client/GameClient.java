@@ -66,7 +66,7 @@ public class GameClient extends Connector implements ClientInterface {
      * Gibt eine Liste von InetAddresses zurueck, die entdeckte Server im lokalen Netzwerk enthaelt.
      * @return @code{List<InetAddress>} mit gefundenen Servern
      */
-    private List<InetAddress> discoverLocalServers(){
+    public List<InetAddress> discoverLocalServers(){
         return client.discoverHosts(udpPort,5000);
     }
 
@@ -79,8 +79,8 @@ public class GameClient extends Connector implements ClientInterface {
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        BuildRequest sellRequest = new BuildRequest(towerType, xCoordinate, yCoordinate, playerNumber);
-        sendRequest(sellRequest);
+        BuildRequest buildRequest = new BuildRequest(towerType, xCoordinate, yCoordinate, playerNumber);
+        sendRequest(buildRequest);
     }
 
     /**

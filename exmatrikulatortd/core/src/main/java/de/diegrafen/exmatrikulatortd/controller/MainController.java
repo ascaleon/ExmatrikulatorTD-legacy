@@ -6,7 +6,9 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Server;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
+import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Highscore;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
@@ -15,6 +17,9 @@ import de.diegrafen.exmatrikulatortd.view.screens.EndScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.MenuScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.SplashScreen;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Haupt-Controller. Dient der Verwaltung der Bildschirme und der Interaktion mit der Kommunikations- und Persistenz-
@@ -230,6 +235,23 @@ public class MainController {
      */
     public void loadMultiPlayerServerGame(Gamestate gamestate) {
         game.setScreen(new GameScreen(this, game, currentProfile, gameServer, gamestate));
+    }
+
+    public List<Highscore> retrieveHighscores(int limit) {
+
+        //Profile profile = new Profile("Sherlock Holmes", Difficulty.EASY);
+
+        //profileDao.create(profile);
+
+        //Highscore highscore1 = new Highscore(profile, 9000, 25, new Date());
+        //Highscore highscore2 = new Highscore(profile, 5012, 691, new Date());
+        //Highscore highscore3 = new Highscore(profile, 1337, 42, new Date());
+
+        //highScoreDao.create(highscore1);
+        //highScoreDao.create(highscore2);
+        //highScoreDao.create(highscore3);
+
+        return highScoreDao.findHighestScores(limit);
     }
 
 }

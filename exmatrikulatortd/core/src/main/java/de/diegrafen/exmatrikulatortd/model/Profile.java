@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,4 +50,58 @@ public class Profile extends BaseModel {
     @Enumerated(EnumType.ORDINAL)
     private Difficulty preferredDifficulty;
 
+    public Profile() {
+        this.highscores = new ArrayList<>();
+        this.saveStates = new ArrayList<>();
+    }
+
+    public Profile(String profileName, Difficulty preferredDifficulty) {
+        this();
+        this.profileName = profileName;
+        this.preferredDifficulty = preferredDifficulty;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
+    }
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
+
+    public void setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
+    }
+
+    public List<Highscore> getHighscores() {
+        return highscores;
+    }
+
+    public void setHighscores(List<Highscore> highscores) {
+        this.highscores = highscores;
+    }
+
+    public void addHighscore(Highscore highscore) {
+        highscores.add(highscore);
+    }
+
+    public List<SaveState> getSaveStates() {
+        return saveStates;
+    }
+
+    public void setSaveStates(List<SaveState> saveStates) {
+        this.saveStates = saveStates;
+    }
+
+    public Difficulty getPreferredDifficulty() {
+        return preferredDifficulty;
+    }
+
+    public void setPreferredDifficulty(Difficulty preferredDifficulty) {
+        this.preferredDifficulty = preferredDifficulty;
+    }
 }

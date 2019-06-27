@@ -2,10 +2,7 @@ package de.diegrafen.exmatrikulatortd.model;
 
 import com.badlogic.gdx.utils.compression.lzma.Base;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -18,6 +15,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "Highscores")
+@NamedQueries({
+        @NamedQuery(name="Highscore.findHighestScores",
+                query="SELECT h FROM Highscore h ORDER BY h.score DESC"),
+})
 public class Highscore extends BaseModel {
 
     /**
@@ -47,4 +48,46 @@ public class Highscore extends BaseModel {
      */
     private Date datePlayed;
 
+    public Highscore() {
+
+    }
+
+    public Highscore(Profile profile, int score, int roundNumberReached, Date datePlayed) {
+        this.profile = profile;
+        this.score = score;
+        this.roundNumberReached = roundNumberReached;
+        this.datePlayed = datePlayed;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getRoundNumberReached() {
+        return roundNumberReached;
+    }
+
+    public void setRoundNumberReached(int roundNumberReached) {
+        this.roundNumberReached = roundNumberReached;
+    }
+
+    public Date getDatePlayed() {
+        return datePlayed;
+    }
+
+    public void setDatePlayed(Date datePlayed) {
+        this.datePlayed = datePlayed;
+    }
 }

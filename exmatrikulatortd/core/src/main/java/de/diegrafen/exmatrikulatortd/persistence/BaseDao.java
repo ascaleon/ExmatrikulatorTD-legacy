@@ -134,27 +134,4 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
         }
         else throw new IllegalArgumentException("The id of the parameter must not be zero!");
     }
-
-    /**
-     * Gibt eine Liste aller Objekte des mit dem DAO-OBjekt assoziierten Typs in der Datenbank zurück
-     * @return Eine Liste aller Objekte des mit dem DAO-OBjekt assoziierten Typs in der Datenbank
-     */
-    //@SuppressWarnings("unchecked")
-    public List<T> findAll() {
-        openCurrentSession();
-        List<T> list = currentSession.createNamedQuery(getClazz().getSimpleName() + ".findAll", getClazz()).getResultList();
-        closeCurrentSession();
-        return list;
-    }
-
-
-    /**
-     * Löscht alle Einträge des mit dem DAO-OBjekt assoziierten Typs in der Datenbank
-     */
-    public void deleteAll() {
-        List<T> entityList = findAll();
-        for (T t : entityList) {
-            delete(t);
-        }
-    }
 }

@@ -17,7 +17,6 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
 
 /**
- *
  * Der Spielzustand. Verwaltet alle spielrelevanten Informationen über das Spielfeld, die Spieler, die Türme,
  * Angriffswellen und Gegner.
  *
@@ -52,7 +51,6 @@ public class Gamestate extends BaseModel implements Observable {
      * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
      */
     private transient int localPlayerNumber;
-
 
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
