@@ -1,7 +1,5 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import de.diegrafen.exmatrikulatortd.view.Observer;
-
 public interface ObservableUnit extends Observable {
 
     String getName ();

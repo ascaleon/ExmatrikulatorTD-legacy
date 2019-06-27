@@ -4,6 +4,12 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 
+/**
+ * Stellt statische Methoden für das Aufrüsten von Türmen zur Verfügung
+ *
+ * @author Jan Romann <jan.romann@uni-bremen.de>
+ * @version 26.06.2019 22:07
+ */
 public final class TowerUpgrader {
 
     /**
@@ -45,7 +51,19 @@ public final class TowerUpgrader {
     }
 
     private static boolean upgradeRegularTower(Tower tower) {
-        return false;
+
+        boolean successful = true;
+
+        if (tower.getMaxUpgradeLevel() >= tower.getUpgradeLevel()) {
+            successful = false;
+        } else {
+            tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
+            tower.setAttackDamage(tower.getAttackDamage() * 2);
+            tower.setUpgradePrice(tower.getUpgradePrice() * 2);
+            tower.setSellPrice(tower.getSellPrice() * 2);
+        }
+
+        return successful;
     }
 
     private static boolean upgradeSlowTower(Tower tower) {
