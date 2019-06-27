@@ -88,6 +88,11 @@ public class Tower extends ObservableModel {
     private int upgradeLevel;
 
     /**
+     * Die maximale Ausbaustufe des Turms
+     */
+    private int maxUpgradeLevel;
+
+    /**
      * Die Position des Turmes auf der Spielkarte
      */
     @OneToOne(mappedBy = "tower")
@@ -145,9 +150,13 @@ public class Tower extends ObservableModel {
 
     /**
      * Konstruktor für die Erzeugung eines neuen Turms über eine TowerFactory.
+     *
      * @param name
+     * @param descriptionText
+     * @param towerType
      * @param attackDamage
      * @param attackRange
+     * @param attackSpeed
      * @param attackType
      * @param aura
      * @param auraRange
@@ -155,9 +164,10 @@ public class Tower extends ObservableModel {
      * @param sellPrice
      * @param upgradePrice
      * @param upgradeLevel
+     * @param maxUpgradeLevel
      * @param assetsName
      */
-    public Tower(String name, String descriptionText, int towerType, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
+    public Tower(String name, String descriptionText, int towerType, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
         super();
 
         this.name = name;
@@ -173,6 +183,7 @@ public class Tower extends ObservableModel {
         this.sellPrice = sellPrice;
         this.upgradePrice = upgradePrice;
         this.upgradeLevel = upgradeLevel;
+        this.maxUpgradeLevel = maxUpgradeLevel;
         this.buffs = new ArrayList<Buff>();
         this.timeSinceLastSearch = 5f;
         this.cooldown = 0;
@@ -351,5 +362,9 @@ public class Tower extends ObservableModel {
 
     public int getTowerType() {
         return towerType;
+    }
+
+    public int getMaxUpgradeLevel() {
+        return maxUpgradeLevel;
     }
 }
