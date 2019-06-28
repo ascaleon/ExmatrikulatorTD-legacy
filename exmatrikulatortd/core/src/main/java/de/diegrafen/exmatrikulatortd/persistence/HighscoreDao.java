@@ -26,6 +26,14 @@ public class HighscoreDao extends BaseDao<Highscore> {
     }
 
 
+    /**
+     * Ruft eine bestimmte Anzahl der höchsten Highscores aus der Datenbank ab und gibt sie als Liste in absteigender
+     * Reihenfolge zurück.
+     *
+     * @param limit Die Anzahl der @code{Highscore}s, die aus der Datenbank abgerufen werden sollen
+     * @return Die <i>n</i> höchsten @code{Highscore}s aus der Datenbank
+     * @author Jan Romann
+     */
     public List<Highscore> findHighestScores(int limit) {
         if (limit < 0) {
             return null;

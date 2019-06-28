@@ -51,6 +51,8 @@ public class GameClient extends Connector implements ClientInterface {
         registerObjects(client.getKryo());
         tcpPort = TCP_PORT;
         udpPort = UDP_PORT;
+        System.out.println("Client created!");
+        client.start(); // Startet den Client in einem neuen Thread
     }
 
     /**

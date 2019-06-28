@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.communication.server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.ServerDiscoveryHandler;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.SellResponse;
@@ -59,6 +60,7 @@ public class GameServer extends Connector {
         this.server = new Server();
         this.connected = false;
         registerObjects(server.getKryo());
+        System.out.println("Server created!");
     }
 
 
@@ -69,6 +71,9 @@ public class GameServer extends Connector {
     public boolean startServer() {
         try {
             server.bind(tcpPort, udpPort);
+            System.out.println("Server started!");
+            server.setDiscoveryHandler(ServerDiscoveryHandler.DEFAULT);
+            server.start();
         } catch (final java.io.IOException e) {
             e.printStackTrace();
             return false;
@@ -106,10 +111,10 @@ public class GameServer extends Connector {
             public void received (Connection connection, Object object) {
                 if (object instanceof BuildRequest) {
                     final BuildRequest request = (BuildRequest) object;
-                    final boolean successful = logicController.buildTower(request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    final boolean successful = logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
 
                     if (successful) {
-                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                     } else {
                         connection.sendTCP(new BuildResponse(successful));
                     }
@@ -127,10 +132,10 @@ public class GameServer extends Connector {
             public void received (Connection connection, Object object) {
                 if (object instanceof SellRequest) {
                     final SellRequest request = (SellRequest) object;
-                    final boolean successful = logicController.sellTower(request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    final boolean successful = logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
 
                     if (successful) {
-                        server.sendToAllTCP(new SellResponse(successful, request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                        server.sendToAllTCP(new SellResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                     } else {
                         connection.sendTCP(new SellResponse(successful));
                     }
@@ -169,10 +174,10 @@ public class GameServer extends Connector {
             public void received (Connection connection, Object object) {
                 if (object instanceof UpgradeRequest) {
                     final UpgradeRequest request = (UpgradeRequest) object;
-                    final boolean successful = logicController.upgradeTower(request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    final boolean successful = logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
 
                     if (successful) {
-                        server.sendToAllTCP(new UpgradeResponse(successful, request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                        server.sendToAllTCP(new UpgradeResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                     } else {
                         connection.sendTCP(new UpgradeResponse(successful));
                     }
@@ -204,52 +209,49 @@ public class GameServer extends Connector {
     }
 
     /**
-     * Baut einen neuen Turm
+     * Sendet an alle Clients, dass ein Turm gebaut wurde.
      *
-     * @param towerType
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      */
     @Override
-    public void buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
-        server.sendToAllTCP(new BuildResponse(true, towerType, xPosition, yPosition, playerNumber));
+    public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+        server.sendToAllTCP(new BuildResponse(true, towerType, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * Verkauft einen Turm
+     * Sendet an alle Clients, dass ein Turm verkauft wurde.
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     @Override
-    public void sellTower(int xPosition, int yPosition, int playerNumber) {
-        server.sendToAllTCP(new SellResponse(true, xPosition, yPosition, playerNumber));
+    public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        server.sendToAllTCP(new SellResponse(true, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * Rüstet einen Turm auf
-     *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     * Sendet an alle Clients die Nachricht, dass ein Turm ausgebaut wurde.
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     @Override
-    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
-
+    public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        server.sendToAllTCP(new UpgradeResponse(true, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * Schickt einen Gegner zum gegnerischen Spieler
+     * TODO: Diese Methode passt, glaube ich, noch nicht so ganz. --JKR
+     * Sendet an alle Clients eine Nachricht, dass ein Gegner geschickt wurde
      *
-     * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType Der Typ des zu schickenden Gegners
      */
     @Override
     public void sendEnemy(int enemyType) {
-
+        server.sendToAllTCP(new SendEnemyResponse(true, enemyType));
     }
 }

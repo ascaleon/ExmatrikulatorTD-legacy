@@ -6,6 +6,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Server;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
 import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
@@ -18,6 +19,7 @@ import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.MenuScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.SplashScreen;
 
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
@@ -165,13 +167,27 @@ public class MainController {
      * Erzeugt einen neuen GameServer
      */
     public void createServer() {
-
+        this.gameServer = new GameServer();
     }
 
     /**
      * Erzeugt einen neuen GameClient
      */
     public void createClient() {
+        if (gameClient == null) {
+            this.gameClient = new GameClient();
+        } else {
+
+            // Code, um Server-Funktionalität zu testen.
+            List<InetAddress> servers  = gameClient.discoverLocalServers();
+
+            for (InetAddress inetAddress : servers) {
+                System.out.println(inetAddress.getHostAddress());
+            }
+
+            gameClient.connect(servers.get(0).getHostName());
+
+        }
 
     }
 

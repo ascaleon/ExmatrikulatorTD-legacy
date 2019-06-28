@@ -38,6 +38,8 @@ public class MenuScreen extends BaseScreen {
 
     private Table highScoreMenuTable;
 
+    private Table clientOrServerMenuTable;
+
 
     public MenuScreen(MainController mainController, Game game) {
         super(mainController, game);
@@ -55,8 +57,6 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void show() {
-        System.out.println("Dies ist der MenuScreen!");
-
         Gdx.input.setInputProcessor(stage);
 
         Stack menuStack = new Stack();
@@ -66,6 +66,7 @@ public class MenuScreen extends BaseScreen {
         createPreferenceMenuTable(menuStack);
         createSelectGameModeTable(menuStack);
         createHighscoreMenuTable(menuStack);
+        createSelectClientOrServerMenu(menuStack);
 
         stage.addActor(menuStack);
     }
@@ -96,7 +97,7 @@ public class MenuScreen extends BaseScreen {
         newGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showSetSelectGameModeMenu();
+                showSetSelectGameModeMenu(mainMenuTable);
             }
         });
 
@@ -104,14 +105,14 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // FIXME: Irgendwie bleibt der Button aktiv, nachdem man draufgeklickt hat
-                showPreferencesMenu();
+                showPreferencesMenu(mainMenuTable);
             }
         });
 
         highScores.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showHighScoreMenu();
+                showHighScoreMenu(mainMenuTable);
             }
         });
 
@@ -152,14 +153,14 @@ public class MenuScreen extends BaseScreen {
         newMultiPlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("Multiplayer!");
+                showClientOrServerMenu(selectGameModeTable);
             }
         });
 
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu();
+                showMainMenu(selectGameModeTable);
                 backButton.setChecked(false);
             }
         });
@@ -168,8 +169,8 @@ public class MenuScreen extends BaseScreen {
     private void createPreferenceMenuTable(Stack menuStack) {
 
         // TODO: Einstellungsmöglichkeiten für Bildschirmgröße etc. hinzufügen
+        // TODO: Auswahlmöglichkeit für Schwierigkeitsgrad hinzufügen
 
-        highScoreMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         //Skin skin = createBasicSkin();
         preferencesMenuTable = new Table();
@@ -185,7 +186,7 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu();
+                showMainMenu(preferencesMenuTable);
                 backButton.setChecked(false);
             }
         });
@@ -193,42 +194,22 @@ public class MenuScreen extends BaseScreen {
 
     private void createHighscoreMenuTable(Stack menuStack) {
 
-        InputListener stopTouchDown = new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                event.stop();
-                return false;
-            }
-        };
-
+        highScoreMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-
         Table highScoreTable = new Table();
-
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, scrollPaneStyle);
+        java.util.List<Highscore> zweiteHighscoreList = getMainController().retrieveHighscores(20);
+        Skin basicSkin = createBasicSkin();
 
         highScoreTable.pad(10).defaults().expandX().space(4);
-
-        java.util.List<Highscore> zweiteHighscoreList = getMainController().retrieveHighscores(20);
-
-        System.out.println(zweiteHighscoreList.size());
-
-        Skin basicSkin = createBasicSkin();
 
         for (Highscore highscore : zweiteHighscoreList) {
             // FIXME: Formatierung passt noch nicht so ganz.
             highScoreTable.row();
-            //highScoreTable.row().pad(10, 0, 0, 0);
             Table rowTable = new TextButton(highscore.getProfile().getProfileName() +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
                     "\nDate played: " + highscore.getDatePlayed(), basicSkin);
-            //rowTable.defaults().expandX().fillX();
-            //rowTable.add(new Label(highscore.getProfile().getProfileName(), skin)).expandX().fillX();
-            //rowTable.row();
-            //rowTable.add(new Label("Score: " + highscore.getScore(), skin)).expandX().fillX();
-            //rowTable.add(new Label("Round reached: " + highscore.getRoundNumberReached(), skin)).expandX().fillX();
-            //rowTable.row();
-            //rowTable.add(new Label("Date played: " + highscore.getDatePlayed().toString(), skin)).expandX().fillX();
             highScoreTable.add(rowTable);
             rowTable.addListener(new ChangeListener() {
                 @Override
@@ -237,7 +218,6 @@ public class MenuScreen extends BaseScreen {
                 }
             });
         }
-
 
         TextButton backButton = new TextButton("Zurück", skin);
 
@@ -251,14 +231,58 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu();
+                showMainMenu(highScoreMenuTable);
                 backButton.setChecked(false);
             }
         });
 
-
         highScoreMenuTable.add(backButton).fillX().uniformX();
         highScoreMenuTable.row();
+    }
+
+    private void createSelectClientOrServerMenu(Stack menuStack) {
+
+        clientOrServerMenuTable = new Table();
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = createBasicSkin();
+        TextButton createGame = new TextButton("Spiel erstellen", skin);
+        TextButton searchGame = new TextButton("Spiel suchen", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        clientOrServerMenuTable.setFillParent(true);
+        clientOrServerMenuTable.setVisible(false);
+        //table.setDebug(true);
+        menuStack.addActor(clientOrServerMenuTable);
+        clientOrServerMenuTable.add(createGame).fillX().uniformX();
+        clientOrServerMenuTable.row().pad(10, 0, 10, 0);
+        clientOrServerMenuTable.add(searchGame).fillX().uniformX();
+        clientOrServerMenuTable.row();
+        clientOrServerMenuTable.add(backButton).fillX().uniformX();
+        clientOrServerMenuTable.row().pad(10, 0, 10, 0);
+
+
+        createGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().createServer();
+                getMainController().startServer();
+            }
+        });
+
+        searchGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().createClient();
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showMainMenu(clientOrServerMenuTable);
+                backButton.setChecked(false);
+            }
+        });
     }
 
     @Override
@@ -282,32 +306,29 @@ public class MenuScreen extends BaseScreen {
 
     }
 
-    private void showMainMenu() {
+    private void showMainMenu(Table callingTable) {
         mainMenuTable.setVisible(true);
-        preferencesMenuTable.setVisible(false);
-        selectGameModeTable.setVisible(false);
-        highScoreMenuTable.setVisible(false);
+        callingTable.setVisible(false);
     }
 
-    private void showSetSelectGameModeMenu() {
-        mainMenuTable.setVisible(false);
-        preferencesMenuTable.setVisible(false);
+    private void showSetSelectGameModeMenu(Table callingTable) {
         selectGameModeTable.setVisible(true);
-        highScoreMenuTable.setVisible(false);
+        callingTable.setVisible(false);
     }
 
-    private void showHighScoreMenu() {
-        mainMenuTable.setVisible(false);
-        preferencesMenuTable.setVisible(false);
-        selectGameModeTable.setVisible(false);
+    private void showHighScoreMenu(Table callingTable) {
         highScoreMenuTable.setVisible(true);
+        callingTable.setVisible(false);
     }
 
-    private void showPreferencesMenu() {
-        mainMenuTable.setVisible(false);
+    private void showPreferencesMenu(Table callingTable) {
         preferencesMenuTable.setVisible(true);
-        selectGameModeTable.setVisible(false);
-        highScoreMenuTable.setVisible(false);
+        callingTable.setVisible(false);
+    }
+
+    private void showClientOrServerMenu(Table callingTable) {
+        clientOrServerMenuTable.setVisible(true);
+        callingTable.setVisible(false);
     }
 
 
