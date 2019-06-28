@@ -496,6 +496,7 @@ public class GameScreen extends BaseScreen implements GameView {
         float cameraUp = getCamera().position.y + cameraHalfHeight;
         float cameraDown = getCamera().position.y - cameraHalfHeight;
 
+
         if (cameraLeft < 0) {
             getCamera().position.x = cameraHalfWidth;
         }
