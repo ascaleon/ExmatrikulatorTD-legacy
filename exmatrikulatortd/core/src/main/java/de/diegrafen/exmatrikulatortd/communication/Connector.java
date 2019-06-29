@@ -28,5 +28,10 @@ public abstract class Connector implements ConnectorInterface {
         kryo.register(SendEnemyResponse.class);
         kryo.register(UpgradeRequest.class);
         kryo.register(UpgradeResponse.class);
+        kryo.register(GetGameInfoRequest.class);
+        kryo.register(GetGameInfoResponse.class);
+
+        kryo.register(java.util.LinkedList.class);
+        kryo.register(java.util.Date.class);
     }
 }

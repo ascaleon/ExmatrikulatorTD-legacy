@@ -49,6 +49,8 @@ public class GameClient extends Connector implements ClientInterface {
 
     private List<String> receivedSessionInfo;
 
+    private int localPlayerNumber;
+
     /**
      * Erzeugt einen neuen GameClient
      */
@@ -77,6 +79,7 @@ public class GameClient extends Connector implements ClientInterface {
                 receivedSessionInfo.add(serverInformation);
             }
         });
+        attachGetGameInfoReponseListener();
         client.start(); // Startet den Client in einem neuen Thread
     }
 
@@ -290,6 +293,23 @@ public class GameClient extends Connector implements ClientInterface {
 
                     if (response.getGamestate() != null) {
                         logicController.setGamestate(response.getGamestate());
+                    }
+                }
+            }
+        });
+    }
+
+    private void attachGetGameInfoReponseListener() {
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof GetGameInfoResponse) {
+                    GetGameInfoResponse response = (GetGameInfoResponse) object;
+                    if (response.isUpdate()) {
+                        // Update-Code kommt hierhin
+                    } else {
+                        localPlayerNumber = response.getAllocatedPlayerNumber();
+                        System.out.println("Allocated Player Number: " + localPlayerNumber);
                     }
                 }
             }
