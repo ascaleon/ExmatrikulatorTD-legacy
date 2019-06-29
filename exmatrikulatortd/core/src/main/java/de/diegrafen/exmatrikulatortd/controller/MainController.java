@@ -20,6 +20,7 @@ import de.diegrafen.exmatrikulatortd.view.screens.MenuScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.SplashScreen;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -177,18 +178,61 @@ public class MainController {
         if (gameClient == null) {
             this.gameClient = new GameClient();
         } else {
-
+            /*
             // Code, um Server-Funktionalität zu testen.
             List<InetAddress> servers  = gameClient.discoverLocalServers();
 
+
+            // TODO: Empfangene Informationen müssen geparst werden
             for (InetAddress inetAddress : servers) {
                 System.out.println(inetAddress.getHostAddress());
             }
 
-            gameClient.connect(servers.get(0).getHostName());
+            for (String string : gameClient.getReceivedSessionInfo()) {
+                System.out.println(string);
+            }
 
+            if (!servers.isEmpty()) {
+                gameClient.connect(servers.get(0).getHostName());
+            } else {
+                System.out.println("Keine Server gefunden!");
+            }
+             */
+        }
+    }
+
+    public List<String> getLocalGameServers() {
+
+        List<String> serverList = new ArrayList<>();
+
+        // Code, um Server-Funktionalität zu testen.
+        List<InetAddress> servers  = gameClient.discoverLocalServers();
+
+
+        // TODO: Empfangene Informationen müssen geparst werden
+        //for (InetAddress inetAddress : servers) {
+            //System.out.println(inetAddress.getHostAddress());
+            //serverList.add(inetAddress.getHostAddress());
+        //}
+
+        serverList = gameClient.getReceivedSessionInfo();
+
+        for (String string : serverList) {
+            System.out.println(string);
         }
 
+        if (!servers.isEmpty()) {
+            //gameClient.connect(servers.get(0).getHostName());
+        } else {
+            System.out.println("Keine Server gefunden!");
+        }
+
+        return serverList;
+    }
+
+    public void shutdownClient() {
+        this.gameClient.shutdown();
+        //this.gameClient = null;
     }
 
     /**

@@ -1,6 +1,8 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
@@ -14,7 +16,9 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
@@ -43,6 +47,8 @@ public class GameClient extends Connector implements ClientInterface {
 
     private LogicController logicController;
 
+    private List<String> receivedSessionInfo;
+
     /**
      * Erzeugt einen neuen GameClient
      */
@@ -51,7 +57,26 @@ public class GameClient extends Connector implements ClientInterface {
         registerObjects(client.getKryo());
         tcpPort = TCP_PORT;
         udpPort = UDP_PORT;
+        this.receivedSessionInfo = new LinkedList<>();
         System.out.println("Client created!");
+        client.setDiscoveryHandler(new ClientDiscoveryHandler() {
+
+            @Override
+            public DatagramPacket onRequestNewDatagramPacket(){
+                return new DatagramPacket(new byte[48], 48);
+            }
+
+            @Override
+            public void onDiscoveredHost(DatagramPacket datagramPacket) {
+                String serverInformation = "";
+                serverInformation += datagramPacket.getAddress().getHostAddress() + "\n";
+                //System.out.println("Ohai.");
+                String packageInfo = new String(datagramPacket.getData(), 0, datagramPacket.getLength());
+                //System.out.println(packageInfo);
+                serverInformation += packageInfo;
+                receivedSessionInfo.add(serverInformation);
+            }
+        });
         client.start(); // Startet den Client in einem neuen Thread
     }
 
@@ -277,5 +302,9 @@ public class GameClient extends Connector implements ClientInterface {
      */
     public boolean isConnected() {
         return connected;
+    }
+
+    public List<String> getReceivedSessionInfo() {
+        return receivedSessionInfo;
     }
 }

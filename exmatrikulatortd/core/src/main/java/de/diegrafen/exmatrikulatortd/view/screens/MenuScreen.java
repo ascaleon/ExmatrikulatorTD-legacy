@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Difficulty;
@@ -40,10 +41,18 @@ public class MenuScreen extends BaseScreen {
 
     private Table clientOrServerMenuTable;
 
+    private Table serverListMenuTable;
+
+    private Table serverListTable;
+
+    private java.util.List<String> serverList;
+
+    private String hostAddress = "";
 
     public MenuScreen(MainController mainController, Game game) {
         super(mainController, game);
         stage = new Stage(new ScreenViewport());
+        this.serverList = new LinkedList<>();
     }
 
     @Override
@@ -67,6 +76,7 @@ public class MenuScreen extends BaseScreen {
         createSelectGameModeTable(menuStack);
         createHighscoreMenuTable(menuStack);
         createSelectClientOrServerMenu(menuStack);
+        createServerListTable(menuStack);
 
         stage.addActor(menuStack);
     }
@@ -273,6 +283,9 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().createClient();
+                serverList = getMainController().getLocalGameServers();
+                updateServerList();
+                showServerListMenu(clientOrServerMenuTable);
             }
         });
 
@@ -283,6 +296,76 @@ public class MenuScreen extends BaseScreen {
                 backButton.setChecked(false);
             }
         });
+    }
+
+    private void createServerListTable(Stack menuStack) {
+
+        serverListMenuTable = new Table();
+        serverListTable = new Table();
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
+
+        TextButton connectButton = new TextButton("Verbinden", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        serverListMenuTable.setFillParent(true);
+        serverListMenuTable.setVisible(false);
+        //table.setDebug(true);
+        menuStack.addActor(serverListMenuTable);
+        serverListMenuTable.add(upgradesScrollPane).fillX().uniformX();
+        serverListMenuTable.row().pad(10, 0, 10, 0);
+
+        connectButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().connectToServer(hostAddress);
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().shutdownClient();
+                showMainMenu(serverListMenuTable);
+                backButton.setChecked(false);
+            }
+        });
+
+        serverListMenuTable.add(connectButton).fillX().uniformX();
+        serverListMenuTable.row();
+        serverListMenuTable.add(backButton).fillX().uniformX();
+        serverListMenuTable.row().pad(10, 0, 10, 0);
+
+        updateServerList();
+    }
+
+    private void updateServerList() {
+
+        // FIXME: Die alten Zeilen werden bei einem Update irgendwie noch nicht ersetzt
+        Array<Cell> cells = serverListTable.getCells();
+
+        for (Cell cell : cells) {
+            serverListTable.removeActor(cell.getActor());
+        }
+
+        Skin basicSkin = createBasicSkin();
+
+        for (String server: serverList) {
+            String[] lines = server.split("\n");
+            // FIXME: Formatierung passt noch nicht so ganz.
+            serverListTable.row();
+            Table rowTable = new TextButton("Map-Name: " + lines[1] + "\nAnzahl Spieler: " + lines[2], basicSkin);
+            serverListTable.add(rowTable);
+            rowTable.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    hostAddress = lines[0];
+                    System.out.println(lines);
+                }
+            });
+        }
+        hostAddress = "blah";
     }
 
     @Override
@@ -331,7 +414,10 @@ public class MenuScreen extends BaseScreen {
         callingTable.setVisible(false);
     }
 
-
+    private void showServerListMenu(Table callingTable) {
+        serverListMenuTable.setVisible(true);
+        callingTable.setVisible(false);
+    }
 
     private Skin createBasicSkin() {
         BitmapFont bitmapFont = getBitmapFont();

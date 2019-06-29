@@ -14,6 +14,11 @@ import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
@@ -72,7 +77,31 @@ public class GameServer extends Connector {
         try {
             server.bind(tcpPort, udpPort);
             System.out.println("Server started!");
-            server.setDiscoveryHandler(ServerDiscoveryHandler.DEFAULT);
+            server.setDiscoveryHandler(new ServerDiscoveryHandler() {
+                @Override
+                public boolean onDiscoverHost(DatagramChannel datagramChannel, InetSocketAddress fromAddress) throws IOException {
+
+                    boolean lookingForPlayers = true;
+
+                    String mapName = "map1";
+
+                    String numberOfPlayers = Integer.toString(2);
+
+                    if (lookingForPlayers) {
+                        String newData = mapName + "\n" + numberOfPlayers;
+
+                        ByteBuffer buf = ByteBuffer.allocate(48);
+                        buf.clear();
+                        buf.put(newData.getBytes());
+                        buf.flip();
+
+                        int bytesSent = datagramChannel.send(buf, fromAddress);
+                        return bytesSent > 0;
+                    } else {
+                        return false;
+                    }
+                }
+            });
             server.start();
         } catch (final java.io.IOException e) {
             e.printStackTrace();
