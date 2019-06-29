@@ -75,18 +75,22 @@ public class EnemyObject extends BaseObject {
         //System.out.println(walkSheet.getWidth());
         //System.out.println(walkSheet.getHeight());
 
+
+        // TODO: Auch andere Richtungen berücksichtigen
+
         // Place the regions into a 1D array in the correct order, starting from the top
         // left, going across first. The Animation constructor requires a 1D array.
-        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        TextureRegion[] walkFrames = new TextureRegion[3];//[FRAME_COLS * FRAME_ROWS];
         int index = 0;
-        for (int i = 0; i < FRAME_ROWS; i++) {
+        //for (int i = 0; i < FRAME_ROWS; i++) {
+        for (int i = 2; i < 3; i++) {
             for (int j = 0; j < FRAME_COLS; j++) {
                 walkFrames[index++] = tmp[i][j];
             }
         }
 
         // Initialize the Animation with the frame interval and array of frames
-        walkAnimation = new Animation<TextureRegion>(0.25f, walkFrames);
+        walkAnimation = new Animation<>(0.25f, walkFrames);
 
         // Reset the elapsed animation time to 0
         stateTime = 0f;
