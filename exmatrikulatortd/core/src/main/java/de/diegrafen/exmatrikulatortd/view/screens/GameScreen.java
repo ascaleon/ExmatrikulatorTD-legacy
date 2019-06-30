@@ -419,9 +419,9 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(scoreLabel).left().align(RIGHT);
 
         // money
-        statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
-        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
-        statsTable.add(resourcesLabel).left().align(RIGHT);
+//        statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
+//        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
+//        statsTable.add(resourcesLabel).left().align(RIGHT);
 
         // lives
         statsTable.add(new Label("Leben: ", infoLabelsStyle)).left().padLeft(10).expandX();
@@ -474,7 +474,7 @@ public class GameScreen extends BaseScreen implements GameView {
         final Table topRow = new Table();
         topRow.add(exit).left().expandX();
         topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
-        topRow.add(new Label("Money: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        topRow.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         topRow.add(resourcesLabel).left().align(RIGHT).expandX();
 
