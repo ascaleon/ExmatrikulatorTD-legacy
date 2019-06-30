@@ -1,6 +1,9 @@
 package de.diegrafen.exmatrikulatortd.communication.client.requests;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -8,9 +11,14 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
  */
 public class SendEnemyRequest extends Request {
 
-    private Enemy enemy;
+    private int enemyType;
 
-    public SendEnemyRequest(Enemy enemy) {
-        this.enemy = enemy;
+    public SendEnemyRequest(int enemyType) {
+        super();
+        this.enemyType = enemyType;
+    }
+
+    public int getEnemyType() {
+        return enemyType;
     }
 }

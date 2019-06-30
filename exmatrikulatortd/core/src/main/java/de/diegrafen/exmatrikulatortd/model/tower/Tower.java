@@ -30,6 +30,11 @@ public class Tower extends ObservableModel {
      */
     private String name;
 
+
+    private String descriptionText;
+
+    private int towerType;
+
     /**
      * Der durch den Turm verursachte Schaden.
      */
@@ -81,6 +86,11 @@ public class Tower extends ObservableModel {
      * Die Ausbaustufe des Turmes
      */
     private int upgradeLevel;
+
+    /**
+     * Die maximale Ausbaustufe des Turms
+     */
+    private int maxUpgradeLevel;
 
     /**
      * Die Position des Turmes auf der Spielkarte
@@ -140,9 +150,13 @@ public class Tower extends ObservableModel {
 
     /**
      * Konstruktor für die Erzeugung eines neuen Turms über eine TowerFactory.
+     *
      * @param name
+     * @param descriptionText
+     * @param towerType
      * @param attackDamage
      * @param attackRange
+     * @param attackSpeed
      * @param attackType
      * @param aura
      * @param auraRange
@@ -150,12 +164,15 @@ public class Tower extends ObservableModel {
      * @param sellPrice
      * @param upgradePrice
      * @param upgradeLevel
+     * @param maxUpgradeLevel
      * @param assetsName
      */
-    public Tower(String name, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, String assetsName) {
+    public Tower(String name, String descriptionText, int towerType, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
         super();
 
         this.name = name;
+        this.descriptionText = descriptionText;
+        this.towerType = towerType;
         this.attackDamage = attackDamage;
         this.attackRange = attackRange;
         this.attackSpeed = attackSpeed;
@@ -166,6 +183,7 @@ public class Tower extends ObservableModel {
         this.sellPrice = sellPrice;
         this.upgradePrice = upgradePrice;
         this.upgradeLevel = upgradeLevel;
+        this.maxUpgradeLevel = maxUpgradeLevel;
         this.buffs = new ArrayList<Buff>();
         this.timeSinceLastSearch = 5f;
         this.cooldown = 0;
@@ -340,5 +358,13 @@ public class Tower extends ObservableModel {
 
     public void setAssetsName(String assetsName) {
         this.assetsName = assetsName;
+    }
+
+    public int getTowerType() {
+        return towerType;
+    }
+
+    public int getMaxUpgradeLevel() {
+        return maxUpgradeLevel;
     }
 }

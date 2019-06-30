@@ -11,6 +11,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_AND_HEAVY_WAVE;
+import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_WAVE;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.createWave;
 
 /**
@@ -109,15 +111,17 @@ public class Player extends BaseModel implements Observable {
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
 
+        // FIXME: Bei Nutzung der NewGameFactory werden die folgenden Zeilen obsolet
         this.currentLives = 25;
         this.maxLives = 25;
         this.resources = 1000;
         this.score = 0;
 
-        waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
-        waves.add(createWave(WaveFactory.WaveType.REGULAR_WAVE));
-        waves.add(createWave(WaveFactory.WaveType.REGULAR_AND_HEAVY_WAVE));
+        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
+        waves.add(createWave(REGULAR_WAVE));
+        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
 
+        // TODO: Wegpunkte automatisch über die Karte erstellen lassen
         wayPoints.add(new Coordinates(0,20-14));
         wayPoints.add(new Coordinates(3,20-14));
         wayPoints.add(new Coordinates(3,20-17));
@@ -281,8 +285,6 @@ public class Player extends BaseModel implements Observable {
 
     @Override
     public void notifyObserver() {
-        for (Observer observer : observers) {
-            observer.update();
-        }
+        observers.forEach(Observer::update);
     }
 }

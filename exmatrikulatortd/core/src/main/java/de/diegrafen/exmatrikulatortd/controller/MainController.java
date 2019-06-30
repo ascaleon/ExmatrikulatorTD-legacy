@@ -17,7 +17,6 @@ import de.diegrafen.exmatrikulatortd.view.screens.MenuScreen;
 import de.diegrafen.exmatrikulatortd.view.screens.SplashScreen;
 
 /**
- *
  * Haupt-Controller. Dient der Verwaltung der Bildschirme und der Interaktion mit der Kommunikations- und Persistenz-
  * Komponente
  *
@@ -78,9 +77,10 @@ public class MainController {
 
     /**
      * Erzeugt einen neuen Maincontroller, das ein Game-Objekt verwaltet
+     *
      * @param game Das mit dem Game-Controller zu assoziierende Game-Objekt
      */
-    public MainController (Game game) {
+    public MainController(Game game) {
         this.game = game;
         this.splashScreen = new SplashScreen(this, game);
         this.menuScreen = new MenuScreen(this, game);
@@ -90,7 +90,7 @@ public class MainController {
     }
 
     /**
-        Zeigt den Splash-Screen an
+     * Zeigt den Splash-Screen an
      */
     public void showSplashScreen() {
         game.setScreen(splashScreen);
@@ -104,6 +104,7 @@ public class MainController {
 
     /**
      * Gibt an, ob die Assets vom Assetmanager bereits geladen sind
+     *
      * @return True, wenn die Assets geladen sind, ansonsten false
      */
     public boolean areAssetsLoaded() {
@@ -120,6 +121,7 @@ public class MainController {
 
     /**
      * Zeigt den Endbildschirm einer Spielpartie an
+     *
      * @param gamestate Der Spielzustand, dessen Informationen angezeigt werden sollen
      */
     public void setEndScreen(Gamestate gamestate) {
@@ -128,15 +130,17 @@ public class MainController {
 
     /**
      * Erzeugt ein neues Profil
-     * @param profileName Der Name des Profils
+     *
+     * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public void createNewProfile (String profileName, String profilePicture) {
+    public void createNewProfile(String profileName, String profilePicture) {
 
     }
 
     /**
      * Gibt das aktuelle Profil zurücl
+     *
      * @return Das aktuelle Profil
      */
     public Profile getCurrentProfile() {
@@ -145,6 +149,7 @@ public class MainController {
 
     /**
      * Legt ein Profil als aktuelles Profil fest
+     *
      * @return Das festzulegende Profil
      */
     public void setCurrentProfile(Profile currentProfile) {
@@ -174,24 +179,26 @@ public class MainController {
 
     /**
      * Verbindet den GameClient mit einem GameServer
+     *
      * @param host Die IP-Adresse des Servers
      */
-    public void connectToServer (String host) {
+    public void connectToServer(String host) {
         gameClient.connect(host);
     }
 
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
-    public void createNewSinglePlayerGame () {
+    public void createNewSinglePlayerGame() {
         game.setScreen(new GameScreen(this, game, currentProfile));
     }
 
     /**
      * Lädt ein Einzelspieler-Spiel
+     *
      * @param gamestate Der Spielzustand, der geladen werden soll
      */
-    public void loadSinglePlayerGame (Gamestate gamestate) {
+    public void loadSinglePlayerGame(Gamestate gamestate) {
         game.setScreen(new GameScreen(this, game, currentProfile, gamestate));
     }
 
@@ -205,7 +212,7 @@ public class MainController {
     /**
      * Lädt ein Multiplayerspiel als Client
      */
-    public void loadMultiPlayerClientGame () {
+    public void loadMultiPlayerClientGame() {
         game.setScreen(new GameScreen(this, game, currentProfile, new Gamestate()));
     }
 
@@ -218,9 +225,10 @@ public class MainController {
 
     /**
      * Lädt ein Multiplayerspiel als Server
+     *
      * @param gamestate Der Spielzustand, der geladen werden soll
      */
-    public void loadMultiPlayerServerGame (Gamestate gamestate) {
+    public void loadMultiPlayerServerGame(Gamestate gamestate) {
         game.setScreen(new GameScreen(this, game, currentProfile, gameServer, gamestate));
     }
 

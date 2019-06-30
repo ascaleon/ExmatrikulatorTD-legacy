@@ -11,6 +11,14 @@ public class Assets {
 
     public static final String REGULAR_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 
+    public static final String SLOW_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
+
+    public static final String CORRUPTION_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
+
+    public static final String EXPLOSIVE_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
+
+    public static final String AURA_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
+
     public static final String REGULAR_ENEMY_ASSETS = "sprites/objects/enemies/Lorenzo@64x64.png";
 
     public static final String HEAVY_ENEMY_ASSETS = "sprites/objects/enemies/Vincenzo@64x64.png";

@@ -1,7 +1,10 @@
 package de.diegrafen.exmatrikulatortd.communication.client.requests;
 
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -9,11 +12,35 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class BuildRequest extends Request {
 
-    private Tower tower;
+    private int towerType;
 
-    private Coordinates coordinates;
+    private int xPosition;
 
-    public BuildRequest (Tower tower, Coordinates coordinates) {
+    private int yPosition;
 
+    private int playerNumber;
+
+    public BuildRequest(int towerType, int xPosition, int yPosition, int playerNumber) {
+        super();
+        this.towerType = towerType;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.playerNumber = playerNumber;
+    }
+
+    public int getTowerType() {
+        return towerType;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 }
