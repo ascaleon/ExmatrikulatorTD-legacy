@@ -9,13 +9,14 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 /**
- *
  * Das Spielobjekt eines Gegners
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 05:03
  */
 public class EnemyObject extends BaseObject {
+
+    private Texture walkSheet;
 
     private static final int FRAME_COLS = 3, FRAME_ROWS = 4;
 
@@ -31,17 +32,14 @@ public class EnemyObject extends BaseObject {
 
     private Animation<TextureRegion> deathAnimation;
 
-    /**
-     * A variable for tracking elapsed time for the animation
-     */
-    private float stateTime;
 
     /**
      * Konstruktor für Gegner-Objekte
-     * @param name Der Name des Spielobjektes
+     *
+     * @param name       Der Name des Spielobjektes
      * @param assetsName Die mit dem Objekt assoziierten Assets
-     * @param xPosition Die x-Position
-     * @param yPosition Die y-Position
+     * @param xPosition  Die x-Position
+     * @param yPosition  Die y-Position
      */
     public EnemyObject(String name, String assetsName, float xPosition, float yPosition) {
         super(name, assetsName, xPosition, yPosition);
@@ -64,7 +62,7 @@ public class EnemyObject extends BaseObject {
 
         // TODO: Von Spritesheet auf TextureAtlas umsteigen
 
-        Texture walkSheet = getCurrentSprite();
+        walkSheet = new Texture(getAssetsName());
 
         TextureRegion[][] tmp = TextureRegion.split(walkSheet,
                 walkSheet.getWidth() / FRAME_COLS,
@@ -91,8 +89,6 @@ public class EnemyObject extends BaseObject {
         walkLeftAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         walkRightAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         walkUpAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-        stateTime = 0f;
     }
 
     /**
@@ -108,23 +104,28 @@ public class EnemyObject extends BaseObject {
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
     @Override
-    public void draw (SpriteBatch spriteBatch) {
-        super.draw(spriteBatch);
+    public void draw(SpriteBatch spriteBatch, float deltaTime) {
+        super.draw(spriteBatch, deltaTime);
+
+        if (isPlayDeathAnimation()) {
+            setRemoved(true);
+            return;
+        }
 
         double angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 180;
 
-        stateTime += Gdx.graphics.getDeltaTime();
+        setStateTime(getStateTime() + deltaTime);
 
         TextureRegion currentFrame;
 
         if (angle >= 135 & angle < 225) {
-            currentFrame = walkRightAnimation.getKeyFrame(stateTime, true);
+            currentFrame = walkRightAnimation.getKeyFrame(getStateTime(), true);
         } else if (angle >= 225 & angle < 315) {
-            currentFrame = walkUpAnimation.getKeyFrame(stateTime, true);
+            currentFrame = walkUpAnimation.getKeyFrame(getStateTime(), true);
         } else if (angle >= 45 & angle < 135) {
-            currentFrame = walkDownAnimation.getKeyFrame(stateTime, true);
+            currentFrame = walkDownAnimation.getKeyFrame(getStateTime(), true);
         } else {
-            currentFrame = walkLeftAnimation.getKeyFrame(stateTime, true);
+            currentFrame = walkLeftAnimation.getKeyFrame(getStateTime(), true);
         }
 
         spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
@@ -136,5 +137,6 @@ public class EnemyObject extends BaseObject {
     @Override
     public void dispose() {
         super.dispose();
+        walkSheet.dispose();
     }
 }

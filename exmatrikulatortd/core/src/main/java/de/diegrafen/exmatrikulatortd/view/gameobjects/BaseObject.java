@@ -11,7 +11,6 @@ import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
 /**
- *
  * Basisklasse für grafische Objekte
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -60,11 +59,15 @@ public abstract class BaseObject implements GameObject {
 
     private boolean removed;
 
-    BaseObject (ObservableUnit observable) {
+    private boolean playDeathAnimation;
+
+    private float stateTime = 0f;
+
+    BaseObject(ObservableUnit observable) {
         this.observable = observable;
         this.name = observable.getName();
         this.assetsName = observable.getAssetsName();
-        this.currentSprite = new Texture(observable.getAssetsName());
+        //this.currentSprite = new Texture(observable.getAssetsName());
         this.xPosition = observable.getxPosition();
         this.yPosition = observable.getyPosition();
         this.xTargetPosition = observable.getTargetxPosition();
@@ -75,10 +78,11 @@ public abstract class BaseObject implements GameObject {
 
     /**
      * Konstruktor für Spiel-Objekte
-     * @param name Der Name des Spielobjektes
+     *
+     * @param name       Der Name des Spielobjektes
      * @param assetsName Die mit dem Objekt assoziierten Assets
-     * @param xPosition Die x-Position
-     * @param yPosition Die y-Position
+     * @param xPosition  Die x-Position
+     * @param yPosition  Die y-Position
      */
     BaseObject(String name, String assetsName, float xPosition, float yPosition) {
         this.name = name;
@@ -94,10 +98,10 @@ public abstract class BaseObject implements GameObject {
     @Override
     public void update() {
         if (observable.isRemoved()) {
-            setRemoved(true);
+            playDeathAnimation = true;
             observable.removeObserver(this);
             observable = null;
-            dispose();
+            stateTime = 0f;
         } else {
             setxPosition(observable.getxPosition());
             setyPosition(observable.getyPosition());
@@ -106,18 +110,23 @@ public abstract class BaseObject implements GameObject {
         }
     }
 
+    void removeObject() {
+        dispose();
+    }
+
     /**
      * Zeichnet das Objekt auf dem Bildschirm
+     *
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
-    public void draw (SpriteBatch spriteBatch) {
+    public void draw(SpriteBatch spriteBatch, float deltaTime) {
 
     }
 
     /**
      * Initialisiert die Darstellung des Spielobjektes
      */
-    private void initializeSprite () {
+    private void initializeSprite() {
 
     }
 
@@ -125,9 +134,13 @@ public abstract class BaseObject implements GameObject {
      * Entfernt das Spielobjekt
      */
     public void dispose() {
-        currentSprite.dispose();
-        //textureAtlas.dispose();
-    };
+        if (currentSprite != null) {
+            currentSprite.dispose();
+        }
+        if (textureAtlas != null) {
+            textureAtlas.dispose();
+        }
+    }
 
     public TextureAtlas getTextureAtlas() {
         return textureAtlas;
@@ -169,7 +182,7 @@ public abstract class BaseObject implements GameObject {
         this.name = name;
     }
 
-    public void setNewPosition (float xPosition, float yPosition) {
+    public void setNewPosition(float xPosition, float yPosition) {
         this.xPosition = xPosition - currentSprite.getWidth() / 2;
         this.yPosition = yPosition - currentSprite.getHeight() / 2;
     }
@@ -201,5 +214,17 @@ public abstract class BaseObject implements GameObject {
 
     public void setyTargetPosition(float yTargetPosition) {
         this.yTargetPosition = yTargetPosition;
+    }
+
+    public boolean isPlayDeathAnimation() {
+        return playDeathAnimation;
+    }
+
+    public float getStateTime() {
+        return stateTime;
+    }
+
+    public void setStateTime(float stateTime) {
+        this.stateTime = stateTime;
     }
 }

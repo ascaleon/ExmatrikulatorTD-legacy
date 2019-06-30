@@ -23,6 +23,11 @@ public class Buff extends BaseModel {
     static final long serialVersionUID = 98478993L;
 
     /**
+     * Gibt an, wie lange der Buff (noch) wirksam ist
+     */
+    private float duration;
+
+    /**
      * Modifikator der Angriffsgeschwindikgeit
      */
     private float attackSpeedModifier;
@@ -46,9 +51,47 @@ public class Buff extends BaseModel {
 
     /**
      * Konstruktor, der alle Attribute initialisiert
+     * @param duration Die Dauer des Buffs
+     * @param attackSpeedModifier Der Angriffsgeschwindigkeitsmodifikator des Buffs
+     * @param attackDamageModifier Der Angriffsschadensmodifikator des Buffs
+     * @param tower Der Turm, der mit dem Debuff belegt ist
      */
-    public Buff (float attackSpeedModifier, float attackDamageModifier) {
+    public Buff(float duration, float attackSpeedModifier, float attackDamageModifier, Tower tower) {
+        this.duration = duration;
         this.attackSpeedModifier = attackSpeedModifier;
-        this.attackDamageModifier =attackDamageModifier;
+        this.attackDamageModifier = attackDamageModifier;
+        this.tower = tower;
+    }
+
+    public float getDuration() {
+        return duration;
+    }
+
+    public void setDuration(float duration) {
+        this.duration = duration;
+    }
+
+    public float getAttackSpeedModifier() {
+        return attackSpeedModifier;
+    }
+
+    public void setAttackSpeedModifier(float attackSpeedModifier) {
+        this.attackSpeedModifier = attackSpeedModifier;
+    }
+
+    public float getAttackDamageModifier() {
+        return attackDamageModifier;
+    }
+
+    public void setAttackDamageModifier(float attackDamageModifier) {
+        this.attackDamageModifier = attackDamageModifier;
+    }
+
+    public Tower getTower() {
+        return tower;
+    }
+
+    public void setTower(Tower tower) {
+        this.tower = tower;
     }
 }

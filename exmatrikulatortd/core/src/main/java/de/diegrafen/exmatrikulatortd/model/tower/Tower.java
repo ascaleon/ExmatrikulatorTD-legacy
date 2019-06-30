@@ -50,6 +50,9 @@ public class Tower extends ObservableModel {
      */
     private float attackSpeed;
 
+    // TODO: Für Buffs müssen Attribute geschaffen werden, die den aktuellen Wert von Geschwindigkeit, Schaden etc. abbilden
+    //private float currentAttackSpeed;
+
     /**
      * Der Angriffstyp des Turmes
      */
@@ -184,9 +187,9 @@ public class Tower extends ObservableModel {
         this.upgradePrice = upgradePrice;
         this.upgradeLevel = upgradeLevel;
         this.maxUpgradeLevel = maxUpgradeLevel;
-        this.buffs = new ArrayList<Buff>();
+        this.buffs = new ArrayList<>();
         this.timeSinceLastSearch = 5f;
-        this.cooldown = 0;
+        this.cooldown = attackSpeed / 2;
         this.assetsName = assetsName;
     }
 

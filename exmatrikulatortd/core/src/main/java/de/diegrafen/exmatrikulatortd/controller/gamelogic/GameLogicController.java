@@ -13,10 +13,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
-import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
-import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
-import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
-import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
+import de.diegrafen.exmatrikulatortd.persistence.*;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 import java.awt.geom.Point2D;
@@ -76,6 +73,11 @@ public class GameLogicController implements LogicController {
      */
     private TowerDao towerDao;
 
+    /**
+     * DAO für CRUD-Operationen mit Geschoss-Objekten
+     */
+    private ProjectileDao projectileDao;
+
 
     public GameLogicController(MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
@@ -85,6 +87,7 @@ public class GameLogicController implements LogicController {
         this.saveStateDao = new SaveStateDao();
         this.enemyDao = new EnemyDao();
         this.towerDao = new TowerDao();
+        this.projectileDao = new ProjectileDao();
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
         gameStateDao.create(gamestate);
@@ -198,10 +201,11 @@ public class GameLogicController implements LogicController {
         float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
         projectile.setxPosition(xPosition + (float) Math.cos(angle) * speed * deltaTime);
         projectile.setyPosition(yPosition + (float) Math.sin(angle) * speed * deltaTime);
+        projectile.setTargetxPosition(targetxPosition);
+        projectile.setTargetyPosition(targetyPosition);
     }
 
     private void applyDamageToTarget(Projectile projectile) {
-        System.out.println("Treffer!");
         Enemy enemy = projectile.getTarget();
         enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - projectile.getDamage());
 
@@ -214,7 +218,6 @@ public class GameLogicController implements LogicController {
                 removeEnemy(enemy);
             }
         }
-
         projectile.setRemoved(true);
         projectile.notifyObserver();
         gamestate.removeProjectile(projectile);
@@ -270,7 +273,7 @@ public class GameLogicController implements LogicController {
             switch (tower.getAttackType()) {
                 case NORMAL: //case EXPLOSIVE:
                     Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getAttackDamage(),
-                            0.5f, 100, 200);
+                            0.5f, 100, 300);
                     addProjectile(projectile, tower);
                     break;
                 default:
@@ -433,6 +436,9 @@ public class GameLogicController implements LogicController {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
             gamestate.notifyObserver();
+            for (Projectile projectile : gamestate.getProjectiles()) {
+                projectileDao.create(projectile);
+            }
             gameStateDao.update(gamestate);
         }
     }
