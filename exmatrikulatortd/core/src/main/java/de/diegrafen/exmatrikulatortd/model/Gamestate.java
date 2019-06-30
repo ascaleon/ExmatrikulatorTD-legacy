@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
+import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
@@ -70,6 +71,9 @@ public class Gamestate extends BaseModel implements Observable {
     @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
     private List<Tower> towers;
 
+    @OneToMany(orphanRemoval = true)
+    private List<Projectile> projectiles;
+
     /**
      * Der Schwierigkeitsgrad des Spieles
      */
@@ -117,6 +121,7 @@ public class Gamestate extends BaseModel implements Observable {
         players = new ArrayList<>();
         enemies = new ArrayList<>();
         towers = new ArrayList<>();
+        projectiles = new ArrayList<>();
         collisionMatrix = new ArrayList<>();
         this.observers = new LinkedList<>();
 
@@ -317,6 +322,18 @@ public class Gamestate extends BaseModel implements Observable {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+    }
+
+    public List<Projectile> getProjectiles() {
+        return projectiles;
+    }
+
+    public void addProjectile(Projectile projectile) {
+        this.projectiles.add(projectile);
+    }
+
+    public void removeProjectile(Projectile projectile) {
+        this.projectiles.remove(projectile);
     }
 
     @Override

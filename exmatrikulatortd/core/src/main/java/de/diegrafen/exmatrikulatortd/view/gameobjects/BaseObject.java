@@ -101,6 +101,8 @@ public abstract class BaseObject implements GameObject {
         } else {
             setxPosition(observable.getxPosition());
             setyPosition(observable.getyPosition());
+            setxTargetPosition(observable.getTargetxPosition());
+            setyTargetPosition(observable.getTargetyPosition());
         }
     }
 
@@ -183,5 +185,21 @@ public abstract class BaseObject implements GameObject {
 
     public String getAssetsName() {
         return assetsName;
+    }
+
+    public float getxTargetPosition() {
+        return xTargetPosition;
+    }
+
+    public void setxTargetPosition(float xTargetPosition) {
+        this.xTargetPosition = xTargetPosition;
+    }
+
+    public float getyTargetPosition() {
+        return yTargetPosition;
+    }
+
+    public void setyTargetPosition(float yTargetPosition) {
+        this.yTargetPosition = yTargetPosition;
     }
 }
