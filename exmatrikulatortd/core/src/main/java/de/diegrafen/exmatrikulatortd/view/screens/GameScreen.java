@@ -7,7 +7,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -27,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
+import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.EnemyType.REGULAR_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
@@ -403,19 +410,66 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(scoreLabel).left().align(RIGHT);
 
         // money
-        statsTable.add(new Label("Money: ", infoLabelsStyle)).left().padLeft(10).expandX();
-        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
-        statsTable.add(resourcesLabel).left().align(RIGHT);
+//        statsTable.add(new Label("Money: ", infoLabelsStyle)).left().padLeft(10).expandX();
+//        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
+//        statsTable.add(resourcesLabel).left().align(RIGHT);
 
         // lives
         statsTable.add(new Label("Lives: ", infoLabelsStyle)).left().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
 
+        //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
-        towerSelect.add(new TextButton("Tower 1", null, null));
-        towerSelect.add(new TextButton("Tower 2", null, null));
-        defaultScreen.add(towerSelect);
+        TextButton tower1 = new TextButton("T1", skin);
+        TextButton tower2 = new TextButton("T2", skin);
+        TextButton tower3 = new TextButton("T3", skin);
+        TextButton tower4 = new TextButton("T4", skin);
+        tower1.setSize(10, 10);
+        tower2.setSize(10, 10);
+        tower3.setSize(10, 10);
+        tower4.setSize(10, 10);
+        tower1.getLabel().setFontScale(1, 1);
+        tower2.getLabel().setFontScale(1,1);
+        tower3.getLabel().setFontScale(1,1);
+        tower4.getLabel().setFontScale(1,1);
+        towerSelect.add(tower1).size(50, 50).spaceRight(5);
+        towerSelect.add(tower2).size(50, 50).spaceRight(5);
+        towerSelect.add(tower3).size(50, 50).spaceRight(5);
+        towerSelect.add(tower4).size(50, 50);
+//        towerSelect.add(new TextButton("Tower 1", skin)).size(50,10);
+//        towerSelect.add(new TextButton("Tower 2", skin)).size(50,10);
+
+        //Exit
+        final Table exit = new Table();
+        TextButton exitButton = new TextButton("X", skin);
+        exitButton.setSize(10,10);
+        exitButton.getLabel().setFontScale(1,1);
+        exitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
+            }
+        });
+        exit.add(exitButton).size(40,40);
+        //Gdx.input.setInputProcessor(stage);
+
+        //Toprow table
+        final Table topRow = new Table();
+        topRow.add(exit).left().expandX();
+        topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
+        topRow.add(new Label("Money: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
+        topRow.add(resourcesLabel).left().align(RIGHT).expandX();
+
+        defaultScreen.add(topRow).expandX();
+        defaultScreen.row();
+
+//        defaultScreen.add(towerSelect).top().center();
+//        defaultScreen.add(exit).top().right();
+//        defaultScreen.row();
 
         defaultScreen.add(statsTable).top().center().expandX().colspan(4);
         defaultScreen.row();
