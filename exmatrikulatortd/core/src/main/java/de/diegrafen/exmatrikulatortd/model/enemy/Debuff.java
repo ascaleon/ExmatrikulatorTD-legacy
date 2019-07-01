@@ -8,7 +8,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- *
  * Beinhaltet Modifikatoren für die Rüstung, die Geschwindgkeit und die Lebenspunkte eines Gegners.
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -16,12 +15,14 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Debuffs")
-public class Debuff extends BaseModel {
+public class Debuff extends BaseModel implements Cloneable {
 
     /**
      * Die eindeutige Serialisierungs-ID
      */
     static final long serialVersionUID = 11958105127419241L;
+
+    private String name;
 
     /**
      * Gibt an, wie lange der Debuff (noch) wirksam ist
@@ -44,32 +45,68 @@ public class Debuff extends BaseModel {
     private float healthModifier;
 
     /**
-     * Der mit dem Debuff assoziierte Gegner
-     */
-    @ManyToOne
-    private Enemy enemy;
-
-    /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
     public Debuff() {
 
     }
 
+
     /**
      * Konstruktor, der alle Attribute initialisiert
-     * @param duration Die Dauer des Debuffs
-     * @param armorModifier Der Rüstungsmodifikator des Debuffs
-     * @param speedModifier Der Geschwindigkeitsmodifikator des Debuffs
+     *
+     * @param duration       Die Dauer des Debuffs
+     * @param armorModifier  Der Rüstungsmodifikator des Debuffs
+     * @param speedModifier  Der Geschwindigkeitsmodifikator des Debuffs
      * @param healthModifier Der Gesundheitsmodifikator des Debuffs
-     * @param enemy Der Gegner, der mit dem Debuff belegt ist
      */
-    public Debuff(float duration, float armorModifier, float speedModifier, float healthModifier, Enemy enemy) {
-        this.duration = duration;
-        this.armorModifier = armorModifier;
-        this.speedModifier = speedModifier;
-        this.healthModifier = healthModifier;
-        this.enemy = enemy;
+    public Debuff(String name, float duration, float armorModifier, float speedModifier, float healthModifier) {
+        this.name = name;
+
+        if (duration < 0) {
+            this.duration = 0;
+        } else {
+            this.duration = duration;
+        }
+
+        if (armorModifier < -1) {
+            this.armorModifier = -1;
+        } else {
+            this.armorModifier = armorModifier;
+        }
+
+        if (speedModifier < -1) {
+            this.speedModifier = -1;
+        } else {
+            this.speedModifier = speedModifier;
+        }
+
+        if (healthModifier < -1) {
+            this.healthModifier = -1;
+        } else {
+            this.healthModifier = healthModifier;
+        }
+    }
+
+    /**
+     * Kopier-Konstruktor
+     *
+     * @param debuff
+     */
+    public Debuff(Debuff debuff) {
+        this.name = debuff.getName();
+        this.duration = debuff.getDuration();
+        this.armorModifier = debuff.getArmorModifier();
+        this.speedModifier = debuff.getSpeedModifier();
+        this.healthModifier = debuff.getHealthModifier();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public float getDuration() {
@@ -84,31 +121,11 @@ public class Debuff extends BaseModel {
         return armorModifier;
     }
 
-    public void setArmorModifier(float armorModifier) {
-        this.armorModifier = armorModifier;
-    }
-
     public float getSpeedModifier() {
         return speedModifier;
     }
 
-    public void setSpeedModifier(float speedModifier) {
-        this.speedModifier = speedModifier;
-    }
-
     public float getHealthModifier() {
         return healthModifier;
-    }
-
-    public void setHealthModifier(float healthModifier) {
-        this.healthModifier = healthModifier;
-    }
-
-    public Enemy getEnemy() {
-        return enemy;
-    }
-
-    public void setEnemy(Enemy enemy) {
-        this.enemy = enemy;
     }
 }

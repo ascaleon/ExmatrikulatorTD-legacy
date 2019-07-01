@@ -9,11 +9,15 @@ import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
+import de.diegrafen.exmatrikulatortd.model.tower.Aura;
+import de.diegrafen.exmatrikulatortd.model.tower.Buff;
 import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.*;
+import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 import java.awt.geom.Point2D;
@@ -63,20 +67,8 @@ public class GameLogicController implements LogicController {
      */
     private SaveStateDao saveStateDao;
 
-    /**
-     * DAO für CRUD-Operationen mit Gegner-Objekten
-     */
-    private EnemyDao enemyDao;
 
-    /**
-     * DAO für CRUD-Operationen mit Turm-Objekten
-     */
-    private TowerDao towerDao;
-
-    /**
-     * DAO für CRUD-Operationen mit Geschoss-Objekten
-     */
-    private ProjectileDao projectileDao;
+    private float auraRefreshTimer = 0;
 
 
     public GameLogicController(MainController mainController, Gamestate gamestate, Profile profile) {
@@ -85,9 +77,6 @@ public class GameLogicController implements LogicController {
         this.profile = profile;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
-        this.enemyDao = new EnemyDao();
-        this.towerDao = new TowerDao();
-        this.projectileDao = new ProjectileDao();
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
         gameStateDao.create(gamestate);
@@ -122,6 +111,84 @@ public class GameLogicController implements LogicController {
      */
     private void applyAuras(float deltaTime) {
 
+        if (auraRefreshTimer > 0) {
+            auraRefreshTimer -= deltaTime;
+            return;
+        } else {
+            auraRefreshTimer = AURA_REFRESH_RATE;
+            auraRefreshTimer -= deltaTime;
+        }
+
+        for (Tower tower : gamestate.getTowers()) {
+            List<Aura> auras = tower.getAuras();
+            for (Aura aura : auras) {
+                List<Debuff> debuffs = aura.getDebuffs();
+                List<Buff> buffs = aura.getBuffs();
+
+                for (Debuff debuff : debuffs) {
+                    List<Enemy> enemiesInRange = getEnemiesInRange(tower, aura.getRange());
+                    for (Enemy enemyInRange : enemiesInRange) {
+                        boolean debuffAlreadyApplied = false;
+                        for (Debuff debuffToCheck : enemyInRange.getDebuffs()) {
+                            if (debuff.getName().equals(debuffToCheck.getName())) {
+                                debuffAlreadyApplied = true;
+                                break;
+                            }
+                        }
+                        if (!debuffAlreadyApplied) {
+                            enemyInRange.addDebuff(new Debuff(debuff));
+                        }
+                    }
+                }
+
+                for (Buff buff : buffs) {
+                    List<Tower> towersInRange = getTowersInRange(tower.getxPosition(), tower.getyPosition(), aura.getRange());
+                    for (Tower towerInRange : towersInRange) {
+                        boolean buffAlreadyApplied = false;
+                        for (Buff buffToCheck : towerInRange.getBuffs()) {
+                            if (buff.getName().equals(buffToCheck.getName())) {
+                                buffAlreadyApplied = true;
+                                break;
+                            }
+                        }
+                        if (!buffAlreadyApplied) {
+                            towerInRange.addBuff(new Buff(buff));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // TODO: System zum Ermitteln von Türmen und Gegnern verbessern
+    private List<Tower> getTowersInRange(float xPosition, float yPosition, float range) {
+        List<Tower> towersInRange = new LinkedList<>();
+
+        for (Tower tower : gamestate.getTowers()) {
+
+            double distance = Point2D.distance(xPosition, yPosition, tower.getxPosition(), tower.getyPosition());
+
+            if (distance <= range) {
+                towersInRange.add(tower);
+            }
+        }
+
+        return towersInRange;
+    }
+
+    private List<Enemy> getEnemiesInRange(Tower tower, float range) {
+        List<Enemy> enemiesInRange = new LinkedList<>();
+
+        for (Enemy enemy : tower.getOwner().getAttackingEnemies()) {
+
+            double distance = Point2D.distance(tower.getxPosition(), tower.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
+
+            if (distance <= range) {
+                enemiesInRange.add(enemy);
+            }
+        }
+
+        return enemiesInRange;
     }
 
     /**
@@ -130,6 +197,47 @@ public class GameLogicController implements LogicController {
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     private void applyBuffsAndDebuffs(float deltaTime) {
+
+        for (Tower tower : gamestate.getTowers()) {
+
+            List<Buff> buffsToRemove = new LinkedList<>();
+
+            tower.setCurrentAttackDamage(tower.getBaseAttackDamage());
+            tower.setCurrentAttackSpeed(tower.getBaseAttackSpeed());
+
+            for (Buff buff : tower.getBuffs()) {
+                tower.setCurrentAttackSpeed(tower.getCurrentAttackSpeed() * (1 + buff.getAttackSpeedModifier()));
+                tower.setCurrentAttackDamage(tower.getCurrentAttackDamage() * (1 + buff.getAttackDamageModifier()));
+                buff.setDuration(buff.getDuration() - deltaTime);
+                if (buff.getDuration() < 0) {
+                    buffsToRemove.add(buff);
+                }
+            }
+
+            buffsToRemove.forEach(tower::removeBuff);
+        }
+
+        for (Enemy enemy : gamestate.getEnemies()) {
+
+            List<Debuff> debuffsToRemove = new LinkedList<>();
+
+            enemy.setCurrentSpeed(enemy.getBaseSpeed());
+            enemy.setCurrentArmor(enemy.getBaseArmor());
+            // TODO: Irgendwas mit Leben überlegen. Vielleicht stattdessen eher einen Damage over Time Debuff ergänzen.
+
+            for (Debuff debuff : enemy.getDebuffs()) {
+                enemy.setCurrentSpeed(enemy.getCurrentSpeed() * (1 + debuff.getSpeedModifier()));
+                System.out.println("Aktuelle Geschwindigkeit: " + enemy.getCurrentSpeed());
+                enemy.setCurrentArmor(enemy.getCurrentArmor() * (1 + debuff.getArmorModifier()));
+                System.out.println("Verbleibende Dauer: " + debuff.getDuration());
+                debuff.setDuration(debuff.getDuration() - deltaTime);
+                if (debuff.getDuration() < 0) {
+                    debuffsToRemove.add(debuff);
+                }
+            }
+
+            debuffsToRemove.forEach(enemy::removeDebuff);
+        }
 
     }
 
@@ -209,6 +317,10 @@ public class GameLogicController implements LogicController {
         Enemy enemy = projectile.getTarget();
         enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - projectile.getDamage());
 
+        for (Debuff debuff : projectile.getApplyingDebuffs()) {
+            enemy.addDebuff(new Debuff(debuff));
+        }
+
         if (enemy.getCurrentHitPoints() <= 0) {
             Player attackedPlayer = enemy.getAttackedPlayer();
             if (attackedPlayer != null) {
@@ -244,16 +356,17 @@ public class GameLogicController implements LogicController {
                 tower.setCooldown(tower.getCooldown() - deltaTime);
             }
 
-            Enemy newTarget;
+            Enemy newTarget = null;
 
             if (!targetInRange(tower)) {
                 tower.setCurrentTarget(null);
                 float timeSinceLastSearch = tower.getTimeSinceLastSearch();
                 if (timeSinceLastSearch >= SEARCH_TARGET_INTERVAL) {
-                    List<Coordinates> visited = new LinkedList<>();
-                    Coordinates startCoordinates = tower.getPosition();
-                    LinkedList<Coordinates> cellsToVisit = new LinkedList<>();
-                    newTarget = searchTarget(startCoordinates, visited, cellsToVisit, tower);
+                    List<Enemy> enemiesInRange = getEnemiesInRange(tower, tower.getAttackRange());
+                    enemiesInRange.sort(new DistanceComparator(tower.getxPosition(), tower.getyPosition()));
+                    if (!enemiesInRange.isEmpty()) {
+                        newTarget = enemiesInRange.get(0);
+                    }
                     tower.setCurrentTarget(newTarget);
                     tower.setTimeSinceLastSearch(0);
                 } else {
@@ -272,12 +385,13 @@ public class GameLogicController implements LogicController {
         if (tower.getCooldown() <= 0) {
             switch (tower.getAttackType()) {
                 case NORMAL: //case EXPLOSIVE:
-                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getAttackDamage(),
+                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getCurrentAttackDamage(),
                             0.5f, 100, 300);
+                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -0.5f, -0.5f, -0.5f));
                     addProjectile(projectile, tower);
                     break;
                 default:
-                    enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getAttackDamage());
+                    enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
                     if (enemy.getCurrentHitPoints() <= 0) {
                         tower.getOwner().addToResources(enemy.getBounty());
                         tower.getOwner().addToScore(enemy.getPointsGranted());
@@ -287,54 +401,9 @@ public class GameLogicController implements LogicController {
                     }
             }
 
-            tower.setCooldown(tower.getAttackSpeed());
+            tower.setCooldown(tower.getCurrentAttackSpeed());
         }
     }
-
-    private Enemy searchTarget(Coordinates startCoordinates, List<Coordinates> visited, LinkedList<Coordinates> cellsToVisit, Tower tower) {
-
-        Enemy enemyToReturn = null;
-
-        visited.add(startCoordinates);
-        cellsToVisit.push(startCoordinates);
-
-        while (!cellsToVisit.isEmpty()) {
-            Coordinates currentCell = cellsToVisit.pop();
-
-            List<Enemy> enemiesInCell = currentCell.getEnemiesInMapCell();
-            if (!enemiesInCell.isEmpty()) {
-                enemyToReturn = enemiesInCell.get(0);
-                break;
-            }
-            for (Coordinates neighbour : currentCell.getNeighbours()) {
-                if (!visited.contains(neighbour)) {
-                    visited.add(neighbour);
-                    if (isCellInRangeOfTower(tower, neighbour)) {
-                        cellsToVisit.push(neighbour);
-                    }
-                }
-            }
-        }
-
-        return enemyToReturn;
-    }
-
-    /*
-     * Fügt Spielern Schaden zu
-    private void applyPlayerDamage() {
-        ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
-        for (Enemy enemy : gamestate.getEnemies()) {
-            if (getDistanceToEndpoint(enemy) < TILE_SIZE / 2) {
-                enemiesToRemove.add(enemy);
-                System.out.println("Damage applied!");
-            }
-        }
-
-        for (Enemy enemy : enemiesToRemove) {
-            applyDamage(enemy);
-        }
-    }
-    */
 
     private void applyDamage(Enemy enemy) {
         Player attackedPlayer = enemy.getAttackedPlayer();
@@ -347,18 +416,11 @@ public class GameLogicController implements LogicController {
         enemy.setAttackedPlayer(null);
         enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
         enemy.setCurrentMapCell(null);
+        enemy.setDebuffs(new LinkedList<>());
         gamestate.removeEnemy(enemy);
         enemy.setGameState(null);
         enemy.setRemoved(true);
         enemy.notifyObserver();
-    }
-
-    private float getDistanceToEndpoint(Enemy enemy) {
-        float x1 = enemy.getxPosition();
-        float x2 = enemy.getEndXPosition();
-        float y1 = enemy.getyPosition();
-        float y2 = enemy.getEndYPosition();
-        return (float) Point2D.distance(x1, y1, x2, y2);
     }
 
     private float getDistanceToNextPoint(Enemy enemy) {
@@ -389,7 +451,7 @@ public class GameLogicController implements LogicController {
 
         Enemy target = tower.getCurrentTarget();
 
-        return target != null && isCellInRangeOfTower(tower, target.getCurrentMapCell());
+        return target != null && !target.isRemoved() && isCellInRangeOfTower(tower, target.getCurrentMapCell());
     }
 
     /**
@@ -436,9 +498,6 @@ public class GameLogicController implements LogicController {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
             gamestate.notifyObserver();
-            for (Projectile projectile : gamestate.getProjectiles()) {
-                projectileDao.create(projectile);
-            }
             gameStateDao.update(gamestate);
         }
     }
@@ -512,7 +571,6 @@ public class GameLogicController implements LogicController {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate + 1));
             }
         }
-
     }
 
     /**

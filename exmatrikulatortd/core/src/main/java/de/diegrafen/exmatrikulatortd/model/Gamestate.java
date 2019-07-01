@@ -71,7 +71,7 @@ public class Gamestate extends BaseModel implements Observable {
     @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
     private List<Tower> towers;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
     private List<Projectile> projectiles;
 
     /**

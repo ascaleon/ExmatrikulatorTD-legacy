@@ -5,10 +5,10 @@ import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * Über diese Klasse werden sämtliche Gegner in unserem Spiel abgebildet.
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -27,15 +27,15 @@ public class Enemy extends ObservableModel {
 
     private float currentHitPoints;
 
-    @OneToMany(mappedBy="enemy", orphanRemoval=true)
+    @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
     private List<Debuff> debuffs;
 
     @ManyToOne
-    @JoinColumn(name="gamestate_id")
+    @JoinColumn(name = "gamestate_id")
     private Gamestate gameState;
 
     @ManyToOne
-    @JoinColumn(name="player_id")
+    @JoinColumn(name = "player_id")
     private Player attackedPlayer;
 
     private float xPosition, yPosition;
@@ -58,7 +58,9 @@ public class Enemy extends ObservableModel {
 
     private int wayPointIndex;
 
-    private float armor;
+    private float baseArmor;
+
+    private float currentArmor;
 
     @Enumerated(EnumType.ORDINAL)
     private ArmorType armorType;
@@ -76,14 +78,14 @@ public class Enemy extends ObservableModel {
     private boolean respawning;
 
     @ManyToOne
-    @JoinColumn(name="wave_id")
+    @JoinColumn(name = "wave_id")
     private Wave wave;
 
     @ManyToOne
-    @JoinColumn(name="mapcell_id")
+    @JoinColumn(name = "mapcell_id")
     private Coordinates currentMapCell;
 
-    public Enemy () {
+    public Enemy() {
 
     }
 
@@ -91,17 +93,21 @@ public class Enemy extends ObservableModel {
      * Standardkonstruktor für die Klasse Enemy. Legt noch keine assoziierte Spielerin, Position oder EnemyObject fest
      * und bestimmt nicht den Zustand des Gegners in Bezug auf aktuelle Lebenspunkte oder Geschwindigkeit.
      *
-     * @param name Der Name des Gegners
-     * @param baseSpeed Die Standardbewegungsgeschwindigkeit des Gegners.
-     * @param maxHitPoints Die maximalen Lebenspunkte des Gegners.
+     * @param name                   Der Name des Gegners
+     * @param baseSpeed              Die Standardbewegungsgeschwindigkeit des Gegners.
+     * @param maxHitPoints           Die maximalen Lebenspunkte des Gegners.
      * @param amountOfDamageToPlayer Die Höhe des Schadens, die der Gegner der Spielerin zufügt, sobald er das Ziel erreicht.
-     * @param bounty Die Anzahl der Ressourcen, die die Spielerin für das Ausschalten des Gegners erhält.
-     * @param sendPrice Die Kosten für das Versenden eines solchen Gegners im Multiplayer-Modus.
-     * @param assetsName Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
+     * @param bounty                 Die Anzahl der Ressourcen, die die Spielerin für das Ausschalten des Gegners erhält.
+     * @param sendPrice              Die Kosten für das Versenden eines solchen Gegners im Multiplayer-Modus.
+     * @param assetsName             Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
      */
-    public Enemy (String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int bounty,
-                  int sendPrice, String assetsName, float xPosition, float yPosition, int pointsGranted) {
+    public Enemy(String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int bounty,
+                 int sendPrice, String assetsName, float xPosition, float yPosition, int pointsGranted) {
         super();
+
+        this.debuffs = new LinkedList<>();
+
+        // TODO: Rüstungswert ergänzen
 
         this.name = name;
         this.baseSpeed = baseSpeed;
@@ -120,11 +126,11 @@ public class Enemy extends ObservableModel {
         this.respawning = false;
     }
 
-    private Coordinates getStartPosition () {
+    private Coordinates getStartPosition() {
         return attackedPlayer.getWayPoints().get(0);
     }
 
-    private Coordinates getEndPosition () {
+    private Coordinates getEndPosition() {
         int size = attackedPlayer.getWayPoints().size();
         return attackedPlayer.getWayPoints().get(size - 1);
     }
@@ -151,17 +157,18 @@ public class Enemy extends ObservableModel {
 
     /**
      * TODO: In GameLogicController verschieben
+     *
      * @param deltaTime
      */
-    public void moveInTargetDirection (float deltaTime) {
+    public void moveInTargetDirection(float deltaTime) {
         Coordinates nextWayPoint = attackedPlayer.getWayPoints().get(wayPointIndex);
         int tileSize = gameState.getTileSize();
         targetxPosition = nextWayPoint.getXCoordinate() * tileSize;// + tileSize / 2;
         targetyPosition = nextWayPoint.getYCoordinate() * tileSize;// + tileSize / 2;
 
         float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
-        xPosition += (float) Math.cos(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
-        yPosition += (float) Math.sin(angle) * currentSpeed * Gdx.graphics.getDeltaTime();
+        xPosition += (float) Math.cos(angle) * currentSpeed * deltaTime;
+        yPosition += (float) Math.sin(angle) * currentSpeed * deltaTime;
     }
 
     public float getxSpawnPosition() {
@@ -229,12 +236,12 @@ public class Enemy extends ObservableModel {
         this.wayPointIndex = wayPointIndex;
     }
 
-    public void incrementWayPointIndex () {
+    public void incrementWayPointIndex() {
         wayPointIndex++;
     }
 
 
-    public void setToStartPosition () {
+    public void setToStartPosition() {
         Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
         int tileSize = gameState.getTileSize();
         xPosition = startCoordinates.getXCoordinate() * tileSize;// + tileSize / 2;
@@ -262,11 +269,11 @@ public class Enemy extends ObservableModel {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return this.name;
     }
 
-    public void setWave (Wave wave) {
+    public void setWave(Wave wave) {
         this.wave = wave;
     }
 
@@ -276,5 +283,53 @@ public class Enemy extends ObservableModel {
 
     public int getPointsGranted() {
         return pointsGranted;
+    }
+
+    public List<Debuff> getDebuffs() {
+        return debuffs;
+    }
+
+    public void setDebuffs(List<Debuff> debuffs) {
+        this.debuffs = debuffs;
+    }
+
+    public void addDebuff(Debuff debuff) {
+        debuffs.add(debuff);
+    }
+
+    public void removeDebuff(Debuff debuff) {
+        debuffs.remove(debuff);
+    }
+
+    public float getBaseSpeed() {
+        return baseSpeed;
+    }
+
+    public void setBaseSpeed(float baseSpeed) {
+        this.baseSpeed = baseSpeed;
+    }
+
+    public float getCurrentSpeed() {
+        return currentSpeed;
+    }
+
+    public void setCurrentSpeed(float currentSpeed) {
+        this.currentSpeed = currentSpeed;
+    }
+
+    public float getBaseArmor() {
+        return baseArmor;
+    }
+
+    public void setBaseArmor(float baseArmor) {
+        this.baseArmor = baseArmor;
+    }
+
+    public float getCurrentArmor() {
+        return currentArmor;
+    }
+
+    public void setCurrentArmor(float currentArmor) {
+        this.currentArmor = currentArmor;
     }
 }

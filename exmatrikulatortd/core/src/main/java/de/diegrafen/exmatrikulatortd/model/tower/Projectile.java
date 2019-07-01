@@ -4,10 +4,7 @@ import de.diegrafen.exmatrikulatortd.model.ObservableModel;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +35,7 @@ public class Projectile extends ObservableModel {
 
     private float targetyPosition;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, cascade= CascadeType.ALL)
     private List<Debuff> applyingDebuffs;
 
     public Projectile() {

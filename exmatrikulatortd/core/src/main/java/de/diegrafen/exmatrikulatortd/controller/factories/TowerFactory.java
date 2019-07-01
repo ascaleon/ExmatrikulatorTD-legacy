@@ -2,16 +2,17 @@ package de.diegrafen.exmatrikulatortd.controller.factories;
 
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Aura;
 import de.diegrafen.exmatrikulatortd.model.tower.Buff;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
+import java.util.LinkedList;
+
 import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.*;
-import static de.diegrafen.exmatrikulatortd.model.tower.Aura.CORRUPTION_AURA;
-import static de.diegrafen.exmatrikulatortd.model.tower.Aura.HASTE_AURA;
-import static de.diegrafen.exmatrikulatortd.model.tower.Aura.SLOW_AURA;
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
+import static de.diegrafen.exmatrikulatortd.util.Constants.AURA_REFRESH_RATE;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
@@ -41,6 +42,7 @@ public final class TowerFactory {
     public static final int AURA_TOWER = 4;
 
     public static final String AURA_TOWER_DESCRIPTION = "Motiviert andere Lehrende in der Umgebung, mehr Stoff in der Prüfung dranzunehmen.";
+
 
     /**
      * Versteckter Konstruktor
@@ -86,7 +88,13 @@ public final class TowerFactory {
      * @return Der erzeugte normalen Turm
      */
     private static Tower createRegularTower() {
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, 2 * TILE_SIZE, 3, NORMAL, null, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS);
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, -0.5f, 0);
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+        debuffs.add(slowDebuff);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        LinkedList<Aura> auras = new LinkedList<>();
+        auras.add(slowAura);
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, 2 * TILE_SIZE, 3, NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS);
     }
 
     /**
@@ -95,7 +103,13 @@ public final class TowerFactory {
      * @return Der erzeugte Verlangsamungsturm
      */
     private static Tower createSlowTower() {
-        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100, 2 * TILE_SIZE, 3, FROST, SLOW_AURA, 0, 300, 150, 600, 1, 3, SLOW_TOWER_ASSETS);
+        Debuff slowDebuff = new Debuff("Slow-Effekt",AURA_REFRESH_RATE, -0.5f, -0.5f, 0);
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+        debuffs.add(slowDebuff);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        LinkedList<Aura> auras = new LinkedList<>();
+        auras.add(slowAura);
+        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100, 2 * TILE_SIZE, 3, FROST, auras, 0, 300, 150, 600, 1, 3, SLOW_TOWER_ASSETS);
     }
 
 
@@ -105,7 +119,7 @@ public final class TowerFactory {
      * @return Der erzeugte Corruption-Turm
      */
     private static Tower createCorruptionTower() {
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, UNHOLY, CORRUPTION_AURA, 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS);
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, UNHOLY, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS);
     }
 
     /**
@@ -114,7 +128,7 @@ public final class TowerFactory {
      * @return Der erzeugte Explosiv-Turm
      */
     private static Tower createExplosiveTower() {
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, null, 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS);
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS);
     }
 
     /**
@@ -123,6 +137,6 @@ public final class TowerFactory {
      * @return Der erzeugte Aura-Turm
      */
     private static Tower createAuraTower() {
-        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100, 2 * TILE_SIZE, 3, PIERCING, HASTE_AURA, 4 * TILE_SIZE, 300, 150, 600, 1, 3, AURA_TOWER_ASSETS);
+        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100, 2 * TILE_SIZE, 3, PIERCING, new LinkedList<>(), 4 * TILE_SIZE, 300, 150, 600, 1, 3, AURA_TOWER_ASSETS);
     }
 }

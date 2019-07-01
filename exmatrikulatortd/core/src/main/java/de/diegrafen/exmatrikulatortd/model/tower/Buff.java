@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.model.tower;
 
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
+import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -22,6 +23,8 @@ public class Buff extends BaseModel {
      */
     static final long serialVersionUID = 98478993L;
 
+    private String name;
+
     /**
      * Gibt an, wie lange der Buff (noch) wirksam ist
      */
@@ -38,12 +41,6 @@ public class Buff extends BaseModel {
     private float attackDamageModifier;
 
     /**
-     * Der mit dem Buff assoziierte Turm
-     */
-    @ManyToOne
-    private Tower tower;
-
-    /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
     public Buff() {
@@ -54,13 +51,32 @@ public class Buff extends BaseModel {
      * @param duration Die Dauer des Buffs
      * @param attackSpeedModifier Der Angriffsgeschwindigkeitsmodifikator des Buffs
      * @param attackDamageModifier Der Angriffsschadensmodifikator des Buffs
-     * @param tower Der Turm, der mit dem Debuff belegt ist
      */
-    public Buff(float duration, float attackSpeedModifier, float attackDamageModifier, Tower tower) {
+    public Buff(String name, float duration, float attackSpeedModifier, float attackDamageModifier) {
+        this.name = name;
         this.duration = duration;
         this.attackSpeedModifier = attackSpeedModifier;
         this.attackDamageModifier = attackDamageModifier;
-        this.tower = tower;
+    }
+
+    /**
+     * Kopier-Konstruktor
+     *
+     * @param buff
+     */
+    public Buff(Buff buff) {
+        this.name = buff.getName();
+        this.duration = buff.getDuration();
+        this.attackSpeedModifier = buff.getAttackSpeedModifier();
+        this.attackDamageModifier = buff.getAttackDamageModifier();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public float getDuration() {
@@ -85,13 +101,5 @@ public class Buff extends BaseModel {
 
     public void setAttackDamageModifier(float attackDamageModifier) {
         this.attackDamageModifier = attackDamageModifier;
-    }
-
-    public Tower getTower() {
-        return tower;
-    }
-
-    public void setTower(Tower tower) {
-        this.tower = tower;
     }
 }

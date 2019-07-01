@@ -4,9 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+
+import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 
 /**
  * Das Spielobjekt eines Gegners
@@ -15,10 +18,6 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
  * @version 15.06.2019 05:03
  */
 public class EnemyObject extends BaseObject {
-
-    private Texture walkSheet;
-
-    private static final int FRAME_COLS = 3, FRAME_ROWS = 4;
 
     private Animation<TextureRegion> walkRightAnimation;
 
@@ -31,7 +30,6 @@ public class EnemyObject extends BaseObject {
     private Animation<TextureRegion> standingAnimation;
 
     private Animation<TextureRegion> deathAnimation;
-
 
     /**
      * Konstruktor für Gegner-Objekte
@@ -48,47 +46,19 @@ public class EnemyObject extends BaseObject {
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
 
+        setTextureAtlas(new TextureAtlas(observableUnit.getAssetsName()));
+
         //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
 
-        //runLeft = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runLeft"), Animation.PlayMode.LOOP);
+        walkLeftAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveLeft"), Animation.PlayMode.LOOP_PINGPONG);
 
-        //runRight = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runRight"), Animation.PlayMode.LOOP);
+        walkRightAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveRight"), Animation.PlayMode.LOOP_PINGPONG);
 
-        //runUp = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runUp"), Animation.PlayMode.LOOP);
+        walkUpAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveUp"), Animation.PlayMode.LOOP_PINGPONG);
 
-        //runDown = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runDown"), Animation.PlayMode.LOOP);
+        walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
 
         //die = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "die"), Animation.PlayMode.LOOP);
-
-        // TODO: Von Spritesheet auf TextureAtlas umsteigen
-
-        walkSheet = new Texture(getAssetsName());
-
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet,
-                walkSheet.getWidth() / FRAME_COLS,
-                walkSheet.getHeight() / FRAME_ROWS);
-
-        TextureRegion[] walkLeftFrames = new TextureRegion[FRAME_COLS];
-        TextureRegion[] walkRightFrames = new TextureRegion[FRAME_COLS];
-        TextureRegion[] walkUpFrames = new TextureRegion[FRAME_COLS];
-        TextureRegion[] walkDownFrames = new TextureRegion[FRAME_COLS];
-
-        for (int j = 0; j < FRAME_COLS; j++) {
-            walkDownFrames[j] = tmp[0][j];
-            walkLeftFrames[j] = tmp[1][j];
-            walkRightFrames[j] = tmp[2][j];
-            walkUpFrames[j] = tmp[3][j];
-        }
-
-        walkDownAnimation = new Animation<>(0.25f, walkDownFrames);
-        walkLeftAnimation = new Animation<>(0.25f, walkLeftFrames);
-        walkRightAnimation = new Animation<>(0.25f, walkRightFrames);
-        walkUpAnimation = new Animation<>(0.25f, walkUpFrames);
-
-        walkDownAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-        walkLeftAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-        walkRightAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-        walkUpAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
     }
 
     /**
@@ -137,6 +107,5 @@ public class EnemyObject extends BaseObject {
     @Override
     public void dispose() {
         super.dispose();
-        walkSheet.dispose();
     }
 }
