@@ -19,6 +19,16 @@ import javax.persistence.Table;
 public class Debuff extends BaseModel {
 
     /**
+     * Die eindeutige Serialisierungs-ID
+     */
+    static final long serialVersionUID = 11958105127419241L;
+
+    /**
+     * Gibt an, wie lange der Debuff (noch) wirksam ist
+     */
+    private float duration;
+
+    /**
      * Modifikator der Rüstung
      */
     private float armorModifier;
@@ -48,10 +58,57 @@ public class Debuff extends BaseModel {
 
     /**
      * Konstruktor, der alle Attribute initialisiert
+     * @param duration Die Dauer des Debuffs
+     * @param armorModifier Der Rüstungsmodifikator des Debuffs
+     * @param speedModifier Der Geschwindigkeitsmodifikator des Debuffs
+     * @param healthModifier Der Gesundheitsmodifikator des Debuffs
+     * @param enemy Der Gegner, der mit dem Debuff belegt ist
      */
-    public Debuff (float armorModifier, float speedModifier, float healthModifier) {
+    public Debuff(float duration, float armorModifier, float speedModifier, float healthModifier, Enemy enemy) {
+        this.duration = duration;
         this.armorModifier = armorModifier;
         this.speedModifier = speedModifier;
-        this. healthModifier = healthModifier;
+        this.healthModifier = healthModifier;
+        this.enemy = enemy;
+    }
+
+    public float getDuration() {
+        return duration;
+    }
+
+    public void setDuration(float duration) {
+        this.duration = duration;
+    }
+
+    public float getArmorModifier() {
+        return armorModifier;
+    }
+
+    public void setArmorModifier(float armorModifier) {
+        this.armorModifier = armorModifier;
+    }
+
+    public float getSpeedModifier() {
+        return speedModifier;
+    }
+
+    public void setSpeedModifier(float speedModifier) {
+        this.speedModifier = speedModifier;
+    }
+
+    public float getHealthModifier() {
+        return healthModifier;
+    }
+
+    public void setHealthModifier(float healthModifier) {
+        this.healthModifier = healthModifier;
+    }
+
+    public Enemy getEnemy() {
+        return enemy;
+    }
+
+    public void setEnemy(Enemy enemy) {
+        this.enemy = enemy;
     }
 }

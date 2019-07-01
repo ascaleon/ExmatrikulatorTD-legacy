@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -10,11 +11,9 @@ import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
+import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
-import de.diegrafen.exmatrikulatortd.persistence.EnemyDao;
-import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
-import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
-import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
+import de.diegrafen.exmatrikulatortd.persistence.*;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 import java.awt.geom.Point2D;
@@ -22,6 +21,8 @@ import java.util.*;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
+import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.EXPLOSIVE;
+import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
@@ -72,6 +73,11 @@ public class GameLogicController implements LogicController {
      */
     private TowerDao towerDao;
 
+    /**
+     * DAO für CRUD-Operationen mit Geschoss-Objekten
+     */
+    private ProjectileDao projectileDao;
+
 
     public GameLogicController(MainController mainController, Gamestate gamestate, Profile profile) {
         this.mainController = mainController;
@@ -81,11 +87,11 @@ public class GameLogicController implements LogicController {
         this.saveStateDao = new SaveStateDao();
         this.enemyDao = new EnemyDao();
         this.towerDao = new TowerDao();
+        this.projectileDao = new ProjectileDao();
         gamestate.addPlayer(new Player());
         gamestate.setLocalPlayerNumber(0);
         gameStateDao.create(gamestate);
     }
-
 
     @Override
     public void update(float deltaTime) {
@@ -105,6 +111,7 @@ public class GameLogicController implements LogicController {
             applyBuffsAndDebuffs(deltaTime);
             applyMovement(deltaTime);
             makeAttacks(deltaTime);
+            moveProjectiles(deltaTime);
         }
     }
 
@@ -161,6 +168,70 @@ public class GameLogicController implements LogicController {
     }
 
     /**
+     * Bewegt die Einheiten
+     *
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
+     */
+    private void moveProjectiles(float deltaTime) {
+        List<Projectile> projectilesThatHit = new ArrayList<>();
+
+        for (Projectile projectile : gamestate.getProjectiles()) {
+            if (Math.floor(getDistanceToTarget(projectile)) <= 3) {
+                projectilesThatHit.add(projectile);
+                continue;
+            }
+            moveInTargetDirection(projectile, deltaTime);
+            projectile.notifyObserver();
+        }
+
+        for (Projectile projectile : projectilesThatHit) {
+            applyDamageToTarget(projectile);
+        }
+    }
+
+    private void moveInTargetDirection(Projectile projectile, float deltaTime) {
+
+        float xPosition = projectile.getxPosition();
+        float yPosition = projectile.getyPosition();
+        float targetxPosition = projectile.getTarget().getxPosition();
+        float targetyPosition = projectile.getTarget().getyPosition();
+
+        float speed = projectile.getSpeed();
+
+        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
+        projectile.setxPosition(xPosition + (float) Math.cos(angle) * speed * deltaTime);
+        projectile.setyPosition(yPosition + (float) Math.sin(angle) * speed * deltaTime);
+        projectile.setTargetxPosition(targetxPosition);
+        projectile.setTargetyPosition(targetyPosition);
+    }
+
+    private void applyDamageToTarget(Projectile projectile) {
+        Enemy enemy = projectile.getTarget();
+        enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - projectile.getDamage());
+
+        if (enemy.getCurrentHitPoints() <= 0) {
+            Player attackedPlayer = enemy.getAttackedPlayer();
+            if (attackedPlayer != null) {
+                attackedPlayer.addToResources(enemy.getBounty());
+                attackedPlayer.addToScore(enemy.getPointsGranted());
+                attackedPlayer.notifyObserver();
+                removeEnemy(enemy);
+            }
+        }
+        projectile.setRemoved(true);
+        projectile.notifyObserver();
+        gamestate.removeProjectile(projectile);
+    }
+
+    private float getDistanceToTarget(Projectile projectile) {
+        float x1 = projectile.getxPosition();
+        float x2 = projectile.getTarget().getxPosition();
+        float y1 = projectile.getyPosition();
+        float y2 = projectile.getTarget().getyPosition();
+        return (float) Point2D.distance(x1, y1, x2, y2);
+    }
+
+    /**
      * Lässt die Türme angreifen
      *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
@@ -199,16 +270,24 @@ public class GameLogicController implements LogicController {
     private void letTowerAttack(Tower tower) {
         Enemy enemy = tower.getCurrentTarget();
         if (tower.getCooldown() <= 0) {
-            enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getAttackDamage());
-            tower.setCooldown(tower.getAttackSpeed());
-        }
+            switch (tower.getAttackType()) {
+                case NORMAL: //case EXPLOSIVE:
+                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getAttackDamage(),
+                            0.5f, 100, 300);
+                    addProjectile(projectile, tower);
+                    break;
+                default:
+                    enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getAttackDamage());
+                    if (enemy.getCurrentHitPoints() <= 0) {
+                        tower.getOwner().addToResources(enemy.getBounty());
+                        tower.getOwner().addToScore(enemy.getPointsGranted());
+                        tower.getOwner().notifyObserver();
+                        removeEnemy(enemy);
+                        tower.setCurrentTarget(null);
+                    }
+            }
 
-        if (enemy.getCurrentHitPoints() <= 0) {
-            tower.getOwner().addToResources(enemy.getBounty());
-            tower.getOwner().addToScore(enemy.getPointsGranted());
-            tower.getOwner().notifyObserver();
-            removeEnemy(enemy);
-            tower.setCurrentTarget(null);
+            tower.setCooldown(tower.getAttackSpeed());
         }
     }
 
@@ -240,9 +319,8 @@ public class GameLogicController implements LogicController {
         return enemyToReturn;
     }
 
-    /**
+    /*
      * Fügt Spielern Schaden zu
-     */
     private void applyPlayerDamage() {
         ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
         for (Enemy enemy : gamestate.getEnemies()) {
@@ -256,6 +334,7 @@ public class GameLogicController implements LogicController {
             applyDamage(enemy);
         }
     }
+    */
 
     private void applyDamage(Enemy enemy) {
         Player attackedPlayer = enemy.getAttackedPlayer();
@@ -357,6 +436,9 @@ public class GameLogicController implements LogicController {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
             gamestate.notifyObserver();
+            for (Projectile projectile : gamestate.getProjectiles()) {
+                projectileDao.create(projectile);
+            }
             gameStateDao.update(gamestate);
         }
     }
@@ -519,6 +601,17 @@ public class GameLogicController implements LogicController {
         tower.setGamestate(gamestate);
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
+    }
+
+    private void addProjectile(Projectile projectile, Tower tower) {
+        projectile.setxPosition(tower.getxPosition());
+        projectile.setyPosition(tower.getyPosition());
+        projectile.setTarget(tower.getCurrentTarget());
+        projectile.setTargetxPosition(tower.getCurrentTarget().getxPosition());
+        projectile.setTargetyPosition(tower.getCurrentTarget().getyPosition());
+
+        gamestate.addProjectile(projectile);
+        gameScreen.addProjectile(projectile);
     }
 
     /**

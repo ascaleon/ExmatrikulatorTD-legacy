@@ -342,7 +342,6 @@ public class GameScreen extends BaseScreen implements GameView {
         }
 
         getSpriteBatch().setProjectionMatrix(getCamera().combined);
-
         getSpriteBatch().begin();
 
         List<GameObject> objectsToRemove = new ArrayList<>();
@@ -352,18 +351,17 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (gameObject.isRemoved()) {
                     objectsToRemove.add(gameObject);
                 } else {
-                    gameObject.draw(getSpriteBatch());
+                    gameObject.draw(getSpriteBatch(), deltaTime);
                 }
             }
         }
-
         objectsToRemove.forEach(this::removeGameObject);
 
         getSpriteBatch().end();
     }
 
     /**
-     * Die nicht mehr benötigten Recourccen werden freigegeben.
+     * Gibt nicht mehr benötigte Ressourcen frei, um Speicherlecks zu vermeiden.
      */
     @Override
     public void dispose() {
@@ -495,6 +493,7 @@ public class GameScreen extends BaseScreen implements GameView {
         float cameraRight = getCamera().position.x + cameraHalfWidth;
         float cameraUp = getCamera().position.y + cameraHalfHeight;
         float cameraDown = getCamera().position.y - cameraHalfHeight;
+
 
         if (cameraLeft < 0) {
             getCamera().position.x = cameraHalfWidth;

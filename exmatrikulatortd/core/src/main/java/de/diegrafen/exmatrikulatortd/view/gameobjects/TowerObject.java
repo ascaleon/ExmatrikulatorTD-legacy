@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
@@ -15,29 +16,9 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class TowerObject extends BaseObject {
 
-//    Tower tower;
-//
-//    /**
-//     * Konstruktor für Turm-Objekte
-//     * @param name Der Name des Spielobjektes
-//     * @param assetsName Die mit dem Objekt assoziierten Assets
-//     * @param xPosition Die x-Position
-//     * @param yPosition Die y-Position
-//     */
-//    public TowerObject(String name, String assetsName, float xPosition, float yPosition) {
-//        super(name, assetsName, xPosition, yPosition);
-//    }
-//
-//
-//    public TowerObject(Tower tower) {
-//        super(tower.getName(), tower.getAssetsName());
-//        setNewPosition(tower.getxPosition(), tower.getyPosition());
-//        this.tower = tower;
-//        tower.registerObserver(this);
-//    }
-
     public TowerObject (ObservableUnit observableUnit) {
         super(observableUnit);
+        setCurrentSprite(new Texture(getAssetsName()));
     }
 
     /**
@@ -55,8 +36,14 @@ public class TowerObject extends BaseObject {
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
     @Override
-    public void draw (SpriteBatch spriteBatch) {
-        super.draw(spriteBatch);
+    public void draw(SpriteBatch spriteBatch, float deltaTime) {
+        super.draw(spriteBatch, deltaTime);
+
+        if (isPlayDeathAnimation()) {
+            setRemoved(true);
+            return;
+        }
+
         spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
     }
 

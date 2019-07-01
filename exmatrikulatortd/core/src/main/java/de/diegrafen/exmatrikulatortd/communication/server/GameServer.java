@@ -3,21 +3,26 @@ package de.diegrafen.exmatrikulatortd.communication.server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.ServerDiscoveryHandler;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.BuildResponse;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.SellResponse;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.SendEnemyResponse;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.UpgradeResponse;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
 /**
- *
  * GameServer-Klasse
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -50,25 +55,66 @@ public class GameServer extends Connector {
      */
     private boolean connected;
 
+    private boolean lookingForPlayers = true;
+
+    private boolean gameRunning = false;
+    
+    private int numberOfPlayers = 2;
+    
+    private boolean[] slotsFilled = new boolean[numberOfPlayers];
+    
+    private HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
+
     /**
      * Erzeugt einen neuen GameServer
      */
-    public GameServer () {
+    public GameServer() {
         this.tcpPort = TCP_PORT;
         this.udpPort = UDP_PORT;
         this.server = new Server();
         this.connected = false;
         registerObjects(server.getKryo());
+        slotsFilled[0] = true;
+        attachGetGameInfoRequestListener();
+        System.out.println("Server created!");
     }
 
 
     /**
      * Startet den GameServer
+     *
      * @return true, wenn das Starten erfolgreich war, ansonsten false
      */
     public boolean startServer() {
         try {
             server.bind(tcpPort, udpPort);
+            System.out.println("Server started!");
+            server.setDiscoveryHandler(new ServerDiscoveryHandler() {
+                @Override
+                public boolean onDiscoverHost(DatagramChannel datagramChannel, InetSocketAddress fromAddress) throws IOException {
+
+                    boolean lookingForPlayers = true;
+
+                    String mapName = "map1";
+
+                    String numberOfPlayers = Integer.toString(2);
+
+                    if (lookingForPlayers) {
+                        String newData = mapName + "\n" + numberOfPlayers;
+
+                        ByteBuffer buf = ByteBuffer.allocate(48);
+                        buf.clear();
+                        buf.put(newData.getBytes());
+                        buf.flip();
+
+                        int bytesSent = datagramChannel.send(buf, fromAddress);
+                        return bytesSent > 0;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            server.start();
         } catch (final java.io.IOException e) {
             e.printStackTrace();
             return false;
@@ -81,15 +127,16 @@ public class GameServer extends Connector {
      * Beendet den Server
      */
     @Override
-    public void shutdown () {
+    public void shutdown() {
         server.close();
     }
 
     /**
      * Fügt RequestListeners hinzu und assoziiert ihn mit einem LogicController
+     *
      * @param logicController Der zu assoziierende LogicController
      */
-    public void attachRequestListeners (final LogicController logicController) {
+    public void attachRequestListeners(final LogicController logicController) {
         attachBuildRequestListener(logicController);
         attachSellRequestListener(logicController);
         attachSendEnemyRequestListener(logicController);
@@ -99,17 +146,18 @@ public class GameServer extends Connector {
 
     /**
      * Fügt einen Request-Listener für das Bauen eines Turms hinzu und assoziiert ihn mit einem LogicController
+     *
      * @param logicController Der zu assoziierende LogicController
      */
-    private void attachBuildRequestListener (final LogicController logicController) {
+    private void attachBuildRequestListener(final LogicController logicController) {
         server.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof BuildRequest) {
                     final BuildRequest request = (BuildRequest) object;
-                    final boolean successful = logicController.buildTower(request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    final boolean successful = logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
 
                     if (successful) {
-                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                     } else {
                         connection.sendTCP(new BuildResponse(successful));
                     }
@@ -120,17 +168,18 @@ public class GameServer extends Connector {
 
     /**
      * Fügt einen Request-Listener für das Verkaufen eines Turms hinzu und assoziiert ihn mit einem LogicController
+     *
      * @param logicController Der zu assoziierende LogicController
      */
-    private void attachSellRequestListener (final LogicController logicController) {
+    private void attachSellRequestListener(final LogicController logicController) {
         server.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof SellRequest) {
                     final SellRequest request = (SellRequest) object;
-                    final boolean successful = logicController.sellTower(request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    final boolean successful = logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
 
                     if (successful) {
-                        server.sendToAllTCP(new SellResponse(successful, request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                        server.sendToAllTCP(new SellResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                     } else {
                         connection.sendTCP(new SellResponse(successful));
                     }
@@ -141,11 +190,12 @@ public class GameServer extends Connector {
 
     /**
      * Fügt einen Request-Listener für das Senden eines Gegners hinzu und assoziiert ihn mit einem LogicController
+     *
      * @param logicController Der zu assoziierende LogicController
      */
-    private void attachSendEnemyRequestListener (final LogicController logicController) {
+    private void attachSendEnemyRequestListener(final LogicController logicController) {
         server.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyRequest) {
                     final SendEnemyRequest request = (SendEnemyRequest) object;
                     final boolean successful = logicController.sendEnemy(request.getEnemyType());
@@ -162,17 +212,18 @@ public class GameServer extends Connector {
 
     /**
      * Fügt einen Request-Listener für das Aufrüsten eines Turms hinzu und assoziiert ihn mit einem LogicController
+     *
      * @param logicController Der zu assoziierende LogicController
      */
-    private void attachUpgradeRequestListener (final LogicController logicController) {
+    private void attachUpgradeRequestListener(final LogicController logicController) {
         server.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof UpgradeRequest) {
                     final UpgradeRequest request = (UpgradeRequest) object;
-                    final boolean successful = logicController.upgradeTower(request.getxPosition(), request.getyPosition(), request.getPlayerNumber());
+                    final boolean successful = logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
 
                     if (successful) {
-                        server.sendToAllTCP(new UpgradeResponse(successful, request.getxPosition(), request.getyPosition(), request.getPlayerNumber()));
+                        server.sendToAllTCP(new UpgradeResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                     } else {
                         connection.sendTCP(new UpgradeResponse(successful));
                     }
@@ -183,11 +234,12 @@ public class GameServer extends Connector {
 
     /**
      * Fügt einen Request-Listener für das Abrufen des Server-Spielzustandes hinzu und assoziiert ihn mit einem LogicController
+     *
      * @param logicController Der zu assoziierende LogicController
      */
-    private void attachGetServerStateRequestListener (final LogicController logicController) {
+    private void attachGetServerStateRequestListener(final LogicController logicController) {
         server.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof GetServerStateRequest) {
                     connection.sendTCP(logicController.getGamestate());
                 }
@@ -195,8 +247,49 @@ public class GameServer extends Connector {
         });
     }
 
+    private void attachGetGameInfoRequestListener() {
+        server.addListener(new Listener() {
+            List<String> playerNames = new LinkedList<>();
+            List<String> playerProfilePicturePaths = new LinkedList<>();
+            @Override
+            public void connected(Connection connection) {
+                int playerNumber = findNextFreePlayerNumber();
+                
+                connectionAndPlayerNumbers.put(connection.getID(), playerNumber);
+
+                if (playerNumber >= slotsFilled.length) {
+                    lookingForPlayers = false;
+                }
+                                
+                GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, playerNames, playerProfilePicturePaths);
+                server.sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
+                getGameInfoResponse.setUpdate(false);
+                connection.sendTCP(getGameInfoResponse);
+            }
+
+            @Override
+            public void disconnected(Connection connection) {
+                if (!gameRunning) {
+                    slotsFilled[connectionAndPlayerNumbers.get(connection.getID())] = false;
+                    connectionAndPlayerNumbers.remove(connection.getID());
+                    lookingForPlayers = true;
+                } else {
+                    // TODO: Hier irgendwie das Triggern einer "Player left"-Message einbauen
+                }
+            }
+
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof GetGameInfoRequest) {
+                    connection.sendTCP(new GetGameInfoResponse(true, 1, playerNames, playerProfilePicturePaths));
+                }
+            }
+        });
+    }
+
     /**
      * Gibt an, ob der Server verbunden ist
+     *
      * @return Gibt zurück, ob der Server verbunden ist
      */
     public boolean isConnected() {
@@ -204,52 +297,68 @@ public class GameServer extends Connector {
     }
 
     /**
-     * Baut einen neuen Turm
+     * Sendet an alle Clients, dass ein Turm gebaut wurde.
      *
-     * @param towerType
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      */
     @Override
-    public void buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
-        server.sendToAllTCP(new BuildResponse(true, towerType, xPosition, yPosition, playerNumber));
+    public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+        server.sendToAllTCP(new BuildResponse(true, towerType, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * Verkauft einen Turm
+     * Sendet an alle Clients, dass ein Turm verkauft wurde.
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     @Override
-    public void sellTower(int xPosition, int yPosition, int playerNumber) {
-        server.sendToAllTCP(new SellResponse(true, xPosition, yPosition, playerNumber));
+    public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        server.sendToAllTCP(new SellResponse(true, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * Rüstet einen Turm auf
+     * Sendet an alle Clients die Nachricht, dass ein Turm ausgebaut wurde.
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     @Override
-    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
-
+    public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        server.sendToAllTCP(new UpgradeResponse(true, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * Schickt einen Gegner zum gegnerischen Spieler
+     * TODO: Diese Methode passt, glaube ich, noch nicht so ganz. --JKR
+     * Sendet an alle Clients eine Nachricht, dass ein Gegner geschickt wurde
      *
-     * @param enemyType@return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType Der Typ des zu schickenden Gegners
      */
     @Override
     public void sendEnemy(int enemyType) {
+        server.sendToAllTCP(new SendEnemyResponse(true, enemyType));
+    }
 
+    public void setNumberOfPlayers(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
+    }
+    
+    private int findNextFreePlayerNumber() {
+        int returnValue = -1;
+        
+        for (int i = 0; i < slotsFilled.length; i++) {
+            if (!slotsFilled[i]) {
+                returnValue = i;
+                slotsFilled[i] = true;
+                break;
+            }
+        }
+        
+        return returnValue;
     }
 }

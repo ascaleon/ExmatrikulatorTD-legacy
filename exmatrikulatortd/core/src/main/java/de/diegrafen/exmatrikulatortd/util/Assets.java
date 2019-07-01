@@ -25,6 +25,5 @@ public class Assets {
 
     public static final String MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
 
-    //public static final String REGULAR_ENEMY_TEXTURE = "sprites/objects/enemies/Lorenzo.png";
-
+    public static final String FIREBALL_ASSETS = "sprites/objects/projectiles/fireball/fireball.atlas";
 }

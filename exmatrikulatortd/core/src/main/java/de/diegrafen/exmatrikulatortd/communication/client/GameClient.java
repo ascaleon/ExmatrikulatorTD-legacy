@@ -1,6 +1,8 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
@@ -14,6 +16,10 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
@@ -41,6 +47,10 @@ public class GameClient extends Connector implements ClientInterface {
 
     private LogicController logicController;
 
+    private List<String> receivedSessionInfo;
+
+    private int localPlayerNumber;
+
     /**
      * Erzeugt einen neuen GameClient
      */
@@ -49,6 +59,28 @@ public class GameClient extends Connector implements ClientInterface {
         registerObjects(client.getKryo());
         tcpPort = TCP_PORT;
         udpPort = UDP_PORT;
+        this.receivedSessionInfo = new LinkedList<>();
+        System.out.println("Client created!");
+        client.setDiscoveryHandler(new ClientDiscoveryHandler() {
+
+            @Override
+            public DatagramPacket onRequestNewDatagramPacket(){
+                return new DatagramPacket(new byte[48], 48);
+            }
+
+            @Override
+            public void onDiscoveredHost(DatagramPacket datagramPacket) {
+                String serverInformation = "";
+                serverInformation += datagramPacket.getAddress().getHostAddress() + "\n";
+                //System.out.println("Ohai.");
+                String packageInfo = new String(datagramPacket.getData(), 0, datagramPacket.getLength());
+                //System.out.println(packageInfo);
+                serverInformation += packageInfo;
+                receivedSessionInfo.add(serverInformation);
+            }
+        });
+        attachGetGameInfoReponseListener();
+        client.start(); // Startet den Client in einem neuen Thread
     }
 
     /**
@@ -61,6 +93,14 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
+     * Gibt eine Liste von InetAddresses zurueck, die entdeckte Server im lokalen Netzwerk enthaelt.
+     * @return @code{List<InetAddress>} mit gefundenen Servern
+     */
+    public List<InetAddress> discoverLocalServers(){
+        return client.discoverHosts(udpPort,5000);
+    }
+
+    /**
      *
      * @param towerType    Der Typ des zu bauenden Turms
      * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
@@ -69,8 +109,8 @@ public class GameClient extends Connector implements ClientInterface {
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        BuildRequest sellRequest = new BuildRequest(towerType, xCoordinate, yCoordinate, playerNumber);
-        sendRequest(sellRequest);
+        BuildRequest buildRequest = new BuildRequest(towerType, xCoordinate, yCoordinate, playerNumber);
+        sendRequest(buildRequest);
     }
 
     /**
@@ -259,11 +299,32 @@ public class GameClient extends Connector implements ClientInterface {
         });
     }
 
+    private void attachGetGameInfoReponseListener() {
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof GetGameInfoResponse) {
+                    GetGameInfoResponse response = (GetGameInfoResponse) object;
+                    if (response.isUpdate()) {
+                        // Update-Code kommt hierhin
+                    } else {
+                        localPlayerNumber = response.getAllocatedPlayerNumber();
+                        System.out.println("Allocated Player Number: " + localPlayerNumber);
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Gibt an, ob der GameClient mit einem Server verbunden ist
      * @return true, wenn der Client verbunden ist, ansonsten false.
      */
     public boolean isConnected() {
         return connected;
+    }
+
+    public List<String> getReceivedSessionInfo() {
+        return receivedSessionInfo;
     }
 }

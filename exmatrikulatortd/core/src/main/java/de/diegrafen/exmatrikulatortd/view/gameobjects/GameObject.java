@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import de.diegrafen.exmatrikulatortd.view.Observer;
 
 /**
- *
  * Interface für Spielobjekte. Wendet das Observer-Pattern an, mit dem Spielobjekte immer genau dann aktualisiert werden,
  * wenn sich ihre Repräsentation im Datenbestand ändert.
  *
@@ -17,9 +16,10 @@ public interface GameObject extends Observer {
 
     /**
      * Zeichnet das Objekt auf dem Bildschirm
+     *
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
-    void draw (SpriteBatch spriteBatch);
+    void draw(SpriteBatch spriteBatch, float deltaTime);
 
     /**
      * Entfernt das Spielobjekt
