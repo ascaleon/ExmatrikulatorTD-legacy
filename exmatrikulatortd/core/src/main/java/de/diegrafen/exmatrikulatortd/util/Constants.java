@@ -9,6 +9,8 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public class Constants {
 
+    public static final String GAME_TITLE = "Exmatrikulator TD";
+
     public static final int UDP_PORT = 9001;
 
     public static final int TCP_PORT = 9002;
@@ -23,4 +25,6 @@ public class Constants {
     public static final float SEARCH_TARGET_INTERVAL = 0.75f;
 
     public static final int TILE_SIZE = 64;
+
+    public static final float AURA_REFRESH_RATE = 0.5f;
 }

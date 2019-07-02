@@ -17,7 +17,7 @@ public class ProfileDao extends BaseDao<Profile> {
      */
     @Override
     Class<Profile> getClazz() {
-        return null;
+        return Profile.class;
     }
 
 

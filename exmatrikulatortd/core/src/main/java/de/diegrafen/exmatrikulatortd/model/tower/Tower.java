@@ -36,9 +36,14 @@ public class Tower extends ObservableModel {
     private int towerType;
 
     /**
-     * Der durch den Turm verursachte Schaden.
+     * Der grundlegend durch den Turm verursachte Schaden.
      */
-    private int attackDamage;
+    private float baseAttackDamage;
+
+    /**
+     * Der aktuell durch den Turm verursachte Schaden.
+     */
+    private float currentAttackDamage;
 
     /**
      * Die Reichweite des Turms.
@@ -46,9 +51,17 @@ public class Tower extends ObservableModel {
     private float attackRange;
 
     /**
-     * Die Angriffsgeschwindigkeit des Turms.
+     * Die grundlegende Angriffsgeschwindigkeit des Turms.
      */
-    private float attackSpeed;
+    private float baseAttackSpeed;
+
+    /**
+     * Die aktuelle Angriffsgeschwindigkeit des Turms.
+     */
+    private float currentAttackSpeed;
+
+    // TODO: Für Buffs müssen Attribute geschaffen werden, die den aktuellen Wert von Geschwindigkeit, Schaden etc. abbilden
+    //private float currentAttackSpeed;
 
     /**
      * Der Angriffstyp des Turmes
@@ -59,8 +72,8 @@ public class Tower extends ObservableModel {
     /**
      * Der Aura-Typ des Turmes
      */
-    @Enumerated(EnumType.STRING)
-    private Aura aura;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<Aura> auras;
 
     /**
      * Die Aura-Reichweite des Turmes
@@ -121,7 +134,7 @@ public class Tower extends ObservableModel {
     /**
      * Die Buffs, über die der Turm aktuell verfügt
      */
-    @OneToMany(mappedBy="tower", orphanRemoval=true)
+    @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
     private List<Buff> buffs;
 
     /**
@@ -154,11 +167,11 @@ public class Tower extends ObservableModel {
      * @param name
      * @param descriptionText
      * @param towerType
-     * @param attackDamage
+     * @param baseAttackDamage
      * @param attackRange
-     * @param attackSpeed
+     * @param baseAttackSpeed
      * @param attackType
-     * @param aura
+     * @param auras
      * @param auraRange
      * @param price
      * @param sellPrice
@@ -167,35 +180,29 @@ public class Tower extends ObservableModel {
      * @param maxUpgradeLevel
      * @param assetsName
      */
-    public Tower(String name, String descriptionText, int towerType, int attackDamage, float attackRange, float attackSpeed, AttackType attackType, Aura aura, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
+    public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange, float baseAttackSpeed, AttackType attackType, List<Aura> auras, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
         super();
 
         this.name = name;
         this.descriptionText = descriptionText;
         this.towerType = towerType;
-        this.attackDamage = attackDamage;
+        this.baseAttackDamage = baseAttackDamage;
+        this.currentAttackDamage = baseAttackDamage;
         this.attackRange = attackRange;
-        this.attackSpeed = attackSpeed;
+        this.baseAttackSpeed = baseAttackSpeed;
+        this.currentAttackSpeed = baseAttackSpeed;
         this.attackType = attackType;
-        this.aura = aura;
+        this.auras = auras;
         this.auraRange = auraRange;
         this.price = price;
         this.sellPrice = sellPrice;
         this.upgradePrice = upgradePrice;
         this.upgradeLevel = upgradeLevel;
         this.maxUpgradeLevel = maxUpgradeLevel;
-        this.buffs = new ArrayList<Buff>();
+        this.buffs = new ArrayList<>();
         this.timeSinceLastSearch = 5f;
-        this.cooldown = 0;
+        this.cooldown = baseAttackSpeed / 2;
         this.assetsName = assetsName;
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
-    }
-
-    public void setAttackDamage(int attackDamage) {
-        this.attackDamage = attackDamage;
     }
 
     public Player getOwner() {
@@ -288,14 +295,6 @@ public class Tower extends ObservableModel {
         this.cooldown = cooldown;
     }
 
-    public float getAttackSpeed() {
-        return attackSpeed;
-    }
-
-    public void setAttackSpeed(float attackSpeed) {
-        this.attackSpeed = attackSpeed;
-    }
-
     public void setName(String towerName) {
         this.name = towerName;
     }
@@ -308,13 +307,22 @@ public class Tower extends ObservableModel {
         this.attackType = attackType;
     }
 
-    public Aura getAura() {
-        return aura;
+    public List<Aura> getAuras() {
+        return auras;
     }
 
-    public void setAura(Aura aura) {
-        this.aura = aura;
+    public void setAura(List<Aura> auras) {
+        this.auras = auras;
     }
+
+    public void addAura(Aura aura) {
+        auras.add(aura);
+    }
+
+    public void removeAura(Aura aura) {
+        auras.remove(aura);
+    }
+
 
     public float getAuraRange() {
         return auraRange;
@@ -356,6 +364,14 @@ public class Tower extends ObservableModel {
         this.buffs = buffs;
     }
 
+    public void addBuff(Buff buff) {
+        buffs.add(buff);
+    }
+
+    public void removeBuff(Buff buff) {
+        buffs.remove(buff);
+    }
+
     public void setAssetsName(String assetsName) {
         this.assetsName = assetsName;
     }
@@ -366,5 +382,37 @@ public class Tower extends ObservableModel {
 
     public int getMaxUpgradeLevel() {
         return maxUpgradeLevel;
+    }
+
+    public float getBaseAttackDamage() {
+        return baseAttackDamage;
+    }
+
+    public void setBaseAttackDamage(float baseAttackDamage) {
+        this.baseAttackDamage = baseAttackDamage;
+    }
+
+    public float getCurrentAttackDamage() {
+        return currentAttackDamage;
+    }
+
+    public void setCurrentAttackDamage(float currentAttackDamage) {
+        this.currentAttackDamage = currentAttackDamage;
+    }
+
+    public float getBaseAttackSpeed() {
+        return baseAttackSpeed;
+    }
+
+    public void setBaseAttackSpeed(float baseAttackSpeed) {
+        this.baseAttackSpeed = baseAttackSpeed;
+    }
+
+    public float getCurrentAttackSpeed() {
+        return currentAttackSpeed;
+    }
+
+    public void setCurrentAttackSpeed(float currentAttackSpeed) {
+        this.currentAttackSpeed = currentAttackSpeed;
     }
 }

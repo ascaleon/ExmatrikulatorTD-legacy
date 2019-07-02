@@ -11,9 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.*;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
@@ -23,6 +21,9 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  */
 public abstract class BaseScreen implements Screen {
 
+    /**
+     *
+     */
     private Viewport stageViewport;
 
     /**
@@ -65,7 +66,7 @@ public abstract class BaseScreen implements Screen {
     public BaseScreen (MainController mainController, Game game) {
         this.camera = new OrthographicCamera();
         this.stageCamera = new OrthographicCamera();
-        viewport = new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
+        viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera); //new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
         stageViewport = new ScreenViewport(stageCamera);
 
         this.spriteBatch = new SpriteBatch();
@@ -227,5 +228,9 @@ public abstract class BaseScreen implements Screen {
 
     public BitmapFont getBitmapFont() {
         return bitmapFont;
+    }
+
+    public Viewport getStageViewport() {
+        return stageViewport;
     }
 }

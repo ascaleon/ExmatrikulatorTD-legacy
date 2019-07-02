@@ -19,12 +19,11 @@ public class Assets {
 
     public static final String AURA_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 
-    public static final String REGULAR_ENEMY_ASSETS = "sprites/objects/enemies/Lorenzo@64x64.png";
+    public static final String REGULAR_ENEMY_ASSETS = "sprites/objects/enemies/monster_cacto.atlas";
 
-    public static final String HEAVY_ENEMY_ASSETS = "sprites/objects/enemies/Vincenzo@64x64.png";
+    public static final String HEAVY_ENEMY_ASSETS = "sprites/objects/enemies/monster_golem.atlas";
 
     public static final String MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
 
-    //public static final String REGULAR_ENEMY_TEXTURE = "sprites/objects/enemies/Lorenzo.png";
-
+    public static final String FIREBALL_ASSETS = "sprites/objects/projectiles/fireball/fireball.atlas";
 }

@@ -14,17 +14,17 @@ public class BuildRequest extends Request {
 
     private int towerType;
 
-    private int xPosition;
+    private int xCoordinate;
 
-    private int yPosition;
+    private int yCoordinate;
 
     private int playerNumber;
 
-    public BuildRequest(int towerType, int xPosition, int yPosition, int playerNumber) {
+    public BuildRequest(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         super();
         this.towerType = towerType;
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
+        this.xCoordinate = xCoordinate;
+        this.yCoordinate = yCoordinate;
         this.playerNumber = playerNumber;
     }
 
@@ -32,12 +32,12 @@ public class BuildRequest extends Request {
         return towerType;
     }
 
-    public int getxPosition() {
-        return xPosition;
+    public int getxCoordinate() {
+        return xCoordinate;
     }
 
-    public int getyPosition() {
-        return yPosition;
+    public int getyCoordinate() {
+        return yCoordinate;
     }
 
     public int getPlayerNumber() {

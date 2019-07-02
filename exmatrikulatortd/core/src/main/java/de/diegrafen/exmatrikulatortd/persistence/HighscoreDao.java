@@ -1,6 +1,10 @@
 package de.diegrafen.exmatrikulatortd.persistence;
 
 import de.diegrafen.exmatrikulatortd.model.Highscore;
+import org.hibernate.Session;
+
+import javax.persistence.NamedQuery;
+import java.util.List;
 
 /**
  *
@@ -18,7 +22,26 @@ public class HighscoreDao extends BaseDao<Highscore> {
      */
     @Override
     Class<Highscore> getClazz() {
-        return null;
+        return Highscore.class;
     }
 
+
+    /**
+     * Ruft eine bestimmte Anzahl der höchsten Highscores aus der Datenbank ab und gibt sie als Liste in absteigender
+     * Reihenfolge zurück.
+     *
+     * @param limit Die Anzahl der @code{Highscore}s, die aus der Datenbank abgerufen werden sollen
+     * @return Die <i>n</i> höchsten @code{Highscore}s aus der Datenbank
+     * @author Jan Romann
+     */
+    public List<Highscore> findHighestScores(int limit) {
+        if (limit < 0) {
+            return null;
+        }
+
+        Session session = openCurrentSessionwithTransaction();
+        final List<Highscore> highscores = session.createNamedQuery("Highscore.findHighestScores", getClazz()).setMaxResults(limit).getResultList();
+        closeCurrentSessionwithTransaction();
+        return highscores;
+    }
 }

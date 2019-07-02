@@ -58,7 +58,7 @@ public final class TowerUpgrader {
             successful = false;
         } else {
             tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
-            tower.setAttackDamage(tower.getAttackDamage() * 2);
+            tower.setBaseAttackDamage(tower.getBaseAttackDamage()* 2);
             tower.setUpgradePrice(tower.getUpgradePrice() * 2);
             tower.setSellPrice(tower.getSellPrice() * 2);
         }
