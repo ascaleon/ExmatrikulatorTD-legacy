@@ -394,6 +394,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private void initializeUserInterface() {
 
+
+
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
@@ -437,6 +439,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
+        towerSelect.setDebug(true);
         TextButton tower1 = new TextButton("T1", skin);
         TextButton tower2 = new TextButton("T2", skin);
         TextButton tower3 = new TextButton("T3", skin);
@@ -461,9 +464,9 @@ public class GameScreen extends BaseScreen implements GameView {
         TextButton exitButton = new TextButton("X", skin);
         exitButton.setSize(10,10);
         exitButton.getLabel().setFontScale(1,1);
-        exitButton.addListener(new ClickListener() {
+        exitButton.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
+            public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.exit();
             }
         });
@@ -472,24 +475,29 @@ public class GameScreen extends BaseScreen implements GameView {
 
         //Toprow table
         final Table topRow = new Table();
-        topRow.add(exit).left().expandX();
+        topRow.setDebug(true);
+        //topRow.add(exit).left();
         topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
         topRow.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         topRow.add(resourcesLabel).left().align(RIGHT).expandX();
+        topRow.add(exit).left();
+        topRow.setBounds(0,50,defaultScreen.getWidth(), defaultScreen.getHeight());
 
-        defaultScreen.add(topRow).expandX();
+        defaultScreen.add(topRow).top().align(MIDDLE).expandX();
         defaultScreen.row();
+        defaultScreen.setDebug(true);
 
 //        defaultScreen.add(towerSelect).top().center();
 //        defaultScreen.add(exit).top().right();
 //        defaultScreen.row();
-        defaultScreen.add(statsTable).top().center().expandX().colspan(4);
-        defaultScreen.row();
+        defaultScreen.add(statsTable).top().expandX().colspan(4);
+        //defaultScreen.row();
 
+        defaultScreen.add(new ProgressBar(0, localPlayer.getAttackingEnemies().size(), 1, false, skin)).top().expandX();
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
-
+        defaultScreen.top().center().align(MIDDLE);
         mainUiStack.add(defaultScreen);
 
         getUi().addActor(mainUiStack);
