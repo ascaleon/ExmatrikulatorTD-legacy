@@ -31,6 +31,9 @@ public class Projectile extends ObservableModel {
     @OneToOne
     private Enemy target;
 
+    @OneToOne
+    private Tower towerThatShot;
+
     private float targetxPosition;
 
     private float targetyPosition;
@@ -157,5 +160,13 @@ public class Projectile extends ObservableModel {
 
     public void removeDebuff(Debuff debuff) {
         this.applyingDebuffs.remove(debuff);
+    }
+
+    public Tower getTowerThatShot() {
+        return towerThatShot;
+    }
+
+    public void setTowerThatShot(Tower towerThatShot) {
+        this.towerThatShot = towerThatShot;
     }
 }

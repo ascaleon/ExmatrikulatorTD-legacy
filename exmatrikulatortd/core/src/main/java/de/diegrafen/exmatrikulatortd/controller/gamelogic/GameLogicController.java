@@ -314,21 +314,36 @@ public class GameLogicController implements LogicController {
     }
 
     private void applyDamageToTarget(Projectile projectile) {
-        Enemy enemy = projectile.getTarget();
-        enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - projectile.getDamage());
+        List<Enemy> enemiesHit = new LinkedList<>();
+        Enemy maintTarget = projectile.getTarget();
+        maintTarget.setCurrentHitPoints(maintTarget.getCurrentHitPoints() - projectile.getDamage());
+        enemiesHit.add(maintTarget);
 
-        for (Debuff debuff : projectile.getApplyingDebuffs()) {
-            enemy.addDebuff(new Debuff(debuff));
+        if (projectile.getSplashRadius() > 0) {
+            List<Enemy> enemiesInSplashRadius = getEnemiesInRange(projectile.getTowerThatShot(), projectile.getSplashRadius());
+            for (Enemy enemyInSplashRadius : enemiesInSplashRadius) {
+                // TODO: Splash-Percentage ist keine gute Bezeichnung.
+                enemyInSplashRadius.setCurrentHitPoints(enemyInSplashRadius.getCurrentHitPoints() - projectile.getDamage() * projectile.getSplashPercentage());
+                enemiesHit.add(enemyInSplashRadius);
+            }
         }
 
-        if (enemy.getCurrentHitPoints() <= 0) {
-            Player attackedPlayer = enemy.getAttackedPlayer();
-            if (attackedPlayer != null) {
-                attackedPlayer.addToResources(enemy.getBounty());
-                attackedPlayer.addToScore(enemy.getPointsGranted());
-                attackedPlayer.notifyObserver();
-                removeEnemy(enemy);
+        for (Enemy enemyHit : enemiesHit) {
+            for (Debuff debuff : projectile.getApplyingDebuffs()) {
+                enemyHit.addDebuff(new Debuff(debuff));
             }
+
+            // TODO: In eigene Funktion auslagern
+            if (enemyHit.getCurrentHitPoints() <= 0) {
+                Player attackedPlayer = enemyHit.getAttackedPlayer();
+                if (attackedPlayer != null) {
+                    attackedPlayer.addToResources(enemyHit.getBounty());
+                    attackedPlayer.addToScore(enemyHit.getPointsGranted());
+                    attackedPlayer.notifyObserver();
+                    removeEnemy(enemyHit);
+                }
+            }
+
         }
         projectile.setRemoved(true);
         projectile.notifyObserver();
@@ -665,6 +680,7 @@ public class GameLogicController implements LogicController {
         projectile.setxPosition(tower.getxPosition());
         projectile.setyPosition(tower.getyPosition());
         projectile.setTarget(tower.getCurrentTarget());
+        projectile.setTowerThatShot(tower);
         projectile.setTargetxPosition(tower.getCurrentTarget().getxPosition());
         projectile.setTargetyPosition(tower.getCurrentTarget().getyPosition());
 
