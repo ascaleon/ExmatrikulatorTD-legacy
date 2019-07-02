@@ -69,11 +69,7 @@ public class Debuff extends BaseModel implements Cloneable {
             this.duration = duration;
         }
 
-        if (armorModifier < -1) {
-            this.armorModifier = -1;
-        } else {
-            this.armorModifier = armorModifier;
-        }
+        this.armorModifier = armorModifier;
 
         if (speedModifier < -1) {
             this.speedModifier = -1;

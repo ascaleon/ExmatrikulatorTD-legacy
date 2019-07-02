@@ -60,14 +60,13 @@ public class Tower extends ObservableModel {
      */
     private float currentAttackSpeed;
 
-    // TODO: Für Buffs müssen Attribute geschaffen werden, die den aktuellen Wert von Geschwindigkeit, Schaden etc. abbilden
-    //private float currentAttackSpeed;
-
     /**
      * Der Angriffstyp des Turmes
      */
+    private int attackType;
+
     @Enumerated(EnumType.STRING)
-    private AttackType attackType;
+    private AttackStyle attackStyle;
 
     /**
      * Der Aura-Typ des Turmes
@@ -180,12 +179,13 @@ public class Tower extends ObservableModel {
      * @param maxUpgradeLevel
      * @param assetsName
      */
-    public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange, float baseAttackSpeed, AttackType attackType, List<Aura> auras, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
+    public Tower(String name, String descriptionText, int towerType, AttackStyle attackStyle, float baseAttackDamage, float attackRange, float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
         super();
 
         this.name = name;
         this.descriptionText = descriptionText;
         this.towerType = towerType;
+        this.attackStyle = attackStyle;
         this.baseAttackDamage = baseAttackDamage;
         this.currentAttackDamage = baseAttackDamage;
         this.attackRange = attackRange;
@@ -299,11 +299,11 @@ public class Tower extends ObservableModel {
         this.name = towerName;
     }
 
-    public AttackType getAttackType() {
+    public int getAttackType() {
         return attackType;
     }
 
-    public void setAttackType(AttackType attackType) {
+    public void setAttackType(int attackType) {
         this.attackType = attackType;
     }
 
@@ -414,5 +414,9 @@ public class Tower extends ObservableModel {
 
     public void setCurrentAttackSpeed(float currentAttackSpeed) {
         this.currentAttackSpeed = currentAttackSpeed;
+    }
+
+    public AttackStyle getAttackStyle() {
+        return attackStyle;
     }
 }

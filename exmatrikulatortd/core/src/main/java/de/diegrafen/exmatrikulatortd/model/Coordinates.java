@@ -94,8 +94,8 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
-        this.enemiesInMapCell = new ArrayList<Enemy>();
-        this.neighbours = new ArrayList<Coordinates>();
+        this.enemiesInMapCell = new ArrayList<>();
+        this.neighbours = new ArrayList<>();
     }
 
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
@@ -107,16 +107,8 @@ public class Coordinates extends BaseModel {
         return xCoordinate;
     }
 
-    public void setXCoordinate(int xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
     public int getYCoordinate() {
         return yCoordinate;
-    }
-
-    public void setYCoordinate(int yCoordinate) {
-        this.yCoordinate = yCoordinate;
     }
 
     public int getxCoordinate() {
@@ -135,22 +127,6 @@ public class Coordinates extends BaseModel {
         this.yCoordinate = yCoordinate;
     }
 
-    public Gamestate getGameState() {
-        return gameState;
-    }
-
-    public void setGameState(Gamestate gameState) {
-        this.gameState = gameState;
-    }
-
-    public boolean isBuildable() {
-        return isBuildable;
-    }
-
-    public void setBuildable(boolean buildable) {
-        isBuildable = buildable;
-    }
-
     public Tower getTower() {
         return tower;
     }
@@ -163,48 +139,16 @@ public class Coordinates extends BaseModel {
         return buildableByPlayer;
     }
 
-    public void setBuildableByPlayer(int buildableByPlayer) {
-        this.buildableByPlayer = buildableByPlayer;
-    }
-
-    public List<Enemy> getEnemiesInMapCell() {
-        return enemiesInMapCell;
-    }
-
-    public void setEnemiesInMapCell(List<Enemy> enemiesInMapCell) {
-        this.enemiesInMapCell = enemiesInMapCell;
-    }
-
     public List<Coordinates> getNeighbours() {
         return neighbours;
-    }
-
-    public void setNeighbours (List<Coordinates> neighbours) {
-        this.neighbours = neighbours;
     }
 
     public void addNeighbour (Coordinates neighbour) {
         this.neighbours.add(neighbour);
     }
 
-    public void removeNeighbour (Coordinates neighbour) {
-        this.neighbours.remove(neighbour);
-    }
-
-    public void addToEnemiesOnCell(Enemy enemy) {
-        enemiesInMapCell.add(enemy);
-    }
-
-    public void removeFromEnemiesOnCell(Enemy enemy) {
-        enemiesInMapCell.remove(enemy);
-    }
-
     public int getTileSize() {
         return tileSize;
-    }
-
-    public void setTileSize(int tileSize) {
-        this.tileSize = tileSize;
     }
 
     @Override

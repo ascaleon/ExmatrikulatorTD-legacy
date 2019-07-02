@@ -10,10 +10,10 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.util.LinkedList;
 
-import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.*;
+import static de.diegrafen.exmatrikulatortd.model.tower.AttackStyle.IMMEDIATE;
+import static de.diegrafen.exmatrikulatortd.model.tower.AttackStyle.PROJECTILE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
-import static de.diegrafen.exmatrikulatortd.util.Constants.AURA_REFRESH_RATE;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
  * Factory für Turm-Objekte
@@ -94,7 +94,7 @@ public final class TowerFactory {
         Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
         LinkedList<Aura> auras = new LinkedList<>();
         auras.add(slowAura);
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, 2 * TILE_SIZE, 3, NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS);
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, PROJECTILE, 100, 2 * TILE_SIZE, 3, NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS);
     }
 
     /**
@@ -109,7 +109,7 @@ public final class TowerFactory {
         Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
         LinkedList<Aura> auras = new LinkedList<>();
         auras.add(slowAura);
-        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100, 2 * TILE_SIZE, 3, FROST, auras, 0, 300, 150, 600, 1, 3, SLOW_TOWER_ASSETS);
+        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, PROJECTILE, 100, 2 * TILE_SIZE, 3, PIERCING, auras, 0, 300, 150, 600, 1, 3, SLOW_TOWER_ASSETS);
     }
 
 
@@ -119,7 +119,7 @@ public final class TowerFactory {
      * @return Der erzeugte Corruption-Turm
      */
     private static Tower createCorruptionTower() {
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, UNHOLY, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS);
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, IMMEDIATE, 100, 2 * TILE_SIZE, 3, LOGIC, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS);
     }
 
     /**
@@ -128,7 +128,7 @@ public final class TowerFactory {
      * @return Der erzeugte Explosiv-Turm
      */
     private static Tower createExplosiveTower() {
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS);
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, PROJECTILE, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS);
     }
 
     /**
@@ -137,6 +137,6 @@ public final class TowerFactory {
      * @return Der erzeugte Aura-Turm
      */
     private static Tower createAuraTower() {
-        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100, 2 * TILE_SIZE, 3, PIERCING, new LinkedList<>(), 4 * TILE_SIZE, 300, 150, 600, 1, 3, AURA_TOWER_ASSETS);
+        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, IMMEDIATE, 100, 2 * TILE_SIZE, 3, PIERCING, new LinkedList<>(), 4 * TILE_SIZE, 300, 150, 600, 1, 3, AURA_TOWER_ASSETS);
     }
 }

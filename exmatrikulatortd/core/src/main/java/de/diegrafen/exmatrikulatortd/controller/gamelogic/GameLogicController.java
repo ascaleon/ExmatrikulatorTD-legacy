@@ -12,10 +12,7 @@ import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
-import de.diegrafen.exmatrikulatortd.model.tower.Aura;
-import de.diegrafen.exmatrikulatortd.model.tower.Buff;
-import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.model.tower.*;
 import de.diegrafen.exmatrikulatortd.persistence.*;
 import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
 import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
@@ -25,7 +22,6 @@ import java.util.*;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
-import static de.diegrafen.exmatrikulatortd.model.tower.AttackType.EXPLOSIVE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
@@ -97,10 +93,10 @@ public class GameLogicController implements LogicController {
             //applyPlayerDamage();
             spawnWave(deltaTime);
             applyAuras(deltaTime);
-            applyBuffsAndDebuffs(deltaTime);
             applyMovement(deltaTime);
             makeAttacks(deltaTime);
             moveProjectiles(deltaTime);
+            applyBuffsAndDebuffs(deltaTime);
         }
     }
 
@@ -128,16 +124,7 @@ public class GameLogicController implements LogicController {
                 for (Debuff debuff : debuffs) {
                     List<Enemy> enemiesInRange = getEnemiesInRange(tower, aura.getRange());
                     for (Enemy enemyInRange : enemiesInRange) {
-                        boolean debuffAlreadyApplied = false;
-                        for (Debuff debuffToCheck : enemyInRange.getDebuffs()) {
-                            if (debuff.getName().equals(debuffToCheck.getName())) {
-                                debuffAlreadyApplied = true;
-                                break;
-                            }
-                        }
-                        if (!debuffAlreadyApplied) {
-                            enemyInRange.addDebuff(new Debuff(debuff));
-                        }
+                        addDebuffToEnemy(enemyInRange, debuff);
                     }
                 }
 
@@ -157,6 +144,19 @@ public class GameLogicController implements LogicController {
                     }
                 }
             }
+        }
+    }
+
+    private void addDebuffToEnemy(Enemy enemy, Debuff debuff) {
+        boolean debuffAlreadyApplied = false;
+        for (Debuff debuffToCheck : enemy.getDebuffs()) {
+            if (debuff.getName().equals(debuffToCheck.getName())) {
+                debuffAlreadyApplied = true;
+                break;
+            }
+        }
+        if (!debuffAlreadyApplied) {
+            enemy.addDebuff(new Debuff(debuff));
         }
     }
 
@@ -223,22 +223,18 @@ public class GameLogicController implements LogicController {
 
             enemy.setCurrentSpeed(enemy.getBaseSpeed());
             enemy.setCurrentArmor(enemy.getBaseArmor());
-            // TODO: Irgendwas mit Leben überlegen. Vielleicht stattdessen eher einen Damage over Time Debuff ergänzen.
+            // TODO: Irgendwas mit Leben überlegen. Vielleicht stattdessen eher Damage over Time Debuffs ergänzen.
 
             for (Debuff debuff : enemy.getDebuffs()) {
                 enemy.setCurrentSpeed(enemy.getCurrentSpeed() * (1 + debuff.getSpeedModifier()));
-                System.out.println("Aktuelle Geschwindigkeit: " + enemy.getCurrentSpeed());
-                enemy.setCurrentArmor(enemy.getCurrentArmor() * (1 + debuff.getArmorModifier()));
-                System.out.println("Verbleibende Dauer: " + debuff.getDuration());
+                enemy.setCurrentArmor(enemy.getCurrentArmor() + debuff.getArmorModifier());
                 debuff.setDuration(debuff.getDuration() - deltaTime);
                 if (debuff.getDuration() < 0) {
                     debuffsToRemove.add(debuff);
                 }
             }
-
             debuffsToRemove.forEach(enemy::removeDebuff);
         }
-
     }
 
 
@@ -253,48 +249,72 @@ public class GameLogicController implements LogicController {
                 enemy.incrementWayPointIndex();
             }
             if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
-                applyDamage(enemy);
+                applyDamageToPlayer(enemy);
                 if (enemy.isRespawning()) {
-                    enemy.setRemoved(false);
-                    enemy.setWayPointIndex(0);
-                    enemy.setToStartPosition();
-                    addEnemy(enemy);
+                    addEnemy(new Enemy(enemy));
                 }
                 break;
             }
 
-            enemy.moveInTargetDirection(deltaTime);
+            moveInTargetDirection(enemy, deltaTime);
             enemy.notifyObserver();
 
-            if (enemy.getCurrentMapCell() != null) {
-                enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
-            }
-            Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
-            enemy.setCurrentMapCell(newCell);
-            newCell.addToEnemiesOnCell(enemy);
+//            if (enemy.getCurrentMapCell() != null) {
+//                enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
+//            }
+//            Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
+//            enemy.setCurrentMapCell(newCell);
+//            newCell.addToEnemiesOnCell(enemy);
         }
     }
 
     /**
-     * Bewegt die Einheiten
+     * Bewegt die Geschosse
      *
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     private void moveProjectiles(float deltaTime) {
         List<Projectile> projectilesThatHit = new ArrayList<>();
+        List<Projectile> projectilesWithoutTarget = new LinkedList<>();
 
         for (Projectile projectile : gamestate.getProjectiles()) {
+            //if (projectile.getTarget().isRemoved()) {
+            //projectilesWithoutTarget.add(projectile);
+            //continue;
+            //}
             if (Math.floor(getDistanceToTarget(projectile)) <= 3) {
                 projectilesThatHit.add(projectile);
                 continue;
             }
             moveInTargetDirection(projectile, deltaTime);
-            projectile.notifyObserver();
         }
+
+        //for (Projectile projectile : projectilesWithoutTarget) {
+        //removeProjectile(projectile);
+        //}
 
         for (Projectile projectile : projectilesThatHit) {
             applyDamageToTarget(projectile);
         }
+    }
+
+
+    private void moveInTargetDirection(Enemy enemy, float deltaTime) {
+        Coordinates nextWayPoint = enemy.getAttackedPlayer().getWayPoints().get(enemy.getWayPointIndex());
+        int tileSize = gamestate.getTileSize();
+
+        float xPosition = enemy.getxPosition();
+        float yPosition = enemy.getyPosition();
+        float targetxPosition = nextWayPoint.getXCoordinate() * tileSize;
+        float targetyPosition = nextWayPoint.getYCoordinate() * tileSize;
+        float currentSpeed = enemy.getCurrentSpeed();
+
+        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
+
+        enemy.setTargetxPosition(targetxPosition);// + tileSize / 2;
+        enemy.setTargetyPosition(targetyPosition);// + tileSize / 2;
+        enemy.setxPosition(xPosition + (float) Math.cos(angle) * currentSpeed * deltaTime);
+        enemy.setyPosition(yPosition + (float) Math.sin(angle) * currentSpeed * deltaTime);
     }
 
     private void moveInTargetDirection(Projectile projectile, float deltaTime) {
@@ -311,28 +331,29 @@ public class GameLogicController implements LogicController {
         projectile.setyPosition(yPosition + (float) Math.sin(angle) * speed * deltaTime);
         projectile.setTargetxPosition(targetxPosition);
         projectile.setTargetyPosition(targetyPosition);
+        projectile.notifyObserver();
     }
 
     private void applyDamageToTarget(Projectile projectile) {
         List<Enemy> enemiesHit = new LinkedList<>();
-        Enemy maintTarget = projectile.getTarget();
-        maintTarget.setCurrentHitPoints(maintTarget.getCurrentHitPoints() - projectile.getDamage());
-        enemiesHit.add(maintTarget);
+        Enemy mainTarget = projectile.getTarget();
+        mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints() - projectile.getDamage() * calculateDamageMultiplier(mainTarget, projectile.getAttackType()));
+        enemiesHit.add(mainTarget);
 
         if (projectile.getSplashRadius() > 0) {
             List<Enemy> enemiesInSplashRadius = getEnemiesInRange(projectile.getTowerThatShot(), projectile.getSplashRadius());
             for (Enemy enemyInSplashRadius : enemiesInSplashRadius) {
+                float damageMultiplier = calculateDamageMultiplier(enemyInSplashRadius, projectile.getAttackType());
                 // TODO: Splash-Percentage ist keine gute Bezeichnung.
-                enemyInSplashRadius.setCurrentHitPoints(enemyInSplashRadius.getCurrentHitPoints() - projectile.getDamage() * projectile.getSplashPercentage());
+                enemyInSplashRadius.setCurrentHitPoints(enemyInSplashRadius.getCurrentHitPoints() - projectile.getDamage() * projectile.getSplashPercentage() * damageMultiplier);
                 enemiesHit.add(enemyInSplashRadius);
             }
         }
 
         for (Enemy enemyHit : enemiesHit) {
             for (Debuff debuff : projectile.getApplyingDebuffs()) {
-                enemyHit.addDebuff(new Debuff(debuff));
+                addDebuffToEnemy(enemyHit, debuff);
             }
-
             // TODO: In eigene Funktion auslagern
             if (enemyHit.getCurrentHitPoints() <= 0) {
                 Player attackedPlayer = enemyHit.getAttackedPlayer();
@@ -343,11 +364,30 @@ public class GameLogicController implements LogicController {
                     removeEnemy(enemyHit);
                 }
             }
-
         }
-        projectile.setRemoved(true);
-        projectile.notifyObserver();
-        gamestate.removeProjectile(projectile);
+        removeProjectile(projectile);
+    }
+
+    private void removeProjectile(Projectile projectileToRemove) {
+        projectileToRemove.setRemoved(true);
+        projectileToRemove.notifyObserver();
+        gamestate.removeProjectile(projectileToRemove);
+    }
+
+    private float calculateDamageMultiplier(Enemy enemy, int attackType) {
+        float armor = enemy.getCurrentArmor();
+        float damageModifier = 1;
+
+        // TODO: Eindeutigeren Namen hinzufügen
+        float armorEffect = ATTACK_DEFENSE_MATRIX[attackType][enemy.getArmorType()];
+
+        if (armor > 0) {
+            damageModifier = 1 - (armor * DAMAGE_REDUCTION_FACTOR) / (1 + DAMAGE_REDUCTION_FACTOR * armor);
+        } else if (armor < 0) {
+            damageModifier = 2 - (float) Math.pow(0.94, -armor);
+        }
+
+        return armorEffect * damageModifier;
     }
 
     private float getDistanceToTarget(Projectile projectile) {
@@ -398,14 +438,14 @@ public class GameLogicController implements LogicController {
     private void letTowerAttack(Tower tower) {
         Enemy enemy = tower.getCurrentTarget();
         if (tower.getCooldown() <= 0) {
-            switch (tower.getAttackType()) {
-                case NORMAL: //case EXPLOSIVE:
-                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getCurrentAttackDamage(),
+            switch (tower.getAttackStyle()) {
+                case PROJECTILE:
+                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, EXPLOSIVE, tower.getCurrentAttackDamage(),
                             0.5f, 100, 300);
-                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -0.5f, -0.5f, -0.5f));
+                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -5, -0.5f, -0.5f));
                     addProjectile(projectile, tower);
                     break;
-                default:
+                case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
                     enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
                     if (enemy.getCurrentHitPoints() <= 0) {
                         tower.getOwner().addToResources(enemy.getBounty());
@@ -414,13 +454,14 @@ public class GameLogicController implements LogicController {
                         removeEnemy(enemy);
                         tower.setCurrentTarget(null);
                     }
+                    break;
             }
 
             tower.setCooldown(tower.getCurrentAttackSpeed());
         }
     }
 
-    private void applyDamage(Enemy enemy) {
+    private void applyDamageToPlayer(Enemy enemy) {
         Player attackedPlayer = enemy.getAttackedPlayer();
         attackedPlayer.setCurrentLives(attackedPlayer.getCurrentLives() - enemy.getAmountOfDamageToPlayer());
         removeEnemy(enemy);
@@ -429,8 +470,8 @@ public class GameLogicController implements LogicController {
     private void removeEnemy(Enemy enemy) {
         enemy.getAttackedPlayer().removeEnemy(enemy);
         enemy.setAttackedPlayer(null);
-        enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
-        enemy.setCurrentMapCell(null);
+        //enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
+        //enemy.setCurrentMapCell(null);
         enemy.setDebuffs(new LinkedList<>());
         gamestate.removeEnemy(enemy);
         enemy.setGameState(null);
@@ -512,6 +553,11 @@ public class GameLogicController implements LogicController {
         if (gamestate.getEnemies().isEmpty() && !gamestate.isNewRound()) {
             gamestate.setRoundEnded(true);
             gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
+
+
+            List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
+            remainingProjectiles.forEach(this::removeProjectile);
+
             gamestate.notifyObserver();
             gameStateDao.update(gamestate);
         }
@@ -657,9 +703,21 @@ public class GameLogicController implements LogicController {
         enemy.setAttackedPlayer(attackedPlayer);
         gamestate.addEnemy(enemy);
         enemy.setGameState(gamestate);
-        enemy.setToStartPosition();
+        setEnemyToStartPosition(enemy);
         gameScreen.addEnemy(enemy);
         enemy.notifyObserver();
+    }
+
+    /**
+     * Setzt einen Gegner an seine Startposition (zurück)
+     *
+     * @param enemy
+     */
+    private void setEnemyToStartPosition(Enemy enemy) {
+        Coordinates startCoordinates = enemy.getAttackedPlayer().getWayPoints().get(0);
+        int tileSize = gamestate.getTileSize();
+        enemy.setxPosition(startCoordinates.getXCoordinate() * tileSize);// + tileSize / 2;
+        enemy.setyPosition(startCoordinates.getYCoordinate() * tileSize);// + tileSize / 2;
     }
 
     private void addTower(Tower tower, int xPosition, int yPosition) {
@@ -743,8 +801,6 @@ public class GameLogicController implements LogicController {
                 errormessage = "Auf diesem feld gibt es bereits einen Turm!";
                 buildable = false;
             } else if (mapCell.getBuildableByPlayer() != playerNumber) {
-                System.out.println(playerNumber);
-                System.out.println(mapCell.getBuildableByPlayer());
                 errormessage = "Du darfst hier nicht bauen!";
                 buildable = false;
             }
@@ -812,6 +868,7 @@ public class GameLogicController implements LogicController {
         tower.setRemoved(true);
         tower.getOwner().removeTower(tower);
         tower.getPosition().setTower(null);
+        gamestate.removeTower(tower);
         tower.setRemoved(true);
         tower.notifyObserver();
     }

@@ -16,6 +16,8 @@ public class Projectile extends ObservableModel {
 
     private String assetsName;
 
+    private int attackType;
+
     private float damage;
 
     private float splashPercentage;
@@ -38,15 +40,16 @@ public class Projectile extends ObservableModel {
 
     private float targetyPosition;
 
-    @OneToMany(orphanRemoval = true, cascade= CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Debuff> applyingDebuffs;
 
     public Projectile() {
     }
 
-    public Projectile(String name, String assetsName, float damage, float splashPercentage, float splashRadius, float speed) {
+    public Projectile(String name, String assetsName, int attackType, float damage, float splashPercentage, float splashRadius, float speed) {
         this.name = name;
         this.assetsName = assetsName;
+        this.attackType = attackType;
         this.damage = damage;
         this.splashPercentage = splashPercentage;
         this.splashRadius = splashRadius;
@@ -68,40 +71,20 @@ public class Projectile extends ObservableModel {
         return assetsName;
     }
 
-    public void setAssetsName(String assetsName) {
-        this.assetsName = assetsName;
-    }
-
     public float getDamage() {
         return damage;
-    }
-
-    public void setDamage(float damage) {
-        this.damage = damage;
     }
 
     public float getSplashPercentage() {
         return splashPercentage;
     }
 
-    public void setSplashPercentage(float splashPercentage) {
-        this.splashPercentage = splashPercentage;
-    }
-
     public float getSplashRadius() {
         return splashRadius;
     }
 
-    public void setSplashRadius(float splashRadius) {
-        this.splashRadius = splashRadius;
-    }
-
     public float getSpeed() {
         return speed;
-    }
-
-    public void setSpeed(float speed) {
-        this.speed = speed;
     }
 
     @Override
@@ -150,16 +133,8 @@ public class Projectile extends ObservableModel {
         return applyingDebuffs;
     }
 
-    public void setApplyingDebuffs(List<Debuff> applyingDebuffs) {
-        this.applyingDebuffs = applyingDebuffs;
-    }
-
     public void addDebuff(Debuff debuff) {
         this.applyingDebuffs.add(debuff);
-    }
-
-    public void removeDebuff(Debuff debuff) {
-        this.applyingDebuffs.remove(debuff);
     }
 
     public Tower getTowerThatShot() {
@@ -168,5 +143,9 @@ public class Projectile extends ObservableModel {
 
     public void setTowerThatShot(Tower towerThatShot) {
         this.towerThatShot = towerThatShot;
+    }
+
+    public int getAttackType() {
+        return attackType;
     }
 }
