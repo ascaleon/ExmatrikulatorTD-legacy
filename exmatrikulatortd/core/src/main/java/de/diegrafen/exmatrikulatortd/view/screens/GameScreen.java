@@ -121,8 +121,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private  InputMultiplexer multiplexer;
 
-    static boolean pause = false;
-
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
      *
@@ -366,6 +364,11 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (gameObject.isRemoved()) {
                     objectsToRemove.add(gameObject);
                 } else {
+                    if (isPause()) {
+                        gameObject.setAnimated(false);
+                    } else {
+                        gameObject.setAnimated(true);
+                    }
                     gameObject.draw(getSpriteBatch(), deltaTime);
                 }
             }
@@ -540,12 +543,12 @@ public class GameScreen extends BaseScreen implements GameView {
                     exitButton.setText(">");
                     //Gdx.files.internal("ui-skin/glassy-ui.png");
                     //Gdx.app.exit();
-                    pause = !pause;
+                    setPause(!isPause());
                 }
                 else{
                     exitButton.setColor(Color.valueOf("ffffffff"));
                     exitButton.setText("| |");
-                    pause = !pause;
+                    setPause(!isPause());
                 }
 
             }
@@ -660,9 +663,5 @@ public class GameScreen extends BaseScreen implements GameView {
         if (cameraDown < 0) {
             getCamera().position.y = cameraHalfHeight;
         }
-    }
-
-    public static boolean isPause() {
-        return pause;
     }
 }

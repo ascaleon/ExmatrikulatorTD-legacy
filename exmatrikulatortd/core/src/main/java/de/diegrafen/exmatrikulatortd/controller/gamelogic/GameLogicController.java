@@ -85,7 +85,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void update(float deltaTime) {
         // FIXME: Bestimmung, wann das Spiel zuende ist, fixen
-        if (!determineGameOver() && GameScreen.isPause() == false) {
+        if (!determineGameOver() && !gameScreen.isPause()) {
             if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
                 determineNewRound();
                 if (gamestate.isRoundEnded()) {

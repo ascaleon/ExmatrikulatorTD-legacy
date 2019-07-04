@@ -59,6 +59,8 @@ public abstract class BaseScreen implements Screen {
 
     private OrthographicCamera stageCamera;
 
+    private boolean pause = false;
+
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
@@ -126,7 +128,7 @@ public abstract class BaseScreen implements Screen {
             ui.act(deltaTime);
             ui.draw();
         }
-        if(GameScreen.isPause() == false){
+        if(!isPause()){
             Gdx.graphics.requestRendering();
         }
     }
@@ -236,5 +238,13 @@ public abstract class BaseScreen implements Screen {
 
     public Viewport getStageViewport() {
         return stageViewport;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 }

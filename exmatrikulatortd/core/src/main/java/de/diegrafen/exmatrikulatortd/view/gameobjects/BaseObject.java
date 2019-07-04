@@ -63,6 +63,8 @@ public abstract class BaseObject implements GameObject {
 
     private float stateTime = 0f;
 
+    private boolean animated;
+
     BaseObject(ObservableUnit observable) {
         this.observable = observable;
         this.name = observable.getName();
@@ -90,6 +92,7 @@ public abstract class BaseObject implements GameObject {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.removed = false;
+        this.animated = true;
     }
 
     /**
@@ -226,5 +229,14 @@ public abstract class BaseObject implements GameObject {
 
     public void setStateTime(float stateTime) {
         this.stateTime = stateTime;
+    }
+
+    public boolean isAnimated() {
+        return animated;
+    }
+
+    @Override
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
     }
 }
