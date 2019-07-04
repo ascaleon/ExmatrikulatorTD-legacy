@@ -125,6 +125,8 @@ public class GameScreen extends BaseScreen implements GameView {
     boolean t2 = false;
     boolean t3 = false;
     boolean t4 = false;
+    boolean u = false;
+    boolean s = false;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
@@ -483,76 +485,90 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
+                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Tower 1 Ausgewählt");
                     tower1.setColor(Color.GREEN);
+                    t1 = true;
                 }
-                else{
+                else if (t1){
                     tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
                 }
-                t1 = !t1;
+                else{}
             }
         });
         tower2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
+                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Tower 2 Ausgewählt");
                     tower2.setColor(Color.GREEN);
+                    t2 = true;
                 }
-                else{
+                else if (t2){
                     tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
                 }
-                t2 = !t2;
+                else{}
             }
         });
         tower3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
+                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Tower 3 Ausgewählt");
                     tower3.setColor(Color.GREEN);
+                    t3 = true;
                 }
-                else{
+                else if (t3){
                     tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
                 }
-                t3 = !t3;
+                else{}
             }
         });
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                     //System.out.println(tower4.getColor());
-                    if(!t1 && !t2 && !t3 && !t4) {
+                    if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                         System.out.println("Tower 4 Ausgewählt");
                         tower4.setColor(Color.GREEN);
+                        t4 = true;
                     }
-                    else{
+                    else if (t4){
                         tower4.setColor(Color.valueOf("ffffffff"));
+                        t4 = false;
                     }
-                    t4 = !t4;
+                    else{}
             }
         });
         upgrade.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (upgrade.getColor().equals(Color.valueOf("ffffffff"))) {
+                if (!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Upgrader gestartet");
                     upgrade.setColor(Color.GOLD);
-                } else {
+                    u = true;
+                } else if (u) {
                     upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
                 }
+                else{}
             }
         });
         sell.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (sell.getColor().equals(Color.valueOf("ffffffff"))) {
+                if (!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Der Händler wartet auf das angebot");
                     sell.setColor(Color.YELLOW);
-                } else {
+                    s = true;
+                } else if (s) {
                     sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
                 }
+                else{}
             }
         });
         //Towerbuttons der Tabelle hinzufügen
