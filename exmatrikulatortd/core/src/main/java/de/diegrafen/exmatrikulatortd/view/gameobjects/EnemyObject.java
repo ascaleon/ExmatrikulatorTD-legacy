@@ -87,7 +87,9 @@ public class EnemyObject extends BaseObject {
 
         double angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 180;
 
-        setStateTime(getStateTime() + deltaTime);
+        if (isAnimated()) {
+            setStateTime(getStateTime() + deltaTime);
+        }
 
         TextureRegion currentFrame;
 

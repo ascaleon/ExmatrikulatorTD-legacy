@@ -39,7 +39,9 @@ public class ProjectileObject extends BaseObject {
 
         TextureRegion currentFrame;
 
-        setStateTime(getStateTime() + deltaTime);
+        if (isAnimated()) {
+            setStateTime(getStateTime() + deltaTime);
+        }
 
         if (!isPlayDeathAnimation()) {
             currentFrame = flyingAnimation.getKeyFrame(getStateTime(), true);

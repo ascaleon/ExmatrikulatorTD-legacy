@@ -1,15 +1,20 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -29,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
+import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
@@ -113,6 +119,13 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private float touchDownX, touchDownY;
 
+    private  InputMultiplexer multiplexer;
+
+    boolean t1 = false;
+    boolean t2 = false;
+    boolean t3 = false;
+    boolean t4 = false;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
      *
@@ -184,11 +197,13 @@ public class GameScreen extends BaseScreen implements GameView {
 
         getCamera().setToOrtho(false, width, height);
 
-        Gdx.input.setInputProcessor(new InputMultiplexer());
+        multiplexer = new InputMultiplexer();
 
-        InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+        //Gdx.input.setInputProcessor(new InputMultiplexer());
 
-        InputProcessor inputProcessor = new InputProcessor() {
+        //InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+
+        InputProcessor inputProcessorCam = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
                 if (keycode == Input.Keys.LEFT)
@@ -284,9 +299,12 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         };
 
-        multiplexer.addProcessor(inputProcessor);
+        //multiplexer.addProcessor(inputProcessorCam);
 
         initializeUserInterface();
+
+        multiplexer.addProcessor(inputProcessorCam);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     /**
@@ -351,6 +369,11 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (gameObject.isRemoved()) {
                     objectsToRemove.add(gameObject);
                 } else {
+                    if (isPause()) {
+                        gameObject.setAnimated(false);
+                    } else {
+                        gameObject.setAnimated(true);
+                    }
                     gameObject.draw(getSpriteBatch(), deltaTime);
                 }
             }
@@ -387,6 +410,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private void initializeUserInterface() {
 
+        int sizeX = 100;
+        int sizeY = 100;
+
+
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
@@ -410,31 +437,196 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
         scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
         statsTable.add(scoreLabel).left().align(RIGHT);
-
+        statsTable.row();
         // money
         statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         statsTable.add(resourcesLabel).left().align(RIGHT);
-
+        statsTable.row();
         // lives
         statsTable.add(new Label("Leben: ", infoLabelsStyle)).left().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
-
+        statsTable.row();
         // Rounds
         statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
         roundsLabel = new Label((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds(), liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
+        statsTable.row();
 
-        defaultScreen.add(statsTable).top().center().expandX().colspan(4);
+        //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        TextButtonStyle style = new TextButtonStyle();
+        final Table towerSelect = new Table();
+        //towerSelect.setDebug(true);
+
+        //Die einzelnen Towerbuttons
+        TextButton tower1 = new TextButton("T1", skin);
+        TextButton tower2 = new TextButton("T2", skin);
+        TextButton tower3 = new TextButton("T3", skin);
+        TextButton tower4 = new TextButton("T4", skin);
+        TextButton upgrade = new TextButton("^", skin);
+        TextButton sell = new TextButton("$$$", skin);
+//        tower1.setSize(10, 10);
+//        tower2.setSize(10, 10);
+//        tower3.setSize(10, 10);
+//        tower4.setSize(10, 10);
+
+        //Nur nen paar parameter, ka ob die überhaupt noch gebraucht werden
+        tower1.getLabel().setFontScale(1, 1);
+        tower2.getLabel().setFontScale(1,1);
+        tower3.getLabel().setFontScale(1,1);
+        tower4.getLabel().setFontScale(1,1);
+        //tower4.setColor(Color.WHITE);
+
+        //InputListener für die Buttons
+        tower1.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(!t1 && !t2 && !t3 && !t4) {
+                    System.out.println("Tower 1 Ausgewählt");
+                    tower1.setColor(Color.GREEN);
+                }
+                else{
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                }
+                t1 = !t1;
+            }
+        });
+        tower2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(!t1 && !t2 && !t3 && !t4) {
+                    System.out.println("Tower 2 Ausgewählt");
+                    tower2.setColor(Color.GREEN);
+                }
+                else{
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                }
+                t2 = !t2;
+            }
+        });
+        tower3.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(!t1 && !t2 && !t3 && !t4) {
+                    System.out.println("Tower 3 Ausgewählt");
+                    tower3.setColor(Color.GREEN);
+                }
+                else{
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                }
+                t3 = !t3;
+            }
+        });
+        tower4.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                    //System.out.println(tower4.getColor());
+                    if(!t1 && !t2 && !t3 && !t4) {
+                        System.out.println("Tower 4 Ausgewählt");
+                        tower4.setColor(Color.GREEN);
+                    }
+                    else{
+                        tower4.setColor(Color.valueOf("ffffffff"));
+                    }
+                    t4 = !t4;
+            }
+        });
+        upgrade.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (upgrade.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Upgrader gestartet");
+                    upgrade.setColor(Color.GOLD);
+                } else {
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                }
+            }
+        });
+        sell.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (sell.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Der Händler wartet auf das angebot");
+                    sell.setColor(Color.YELLOW);
+                } else {
+                    sell.setColor(Color.valueOf("ffffffff"));
+                }
+            }
+        });
+        //Towerbuttons der Tabelle hinzufügen
+        towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
+        towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
+        towerSelect.add(tower3).size(sizeX, sizeY).spaceRight(5);
+        towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
+        towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
+        towerSelect.add(sell).size(sizeX, sizeY);
+//        towerSelect.add(new TextButton("Tower 1", skin)).size(50,10);
+//        towerSelect.add(new TextButton("Tower 2", skin)).size(50,10);
+
+        //Exit
+        final Table exit = new Table();
+        TextButton exitButton = new TextButton("| |", skin);
+        exitButton.setSize(10,10);
+        exitButton.getLabel().setFontScale(1,1);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(exitButton.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Pausiert");
+                    exitButton.setColor(255,0,0,255);
+                    exitButton.setText(">");
+                    //Gdx.files.internal("ui-skin/glassy-ui.png");
+                    //Gdx.app.exit();
+                    setPause(!isPause());
+                }
+                else{
+                    exitButton.setColor(Color.valueOf("ffffffff"));
+                    exitButton.setText("| |");
+                    setPause(!isPause());
+                }
+
+            }
+        });
+        exit.add(exitButton).size(sizeX, sizeY);
+        //Gdx.input.setInputProcessor(stage);
+        //getUi().addActor(exitButton);
+
+        //Toprow table
+        final Table topRow = new Table();
+        //topRow.setDebug(true);
+        //topRow.add(exit).left();
+        //topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
+        topRow.add(exit).top().right();
+        topRow.setBounds(0,50,defaultScreen.getWidth(), defaultScreen.getHeight());
+
+        final Table bottomOfScreen = new Table();
+        bottomOfScreen.add(towerSelect).expandX();
+        bottomOfScreen.align(MIDDLE);
+        //bottomOfScreen.setDebug(true);
+
+        defaultScreen.add(topRow).top().right().expandX();
+        defaultScreen.row();
+        //defaultScreen.setDebug(true);
+
+//        defaultScreen.add(towerSelect).top().center();
+//        defaultScreen.add(exit).top().right();
+//        defaultScreen.row();
+        defaultScreen.add(statsTable).top().right().expandX().colspan(4);
         defaultScreen.row();
 
+        //defaultScreen.add(new ProgressBar(0, localPlayer.getAttackingEnemies().size(), 1, false, skin)).top().expandX();
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
+        defaultScreen.add(bottomOfScreen).bottom().center();
+        mainUiStack.addActor(defaultScreen);
 
-        mainUiStack.add(defaultScreen);
-
+        //getUi().addActor(defaultScreen);
         getUi().addActor(mainUiStack);
+        multiplexer.addProcessor(getUi());
+        //InputProcessor inputProcessorButton;
+        //Gdx.input.setInputProcessor(getUi());
     }
 
     private void reinitializeGameScreen() {

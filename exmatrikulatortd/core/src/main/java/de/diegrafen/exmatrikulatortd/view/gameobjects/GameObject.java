@@ -12,6 +12,8 @@ import de.diegrafen.exmatrikulatortd.view.Observer;
  */
 public interface GameObject extends Observer {
 
+    void setAnimated(boolean animated);
+
     boolean isRemoved();
 
     /**
