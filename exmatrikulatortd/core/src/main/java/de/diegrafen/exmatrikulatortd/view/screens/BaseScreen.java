@@ -119,7 +119,7 @@ public abstract class BaseScreen implements Screen {
      */
     @Override
     public void render(float deltaTime) {
-        Gdx.graphics.setContinuousRendering(false);
+        //Gdx.graphics.setContinuousRendering(false);
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(deltaTime);
@@ -128,9 +128,9 @@ public abstract class BaseScreen implements Screen {
             ui.act(deltaTime);
             ui.draw();
         }
-        if(!isPause()){
-            Gdx.graphics.requestRendering();
-        }
+        //if(!isPause()){
+            //Gdx.graphics.requestRendering();
+        //}
     }
 
     /**
