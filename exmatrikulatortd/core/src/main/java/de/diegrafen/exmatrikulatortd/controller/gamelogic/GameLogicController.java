@@ -85,7 +85,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void update(float deltaTime) {
         // FIXME: Bestimmung, wann das Spiel zuende ist, fixen
-        if (!determineGameOver()) {
+        if (!determineGameOver() && GameScreen.isPause() == false) {
             if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
                 determineNewRound();
                 if (gamestate.isRoundEnded()) {
@@ -94,13 +94,15 @@ public class GameLogicController implements LogicController {
                     startNewRound();
                 }
             }
-            //applyPlayerDamage();
-            spawnWave(deltaTime);
-            applyAuras(deltaTime);
-            applyBuffsAndDebuffs(deltaTime);
-            applyMovement(deltaTime);
-            makeAttacks(deltaTime);
-            moveProjectiles(deltaTime);
+            //if(GameScreen.isPause() == false) {
+                //applyPlayerDamage();
+                spawnWave(deltaTime);
+                applyAuras(deltaTime);
+                applyBuffsAndDebuffs(deltaTime);
+                applyMovement(deltaTime);
+                makeAttacks(deltaTime);
+                moveProjectiles(deltaTime);
+            //}
         }
     }
 
