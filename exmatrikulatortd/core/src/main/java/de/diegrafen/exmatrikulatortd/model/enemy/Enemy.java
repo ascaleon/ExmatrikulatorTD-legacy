@@ -40,8 +40,6 @@ public class Enemy extends ObservableModel {
 
     private float xPosition, yPosition;
 
-    private float endXPosition = 400, endYPosition = 200;
-
     private int amountOfDamageToPlayer;
 
     private int bounty;
@@ -50,20 +48,14 @@ public class Enemy extends ObservableModel {
 
     private int sendPrice;
 
-    private float xVelocity, yVelocity;
-
-    private boolean dead;
-
-    private boolean reachedTarget;
-
     private int wayPointIndex;
 
     private float baseArmor;
 
     private float currentArmor;
 
-    @Enumerated(EnumType.ORDINAL)
-    private ArmorType armorType;
+    //@Enumerated(EnumType.ORDINAL)
+    private int armorType;
 
     private String assetsName;
 
@@ -101,14 +93,15 @@ public class Enemy extends ObservableModel {
      * @param sendPrice              Die Kosten für das Versenden eines solchen Gegners im Multiplayer-Modus.
      * @param assetsName             Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
      */
-    public Enemy(String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int bounty,
-                 int sendPrice, String assetsName, float xPosition, float yPosition, int pointsGranted) {
+    public Enemy(String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int bounty, int sendPrice,
+                 int armorType, float baseArmor, String assetsName, float xPosition, float yPosition, int pointsGranted) {
         super();
 
         this.debuffs = new LinkedList<>();
 
-        // TODO: Rüstungswert ergänzen
-
+        this.armorType = armorType;
+        this.baseArmor = baseArmor;
+        this.currentArmor = baseArmor;
         this.name = name;
         this.baseSpeed = baseSpeed;
         this.currentSpeed = baseSpeed;
@@ -125,6 +118,31 @@ public class Enemy extends ObservableModel {
 
         this.respawning = false;
     }
+
+    public Enemy(Enemy enemy) {
+
+        this.debuffs = enemy.getDebuffs();
+
+        this.baseArmor = enemy.getBaseArmor();
+        this.currentArmor = enemy.getBaseArmor();
+        this.name = enemy.getName();
+        this.baseSpeed = enemy.getBaseSpeed();
+        this.currentSpeed = enemy.getBaseSpeed();
+        this.maxHitPoints = enemy.getMaxHitPoints();
+        this.currentHitPoints = enemy.getMaxHitPoints();;
+        this.amountOfDamageToPlayer = enemy.getAmountOfDamageToPlayer();
+        this.bounty = enemy.getBounty();
+        this.pointsGranted = enemy.getPointsGranted();
+        this.sendPrice = enemy.getSendPrice();
+        this.assetsName = enemy.getAssetsName();
+        this.xPosition = enemy.getxPosition();
+        this.yPosition = enemy.getyPosition();
+        this.wayPointIndex = 0;
+
+        this.respawning = enemy.isRespawning();
+    }
+
+
 
     private Coordinates getStartPosition() {
         return attackedPlayer.getWayPoints().get(0);
@@ -147,28 +165,20 @@ public class Enemy extends ObservableModel {
         return yPosition;
     }
 
+    public void setxPosition(float xPosition) {
+        this.xPosition = xPosition;
+    }
+
+    public void setyPosition(float yPosition) {
+        this.yPosition = yPosition;
+    }
+
     public String getAssetsName() {
         return assetsName;
     }
 
     public String getName() {
         return name;
-    }
-
-    /**
-     * TODO: In GameLogicController verschieben
-     *
-     * @param deltaTime
-     */
-    public void moveInTargetDirection(float deltaTime) {
-        Coordinates nextWayPoint = attackedPlayer.getWayPoints().get(wayPointIndex);
-        int tileSize = gameState.getTileSize();
-        targetxPosition = nextWayPoint.getXCoordinate() * tileSize;// + tileSize / 2;
-        targetyPosition = nextWayPoint.getYCoordinate() * tileSize;// + tileSize / 2;
-
-        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
-        xPosition += (float) Math.cos(angle) * currentSpeed * deltaTime;
-        yPosition += (float) Math.sin(angle) * currentSpeed * deltaTime;
     }
 
     public float getxSpawnPosition() {
@@ -181,10 +191,6 @@ public class Enemy extends ObservableModel {
 
     public int getEndXPosition() {
         return getEndPosition().getXCoordinate() * gameState.getTileSize();
-    }
-
-    public float getEndYPosition() {
-        return endYPosition * gameState.getTileSize();
     }
 
     public int getNextXPosition() {
@@ -238,14 +244,6 @@ public class Enemy extends ObservableModel {
 
     public void incrementWayPointIndex() {
         wayPointIndex++;
-    }
-
-
-    public void setToStartPosition() {
-        Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
-        int tileSize = gameState.getTileSize();
-        xPosition = startCoordinates.getXCoordinate() * tileSize;// + tileSize / 2;
-        yPosition = startCoordinates.getYCoordinate() * tileSize;// + tileSize / 2;
     }
 
     public boolean isRespawning() {
@@ -331,5 +329,17 @@ public class Enemy extends ObservableModel {
 
     public void setCurrentArmor(float currentArmor) {
         this.currentArmor = currentArmor;
+    }
+
+    public float getMaxHitPoints() {
+        return maxHitPoints;
+    }
+
+    public int getSendPrice() {
+        return sendPrice;
+    }
+
+    public int getArmorType() {
+        return armorType;
     }
 }
