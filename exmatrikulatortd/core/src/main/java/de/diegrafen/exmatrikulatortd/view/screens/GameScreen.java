@@ -121,6 +121,11 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private  InputMultiplexer multiplexer;
 
+    boolean t1 = false;
+    boolean t2 = false;
+    boolean t3 = false;
+    boolean t4 = false;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
      *
@@ -408,6 +413,7 @@ public class GameScreen extends BaseScreen implements GameView {
         int sizeX = 100;
         int sizeY = 100;
 
+
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
@@ -452,13 +458,15 @@ public class GameScreen extends BaseScreen implements GameView {
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
-        towerSelect.setDebug(true);
+        //towerSelect.setDebug(true);
 
         //Die einzelnen Towerbuttons
         TextButton tower1 = new TextButton("T1", skin);
         TextButton tower2 = new TextButton("T2", skin);
         TextButton tower3 = new TextButton("T3", skin);
         TextButton tower4 = new TextButton("T4", skin);
+        TextButton upgrade = new TextButton("^", skin);
+        TextButton sell = new TextButton("$$$", skin);
 //        tower1.setSize(10, 10);
 //        tower2.setSize(10, 10);
 //        tower3.setSize(10, 10);
@@ -475,57 +483,85 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(tower1.getColor().equals(Color.valueOf("ffffffff"))) {
+                if(!t1 && !t2 && !t3 && !t4) {
                     System.out.println("Tower 1 Ausgewählt");
                     tower1.setColor(Color.GREEN);
                 }
                 else{
                     tower1.setColor(Color.valueOf("ffffffff"));
                 }
+                t1 = !t1;
             }
         });
         tower2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(tower2.getColor().equals(Color.valueOf("ffffffff"))) {
+                if(!t1 && !t2 && !t3 && !t4) {
                     System.out.println("Tower 2 Ausgewählt");
                     tower2.setColor(Color.GREEN);
                 }
                 else{
                     tower2.setColor(Color.valueOf("ffffffff"));
                 }
+                t2 = !t2;
             }
         });
         tower3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(tower3.getColor().equals(Color.valueOf("ffffffff"))) {
+                if(!t1 && !t2 && !t3 && !t4) {
                     System.out.println("Tower 3 Ausgewählt");
                     tower3.setColor(Color.GREEN);
                 }
                 else{
                     tower3.setColor(Color.valueOf("ffffffff"));
                 }
+                t3 = !t3;
             }
         });
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println(tower4.getColor());
-                    if(tower4.getColor().equals(Color.valueOf("ffffffff"))) {
+                    //System.out.println(tower4.getColor());
+                    if(!t1 && !t2 && !t3 && !t4) {
                         System.out.println("Tower 4 Ausgewählt");
                         tower4.setColor(Color.GREEN);
                     }
                     else{
                         tower4.setColor(Color.valueOf("ffffffff"));
                     }
+                    t4 = !t4;
+            }
+        });
+        upgrade.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (upgrade.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Upgrader gestartet");
+                    upgrade.setColor(Color.GOLD);
+                } else {
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                }
+            }
+        });
+        sell.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (sell.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Der Händler wartet auf das angebot");
+                    sell.setColor(Color.YELLOW);
+                } else {
+                    sell.setColor(Color.valueOf("ffffffff"));
+                }
             }
         });
         //Towerbuttons der Tabelle hinzufügen
         towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower3).size(sizeX, sizeY).spaceRight(5);
-        towerSelect.add(tower4).size(sizeX, sizeY);
+        towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
+        towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
+        towerSelect.add(sell).size(sizeX, sizeY);
 //        towerSelect.add(new TextButton("Tower 1", skin)).size(50,10);
 //        towerSelect.add(new TextButton("Tower 2", skin)).size(50,10);
 
@@ -559,7 +595,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         //Toprow table
         final Table topRow = new Table();
-        topRow.setDebug(true);
+        //topRow.setDebug(true);
         //topRow.add(exit).left();
         //topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
         topRow.add(exit).top().right();
@@ -568,11 +604,11 @@ public class GameScreen extends BaseScreen implements GameView {
         final Table bottomOfScreen = new Table();
         bottomOfScreen.add(towerSelect).expandX();
         bottomOfScreen.align(MIDDLE);
-        bottomOfScreen.setDebug(true);
+        //bottomOfScreen.setDebug(true);
 
         defaultScreen.add(topRow).top().right().expandX();
         defaultScreen.row();
-        defaultScreen.setDebug(true);
+        //defaultScreen.setDebug(true);
 
 //        defaultScreen.add(towerSelect).top().center();
 //        defaultScreen.add(exit).top().right();
