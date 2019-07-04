@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -118,6 +119,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private float touchDownX, touchDownY;
 
+    private  InputMultiplexer multiplexer;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
      *
@@ -189,11 +192,13 @@ public class GameScreen extends BaseScreen implements GameView {
 
         getCamera().setToOrtho(false, width, height);
 
-        Gdx.input.setInputProcessor(new InputMultiplexer());
+        multiplexer = new InputMultiplexer();
 
-        InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+        //Gdx.input.setInputProcessor(new InputMultiplexer());
 
-        InputProcessor inputProcessor = new InputProcessor() {
+        //InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+
+        InputProcessor inputProcessorCam = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
                 if (keycode == Input.Keys.LEFT)
@@ -289,9 +294,12 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         };
 
-        multiplexer.addProcessor(inputProcessor);
+        //multiplexer.addProcessor(inputProcessorCam);
 
         initializeUserInterface();
+
+        multiplexer.addProcessor(inputProcessorCam);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     /**
@@ -440,6 +448,8 @@ public class GameScreen extends BaseScreen implements GameView {
         TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         towerSelect.setDebug(true);
+
+        //Die einzelnen Towerbuttons
         TextButton tower1 = new TextButton("T1", skin);
         TextButton tower2 = new TextButton("T2", skin);
         TextButton tower3 = new TextButton("T3", skin);
@@ -448,10 +458,65 @@ public class GameScreen extends BaseScreen implements GameView {
 //        tower2.setSize(10, 10);
 //        tower3.setSize(10, 10);
 //        tower4.setSize(10, 10);
+
+        //Nur nen paar parameter, ka ob die überhaupt noch gebraucht werden
         tower1.getLabel().setFontScale(1, 1);
         tower2.getLabel().setFontScale(1,1);
         tower3.getLabel().setFontScale(1,1);
         tower4.getLabel().setFontScale(1,1);
+        //tower4.setColor(Color.WHITE);
+
+        //InputListener für die Buttons
+        tower1.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(tower1.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Tower 1 Ausgewählt");
+                    tower1.setColor(Color.GREEN);
+                }
+                else{
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                }
+            }
+        });
+        tower2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(tower2.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Tower 2 Ausgewählt");
+                    tower2.setColor(Color.GREEN);
+                }
+                else{
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                }
+            }
+        });
+        tower3.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(tower3.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("Tower 3 Ausgewählt");
+                    tower3.setColor(Color.GREEN);
+                }
+                else{
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                }
+            }
+        });
+        tower4.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                    System.out.println(tower4.getColor());
+                    if(tower4.getColor().equals(Color.valueOf("ffffffff"))) {
+                        System.out.println("Tower 4 Ausgewählt");
+                        tower4.setColor(Color.GREEN);
+                    }
+                    else{
+                        tower4.setColor(Color.valueOf("ffffffff"));
+                    }
+            }
+        });
+        //Towerbuttons der Tabelle hinzufügen
         towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower3).size(sizeX, sizeY).spaceRight(5);
@@ -467,11 +532,21 @@ public class GameScreen extends BaseScreen implements GameView {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
+                if(exitButton.getColor().equals(Color.valueOf("ffffffff"))) {
+                    System.out.println("EXIT");
+                    exitButton.setColor(255,0,0,255);
+                    //Gdx.files.internal("ui-skin/glassy-ui.png");
+                    //Gdx.app.exit();
+                }
+                else{
+                    exitButton.setColor(Color.valueOf("ffffffff"));
+                }
+
             }
         });
         exit.add(exitButton).size(sizeX, sizeY);
         //Gdx.input.setInputProcessor(stage);
+        //getUi().addActor(exitButton);
 
         //Toprow table
         final Table topRow = new Table();
@@ -500,9 +575,13 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
         defaultScreen.add(bottomOfScreen).bottom().center();
-        mainUiStack.add(defaultScreen);
+        mainUiStack.addActor(defaultScreen);
 
+        //getUi().addActor(defaultScreen);
         getUi().addActor(mainUiStack);
+        multiplexer.addProcessor(getUi());
+        //InputProcessor inputProcessorButton;
+        //Gdx.input.setInputProcessor(getUi());
     }
 
     private void reinitializeGameScreen() {
