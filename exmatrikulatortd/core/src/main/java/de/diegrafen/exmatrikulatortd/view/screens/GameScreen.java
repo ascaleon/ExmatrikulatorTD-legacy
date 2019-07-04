@@ -2,6 +2,7 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -583,6 +585,7 @@ public class GameScreen extends BaseScreen implements GameView {
                     //Gdx.files.internal("ui-skin/glassy-ui.png");
                     //Gdx.app.exit();
                     setPause(!isPause());
+                    pauseScreen();
                 }
                 else{
                     exitButton.setColor(Color.valueOf("ffffffff"));
@@ -701,6 +704,18 @@ public class GameScreen extends BaseScreen implements GameView {
         }
         if (cameraDown < 0) {
             getCamera().position.y = cameraHalfHeight;
+        }
+    }
+
+    private void pauseScreen() {
+        if(isPause() == true){
+            Group pauseGroup = new Group();
+            Image semiTBG = new Image(new Texture(Gdx.files.internal("ui-skin/glassy-ui.png")));
+            pauseGroup.addActor(semiTBG);
+            getUi().addActor(pauseGroup);
+        }
+        else{
+
         }
     }
 }
