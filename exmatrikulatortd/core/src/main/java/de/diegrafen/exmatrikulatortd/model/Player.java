@@ -14,6 +14,7 @@ import java.util.List;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_AND_HEAVY_WAVE;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_WAVE;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.createWave;
+import static de.diegrafen.exmatrikulatortd.model.Difficulty.*;
 
 /**
  * Die Spielerklasse. Verwaltet die Informationen über den Spieler wie Name, Anzahl der Leben und die erzielten Punkte
@@ -99,6 +100,12 @@ public class Player extends BaseModel implements Observable {
     private transient List<Observer> observers;
 
     /**
+     * Der Schwierigkeitsgrad des Spieles
+     */
+    @Enumerated(EnumType.ORDINAL)
+    private Difficulty difficulty = MEDIUM;
+
+    /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
     public Player () {
@@ -116,10 +123,7 @@ public class Player extends BaseModel implements Observable {
         this.maxLives = 25;
         this.resources = 1000;
         this.score = 0;
-
-        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-        waves.add(createWave(REGULAR_WAVE));
-        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
+        this.difficulty = EASY;
 
         // TODO: Wegpunkte automatisch über die Karte erstellen lassen
         wayPoints.add(new Coordinates(0,20-14));
@@ -151,13 +155,6 @@ public class Player extends BaseModel implements Observable {
 
     public Coordinates getWayPointByIndex (int index) {
         return wayPoints.get(index);
-    }
-
-    /**
-     * Fügt der nächsten Welle einen Gegner hinzu
-     */
-    public void addEnemyToNextWave () {
-
     }
 
     public int getMaxLives() {
@@ -286,5 +283,13 @@ public class Player extends BaseModel implements Observable {
     @Override
     public void notifyObserver() {
         observers.forEach(Observer::update);
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
     }
 }

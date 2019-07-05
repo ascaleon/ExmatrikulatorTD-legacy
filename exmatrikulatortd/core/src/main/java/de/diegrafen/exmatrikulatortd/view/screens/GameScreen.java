@@ -36,6 +36,8 @@ import java.util.List;
 import static com.badlogic.gdx.Input.Buttons.LEFT;
 import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
 /**
@@ -134,20 +136,19 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     public GameScreen(MainController mainController, Game game, Profile playerProfile) {
         super(mainController, game);
-        this.gameState = new Gamestate();
+        this.gameLogicController = new GameLogicController(mainController, playerProfile);
+        this.gameState = gameLogicController.getGamestate();
         gameState.registerObserver(this);
-        this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
         gameLogicController.setGameScreen(this);
         gameLogicController.initializeCollisionMap(MAP_PATH);
         this.players = gameState.getPlayers();
         gameState.getPlayerByNumber(localPlayerNumber).registerObserver(this);
     }
 
-
     public GameScreen(MainController mainController, Game game, Profile playerProfile, Gamestate gameState) {
         this(mainController, game, playerProfile);
         this.gameState = gameState;
-        this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
+        this.gameLogicController = new GameLogicController(mainController, playerProfile);
         gameLogicController.setGameScreen(this);
     }
 
@@ -214,6 +215,12 @@ public class GameScreen extends BaseScreen implements GameView {
                     keyUpDown = true;
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
+                if (keycode == Input.Keys.I) {
+                    gameLogicController.sendEnemy(REGULAR_ENEMY, gameState.getLocalPlayerNumber(), gameState.getLocalPlayerNumber());
+                }
+                if (keycode == Input.Keys.O) {
+                    gameLogicController.sendEnemy(HEAVY_ENEMY, gameState.getLocalPlayerNumber(), gameState.getLocalPlayerNumber());
+                }
                 return false;
             }
 
@@ -256,11 +263,12 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
+                int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
+
                 if (button == LEFT) {
                     returnvalue = true;
                 } else if (button == RIGHT) {
-                    int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
-                    int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
                     if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, 0)) {
                         // TODO: Mit Baumenü ersetzen
                         gameLogicController.buildRegularTower(xCoordinate, yCoordinate);
@@ -269,6 +277,12 @@ public class GameScreen extends BaseScreen implements GameView {
                         gameLogicController.sellTower(xCoordinate, yCoordinate, 0);
                     }
                     returnvalue = true;
+                } else if (button == MIDDLE) {
+                    System.out.println("Clicked!");
+                    if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
+                        System.out.println("Tower found!");
+                        gameLogicController.upgradeTower(xCoordinate, yCoordinate, gameState.getLocalPlayerNumber());
+                    }
                 }
 
                 return returnvalue;
@@ -525,15 +539,15 @@ public class GameScreen extends BaseScreen implements GameView {
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    //System.out.println(tower4.getColor());
-                    if(!t1 && !t2 && !t3 && !t4) {
-                        System.out.println("Tower 4 Ausgewählt");
-                        tower4.setColor(Color.GREEN);
-                    }
-                    else{
-                        tower4.setColor(Color.valueOf("ffffffff"));
-                    }
-                    t4 = !t4;
+                //System.out.println(tower4.getColor());
+                if(!t1 && !t2 && !t3 && !t4) {
+                    System.out.println("Tower 4 Ausgewählt");
+                    tower4.setColor(Color.GREEN);
+                }
+                else{
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                }
+                t4 = !t4;
             }
         });
         upgrade.addListener(new ChangeListener() {

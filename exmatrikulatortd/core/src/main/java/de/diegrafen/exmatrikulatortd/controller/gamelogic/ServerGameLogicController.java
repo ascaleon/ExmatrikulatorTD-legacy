@@ -31,7 +31,7 @@ public class ServerGameLogicController extends GameLogicController {
      * @param gameServer     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ServerGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameServer gameServer) {
-        super(mainController, gamestate, profile);
+        super(mainController, profile);
         this.gameServer = gameServer;
         gameServer.attachRequestListeners(this);
     }
@@ -81,13 +81,14 @@ public class ServerGameLogicController extends GameLogicController {
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType @return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType            Der Typ des zu schickenden Gegners
+     * @param playerToSendToNumber
+     * @param sendingPlayerNumber
+     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(int enemyType) {
-        // TODO: Schauen, wie man diese Methode am besten implementieren kann.
-        //return super.sendEnemy(enemyType);
-        return false;
+    public boolean sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+        return super.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
     }
 
     /**

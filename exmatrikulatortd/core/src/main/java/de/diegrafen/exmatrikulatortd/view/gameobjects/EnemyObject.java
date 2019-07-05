@@ -46,8 +46,16 @@ public class EnemyObject extends BaseObject {
 
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
+    }
 
-        String assetsName = observableUnit.getAssetsName();
+    /**
+     * Initialisiert die Darstellung des Spielobjektes
+     */
+    @Override
+    void initializeSprite() {
+        super.initializeSprite();
+
+        String assetsName = getAssetsName();
 
         setTextureAtlas(new TextureAtlas(ENEMY_SPRITE_PATH + assetsName + ".atlas"));
 
