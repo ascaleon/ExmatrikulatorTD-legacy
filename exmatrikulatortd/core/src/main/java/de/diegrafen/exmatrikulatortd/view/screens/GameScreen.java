@@ -2,19 +2,15 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -23,12 +19,9 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +29,9 @@ import java.util.List;
 import static com.badlogic.gdx.Input.Buttons.LEFT;
 import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
 /**
@@ -119,14 +115,21 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private float touchDownX, touchDownY;
 
-    private  InputMultiplexer multiplexer;
+    private InputMultiplexer multiplexer;
 
-    boolean t1 = false;
-    boolean t2 = false;
-    boolean t3 = false;
-    boolean t4 = false;
-    boolean u = false;
-    boolean s = false;
+    // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
+
+    private boolean t1 = false;
+
+    private boolean t2 = false;
+
+    private boolean t3 = false;
+
+    private boolean t4 = false;
+
+    private boolean u = false;
+
+    private boolean s = false;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
@@ -136,20 +139,19 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     public GameScreen(MainController mainController, Game game, Profile playerProfile) {
         super(mainController, game);
-        this.gameState = new Gamestate();
+        this.gameLogicController = new GameLogicController(mainController, playerProfile);
+        this.gameState = gameLogicController.getGamestate();
         gameState.registerObserver(this);
-        this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
         gameLogicController.setGameScreen(this);
         gameLogicController.initializeCollisionMap(MAP_PATH);
         this.players = gameState.getPlayers();
         gameState.getPlayerByNumber(localPlayerNumber).registerObserver(this);
     }
 
-
     public GameScreen(MainController mainController, Game game, Profile playerProfile, Gamestate gameState) {
         this(mainController, game, playerProfile);
         this.gameState = gameState;
-        this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
+        this.gameLogicController = new GameLogicController(mainController, playerProfile);
         gameLogicController.setGameScreen(this);
     }
 
@@ -216,6 +218,12 @@ public class GameScreen extends BaseScreen implements GameView {
                     keyUpDown = true;
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
+                if (keycode == Input.Keys.I) {
+                    gameLogicController.sendEnemy(REGULAR_ENEMY, gameState.getLocalPlayerNumber(), gameState.getLocalPlayerNumber());
+                }
+                if (keycode == Input.Keys.O) {
+                    gameLogicController.sendEnemy(HEAVY_ENEMY, gameState.getLocalPlayerNumber(), gameState.getLocalPlayerNumber());
+                }
                 return false;
             }
 
@@ -258,19 +266,34 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
+                int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
+
                 if (button == LEFT) {
                     returnvalue = true;
                 } else if (button == RIGHT) {
-                    int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
-                    int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
-                    if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, 0)) {
+                    if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
                         // TODO: Mit Baumenü ersetzen
-                        gameLogicController.buildRegularTower(xCoordinate, yCoordinate);
+                        if (t1) {
+                            gameLogicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t2) {
+                            gameLogicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t3) {
+                            gameLogicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t4) {
+                            gameLogicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        }
                     } else if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
                         // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
-                        gameLogicController.sellTower(xCoordinate, yCoordinate, 0);
+                        gameLogicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
                     }
                     returnvalue = true;
+                } else if (button == MIDDLE) {
+                    System.out.println("Clicked!");
+                    if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
+                        System.out.println("Tower found!");
+                        gameLogicController.upgradeTower(xCoordinate, yCoordinate, gameState.getLocalPlayerNumber());
+                    }
                 }
 
                 return returnvalue;
@@ -316,7 +339,9 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void update(float deltaTime) {
-        gameLogicController.update(deltaTime);
+        if (!isPause()) {
+            gameLogicController.update(deltaTime);
+        }
     }
 
     @Override
@@ -342,6 +367,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         if (keyLeftDown) {
             getCamera().translate(-translateValue, 0);
+            System.out.println("Keyleftdown");
         }
         if (keyRightDown) {
             getCamera().translate(translateValue, 0);
@@ -494,7 +520,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     tower1.setColor(Color.valueOf("ffffffff"));
                     t1 = false;
                 }
-                else{}
             }
         });
         tower2.addListener(new ChangeListener() {
@@ -509,7 +534,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     tower2.setColor(Color.valueOf("ffffffff"));
                     t2 = false;
                 }
-                else{}
             }
         });
         tower3.addListener(new ChangeListener() {
@@ -524,23 +548,20 @@ public class GameScreen extends BaseScreen implements GameView {
                     tower3.setColor(Color.valueOf("ffffffff"));
                     t3 = false;
                 }
-                else{}
             }
         });
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    //System.out.println(tower4.getColor());
-                    if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
-                        System.out.println("Tower 4 Ausgewählt");
-                        tower4.setColor(Color.GREEN);
-                        t4 = true;
-                    }
-                    else if (t4){
-                        tower4.setColor(Color.valueOf("ffffffff"));
-                        t4 = false;
-                    }
-                    else{}
+                //System.out.println(tower4.getColor());
+                if(!t1 && !t2 && !t3 && !t4) {
+                    System.out.println("Tower 4 Ausgewählt");
+                    tower4.setColor(Color.GREEN);
+                }
+                else{
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                }
+                t4 = !t4;
             }
         });
         upgrade.addListener(new ChangeListener() {
@@ -554,7 +575,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     upgrade.setColor(Color.valueOf("ffffffff"));
                     u = false;
                 }
-                else{}
             }
         });
         sell.addListener(new ChangeListener() {
@@ -568,7 +588,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     sell.setColor(Color.valueOf("ffffffff"));
                     s = false;
                 }
-                else{}
             }
         });
         //Towerbuttons der Tabelle hinzufügen

@@ -19,6 +19,14 @@ public class ProjectileObject extends BaseObject {
 
     public ProjectileObject(ObservableUnit observableUnit) {
         super(observableUnit);
+    }
+
+    /**
+     * Initialisiert die Darstellung des Spielobjektes
+     */
+    @Override
+    void initializeSprite() {
+        super.initializeSprite();
 
         setTextureAtlas(new TextureAtlas(FIREBALL_ASSETS));
         flyingAnimation = new Animation<>(0.033f, getTextureAtlas().findRegions("fireball"), Animation.PlayMode.LOOP);

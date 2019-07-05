@@ -5,10 +5,8 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Player;
-import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
+import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
@@ -20,10 +18,13 @@ import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 import java.awt.geom.Point2D;
 import java.util.*;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
+import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
+import static de.diegrafen.exmatrikulatortd.util.Constants.DISTANCE_TOLERANCE;
 
 /**
  * Der Standard-Spiellogik-Controller.
@@ -67,15 +68,28 @@ public class GameLogicController implements LogicController {
     private float auraRefreshTimer = 0;
 
 
-    public GameLogicController(MainController mainController, Gamestate gamestate, Profile profile) {
+    public GameLogicController(MainController mainController, Profile profile) {
         this.mainController = mainController;
-        this.gamestate = gamestate;
+
+        List<Player> players = new LinkedList<>();
+
+        players.add(new Player());
+
+        List<Wave> waves = new LinkedList<>();
+        waves.add(createWave(REGULAR_WAVE));
+        int i = 0;
+        while (i < 12) {
+            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
+            waves.add(createWave(REGULAR_WAVE));
+            i++;
+        }
+
+        this.gamestate = new Gamestate(players, waves);
         this.profile = profile;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
-        gamestate.addPlayer(new Player());
-        gamestate.setLocalPlayerNumber(0);
-        gameStateDao.create(gamestate);
+        this.gamestate.setLocalPlayerNumber(0);
+        gameStateDao.create(this.gamestate);
     }
 
     @Override
@@ -221,18 +235,31 @@ public class GameLogicController implements LogicController {
 
             List<Debuff> debuffsToRemove = new LinkedList<>();
 
+            float oldMaxHitPoints = enemy.getCurrentMaxHitPoints();
+
             enemy.setCurrentSpeed(enemy.getBaseSpeed());
             enemy.setCurrentArmor(enemy.getBaseArmor());
+            enemy.setCurrentMaxHitPoints(enemy.getBaseMaxHitPoints());
             // TODO: Irgendwas mit Leben überlegen. Vielleicht stattdessen eher Damage over Time Debuffs ergänzen.
 
             for (Debuff debuff : enemy.getDebuffs()) {
-                enemy.setCurrentSpeed(enemy.getCurrentSpeed() * (1 + debuff.getSpeedModifier()));
-                enemy.setCurrentArmor(enemy.getCurrentArmor() + debuff.getArmorModifier());
+                enemy.setCurrentSpeed(enemy.getCurrentSpeed() * debuff.getSpeedMultiplier());
+                enemy.setCurrentArmor(enemy.getCurrentArmor() + debuff.getArmorBonus());
+                enemy.setCurrentMaxHitPoints(enemy.getCurrentMaxHitPoints() + debuff.getHealthBonus());
+
+                if (enemy.getCurrentMaxHitPoints() < 0) {
+                    enemy.setCurrentMaxHitPoints(1);
+                }
+
                 debuff.setDuration(debuff.getDuration() - deltaTime);
+
                 if (debuff.getDuration() < 0) {
                     debuffsToRemove.add(debuff);
                 }
             }
+
+            enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() * enemy.getCurrentMaxHitPoints() / oldMaxHitPoints);
+
             debuffsToRemove.forEach(enemy::removeDebuff);
         }
     }
@@ -245,13 +272,13 @@ public class GameLogicController implements LogicController {
      */
     private void applyMovement(float deltaTime) {
         for (Enemy enemy : gamestate.getEnemies()) {
-            if (Math.floor(getDistanceToNextPoint(enemy)) <= 3) {
+            if (Math.floor(getDistanceToNextPoint(enemy)) <= DISTANCE_TOLERANCE) {
                 enemy.incrementWayPointIndex();
             }
             if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
                 applyDamageToPlayer(enemy);
                 if (enemy.isRespawning()) {
-                    addEnemy(new Enemy(enemy));
+                    addEnemy(new Enemy(enemy), enemy.getAttackedPlayer().getPlayerNumber());
                 }
                 break;
             }
@@ -275,14 +302,14 @@ public class GameLogicController implements LogicController {
      */
     private void moveProjectiles(float deltaTime) {
         List<Projectile> projectilesThatHit = new ArrayList<>();
-        List<Projectile> projectilesWithoutTarget = new LinkedList<>();
+        //List<Projectile> projectilesWithoutTarget = new LinkedList<>();
 
         for (Projectile projectile : gamestate.getProjectiles()) {
             //if (projectile.getTarget().isRemoved()) {
             //projectilesWithoutTarget.add(projectile);
             //continue;
             //}
-            if (Math.floor(getDistanceToTarget(projectile)) <= 3) {
+            if (Math.floor(getDistanceToTarget(projectile)) <= DISTANCE_TOLERANCE) {
                 projectilesThatHit.add(projectile);
                 continue;
             }
@@ -440,9 +467,9 @@ public class GameLogicController implements LogicController {
         if (tower.getCooldown() <= 0) {
             switch (tower.getAttackStyle()) {
                 case PROJECTILE:
-                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, EXPLOSIVE, tower.getCurrentAttackDamage(),
+                    Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getAttackType(), tower.getCurrentAttackDamage(),
                             0.5f, 100, 300);
-                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -5, -0.5f, -0.5f));
+                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -5, 0.5f, -50));
                     addProjectile(projectile, tower);
                     break;
                 case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
@@ -470,8 +497,6 @@ public class GameLogicController implements LogicController {
     private void removeEnemy(Enemy enemy) {
         enemy.getAttackedPlayer().removeEnemy(enemy);
         enemy.setAttackedPlayer(null);
-        //enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
-        //enemy.setCurrentMapCell(null);
         enemy.setDebuffs(new LinkedList<>());
         gamestate.removeEnemy(enemy);
         enemy.setGameState(null);
@@ -535,7 +560,7 @@ public class GameLogicController implements LogicController {
                     Enemy enemy = player.getWaves().get(roundNumber).getEnemies().get(0);
                     // TODO: Replace with .pop()
                     player.getWaves().get(roundNumber).getEnemies().remove(0);
-                    addEnemy(enemy);
+                    addEnemy(enemy, player.getPlayerNumber());
                     player.setTimeSinceLastSpawn(0);
                 } else {
                     player.setTimeSinceLastSpawn(player.getTimeSinceLastSpawn() + deltaTime);
@@ -697,15 +722,50 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
     }
 
-    private void addEnemy(Enemy enemy) {
-        Player attackedPlayer = gamestate.getPlayerByNumber(0);
+    private void addEnemy(Enemy enemy, int playerNumber) {
+        Player attackedPlayer = gamestate.getPlayerByNumber(playerNumber);
         attackedPlayer.addEnemy(enemy);
         enemy.setAttackedPlayer(attackedPlayer);
         gamestate.addEnemy(enemy);
         enemy.setGameState(gamestate);
+        enemy.addDebuff(generateDifficultyDebuff(enemy.getAttackedPlayer().getDifficulty()));
+        enemy.addDebuff(generateRoundNumberDebuff());
         setEnemyToStartPosition(enemy);
         gameScreen.addEnemy(enemy);
         enemy.notifyObserver();
+    }
+
+    private Debuff generateDifficultyDebuff(Difficulty difficulty) {
+
+        Debuff difficultyDebuff = new Debuff();
+
+        switch (difficulty) {
+            case TESTMODE:
+                difficultyDebuff.setArmorBonus(-100);
+                difficultyDebuff.setHealthBonus(-1000);
+                difficultyDebuff.setSpeedMultiplier(0.5f);
+                break;
+            case EASY:
+                difficultyDebuff.setArmorBonus(-6);
+                difficultyDebuff.setSpeedMultiplier(0.7f);
+                break;
+            case HARD:
+                difficultyDebuff.setArmorBonus(6);
+                difficultyDebuff.setSpeedMultiplier(1.3f);
+                break;
+        }
+
+        return difficultyDebuff;
+    }
+
+    private Debuff generateRoundNumberDebuff() {
+
+        Debuff roundNumberDebuff = new Debuff();
+
+        roundNumberDebuff.setArmorBonus(gamestate.getRoundNumber() * ARMOR_INCREASE_PER_LEVEL);
+        roundNumberDebuff.setSpeedMultiplier(1 + ((float)  gamestate.getRoundNumber()) / 100 * SPEED_INCREASE_PER_LEVEL);
+
+        return roundNumberDebuff;
     }
 
     /**
@@ -774,10 +834,6 @@ public class GameLogicController implements LogicController {
         }
 
         return wasSuccessful;
-    }
-
-    public void buildRegularTower(final int mapX, final int mapY) {
-        buildTower(REGULAR_TOWER, mapX, mapY, 0);
     }
 
     public boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber) {
@@ -884,18 +940,53 @@ public class GameLogicController implements LogicController {
      */
     @Override
     public boolean upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        return false;
+
+        boolean successful = false;
+        Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
+
+        Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
+        Tower tower = mapCell.getTower();
+
+        if (owningPlayer != tower.getOwner()) {
+            System.err.println("Du darfst nur eigene Türme aufrüsten!");
+        } else if (owningPlayer.getResources() < tower.getUpgradePrice()) {
+            System.err.println("Du hast nicht genug Geld, um diesen Turm aufzurüsten!");
+        } else {
+            owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
+            successful = TowerUpgrader.upgradeTower(tower);
+            owningPlayer.notifyObserver();
+            tower.notifyObserver();
+        }
+
+        return successful;
     }
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType Der Typ des zu schickenden Gegners
+     * @param enemyType            Der Typ des zu schickenden Gegners
+     * @param playerToSendToNumber
+     * @param sendingPlayerNumber
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(int enemyType) {
-        return false;
+    public boolean sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+
+        boolean successful = false;
+
+        Enemy enemy = createNewEnemy(enemyType);
+        Player sendingPlayer = gamestate.getPlayerByNumber(sendingPlayerNumber);
+        if (sendingPlayer.getResources() >= enemy.getSendPrice()) {
+            Player playerToSendTo = gamestate.getPlayerByNumber(playerToSendToNumber);
+            if (playerToSendTo.getWaves().size() > gamestate.getRoundNumber() + 1) {
+                playerToSendTo.getWaves().get(gamestate.getRoundNumber() + 1).addEnemy(enemy);
+                sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
+                sendingPlayer.notifyObserver();
+                System.out.println("Enemy added!");
+                successful = true;
+            }
+        }
+        return successful;
     }
 
     /**

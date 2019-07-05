@@ -31,7 +31,7 @@ public class ClientGameLogicController extends GameLogicController {
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ClientGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameClient gameClient) {
-        super(mainController, gamestate, profile);
+        super(mainController, profile);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
     }
@@ -47,17 +47,24 @@ public class ClientGameLogicController extends GameLogicController {
      */
     @Override
     public boolean upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        return super.upgradeTower(xCoordinate, yCoordinate, playerNumber);
+        gameClient.upgradeTower(xCoordinate, yCoordinate, playerNumber);
+        // TODO: Rückgabewerte anpassen
+        return true;
     }
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType @return Wenn das Schicken erfolgreich war, true, ansonsten false
+     * @param enemyType            Der Typ des zu schickenden Gegners
+     * @param playerToSendToNumber
+     * @param sendingPlayerNumber
+     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(int enemyType) {
-        return super.sendEnemy(enemyType);
+    public boolean sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+        gameClient.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
+        // TODO: Rückgabewerte anpassen
+        return true;
     }
 
     /**

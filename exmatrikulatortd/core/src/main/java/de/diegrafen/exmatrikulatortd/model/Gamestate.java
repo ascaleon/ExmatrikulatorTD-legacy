@@ -108,10 +108,18 @@ public class Gamestate extends BaseModel implements Observable {
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
-    public Gamestate (List<Player> players, Difficulty difficulty) {
-        this.players = players;
-        this.difficulty = difficulty;
+    public Gamestate (List<Player> players, List<Wave> waves) {
+        this.enemies = new ArrayList<>();
+        this.towers = new ArrayList<>();
+        this.projectiles = new ArrayList<>();
+        this.collisionMatrix = new ArrayList<>();
+        this.observers = new LinkedList<>();
+
+        this.players = new LinkedList<>(players);
+        this.players.forEach(player -> player.setWaves(waves));
+        this.numberOfRounds = waves.size();
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
+        this.newRound = true;
     }
 
     /**
@@ -129,20 +137,13 @@ public class Gamestate extends BaseModel implements Observable {
         this.roundNumber = 0;
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.roundEnded = true;
-        this.numberOfRounds = 3;
+        this.numberOfRounds = 5;
         this.gameOver = false;
     }
 
     public void addEnemy (Enemy enemy) {
         enemies.add(enemy);
     }
-
-    public void addEnemy (Enemy enemy, Player player) {
-        enemy.setAttackedPlayer(player);
-        player.addEnemy(enemy);
-        enemies.add(enemy);
-    }
-
 
     public List<Enemy> getEnemies() {
         return enemies;

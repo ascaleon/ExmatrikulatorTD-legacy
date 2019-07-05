@@ -6,7 +6,7 @@ package de.diegrafen.exmatrikulatortd.util;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 02.07.2019 22:09
  */
-public class Constants {
+public final class Constants {
 
     public static final String GAME_TITLE = "Exmatrikulator TD";
 
@@ -18,6 +18,8 @@ public class Constants {
 
     public static final float TIME_BETWEEN_ROUNDS = 5f;
 
+    public static final float DISTANCE_TOLERANCE = 3f;
+
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
      */
@@ -28,6 +30,10 @@ public class Constants {
     public static final float AURA_REFRESH_RATE = 0.5f;
 
     public static final float DAMAGE_REDUCTION_FACTOR = 0.06f;
+
+    public static final float SPEED_INCREASE_PER_LEVEL = 1f;
+
+    public static final float ARMOR_INCREASE_PER_LEVEL = 1f;
 
     /**
      * Angriffstyp "Normaler Schaden"

@@ -178,26 +178,7 @@ public class MainController {
         if (gameClient == null) {
             this.gameClient = new GameClient();
         } else {
-            /*
-            // Code, um Server-Funktionalität zu testen.
-            List<InetAddress> servers  = gameClient.discoverLocalServers();
 
-
-            // TODO: Empfangene Informationen müssen geparst werden
-            for (InetAddress inetAddress : servers) {
-                System.out.println(inetAddress.getHostAddress());
-            }
-
-            for (String string : gameClient.getReceivedSessionInfo()) {
-                System.out.println(string);
-            }
-
-            if (!servers.isEmpty()) {
-                gameClient.connect(servers.get(0).getHostName());
-            } else {
-                System.out.println("Keine Server gefunden!");
-            }
-             */
         }
     }
 

@@ -18,6 +18,14 @@ public class TowerObject extends BaseObject {
 
     public TowerObject (ObservableUnit observableUnit) {
         super(observableUnit);
+    }
+
+    /**
+     * Initialisiert die Darstellung des Spielobjektes
+     */
+    @Override
+    void initializeSprite() {
+        super.initializeSprite();
         setCurrentSprite(new Texture(getAssetsName()));
     }
 

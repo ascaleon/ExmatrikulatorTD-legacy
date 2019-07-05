@@ -88,7 +88,7 @@ public final class TowerFactory {
      * @return Der erzeugte normalen Turm
      */
     private static Tower createRegularTower() {
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, -0.5f, 0);
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0);
         LinkedList<Debuff> debuffs = new LinkedList<>();
         debuffs.add(slowDebuff);
         Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
@@ -103,7 +103,7 @@ public final class TowerFactory {
      * @return Der erzeugte Verlangsamungsturm
      */
     private static Tower createSlowTower() {
-        Debuff slowDebuff = new Debuff("Slow-Effekt",AURA_REFRESH_RATE, -0.5f, -0.5f, 0);
+        Debuff slowDebuff = new Debuff("Slow-Effekt",AURA_REFRESH_RATE, -0.5f, 0.5f, 0);
         LinkedList<Debuff> debuffs = new LinkedList<>();
         debuffs.add(slowDebuff);
         Aura slowAura = new Aura(200, debuffs, new LinkedList<>());

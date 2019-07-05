@@ -139,12 +139,15 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
+     * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType Der Typ des zu schickenden Gegners
+     * @param enemyType      Der Typ des zu schickenden Gegners
+     * @param playerToSendTo
+     * @param sendingPlayer
      */
     @Override
-    public void sendEnemy(int enemyType) {
-        SendEnemyRequest sendEnemyRequest = new SendEnemyRequest(enemyType);
+    public void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer) {
+        SendEnemyRequest sendEnemyRequest = new SendEnemyRequest(enemyType, playerToSendTo, sendingPlayer);
         sendRequest(sendEnemyRequest);
     }
 
@@ -234,7 +237,7 @@ public class GameClient extends Connector implements ClientInterface {
                     if (response.wasSuccessful()) {
                         logicController.sellTower(response.getxCoordinate(),response.getyCoordinate(),response.getPlayerNumber());
                     } //else {
-                        //logicController.sellFailed() ?
+                    //logicController.sellFailed() ?
                     //}
                 }
             }
@@ -252,7 +255,7 @@ public class GameClient extends Connector implements ClientInterface {
                     final SendEnemyResponse response = (SendEnemyResponse) object;
 
                     if(response.wasSuccessful()) {
-                        logicController.sendEnemy(response.getEnemyType());
+                        logicController.sendEnemy(response.getEnemyType(), response.getPlayerToSendTo(), response.getSendingPlayer());
                     } else{
                         logicController.sendFailed();
                     }
