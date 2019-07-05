@@ -766,8 +766,6 @@ public class GameLogicController implements LogicController {
         roundNumberDebuff.setArmorBonus(gamestate.getRoundNumber());
         roundNumberDebuff.setSpeedMultiplier(1 + ((float)  gamestate.getRoundNumber()) / 100);
 
-        System.out.println(1 + ((float)  gamestate.getRoundNumber()) / 100);
-
         return roundNumberDebuff;
     }
 
