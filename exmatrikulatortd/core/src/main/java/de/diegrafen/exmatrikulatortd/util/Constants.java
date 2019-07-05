@@ -31,6 +31,10 @@ public final class Constants {
 
     public static final float DAMAGE_REDUCTION_FACTOR = 0.06f;
 
+    public static final float SPEED_INCREASE_PER_LEVEL = 1f;
+
+    public static final float ARMOR_INCREASE_PER_LEVEL = 1f;
+
     /**
      * Angriffstyp "Normaler Schaden"
      */

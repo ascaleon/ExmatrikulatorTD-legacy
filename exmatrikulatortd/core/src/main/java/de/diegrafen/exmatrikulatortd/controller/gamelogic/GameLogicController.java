@@ -722,7 +722,6 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xIndex + yCoordinate);
     }
 
-
     private void addEnemy(Enemy enemy, int playerNumber) {
         Player attackedPlayer = gamestate.getPlayerByNumber(playerNumber);
         attackedPlayer.addEnemy(enemy);
@@ -763,8 +762,8 @@ public class GameLogicController implements LogicController {
 
         Debuff roundNumberDebuff = new Debuff();
 
-        roundNumberDebuff.setArmorBonus(gamestate.getRoundNumber());
-        roundNumberDebuff.setSpeedMultiplier(1 + ((float)  gamestate.getRoundNumber()) / 100);
+        roundNumberDebuff.setArmorBonus(gamestate.getRoundNumber() * ARMOR_INCREASE_PER_LEVEL);
+        roundNumberDebuff.setSpeedMultiplier(1 + ((float)  gamestate.getRoundNumber()) / 100 * SPEED_INCREASE_PER_LEVEL);
 
         return roundNumberDebuff;
     }
@@ -835,10 +834,6 @@ public class GameLogicController implements LogicController {
         }
 
         return wasSuccessful;
-    }
-
-    public void buildRegularTower(final int mapX, final int mapY) {
-        buildTower(REGULAR_TOWER, mapX, mapY, 0);
     }
 
     public boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber) {

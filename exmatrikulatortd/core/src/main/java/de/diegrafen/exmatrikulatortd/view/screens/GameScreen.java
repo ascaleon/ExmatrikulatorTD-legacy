@@ -38,6 +38,7 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
 /**
@@ -269,12 +270,20 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (button == LEFT) {
                     returnvalue = true;
                 } else if (button == RIGHT) {
-                    if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, 0)) {
+                    if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
                         // TODO: Mit Baumenü ersetzen
-                        gameLogicController.buildRegularTower(xCoordinate, yCoordinate);
+                        if (t1) {
+                            gameLogicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t2) {
+                            gameLogicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t3) {
+                            gameLogicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t4) {
+                            gameLogicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        }
                     } else if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
                         // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
-                        gameLogicController.sellTower(xCoordinate, yCoordinate, 0);
+                        gameLogicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
                     }
                     returnvalue = true;
                 } else if (button == MIDDLE) {
