@@ -2,19 +2,15 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -23,12 +19,9 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -122,12 +115,21 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private float touchDownX, touchDownY;
 
-    private  InputMultiplexer multiplexer;
+    private InputMultiplexer multiplexer;
 
-    boolean t1 = false;
-    boolean t2 = false;
-    boolean t3 = false;
-    boolean t4 = false;
+    // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
+
+    private boolean t1 = false;
+
+    private boolean t2 = false;
+
+    private boolean t3 = false;
+
+    private boolean t4 = false;
+
+    private boolean u = false;
+
+    private boolean s = false;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
@@ -509,40 +511,43 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
+                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Tower 1 Ausgewählt");
                     tower1.setColor(Color.GREEN);
+                    t1 = true;
                 }
-                else{
+                else if (t1){
                     tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
                 }
-                t1 = !t1;
             }
         });
         tower2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
+                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Tower 2 Ausgewählt");
                     tower2.setColor(Color.GREEN);
+                    t2 = true;
                 }
-                else{
+                else if (t2){
                     tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
                 }
-                t2 = !t2;
             }
         });
         tower3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
+                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Tower 3 Ausgewählt");
                     tower3.setColor(Color.GREEN);
+                    t3 = true;
                 }
-                else{
+                else if (t3){
                     tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
                 }
-                t3 = !t3;
             }
         });
         tower4.addListener(new ChangeListener() {
@@ -562,22 +567,26 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (upgrade.getColor().equals(Color.valueOf("ffffffff"))) {
+                if (!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Upgrader gestartet");
                     upgrade.setColor(Color.GOLD);
-                } else {
+                    u = true;
+                } else if (u) {
                     upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
                 }
             }
         });
         sell.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (sell.getColor().equals(Color.valueOf("ffffffff"))) {
+                if (!t1 && !t2 && !t3 && !t4 && !u && !s) {
                     System.out.println("Der Händler wartet auf das angebot");
                     sell.setColor(Color.YELLOW);
-                } else {
+                    s = true;
+                } else if (s) {
                     sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
                 }
             }
         });
