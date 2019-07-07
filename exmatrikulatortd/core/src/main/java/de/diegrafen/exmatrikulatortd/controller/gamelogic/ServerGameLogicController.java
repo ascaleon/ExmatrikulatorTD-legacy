@@ -30,8 +30,9 @@ public class ServerGameLogicController extends GameLogicController {
      * @param profile        Das Spieler-Profil
      * @param gameServer     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
-    public ServerGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameServer gameServer) {
-        super(mainController, profile);
+    public ServerGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
+                                     int gamemode, GameServer gameServer) {
+        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
         this.gameServer = gameServer;
         gameServer.attachRequestListeners(this);
     }

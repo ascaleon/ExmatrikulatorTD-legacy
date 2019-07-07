@@ -123,7 +123,11 @@ public class Enemy extends ObservableModel {
 
     public Enemy(Enemy enemy) {
 
-        this.debuffs = enemy.getDebuffs();
+        this.debuffs = new LinkedList<>();
+
+        for (Debuff debuff : enemy.getDebuffs()) {
+            this.debuffs.add(new Debuff(debuff));
+        }
 
         this.baseArmor = enemy.getBaseArmor();
         this.currentArmor = enemy.getBaseArmor();

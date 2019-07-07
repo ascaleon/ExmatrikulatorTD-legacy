@@ -6,6 +6,7 @@ import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 /**
  * Interface für Controller der Spiellogik
@@ -78,4 +79,9 @@ public interface LogicController {
 
     Gamestate getGamestate();
 
+    GameScreen getGameScreen();
+
+    int getLocalPlayerNumber();
+
+    boolean hasCellTower(int xCoordinate, int yCoordinate);
 }

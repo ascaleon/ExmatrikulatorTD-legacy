@@ -30,8 +30,9 @@ public class ClientGameLogicController extends GameLogicController {
      * @param profile        Das Spieler-Profil
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
-    public ClientGameLogicController(MainController mainController, Gamestate gamestate, Profile profile, GameClient gameClient) {
-        super(mainController, profile);
+    public ClientGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
+        int gamemode, GameClient gameClient) {
+        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
     }

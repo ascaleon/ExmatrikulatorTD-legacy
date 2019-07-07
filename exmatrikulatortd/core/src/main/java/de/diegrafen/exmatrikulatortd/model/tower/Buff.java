@@ -40,6 +40,8 @@ public class Buff extends BaseModel {
      */
     private float attackDamageModifier;
 
+    private boolean permanent;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -52,11 +54,12 @@ public class Buff extends BaseModel {
      * @param attackSpeedModifier Der Angriffsgeschwindigkeitsmodifikator des Buffs
      * @param attackDamageModifier Der Angriffsschadensmodifikator des Buffs
      */
-    public Buff(String name, float duration, float attackSpeedModifier, float attackDamageModifier) {
+    public Buff(String name, float duration, float attackSpeedModifier, float attackDamageModifier, boolean permanent) {
         this.name = name;
         this.duration = duration;
         this.attackSpeedModifier = attackSpeedModifier;
         this.attackDamageModifier = attackDamageModifier;
+        this.permanent = permanent;
     }
 
     /**
@@ -69,6 +72,7 @@ public class Buff extends BaseModel {
         this.duration = buff.getDuration();
         this.attackSpeedModifier = buff.getAttackSpeedModifier();
         this.attackDamageModifier = buff.getAttackDamageModifier();
+        this.permanent = buff.isPermanent();
     }
 
     public String getName() {
@@ -101,5 +105,13 @@ public class Buff extends BaseModel {
 
     public void setAttackDamageModifier(float attackDamageModifier) {
         this.attackDamageModifier = attackDamageModifier;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
     }
 }

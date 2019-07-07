@@ -27,7 +27,7 @@ public final class Constants {
 
     public static final int TILE_SIZE = 64;
 
-    public static final float AURA_REFRESH_RATE = 0.5f;
+    public static final float AURA_REFRESH_RATE = 0.1f;
 
     public static final float DAMAGE_REDUCTION_FACTOR = 0.06f;
 

@@ -33,7 +33,7 @@ public class Player extends BaseModel implements Observable {
      * Der Zustand des laufenden Spiels
      */
     @ManyToOne
-    @JoinColumn(name="gamestate_id")
+    @JoinColumn(name = "gamestate_id")
     private Gamestate gameState;
 
     /**
@@ -69,19 +69,19 @@ public class Player extends BaseModel implements Observable {
     /**
      * Die Türme des Spielers
      */
-    @OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Tower> towers;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     private List<Wave> waves;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy="attackedPlayer", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "attackedPlayer", cascade = CascadeType.ALL)
     private List<Enemy> attackingEnemies;
 
     /**
@@ -105,10 +105,12 @@ public class Player extends BaseModel implements Observable {
     @Enumerated(EnumType.ORDINAL)
     private Difficulty difficulty = MEDIUM;
 
+    private boolean victorious;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
-    public Player () {
+    public Player() {
         this.attackingEnemies = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.wayPoints = new ArrayList<>();
@@ -126,22 +128,22 @@ public class Player extends BaseModel implements Observable {
         this.difficulty = EASY;
 
         // TODO: Wegpunkte automatisch über die Karte erstellen lassen
-        wayPoints.add(new Coordinates(0,20-14));
-        wayPoints.add(new Coordinates(3,20-14));
-        wayPoints.add(new Coordinates(3,20-17));
-        wayPoints.add(new Coordinates(17,20-17));
-        wayPoints.add(new Coordinates(17,20-13));
-        wayPoints.add(new Coordinates(10,20-13));
-        wayPoints.add(new Coordinates(10,20-4));
-        wayPoints.add(new Coordinates(17,20-4));
-        wayPoints.add(new Coordinates(17,20-2));
+        wayPoints.add(new Coordinates(0, 20 - 14));
+        wayPoints.add(new Coordinates(3, 20 - 14));
+        wayPoints.add(new Coordinates(3, 20 - 17));
+        wayPoints.add(new Coordinates(17, 20 - 17));
+        wayPoints.add(new Coordinates(17, 20 - 13));
+        wayPoints.add(new Coordinates(10, 20 - 13));
+        wayPoints.add(new Coordinates(10, 20 - 4));
+        wayPoints.add(new Coordinates(17, 20 - 4));
+        wayPoints.add(new Coordinates(17, 20 - 2));
     }
 
-    public void addEnemy (Enemy attackingEnemy) {
+    public void addEnemy(Enemy attackingEnemy) {
         this.attackingEnemies.add(attackingEnemy);
     }
 
-    public void addTower (Tower tower) {
+    public void addTower(Tower tower) {
         towers.add(tower);
     }
 
@@ -153,7 +155,7 @@ public class Player extends BaseModel implements Observable {
         this.wayPoints = wayPoints;
     }
 
-    public Coordinates getWayPointByIndex (int index) {
+    public Coordinates getWayPointByIndex(int index) {
         return wayPoints.get(index);
     }
 
@@ -190,15 +192,15 @@ public class Player extends BaseModel implements Observable {
         return resources;
     }
 
-    public void setResources (int resources) {
+    public void setResources(int resources) {
         this.resources = resources;
     }
 
-    public void addToResources (int resources) {
+    public void addToResources(int resources) {
         this.resources += resources;
     }
 
-    public void addToScore (int score) {
+    public void addToScore(int score) {
         this.score += score;
     }
 
@@ -291,5 +293,13 @@ public class Player extends BaseModel implements Observable {
 
     public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public void setVictorious(boolean victorious) {
+        this.victorious = victorious;
+    }
+
+    public boolean isVictorious() {
+        return victorious;
     }
 }

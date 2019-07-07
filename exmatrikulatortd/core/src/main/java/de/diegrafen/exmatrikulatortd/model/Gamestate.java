@@ -49,11 +49,6 @@ public class Gamestate extends BaseModel implements Observable {
     private int numberOfRows = 20;
 
     /**
-     * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
-     */
-    private transient int localPlayerNumber;
-
-    /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
      */
     @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
@@ -103,7 +98,11 @@ public class Gamestate extends BaseModel implements Observable {
 
     private boolean roundEnded;
 
+    private boolean endlessGame = false;
+
     private transient List<Observer> observers;
+
+    private int gameMode;
 
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
@@ -149,10 +148,6 @@ public class Gamestate extends BaseModel implements Observable {
         return enemies;
     }
 
-    public int getLocalPlayerNumber() {
-        return localPlayerNumber;
-    }
-
     public List<Player> getPlayers() {
         return players;
     }
@@ -171,10 +166,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     public Player getPlayerByNumber (int playerNumber) {
         return players.get(playerNumber);
-    }
-
-    public void setLocalPlayerNumber(int localPlayerNumber) {
-        this.localPlayerNumber = localPlayerNumber;
     }
 
     public int getMapWidth() {
@@ -350,5 +341,21 @@ public class Gamestate extends BaseModel implements Observable {
     @Override
     public void notifyObserver() {
         observers.forEach(Observer::update);
+    }
+
+    public boolean isEndlessGame() {
+        return endlessGame;
+    }
+
+    public void setEndlessGame(boolean endlessGame) {
+        this.endlessGame = endlessGame;
+    }
+
+    public int getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(int gameMode) {
+        this.gameMode = gameMode;
     }
 }

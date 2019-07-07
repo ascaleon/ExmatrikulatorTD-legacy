@@ -44,6 +44,8 @@ public class Debuff extends BaseModel implements Cloneable {
      */
     private float healthBonus;
 
+    private boolean permanent;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -61,10 +63,11 @@ public class Debuff extends BaseModel implements Cloneable {
      */
 
 
-    public Debuff(String name, float duration, float armorBonus, float speedMultiplier, float healthBonus) {
+    public Debuff(String name, float duration, float armorBonus, float speedMultiplier, float healthBonus, boolean permanent) {
         this.name = name;
         this.armorBonus = armorBonus;
         this.healthBonus = healthBonus;
+        this.permanent = permanent;
 
         if (duration < 0) {
             this.duration = 0;
@@ -72,11 +75,7 @@ public class Debuff extends BaseModel implements Cloneable {
             this.duration = duration;
         }
 
-        if (speedMultiplier < 0) {
-            this.speedMultiplier = 0;
-        } else {
-            this.speedMultiplier = speedMultiplier;
-        }
+        setSpeedMultiplier(speedMultiplier);
     }
 
     /**
@@ -90,6 +89,7 @@ public class Debuff extends BaseModel implements Cloneable {
         this.armorBonus = debuff.getArmorBonus();
         this.speedMultiplier = debuff.getSpeedMultiplier();
         this.healthBonus = debuff.getHealthBonus();
+        this.permanent = debuff.isPermanent();
     }
 
     public String getName() {
@@ -105,11 +105,7 @@ public class Debuff extends BaseModel implements Cloneable {
     }
 
     public void setDuration(float duration) {
-        if (duration < 0) {
-            this.duration = 0;
-        } else {
-            this.duration = duration;
-        }
+        this.duration = duration;
     }
 
     public float getArmorBonus() {
@@ -138,5 +134,13 @@ public class Debuff extends BaseModel implements Cloneable {
 
     public void setHealthBonus(float healthBonus) {
         this.healthBonus = healthBonus;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
     }
 }
