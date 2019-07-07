@@ -231,11 +231,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 int localPlayerNumber = logicController.getLocalPlayerNumber();
 
-                if (button == LEFT) {
+                if (button == RIGHT) {
                     returnvalue = true;
-                } else if (button == RIGHT) {
+                } else if (button == LEFT) {
                     if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
-                        // TODO: Mit Baumenü ersetzen
                         if (t1) {
                             logicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t2) {
@@ -246,16 +245,13 @@ public class GameScreen extends BaseScreen implements GameView {
                             logicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         }
                     } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
-                        logicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        if (s) {
+                            logicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (u) {
+                            logicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        }
                     }
                     returnvalue = true;
-                } else if (button == MIDDLE) {
-                    System.out.println("Clicked!");
-                    if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        System.out.println("Tower found!");
-                        logicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
-                    }
                 }
 
                 return returnvalue;
@@ -479,83 +475,103 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
-                    System.out.println("Tower 1 Ausgewählt");
                     tower1.setColor(Color.GREEN);
                     t1 = true;
-                }
-                else if (t1){
-                    tower1.setColor(Color.valueOf("ffffffff"));
-                    t1 = false;
-                }
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
             }
         });
         tower2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
-                    System.out.println("Tower 2 Ausgewählt");
-                    tower2.setColor(Color.GREEN);
-                    t2 = true;
-                }
-                else if (t2){
-                    tower2.setColor(Color.valueOf("ffffffff"));
-                    t2 = false;
-                }
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.GREEN);
+                t2 = true;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         tower3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4 && !u && !s) {
-                    System.out.println("Tower 3 Ausgewählt");
-                    tower3.setColor(Color.GREEN);
-                    t3 = true;
-                }
-                else if (t3){
-                    tower3.setColor(Color.valueOf("ffffffff"));
-                    t3 = false;
-                }
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.GREEN);
+                t3 = true;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //System.out.println(tower4.getColor());
-                if(!t1 && !t2 && !t3 && !t4) {
-                    System.out.println("Tower 4 Ausgewählt");
-                    tower4.setColor(Color.GREEN);
-                }
-                else{
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                }
-                t4 = !t4;
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.GREEN);
+                t4 = true;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         upgrade.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!t1 && !t2 && !t3 && !t4 && !u && !s) {
-                    System.out.println("Upgrader gestartet");
-                    upgrade.setColor(Color.GOLD);
-                    u = true;
-                } else if (u) {
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                }
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.GREEN);
+                u = true;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         sell.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!t1 && !t2 && !t3 && !t4 && !u && !s) {
-                    System.out.println("Der Händler wartet auf das angebot");
-                    sell.setColor(Color.YELLOW);
-                    s = true;
-                } else if (s) {
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
-                }
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.GREEN);
+                s = true;
             }
         });
         //Towerbuttons der Tabelle hinzufügen
