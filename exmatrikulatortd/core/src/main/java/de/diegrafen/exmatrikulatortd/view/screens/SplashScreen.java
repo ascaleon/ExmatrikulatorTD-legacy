@@ -9,8 +9,8 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  */
 public class SplashScreen extends BaseScreen {
 
-    public SplashScreen (MainController mainController, Game game) {
-        super(mainController, game);
+    public SplashScreen (MainController mainController) {
+        super(mainController);
     }
 
     @Override

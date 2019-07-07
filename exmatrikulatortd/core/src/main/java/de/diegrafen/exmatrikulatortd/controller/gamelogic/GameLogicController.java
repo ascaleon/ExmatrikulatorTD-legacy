@@ -24,6 +24,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.RE
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.DISTANCE_TOLERANCE;
 
@@ -65,20 +66,25 @@ public class GameLogicController implements LogicController {
      */
     private SaveStateDao saveStateDao;
 
-
     private float auraRefreshTimer = 0;
 
     private int enemySpawnIndex = 0;
 
     private int localPlayerNumber;
 
+    private boolean multiplayer;
 
-    public GameLogicController(MainController mainController, Profile profile) {
+
+    public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
+                               int gamemode) {
         this.mainController = mainController;
 
         List<Player> players = new LinkedList<>();
 
-        players.add(new Player());
+        // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
+        for (int i = 0; i < numberOfPlayers; i++) {
+            players.add(new Player());
+        }
 
         List<Wave> waves = new LinkedList<>();
         waves.add(createWave(HEAVY_WAVE));
@@ -93,12 +99,15 @@ public class GameLogicController implements LogicController {
         this.profile = profile;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
-        localPlayerNumber = 0;
-        //this.gamestate.setLocalPlayerNumber(0);
-        // TODO: Konstruktor-Signatur anpassen
-        //if (gamemode == ENDLESS_SINGLE_PLAYER_GAME | MULTIPLAYER_ENDLESS_GAME) {
-            //this.gamestate.setEndlessGame(true);
-        //}
+        this.localPlayerNumber = localPlayerNumber;
+        if (gamemode == ENDLESS_SINGLE_PLAYER_GAME | gamemode == MULTIPLAYER_ENDLESS_GAME) {
+            this.gamestate.setEndlessGame(true);
+        }
+        this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
+        System.out.println("Multiplayer? " + multiplayer);
+        this.gameScreen = new GameScreen(mainController, this);
+        this.mainController.showScreen(gameScreen);
+        initializeCollisionMap(MAP_PATH);
         this.gamestate.notifyObserver();
         gameStateDao.create(this.gamestate);
     }
@@ -109,7 +118,9 @@ public class GameLogicController implements LogicController {
 
         if (!gamestate.isGameOver() && !gameScreen.isPause()) {
             determineNewRound();
-            determineGameOver();
+            if (gamestate.isRoundEnded()) {
+                determineGameOver();
+            }
 
             if (!gamestate.isGameOver()) {
                 if (gamestate.isRoundEnded()) {
@@ -264,9 +275,11 @@ public class GameLogicController implements LogicController {
                     enemy.setCurrentMaxHitPoints(1);
                 }
 
-                debuff.setDuration(debuff.getDuration() - deltaTime);
+                if (!debuff.isPermanent()) {
+                    debuff.setDuration(debuff.getDuration() - deltaTime);
+                }
 
-                if (debuff.getDuration() < 0f) {
+                if (debuff.getDuration() < 0) {
                     debuffsToRemove.add(debuff);
                 }
             }
@@ -327,6 +340,8 @@ public class GameLogicController implements LogicController {
 
 
     private void moveInTargetDirection(Enemy enemy, float deltaTime) {
+        // FIXME: Bei Verschieben des Fensters wird die "Kollision" mit Wegpunkten nicht korrekt berechnet
+        // Hierfür könnte eine Aktualisierung des Spielzustandes, unabhängig von der der View, tatsächlich Sinn ergeben...
         Coordinates nextWayPoint = enemy.getAttackedPlayer().getWayPoints().get(enemy.getWayPointIndex());
         int tileSize = gamestate.getTileSize();
 
@@ -469,7 +484,7 @@ public class GameLogicController implements LogicController {
                 case PROJECTILE:
                     Projectile projectile = new Projectile("Feuerball", FIREBALL_ASSETS, tower.getAttackType(), tower.getCurrentAttackDamage(),
                             0.5f, 100, 300);
-                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -5, 0.5f, -50));
+                    projectile.addDebuff(new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false));
                     addProjectile(projectile, tower);
                     break;
                 case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
@@ -575,8 +590,9 @@ public class GameLogicController implements LogicController {
     private void determineNewRound() {
         if (gamestate.getEnemies().isEmpty() && !gamestate.isNewRound()) {
             gamestate.setRoundEnded(true);
-            gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
-
+            if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
+                gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
+            }
 
             List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
             for (Projectile remainingProjectile : remainingProjectiles) {
@@ -599,7 +615,7 @@ public class GameLogicController implements LogicController {
                 player.setVictorious(true);
             }
             System.out.println("Alle waren Sieger, obwohl einer nur gewinnen kann...");
-        } else if (isMultiplayer() && determineWinner() >= 0) {
+        } else if (multiplayer && determineWinner() >= 0) {
             int victoriousPlayer = determineWinner();
             gamestate.getPlayerByNumber(victoriousPlayer).setVictorious(true);
             gameOver = true;
@@ -610,10 +626,6 @@ public class GameLogicController implements LogicController {
         }
 
         gamestate.setGameOver(gameOver);
-    }
-
-    private boolean isMultiplayer() {
-        return false;
     }
 
     private boolean haveAllPlayersLost() {
@@ -797,6 +809,8 @@ public class GameLogicController implements LogicController {
     private Debuff generateDifficultyDebuff(Difficulty difficulty) {
 
         Debuff difficultyDebuff = new Debuff();
+
+        difficultyDebuff.setPermanent(true);
 
         switch (difficulty) {
             case TESTMODE:
@@ -1066,6 +1080,10 @@ public class GameLogicController implements LogicController {
         this.gamestate = gamestate;
     }
 
+    public GameScreen getGameScreen() {
+        return gameScreen;
+    }
+
     public void setGameScreen(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
     }
@@ -1085,5 +1103,13 @@ public class GameLogicController implements LogicController {
 
     public void setLocalPlayerNumber(int localPlayerNumber) {
         this.localPlayerNumber = localPlayerNumber;
+    }
+
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
+    public void setMultiplayer(boolean multiplayer) {
+        this.multiplayer = multiplayer;
     }
 }

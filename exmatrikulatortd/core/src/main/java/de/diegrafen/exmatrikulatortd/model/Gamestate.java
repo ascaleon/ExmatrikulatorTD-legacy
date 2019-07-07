@@ -102,6 +102,8 @@ public class Gamestate extends BaseModel implements Observable {
 
     private transient List<Observer> observers;
 
+    private int gameMode;
+
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
@@ -347,5 +349,13 @@ public class Gamestate extends BaseModel implements Observable {
 
     public void setEndlessGame(boolean endlessGame) {
         this.endlessGame = endlessGame;
+    }
+
+    public int getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(int gameMode) {
+        this.gameMode = gameMode;
     }
 }

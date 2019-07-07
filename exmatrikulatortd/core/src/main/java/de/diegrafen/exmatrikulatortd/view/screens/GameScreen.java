@@ -14,10 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
@@ -42,11 +40,6 @@ import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
  * @version 14.06.2019 02:12
  */
 public class GameScreen extends BaseScreen implements GameView {
-
-    /**
-     * Der GameLogicController.
-     */
-    private GameLogicController gameLogicController;
 
     /**
      * Der aktuelle Spielstand.
@@ -130,59 +123,23 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private boolean s = false;
 
+    private LogicController logicController;
+
     /**
-     * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
+     * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
      * @param mainController Der Maincontrroller.
      * @param playerProfile  Das Spielerprofil.
      */
-    public GameScreen(MainController mainController, Game game, Profile playerProfile) {
-        super(mainController, game);
-        this.gameLogicController = new GameLogicController(mainController, playerProfile);
-        this.gameState = gameLogicController.getGamestate();
+    public GameScreen(MainController mainController, LogicController logicController) {
+        super(mainController);
+        this.logicController = logicController;
+        this.gameState = logicController.getGamestate();
         gameState.registerObserver(this);
-        gameLogicController.setGameScreen(this);
-        gameLogicController.initializeCollisionMap(MAP_PATH);
         this.players = gameState.getPlayers();
-        gameState.getPlayerByNumber(gameLogicController.getLocalPlayerNumber()).registerObserver(this);
-    }
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, Gamestate gameState) {
-        this(mainController, game, playerProfile);
-        this.gameState = gameState;
-        this.gameLogicController = new GameLogicController(mainController, playerProfile);
-        gameLogicController.setGameScreen(this);
-    }
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient) {
-        super(mainController, game);
-        this.gameState = new Gamestate();
-        this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
-        gameLogicController.setGameScreen(this);
-    }
-
-    // TODO: Konstruktoren so anpassen, dass ein Spiel als Client tatsächlich geladen und fortgesetzt werden kann, bzw. in die LogicController verschieben
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient, Gamestate gamestate) {
-        this(mainController, game, playerProfile, gameClient);
-        gameClient.refreshLocalGameState();
-        this.gameState = gamestate;
-        this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
-        gameLogicController.setGameScreen(this);
-    }
-
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameServer gameServer) {
-        super(mainController, game);
-        this.gameState = new Gamestate();
-        this.gameLogicController = new ServerGameLogicController(mainController, gameState, playerProfile, gameServer);
-        gameLogicController.setGameScreen(this);
-    }
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameServer gameServer, Gamestate gameState) {
-        super(mainController, game);
-        this.gameState = gameState;
-        this.gameLogicController = new ServerGameLogicController(mainController, gameState, playerProfile, gameServer);
-        gameLogicController.setGameScreen(this);
+        for (Player player : gameState.getPlayers()) {
+            player.registerObserver(this);
+        }
     }
 
 
@@ -210,7 +167,7 @@ public class GameScreen extends BaseScreen implements GameView {
             @Override
             public boolean keyDown(int keycode) {
 
-                int localPlayerNumber = gameLogicController.getLocalPlayerNumber();
+                int localPlayerNumber = logicController.getLocalPlayerNumber();
 
                 if (keycode == Input.Keys.LEFT)
                     keyLeftDown = true;
@@ -222,10 +179,10 @@ public class GameScreen extends BaseScreen implements GameView {
                     keyDownDown = true;
                 if (keycode == Input.Keys.I) {
 
-                    gameLogicController.sendEnemy(REGULAR_ENEMY, localPlayerNumber, localPlayerNumber);
+                    logicController.sendEnemy(REGULAR_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 if (keycode == Input.Keys.O) {
-                    gameLogicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
+                    logicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 return false;
             }
@@ -269,35 +226,35 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
-                int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
-                int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
+                int xCoordinate = logicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = logicController.getYCoordinateByPosition(position.y);
 
-                int localPlayerNumber = gameLogicController.getLocalPlayerNumber();
+                int localPlayerNumber = logicController.getLocalPlayerNumber();
 
                 if (button == LEFT) {
                     returnvalue = true;
                 } else if (button == RIGHT) {
-                    if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
                         // TODO: Mit Baumenü ersetzen
                         if (t1) {
-                            gameLogicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                            logicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t2) {
-                            gameLogicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                            logicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t3) {
-                            gameLogicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                            logicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t4) {
-                            gameLogicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                            logicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         }
-                    } else if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
+                    } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
                         // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
-                        gameLogicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        logicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
                     }
                     returnvalue = true;
                 } else if (button == MIDDLE) {
                     System.out.println("Clicked!");
-                    if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
+                    if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
                         System.out.println("Tower found!");
-                        gameLogicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        logicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
                     }
                 }
 
@@ -345,13 +302,13 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void update(float deltaTime) {
         if (!isPause()) {
-            gameLogicController.update(deltaTime);
+            logicController.update(deltaTime);
         }
     }
 
     @Override
     public void update() {
-        Player localPlayer = players.get(gameLogicController.getLocalPlayerNumber());
+        Player localPlayer = players.get(logicController.getLocalPlayerNumber());
 
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
@@ -468,7 +425,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Label.LabelStyle roundLabelStyle = new Label.LabelStyle();
         liveLabelStyle.font = getBitmapFont();
 
-        Player localPlayer = players.get(gameLogicController.getLocalPlayerNumber());
+        Player localPlayer = players.get(logicController.getLocalPlayerNumber());
 
         // score
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
