@@ -72,11 +72,7 @@ public class Debuff extends BaseModel implements Cloneable {
             this.duration = duration;
         }
 
-        if (speedMultiplier < 0) {
-            this.speedMultiplier = 0;
-        } else {
-            this.speedMultiplier = speedMultiplier;
-        }
+        setSpeedMultiplier(speedMultiplier);
     }
 
     /**
@@ -105,11 +101,7 @@ public class Debuff extends BaseModel implements Cloneable {
     }
 
     public void setDuration(float duration) {
-        if (duration < 0) {
-            this.duration = 0;
-        } else {
-            this.duration = duration;
-        }
+        this.duration = duration;
     }
 
     public float getArmorBonus() {

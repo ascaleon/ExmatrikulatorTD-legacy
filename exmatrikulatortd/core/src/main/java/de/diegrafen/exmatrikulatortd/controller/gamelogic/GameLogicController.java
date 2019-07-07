@@ -19,6 +19,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.*;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.REGULAR_TOWER;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
@@ -67,6 +68,10 @@ public class GameLogicController implements LogicController {
 
     private float auraRefreshTimer = 0;
 
+    private int enemySpawnIndex = 0;
+
+    private int localPlayerNumber;
+
 
     public GameLogicController(MainController mainController, Profile profile) {
         this.mainController = mainController;
@@ -76,11 +81,11 @@ public class GameLogicController implements LogicController {
         players.add(new Player());
 
         List<Wave> waves = new LinkedList<>();
-        waves.add(createWave(REGULAR_WAVE));
+        waves.add(createWave(HEAVY_WAVE));
         int i = 0;
         while (i < 12) {
-            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
             waves.add(createWave(REGULAR_WAVE));
+            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
             i++;
         }
 
@@ -88,29 +93,37 @@ public class GameLogicController implements LogicController {
         this.profile = profile;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
-        this.gamestate.setLocalPlayerNumber(0);
+        localPlayerNumber = 0;
+        //this.gamestate.setLocalPlayerNumber(0);
+        // TODO: Konstruktor-Signatur anpassen
+        //if (gamemode == ENDLESS_SINGLE_PLAYER_GAME | MULTIPLAYER_ENDLESS_GAME) {
+            //this.gamestate.setEndlessGame(true);
+        //}
+        this.gamestate.notifyObserver();
         gameStateDao.create(this.gamestate);
     }
 
     @Override
     public void update(float deltaTime) {
         // FIXME: Bestimmung, wann das Spiel zuende ist, fixen
-        if (!determineGameOver() && !gameScreen.isPause()) {
-            if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
-                determineNewRound();
+
+        if (!gamestate.isGameOver() && !gameScreen.isPause()) {
+            determineNewRound();
+            determineGameOver();
+
+            if (!gamestate.isGameOver()) {
                 if (gamestate.isRoundEnded()) {
                     gamestate.setRoundEnded(false);
-                    System.out.println("Runde zuende!");
                     startNewRound();
                 }
+                //applyPlayerDamage();
+                spawnWave(deltaTime);
+                applyAuras(deltaTime);
+                applyMovement(deltaTime);
+                makeAttacks(deltaTime);
+                moveProjectiles(deltaTime);
+                applyBuffsAndDebuffs(deltaTime);
             }
-            //applyPlayerDamage();
-            spawnWave(deltaTime);
-            applyAuras(deltaTime);
-            applyMovement(deltaTime);
-            makeAttacks(deltaTime);
-            moveProjectiles(deltaTime);
-            applyBuffsAndDebuffs(deltaTime);
         }
     }
 
@@ -240,7 +253,7 @@ public class GameLogicController implements LogicController {
             enemy.setCurrentSpeed(enemy.getBaseSpeed());
             enemy.setCurrentArmor(enemy.getBaseArmor());
             enemy.setCurrentMaxHitPoints(enemy.getBaseMaxHitPoints());
-            // TODO: Irgendwas mit Leben überlegen. Vielleicht stattdessen eher Damage over Time Debuffs ergänzen.
+            // TODO: Damage over Time Debuffs ergänzen.
 
             for (Debuff debuff : enemy.getDebuffs()) {
                 enemy.setCurrentSpeed(enemy.getCurrentSpeed() * debuff.getSpeedMultiplier());
@@ -253,14 +266,16 @@ public class GameLogicController implements LogicController {
 
                 debuff.setDuration(debuff.getDuration() - deltaTime);
 
-                if (debuff.getDuration() < 0) {
+                if (debuff.getDuration() < 0f) {
                     debuffsToRemove.add(debuff);
                 }
             }
 
             enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() * enemy.getCurrentMaxHitPoints() / oldMaxHitPoints);
 
-            debuffsToRemove.forEach(enemy::removeDebuff);
+            for (Debuff debuff : debuffsToRemove) {
+                enemy.removeDebuff(debuff);
+            }
         }
     }
 
@@ -285,13 +300,6 @@ public class GameLogicController implements LogicController {
 
             moveInTargetDirection(enemy, deltaTime);
             enemy.notifyObserver();
-
-//            if (enemy.getCurrentMapCell() != null) {
-//                enemy.getCurrentMapCell().removeFromEnemiesOnCell(enemy);
-//            }
-//            Coordinates newCell = getMapCellByXandY((int) enemy.getxPosition(), (int) enemy.getyPosition());
-//            enemy.setCurrentMapCell(newCell);
-//            newCell.addToEnemiesOnCell(enemy);
         }
     }
 
@@ -302,23 +310,15 @@ public class GameLogicController implements LogicController {
      */
     private void moveProjectiles(float deltaTime) {
         List<Projectile> projectilesThatHit = new ArrayList<>();
-        //List<Projectile> projectilesWithoutTarget = new LinkedList<>();
 
         for (Projectile projectile : gamestate.getProjectiles()) {
-            //if (projectile.getTarget().isRemoved()) {
-            //projectilesWithoutTarget.add(projectile);
-            //continue;
-            //}
+
             if (Math.floor(getDistanceToTarget(projectile)) <= DISTANCE_TOLERANCE) {
                 projectilesThatHit.add(projectile);
                 continue;
             }
             moveInTargetDirection(projectile, deltaTime);
         }
-
-        //for (Projectile projectile : projectilesWithoutTarget) {
-        //removeProjectile(projectile);
-        //}
 
         for (Projectile projectile : projectilesThatHit) {
             applyDamageToTarget(projectile);
@@ -546,20 +546,18 @@ public class GameLogicController implements LogicController {
 
             for (Player player : gamestate.getPlayers()) {
                 List<Wave> waves = player.getWaves();
-                if (waves.size() <= roundNumber) {
-                    // TODO: Mehrspieler*innen-Szenario berücksichtigen
-                    gamestate.setGameOver(true);
-                    break;
-                } else if (waves.get(roundNumber).getEnemies().isEmpty()) {
+                if (waves.get(roundNumber).getEnemies().size() <= enemySpawnIndex) {
+                    enemySpawnIndex = 0;
                     player.setEnemiesSpawned(true);
                     gamestate.setNewRound(false);
+                    if (gamestate.isEndlessGame()) {
+                        waves.add(new Wave(waves.get(roundNumber)));
+                    }
                     break;
                 }
 
                 if (!player.isEnemiesSpawned() && player.getTimeSinceLastSpawn() > TIME_BETWEEN_SPAWNS) {
-                    Enemy enemy = player.getWaves().get(roundNumber).getEnemies().get(0);
-                    // TODO: Replace with .pop()
-                    player.getWaves().get(roundNumber).getEnemies().remove(0);
+                    Enemy enemy = player.getWaves().get(roundNumber).getEnemies().get(enemySpawnIndex++);
                     addEnemy(enemy, player.getPlayerNumber());
                     player.setTimeSinceLastSpawn(0);
                 } else {
@@ -581,22 +579,83 @@ public class GameLogicController implements LogicController {
 
 
             List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
-            remainingProjectiles.forEach(this::removeProjectile);
+            for (Projectile remainingProjectile : remainingProjectiles) {
+                removeProjectile(remainingProjectile);
+                remainingProjectile.notifyObserver();
+            }
 
             gamestate.notifyObserver();
             gameStateDao.update(gamestate);
+            System.out.println("Runde zuende!");
         }
     }
 
-    private boolean determineGameOver() {
-        boolean gameOver = true;
+    private void determineGameOver() {
+        boolean gameOver = false;
+
+        if (!gamestate.isEndlessGame() && gamestate.getRoundNumber() >= gamestate.getNumberOfRounds()) {
+            gameOver = true;
+            for (Player player : gamestate.getPlayers()) {
+                player.setVictorious(true);
+            }
+            System.out.println("Alle waren Sieger, obwohl einer nur gewinnen kann...");
+        } else if (isMultiplayer() && determineWinner() >= 0) {
+            int victoriousPlayer = determineWinner();
+            gamestate.getPlayerByNumber(victoriousPlayer).setVictorious(true);
+            gameOver = true;
+            System.out.println("Spielerin " + (victoriousPlayer + 1) + " hat gewonnen!");
+        } else if (haveAllPlayersLost()) {
+            gameOver = true;
+            System.out.println("Alle Spielerinnen haben verloren!");
+        }
+
+        gamestate.setGameOver(gameOver);
+    }
+
+    private boolean isMultiplayer() {
+        return false;
+    }
+
+    private boolean haveAllPlayersLost() {
+
+        boolean allPlayersLost = true;
+
         for (Player player : gamestate.getPlayers()) {
-            if (!(player.getWaves().size() <= gamestate.getRoundNumber())) {
-                gameOver = false;
+            allPlayersLost &= hasPlayerLost(player);
+        }
+
+        return allPlayersLost;
+
+    }
+
+    private boolean hasPlayerLost(Player player) {
+
+        if (player.getCurrentLives() <= 0) {
+            System.out.println("Spielerin " + (player.getPlayerNumber() + 1) + " hat verloren!");
+        }
+
+        return player.getCurrentLives() <= 0;
+    }
+
+    private int determineWinner() {
+
+        int victoriousPlayer = -1;
+
+        int numberOfPlayers = gamestate.getPlayers().size();
+
+        for (Player player : gamestate.getPlayers()) {
+            if (hasPlayerLost(player)) {
+                numberOfPlayers -= 1;
+            } else {
+                victoriousPlayer = player.getPlayerNumber();
             }
         }
-        gamestate.setGameOver(gameOver);
-        return gameOver;
+
+        if (numberOfPlayers != 1) {
+            victoriousPlayer = -1;
+        }
+
+        return victoriousPlayer;
     }
 
     /**
@@ -1018,5 +1077,13 @@ public class GameLogicController implements LogicController {
      */
     public void exitGame(boolean saveBeforeExit) {
         mainController.setEndScreen(gamestate);
+    }
+
+    public int getLocalPlayerNumber() {
+        return localPlayerNumber;
+    }
+
+    public void setLocalPlayerNumber(int localPlayerNumber) {
+        this.localPlayerNumber = localPlayerNumber;
     }
 }

@@ -31,6 +31,7 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.ENDLESS_SINGLE_PLAYER_GAME;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
@@ -78,8 +79,6 @@ public class GameScreen extends BaseScreen implements GameView {
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
     private List<Player> players;
-
-    private int localPlayerNumber = 0;
 
     /**
      * Die Breite der Karte in Pixeln
@@ -145,7 +144,7 @@ public class GameScreen extends BaseScreen implements GameView {
         gameLogicController.setGameScreen(this);
         gameLogicController.initializeCollisionMap(MAP_PATH);
         this.players = gameState.getPlayers();
-        gameState.getPlayerByNumber(localPlayerNumber).registerObserver(this);
+        gameState.getPlayerByNumber(gameLogicController.getLocalPlayerNumber()).registerObserver(this);
     }
 
     public GameScreen(MainController mainController, Game game, Profile playerProfile, Gamestate gameState) {
@@ -210,6 +209,9 @@ public class GameScreen extends BaseScreen implements GameView {
         InputProcessor inputProcessorCam = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
+
+                int localPlayerNumber = gameLogicController.getLocalPlayerNumber();
+
                 if (keycode == Input.Keys.LEFT)
                     keyLeftDown = true;
                 if (keycode == Input.Keys.RIGHT)
@@ -219,10 +221,11 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
                 if (keycode == Input.Keys.I) {
-                    gameLogicController.sendEnemy(REGULAR_ENEMY, gameState.getLocalPlayerNumber(), gameState.getLocalPlayerNumber());
+
+                    gameLogicController.sendEnemy(REGULAR_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 if (keycode == Input.Keys.O) {
-                    gameLogicController.sendEnemy(HEAVY_ENEMY, gameState.getLocalPlayerNumber(), gameState.getLocalPlayerNumber());
+                    gameLogicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 return false;
             }
@@ -269,6 +272,8 @@ public class GameScreen extends BaseScreen implements GameView {
                 int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
                 int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
 
+                int localPlayerNumber = gameLogicController.getLocalPlayerNumber();
+
                 if (button == LEFT) {
                     returnvalue = true;
                 } else if (button == RIGHT) {
@@ -292,7 +297,7 @@ public class GameScreen extends BaseScreen implements GameView {
                     System.out.println("Clicked!");
                     if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
                         System.out.println("Tower found!");
-                        gameLogicController.upgradeTower(xCoordinate, yCoordinate, gameState.getLocalPlayerNumber());
+                        gameLogicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
                     }
                 }
 
@@ -346,12 +351,16 @@ public class GameScreen extends BaseScreen implements GameView {
 
     @Override
     public void update() {
-        Player localPlayer = players.get(localPlayerNumber);
+        Player localPlayer = players.get(gameLogicController.getLocalPlayerNumber());
 
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
         resourcesLabel.setText(localPlayer.getResources());
-        roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
+        if (gameState.isEndlessGame()) {
+            roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
+        } else {
+            roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
+        }
     }
 
     /**
@@ -397,7 +406,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (gameObject.isRemoved()) {
                     objectsToRemove.add(gameObject);
                 } else {
-                    if (isPause()) {
+                    if (isPause() | gameState.isGameOver()) {
                         gameObject.setAnimated(false);
                     } else {
                         gameObject.setAnimated(true);
@@ -459,7 +468,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Label.LabelStyle roundLabelStyle = new Label.LabelStyle();
         liveLabelStyle.font = getBitmapFont();
 
-        Player localPlayer = players.get(localPlayerNumber);
+        Player localPlayer = players.get(gameLogicController.getLocalPlayerNumber());
 
         // score
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
@@ -478,7 +487,9 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.row();
         // Rounds
         statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
-        roundsLabel = new Label((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds(), liveLabelStyle);
+        String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
+        System.out.println();
+        roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
 
