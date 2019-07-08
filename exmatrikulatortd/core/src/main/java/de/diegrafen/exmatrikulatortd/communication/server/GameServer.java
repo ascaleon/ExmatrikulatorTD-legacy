@@ -270,6 +270,7 @@ public class GameServer extends Connector {
             List<String> playerProfilePicturePaths = new LinkedList<>();
             @Override
             public void connected(Connection connection) {
+
                 int playerNumber = allocatePlayerNumber();
 
                 connectionAndPlayerNumbers.put(connection.getID(), playerNumber);
@@ -370,6 +371,7 @@ public class GameServer extends Connector {
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
     }
+
 
     private int allocatePlayerNumber() {
         int returnValue = -1;

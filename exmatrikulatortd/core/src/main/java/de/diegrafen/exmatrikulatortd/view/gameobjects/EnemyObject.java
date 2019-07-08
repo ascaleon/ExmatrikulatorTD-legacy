@@ -4,12 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
+import static de.diegrafen.exmatrikulatortd.util.Assets.ENEMY_SPRITE_PATH;
+import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
+
 /**
- *
  * Das Spielobjekt eines Gegners
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -17,35 +20,25 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
  */
 public class EnemyObject extends BaseObject {
 
-    // Constant rows and columns of the sprite sheet
-    private static final int FRAME_COLS = 3, FRAME_ROWS = 4;
+    private Animation<TextureRegion> walkRightAnimation;
 
-    // Objects used
-    Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
+    private Animation<TextureRegion> walkLeftAnimation;
 
-    Texture walkSheet;
+    private Animation<TextureRegion> walkUpAnimation;
 
-    private Animation<TextureRegion> standing;
+    private Animation<TextureRegion> walkDownAnimation;
 
-    private Animation<TextureRegion> runLeft;
+    private Animation<TextureRegion> standingAnimation;
 
-    private Animation<TextureRegion> runRight;
-
-    private Animation<TextureRegion> runUp;
-
-    private Animation<TextureRegion> runDown;
-
-    private Animation<TextureRegion> die;
-
-    // A variable for tracking elapsed time for the animation
-    float stateTime;
+    private Animation<TextureRegion> deathAnimation;
 
     /**
      * Konstruktor für Gegner-Objekte
-     * @param name Der Name des Spielobjektes
+     *
+     * @param name       Der Name des Spielobjektes
      * @param assetsName Die mit dem Objekt assoziierten Assets
-     * @param xPosition Die x-Position
-     * @param yPosition Die y-Position
+     * @param xPosition  Die x-Position
+     * @param yPosition  Die y-Position
      */
     public EnemyObject(String name, String assetsName, float xPosition, float yPosition) {
         super(name, assetsName, xPosition, yPosition);
@@ -53,55 +46,37 @@ public class EnemyObject extends BaseObject {
 
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
-
-        //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
-
-        //runLeft = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runLeft"), Animation.PlayMode.LOOP);
-
-        //runRight = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runRight"), Animation.PlayMode.LOOP);
-
-        //runUp = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runUp"), Animation.PlayMode.LOOP);
-
-        //runDown = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "runDown"), Animation.PlayMode.LOOP);
-
-        //die = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "die"), Animation.PlayMode.LOOP);
-
-        walkSheet = getCurrentSprite();
-
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet,
-                walkSheet.getWidth() / FRAME_COLS,
-                walkSheet.getHeight() / FRAME_ROWS);
-
-        //System.out.println(walkSheet.getWidth());
-        //System.out.println(walkSheet.getHeight());
-
-
-        // TODO: Auch andere Richtungen berücksichtigen
-
-        // Place the regions into a 1D array in the correct order, starting from the top
-        // left, going across first. The Animation constructor requires a 1D array.
-        TextureRegion[] walkFrames = new TextureRegion[3];//[FRAME_COLS * FRAME_ROWS];
-        int index = 0;
-        //for (int i = 0; i < FRAME_ROWS; i++) {
-        for (int i = 2; i < 3; i++) {
-            for (int j = 0; j < FRAME_COLS; j++) {
-                walkFrames[index++] = tmp[i][j];
-            }
-        }
-
-        // Initialize the Animation with the frame interval and array of frames
-        walkAnimation = new Animation<>(0.25f, walkFrames);
-
-        // Reset the elapsed animation time to 0
-        stateTime = 0f;
     }
 
     /**
-     * Update-Methode. Aktualisiert den Zustand des Objektes
+     * Initialisiert die Darstellung des Spielobjektes
+     */
+    @Override
+    void initializeSprite() {
+        super.initializeSprite();
+
+        String assetsName = getAssetsName();
+
+        setTextureAtlas(new TextureAtlas(ENEMY_SPRITE_PATH + assetsName + ".atlas"));
+
+        //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
+
+        walkLeftAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveLeft"), Animation.PlayMode.LOOP_PINGPONG);
+
+        walkRightAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveRight"), Animation.PlayMode.LOOP_PINGPONG);
+
+        walkUpAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveUp"), Animation.PlayMode.LOOP_PINGPONG);
+
+        walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
+
+        //die = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "die"), Animation.PlayMode.LOOP);
+    }
+
+    /**
+     * Update-Methode. Aktualisiert den Zustand des Objektes durch Benachrichtigung eines beobachteten Daten-Objekts
      */
     public void update() {
         super.update();
-        //setxPosition(getxPosition() + movementSpeed * deltaTime);
     }
 
     /**
@@ -110,12 +85,33 @@ public class EnemyObject extends BaseObject {
      * @param spriteBatch Der spriteBatch, mit dem Objekt gerendert wird
      */
     @Override
-    public void draw (SpriteBatch spriteBatch) {
-        super.draw(spriteBatch);
-        stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
-        TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
+    public void draw(SpriteBatch spriteBatch, float deltaTime) {
+        super.draw(spriteBatch, deltaTime);
+
+        if (isPlayDeathAnimation()) {
+            setRemoved(true);
+            return;
+        }
+
+        double angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 180;
+
+        if (isAnimated()) {
+            setStateTime(getStateTime() + deltaTime);
+        }
+
+        TextureRegion currentFrame;
+
+        if (angle >= 135 & angle < 225) {
+            currentFrame = walkRightAnimation.getKeyFrame(getStateTime(), true);
+        } else if (angle >= 225 & angle < 315) {
+            currentFrame = walkUpAnimation.getKeyFrame(getStateTime(), true);
+        } else if (angle >= 45 & angle < 135) {
+            currentFrame = walkDownAnimation.getKeyFrame(getStateTime(), true);
+        } else {
+            currentFrame = walkLeftAnimation.getKeyFrame(getStateTime(), true);
+        }
+
         spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
-        //spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
     }
 
     /**

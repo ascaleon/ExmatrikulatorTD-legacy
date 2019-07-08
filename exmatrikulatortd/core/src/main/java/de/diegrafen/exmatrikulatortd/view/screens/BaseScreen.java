@@ -59,11 +59,13 @@ public abstract class BaseScreen implements Screen {
 
     private OrthographicCamera stageCamera;
 
+    private boolean pause = false;
+
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
      */
-    public BaseScreen (MainController mainController, Game game) {
+    public BaseScreen (MainController mainController) {
         this.camera = new OrthographicCamera();
         this.stageCamera = new OrthographicCamera();
         viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera); //new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
@@ -71,7 +73,7 @@ public abstract class BaseScreen implements Screen {
 
         this.spriteBatch = new SpriteBatch();
         this.mainController = mainController;
-        this.game = game;
+        //this.game = game;
         ui = new Stage(stageViewport);
     }
 
@@ -117,6 +119,7 @@ public abstract class BaseScreen implements Screen {
      */
     @Override
     public void render(float deltaTime) {
+        //Gdx.graphics.setContinuousRendering(false);
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(deltaTime);
@@ -125,6 +128,9 @@ public abstract class BaseScreen implements Screen {
             ui.act(deltaTime);
             ui.draw();
         }
+        //if(!isPause()){
+            //Gdx.graphics.requestRendering();
+        //}
     }
 
     /**
@@ -186,14 +192,6 @@ public abstract class BaseScreen implements Screen {
         ui = null;
     }
 
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(ExmatrikulatorTD game) {
-        this.game = game;
-    }
-
     public MainController getMainController() {
         return mainController;
     }
@@ -232,5 +230,13 @@ public abstract class BaseScreen implements Screen {
 
     public Viewport getStageViewport() {
         return stageViewport;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 }

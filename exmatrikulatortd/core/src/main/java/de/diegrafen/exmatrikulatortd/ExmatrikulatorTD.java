@@ -43,4 +43,5 @@ public class ExmatrikulatorTD extends Game {
         mainController.showSplashScreen();
 	}
 
+
 }

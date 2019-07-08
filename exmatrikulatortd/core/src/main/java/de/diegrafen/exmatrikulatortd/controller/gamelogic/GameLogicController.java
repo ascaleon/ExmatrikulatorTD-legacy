@@ -111,6 +111,7 @@ public class GameLogicController implements LogicController {
         } else {
             initializeCollisionMap(MULTIPLAYER_MAP_PATH);
         }
+
         this.gamestate.notifyObserver();
         gameStateDao.create(this.gamestate);
     }
@@ -318,6 +319,7 @@ public class GameLogicController implements LogicController {
             enemy.notifyObserver();
         }
     }
+
 
     /**
      * Bewegt die Geschosse

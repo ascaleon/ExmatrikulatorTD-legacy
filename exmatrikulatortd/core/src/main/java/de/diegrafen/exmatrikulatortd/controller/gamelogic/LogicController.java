@@ -6,6 +6,7 @@ import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
 
 /**
  * Interface für Controller der Spiellogik
@@ -60,7 +61,7 @@ public interface LogicController {
      * @param enemyType Der Typ des zu schickenden Gegners
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
-    boolean sendEnemy(int enemyType);
+    boolean sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer);
 
     boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber);
 
@@ -78,4 +79,9 @@ public interface LogicController {
 
     Gamestate getGamestate();
 
+    GameScreen getGameScreen();
+
+    int getLocalPlayerNumber();
+
+    boolean hasCellTower(int xCoordinate, int yCoordinate);
 }

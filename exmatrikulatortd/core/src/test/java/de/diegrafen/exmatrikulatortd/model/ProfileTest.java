@@ -21,6 +21,6 @@ public class ProfileTest {
 
     @Test
     public void getHighscores() {
-        assertNull(profile.getHighscores());
+        assertTrue(profile.getHighscores().isEmpty());
     }
 }

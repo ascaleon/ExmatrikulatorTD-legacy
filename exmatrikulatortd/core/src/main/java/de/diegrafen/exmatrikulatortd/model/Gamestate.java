@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
+import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
@@ -48,11 +49,6 @@ public class Gamestate extends BaseModel implements Observable {
     private int numberOfRows = 20;
 
     /**
-     * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
-     */
-    private transient int localPlayerNumber;
-
-    /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
      */
     @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
@@ -69,6 +65,9 @@ public class Gamestate extends BaseModel implements Observable {
 
     @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
     private List<Tower> towers;
+
+    @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
+    private List<Projectile> projectiles;
 
     /**
      * Der Schwierigkeitsgrad des Spieles
@@ -99,15 +98,27 @@ public class Gamestate extends BaseModel implements Observable {
 
     private boolean roundEnded;
 
+    private boolean endlessGame = false;
+
     private transient List<Observer> observers;
+
+    private int gameMode;
 
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
-    public Gamestate (List<Player> players, Difficulty difficulty) {
-        this.players = players;
-        this.difficulty = difficulty;
+    public Gamestate (List<Player> players, List<Wave> waves) {
+        this.enemies = new ArrayList<>();
+        this.towers = new ArrayList<>();
+        this.projectiles = new ArrayList<>();
+        this.collisionMatrix = new ArrayList<>();
+        this.observers = new LinkedList<>();
+
+        this.players = new LinkedList<>(players);
+        this.players.forEach(player -> player.setWaves(waves));
+        this.numberOfRounds = waves.size();
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
+        this.newRound = true;
     }
 
     /**
@@ -117,6 +128,7 @@ public class Gamestate extends BaseModel implements Observable {
         players = new ArrayList<>();
         enemies = new ArrayList<>();
         towers = new ArrayList<>();
+        projectiles = new ArrayList<>();
         collisionMatrix = new ArrayList<>();
         this.observers = new LinkedList<>();
 
@@ -124,7 +136,7 @@ public class Gamestate extends BaseModel implements Observable {
         this.roundNumber = 0;
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.roundEnded = true;
-        this.numberOfRounds = 3;
+        this.numberOfRounds = 5;
         this.gameOver = false;
     }
 
@@ -132,19 +144,8 @@ public class Gamestate extends BaseModel implements Observable {
         enemies.add(enemy);
     }
 
-    public void addEnemy (Enemy enemy, Player player) {
-        enemy.setAttackedPlayer(player);
-        player.addEnemy(enemy);
-        enemies.add(enemy);
-    }
-
-
     public List<Enemy> getEnemies() {
         return enemies;
-    }
-
-    public int getLocalPlayerNumber() {
-        return localPlayerNumber;
     }
 
     public List<Player> getPlayers() {
@@ -165,10 +166,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     public Player getPlayerByNumber (int playerNumber) {
         return players.get(playerNumber);
-    }
-
-    public void setLocalPlayerNumber(int localPlayerNumber) {
-        this.localPlayerNumber = localPlayerNumber;
     }
 
     public int getMapWidth() {
@@ -319,6 +316,18 @@ public class Gamestate extends BaseModel implements Observable {
         this.gameOver = gameOver;
     }
 
+    public List<Projectile> getProjectiles() {
+        return projectiles;
+    }
+
+    public void addProjectile(Projectile projectile) {
+        this.projectiles.add(projectile);
+    }
+
+    public void removeProjectile(Projectile projectile) {
+        this.projectiles.remove(projectile);
+    }
+
     @Override
     public void registerObserver(Observer observer) {
         observers.add(observer);
@@ -332,5 +341,21 @@ public class Gamestate extends BaseModel implements Observable {
     @Override
     public void notifyObserver() {
         observers.forEach(Observer::update);
+    }
+
+    public boolean isEndlessGame() {
+        return endlessGame;
+    }
+
+    public void setEndlessGame(boolean endlessGame) {
+        this.endlessGame = endlessGame;
+    }
+
+    public int getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(int gameMode) {
+        this.gameMode = gameMode;
     }
 }

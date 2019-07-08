@@ -23,6 +23,8 @@ import de.diegrafen.exmatrikulatortd.model.Profile;
 import java.util.Date;
 import java.util.LinkedList;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
+
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 14.06.2019 04:34
@@ -49,8 +51,8 @@ public class MenuScreen extends BaseScreen {
 
     private String hostAddress = "";
 
-    public MenuScreen(MainController mainController, Game game) {
-        super(mainController, game);
+    public MenuScreen(MainController mainController) {
+        super(mainController);
         stage = new Stage(new ScreenViewport());
         this.serverList = new LinkedList<>();
     }
@@ -156,7 +158,7 @@ public class MenuScreen extends BaseScreen {
         newSinglePlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().createNewSinglePlayerGame();
+                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME);
             }
         });
 
@@ -449,4 +451,7 @@ public class MenuScreen extends BaseScreen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
+
+
+
 }
