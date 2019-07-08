@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
@@ -466,14 +468,20 @@ public class GameScreen extends BaseScreen implements GameView {
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1.png")));
+        Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1_selected.png")));
+        Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2.png")));
+        Drawable towerImage2_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2_selected.png")));
+        Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3.png")));
+        Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3_selected.png")));
         TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         //towerSelect.setDebug(true);
 
         //Die einzelnen Towerbuttons
-        TextButton tower1 = new TextButton("T1", skin);
-        TextButton tower2 = new TextButton("T2", skin);
-        TextButton tower3 = new TextButton("T3", skin);
+        ImageButton tower1 = new ImageButton(towerImage1, towerImage1, towerImage1_selected);
+        ImageButton tower2 = new ImageButton(towerImage2, towerImage2, towerImage2_selected);
+        ImageButton tower3 = new ImageButton(towerImage3, towerImage3, towerImage3_selected);
         TextButton tower4 = new TextButton("T4", skin);
         TextButton upgrade = new TextButton("^", skin);
         TextButton sell = new TextButton("$$$", skin);
@@ -483,10 +491,10 @@ public class GameScreen extends BaseScreen implements GameView {
 //        tower4.setSize(10, 10);
 
         //Nur nen paar parameter, ka ob die überhaupt noch gebraucht werden
-        tower1.getLabel().setFontScale(1, 1);
-        tower2.getLabel().setFontScale(1,1);
-        tower3.getLabel().setFontScale(1,1);
-        tower4.getLabel().setFontScale(1,1);
+        //tower1.getLabel().setFontScale(1, 1);
+        //tower2.getLabel().setFontScale(1,1);
+        //tower3.getLabel().setFontScale(1,1);
+        //tower4.getLabel().setFontScale(1,1);
         //tower4.setColor(Color.WHITE);
 
         //InputListener für die Buttons
@@ -495,10 +503,12 @@ public class GameScreen extends BaseScreen implements GameView {
             public void changed(ChangeEvent event, Actor actor) {
                 if(!t1 && !t2 && !t3 && !t4) {
                     System.out.println("Tower 1 Ausgewählt");
-                    tower1.setColor(Color.GREEN);
+                    //tower1.setColor(Color.GREEN);
+                    tower1.setChecked(true);
                 }
                 else{
-                    tower1.setColor(Color.valueOf("ffffffff"));
+                    //tower1.setColor(Color.valueOf("ffffffff"));
+                    tower1.setChecked(false);
                 }
                 t1 = !t1;
             }
@@ -508,10 +518,12 @@ public class GameScreen extends BaseScreen implements GameView {
             public void changed(ChangeEvent event, Actor actor) {
                 if(!t1 && !t2 && !t3 && !t4) {
                     System.out.println("Tower 2 Ausgewählt");
-                    tower2.setColor(Color.GREEN);
+                    //tower2.setColor(Color.GREEN);
+                    tower2.setChecked(true);
                 }
                 else{
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                    //tower2.setColor(Color.valueOf("ffffffff"));
+                    tower2.setChecked(false);
                 }
                 t2 = !t2;
             }
@@ -521,10 +533,12 @@ public class GameScreen extends BaseScreen implements GameView {
             public void changed(ChangeEvent event, Actor actor) {
                 if(!t1 && !t2 && !t3 && !t4) {
                     System.out.println("Tower 3 Ausgewählt");
-                    tower3.setColor(Color.GREEN);
+                    //tower3.setColor(Color.GREEN);
+                    tower3.setChecked(true);
                 }
                 else{
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    //tower3.setColor(Color.valueOf("ffffffff"));
+                    tower3.setChecked(false);
                 }
                 t3 = !t3;
             }
@@ -719,7 +733,7 @@ public class GameScreen extends BaseScreen implements GameView {
             pauseGroup = new Group();
             Image semiTBG = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
             //semiTBG.setSize(500,500);
-            semiTBG.setBounds(0,0, mapWidth, mapHeight);
+            semiTBG.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
             Table buttonTable = new Table();
             TextButton resume = new TextButton("Resume", skin);
             resume.addListener(new ChangeListener() {
@@ -730,7 +744,7 @@ public class GameScreen extends BaseScreen implements GameView {
                     defaultScreen.setVisible(true);
                 }
             });
-            buttonTable.add(resume).top().center().row();
+            buttonTable.add(resume).top().center().spaceBottom(10).row();
             TextButton back2main = new TextButton("Menu", skin);
             back2main.addListener(new ChangeListener() {
                 @Override
@@ -739,6 +753,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 }
             });
             buttonTable.add(back2main).top().center().row();
+            buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
             pauseGroup.addActor(semiTBG);
             //semiTBG.setAlign(MIDDLE);
             pauseGroup.addActor(buttonTable);
