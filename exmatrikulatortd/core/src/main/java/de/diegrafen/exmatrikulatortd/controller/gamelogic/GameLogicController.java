@@ -106,7 +106,7 @@ public class GameLogicController implements LogicController {
         System.out.println("Multiplayer? " + multiplayer);
         this.gameScreen = new GameScreen(mainController, this);
         this.mainController.showScreen(gameScreen);
-        if (gamemode <= ENDLESS_SINGLE_PLAYER_GAME) {
+        if ((gamemode <= ENDLESS_SINGLE_PLAYER_GAME)) {
             initializeCollisionMap(SINGLEPLAYER_MAP_PATH);
         } else {
             initializeCollisionMap(MULTIPLAYER_MAP_PATH);
@@ -714,6 +714,8 @@ public class GameLogicController implements LogicController {
             }
         }
 
+        System.out.println(gamestate.getCollisionMatrix().size());
+
         for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
 
             int mapCellXCoordinate = mapCell.getxCoordinate();
@@ -721,16 +723,18 @@ public class GameLogicController implements LogicController {
 
             int numberOfCols = gamestate.getNumberOfColumns();
             if (mapCellXCoordinate > 0) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate - 1) + mapCellYCoordinate));
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
             }
             if (mapCellXCoordinate < numberOfColumns - 1) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellXCoordinate + 1) + mapCellYCoordinate));
+                System.out.println(mapCellXCoordinate);
+                System.out.println(numberOfColumns);
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
             }
             if (mapCellYCoordinate > 0) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate - 1));
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
             }
-            if (mapCellYCoordinate < numberOfColumns - 1) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellXCoordinate + mapCellYCoordinate + 1));
+            if (mapCellYCoordinate < numberOfRows - 1) {
+                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
             }
         }
     }
