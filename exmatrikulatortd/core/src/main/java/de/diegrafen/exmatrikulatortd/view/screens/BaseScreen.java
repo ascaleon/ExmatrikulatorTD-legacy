@@ -65,7 +65,7 @@ public abstract class BaseScreen implements Screen {
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
      */
-    public BaseScreen (MainController mainController, Game game) {
+    public BaseScreen (MainController mainController) {
         this.camera = new OrthographicCamera();
         this.stageCamera = new OrthographicCamera();
         viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera); //new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
@@ -73,7 +73,7 @@ public abstract class BaseScreen implements Screen {
 
         this.spriteBatch = new SpriteBatch();
         this.mainController = mainController;
-        this.game = game;
+        //this.game = game;
         ui = new Stage(stageViewport);
     }
 
@@ -190,14 +190,6 @@ public abstract class BaseScreen implements Screen {
     public void dispose() {
         if(ui != null) ui.dispose();
         ui = null;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(ExmatrikulatorTD game) {
-        this.game = game;
     }
 
     public MainController getMainController() {

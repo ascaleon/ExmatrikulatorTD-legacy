@@ -15,14 +15,19 @@ public class SendEnemyResponse extends Response {
 
     private int enemyType;
 
-    public SendEnemyResponse(boolean successful, int enemyType) {
-        super();
-        this.successful = successful;
-        this.enemyType = enemyType;
-    }
+    private int playerToSendTo;
+
+    private int sendingPlayer;
 
     public SendEnemyResponse(boolean successful) {
         this.successful = successful;
+    }
+
+    public SendEnemyResponse(boolean successful, int enemyType, int playerToSendTo, int sendingPlayer) {
+        this.successful = successful;
+        this.enemyType = enemyType;
+        this.playerToSendTo = playerToSendTo;
+        this.sendingPlayer = sendingPlayer;
     }
 
     public boolean wasSuccessful() {
@@ -31,5 +36,13 @@ public class SendEnemyResponse extends Response {
 
     public int getEnemyType() {
         return enemyType;
+    }
+
+    public int getPlayerToSendTo() {
+        return playerToSendTo;
+    }
+
+    public int getSendingPlayer() {
+        return sendingPlayer;
     }
 }

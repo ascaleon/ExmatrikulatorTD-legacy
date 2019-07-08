@@ -76,6 +76,7 @@ public abstract class BaseObject implements GameObject {
         this.yTargetPosition = observable.getTargetyPosition();
         this.removed = false;
         observable.registerObserver(this);
+        initializeSprite();
     }
 
     /**
@@ -105,6 +106,9 @@ public abstract class BaseObject implements GameObject {
             observable.removeObserver(this);
             observable = null;
             stateTime = 0f;
+        } else if (!assetsName.equals(observable.getAssetsName())) {
+            this.assetsName = observable.getAssetsName();
+            initializeSprite();
         } else {
             setxPosition(observable.getxPosition());
             setyPosition(observable.getyPosition());
@@ -129,7 +133,7 @@ public abstract class BaseObject implements GameObject {
     /**
      * Initialisiert die Darstellung des Spielobjektes
      */
-    private void initializeSprite() {
+    void initializeSprite() {
 
     }
 

@@ -43,7 +43,7 @@ public interface ConnectorInterface {
      *
      * @param enemyType Der Typ des zu schickenden Gegners
      */
-    void sendEnemy(int enemyType);
+    void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer);
 
     void shutdown ();
 }

@@ -9,8 +9,8 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  */
 public class IntroScreen extends BaseScreen {
 
-    public IntroScreen (MainController mainController, Game game) {
-        super(mainController, game);
+    public IntroScreen (MainController mainController) {
+        super(mainController);
     }
 
     @Override

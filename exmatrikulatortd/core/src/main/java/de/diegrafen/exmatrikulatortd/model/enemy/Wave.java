@@ -6,6 +6,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -46,8 +47,15 @@ public class Wave extends BaseModel {
     private Player player;
 
     public Wave () {
-        this.enemies = new ArrayList<Enemy>();
+        this.enemies = new ArrayList<>();
+    }
 
+    public Wave(Wave wave) {
+        this.enemies = new LinkedList<>();
+        for (Enemy enemy : wave.getEnemies()) {
+            this.enemies.add(new Enemy(enemy));
+        }
+        this.player = wave.getPlayer();
     }
 
     public List<Enemy> getEnemies() {

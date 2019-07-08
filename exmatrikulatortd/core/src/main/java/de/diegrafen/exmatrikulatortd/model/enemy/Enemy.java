@@ -23,9 +23,11 @@ public class Enemy extends ObservableModel {
 
     private float currentSpeed;
 
-    private float maxHitPoints;
+    private float baseMaxHitPoints;
 
     private float currentHitPoints;
+
+    private float currentMaxHitPoints;
 
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
     private List<Debuff> debuffs;
@@ -54,7 +56,6 @@ public class Enemy extends ObservableModel {
 
     private float currentArmor;
 
-    //@Enumerated(EnumType.ORDINAL)
     private int armorType;
 
     private String assetsName;
@@ -105,8 +106,9 @@ public class Enemy extends ObservableModel {
         this.name = name;
         this.baseSpeed = baseSpeed;
         this.currentSpeed = baseSpeed;
-        this.maxHitPoints = maxHitPoints;
+        this.currentMaxHitPoints = maxHitPoints;
         this.currentHitPoints = maxHitPoints;
+        this.baseMaxHitPoints = maxHitPoints;
         this.amountOfDamageToPlayer = amountOfDamageToPlayer;
         this.bounty = bounty;
         this.pointsGranted = pointsGranted;
@@ -121,15 +123,21 @@ public class Enemy extends ObservableModel {
 
     public Enemy(Enemy enemy) {
 
-        this.debuffs = enemy.getDebuffs();
+        this.debuffs = new LinkedList<>();
+
+        for (Debuff debuff : enemy.getDebuffs()) {
+            this.debuffs.add(new Debuff(debuff));
+        }
 
         this.baseArmor = enemy.getBaseArmor();
         this.currentArmor = enemy.getBaseArmor();
         this.name = enemy.getName();
+        this.description = enemy.getDescription();
         this.baseSpeed = enemy.getBaseSpeed();
         this.currentSpeed = enemy.getBaseSpeed();
-        this.maxHitPoints = enemy.getMaxHitPoints();
-        this.currentHitPoints = enemy.getMaxHitPoints();;
+        this.baseMaxHitPoints = enemy.getBaseMaxHitPoints();
+        this.currentMaxHitPoints = enemy.getCurrentMaxHitPoints();
+        this.currentHitPoints = enemy.getCurrentHitPoints();;
         this.amountOfDamageToPlayer = enemy.getAmountOfDamageToPlayer();
         this.bounty = enemy.getBounty();
         this.pointsGranted = enemy.getPointsGranted();
@@ -331,15 +339,31 @@ public class Enemy extends ObservableModel {
         this.currentArmor = currentArmor;
     }
 
-    public float getMaxHitPoints() {
-        return maxHitPoints;
-    }
-
     public int getSendPrice() {
         return sendPrice;
     }
 
     public int getArmorType() {
         return armorType;
+    }
+
+    public float getBaseMaxHitPoints() {
+        return baseMaxHitPoints;
+    }
+
+    public void setBaseMaxHitPoints(float baseMaxHitPoints) {
+        this.baseMaxHitPoints = baseMaxHitPoints;
+    }
+
+    public float getCurrentMaxHitPoints() {
+        return currentMaxHitPoints;
+    }
+
+    public void setCurrentMaxHitPoints(float currentMaxHitPoints) {
+        this.currentMaxHitPoints = currentMaxHitPoints;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

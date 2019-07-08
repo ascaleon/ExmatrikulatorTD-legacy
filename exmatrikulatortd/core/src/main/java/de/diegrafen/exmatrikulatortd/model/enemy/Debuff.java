@@ -32,25 +32,26 @@ public class Debuff extends BaseModel implements Cloneable {
     /**
      * Modifikator der Rüstung
      */
-    private float armorModifier;
+    private float armorBonus;
 
     /**
      * Modifikator der Geschwindigkeit
      */
-    private float speedModifier;
+    private float speedMultiplier;
 
     /**
      * Modifikator der Lebenspunkte
      */
-    private float healthModifier;
+    private float healthBonus;
+
+    private boolean permanent;
 
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
     public Debuff() {
-
+        this.speedMultiplier = 1;
     }
-
 
     /**
      * Konstruktor, der alle Attribute initialisiert
@@ -60,8 +61,13 @@ public class Debuff extends BaseModel implements Cloneable {
      * @param speedModifier  Der Geschwindigkeitsmodifikator des Debuffs
      * @param healthModifier Der Gesundheitsmodifikator des Debuffs
      */
-    public Debuff(String name, float duration, float armorModifier, float speedModifier, float healthModifier) {
+
+
+    public Debuff(String name, float duration, float armorBonus, float speedMultiplier, float healthBonus, boolean permanent) {
         this.name = name;
+        this.armorBonus = armorBonus;
+        this.healthBonus = healthBonus;
+        this.permanent = permanent;
 
         if (duration < 0) {
             this.duration = 0;
@@ -69,19 +75,7 @@ public class Debuff extends BaseModel implements Cloneable {
             this.duration = duration;
         }
 
-        this.armorModifier = armorModifier;
-
-        if (speedModifier < -1) {
-            this.speedModifier = -1;
-        } else {
-            this.speedModifier = speedModifier;
-        }
-
-        if (healthModifier < -1) {
-            this.healthModifier = -1;
-        } else {
-            this.healthModifier = healthModifier;
-        }
+        setSpeedMultiplier(speedMultiplier);
     }
 
     /**
@@ -92,9 +86,10 @@ public class Debuff extends BaseModel implements Cloneable {
     public Debuff(Debuff debuff) {
         this.name = debuff.getName();
         this.duration = debuff.getDuration();
-        this.armorModifier = debuff.getArmorModifier();
-        this.speedModifier = debuff.getSpeedModifier();
-        this.healthModifier = debuff.getHealthModifier();
+        this.armorBonus = debuff.getArmorBonus();
+        this.speedMultiplier = debuff.getSpeedMultiplier();
+        this.healthBonus = debuff.getHealthBonus();
+        this.permanent = debuff.isPermanent();
     }
 
     public String getName() {
@@ -113,15 +108,39 @@ public class Debuff extends BaseModel implements Cloneable {
         this.duration = duration;
     }
 
-    public float getArmorModifier() {
-        return armorModifier;
+    public float getArmorBonus() {
+        return armorBonus;
     }
 
-    public float getSpeedModifier() {
-        return speedModifier;
+    public void setArmorBonus(float armorBonus) {
+        this.armorBonus = armorBonus;
     }
 
-    public float getHealthModifier() {
-        return healthModifier;
+    public float getSpeedMultiplier() {
+        return speedMultiplier;
+    }
+
+    public void setSpeedMultiplier(float speedMultiplier) {
+        if (speedMultiplier < 0) {
+            this.speedMultiplier = 0;
+        } else {
+            this.speedMultiplier = speedMultiplier;
+        }
+    }
+
+    public float getHealthBonus() {
+        return healthBonus;
+    }
+
+    public void setHealthBonus(float healthBonus) {
+        this.healthBonus = healthBonus;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
     }
 }

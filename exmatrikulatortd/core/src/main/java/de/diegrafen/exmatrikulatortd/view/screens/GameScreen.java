@@ -23,17 +23,12 @@ import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.ServerGameLogicController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +36,10 @@ import java.util.List;
 import static com.badlogic.gdx.Input.Buttons.LEFT;
 import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.ENDLESS_SINGLE_PLAYER_GAME;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
 /**
@@ -50,11 +49,6 @@ import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
  * @version 14.06.2019 02:12
  */
 public class GameScreen extends BaseScreen implements GameView {
-
-    /**
-     * Der GameLogicController.
-     */
-    private GameLogicController gameLogicController;
 
     /**
      * Der aktuelle Spielstand.
@@ -87,8 +81,6 @@ public class GameScreen extends BaseScreen implements GameView {
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
     private List<Player> players;
-
-    private int localPlayerNumber = 0;
 
     /**
      * Die Breite der Karte in Pixeln
@@ -124,71 +116,50 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private float touchDownX, touchDownY;
 
-    private  InputMultiplexer multiplexer;
+    private InputMultiplexer multiplexer;
 
     private final Table defaultScreen = new Table();
 
     private Group pauseGroup;
+    // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
-    boolean t1 = false;
-    boolean t2 = false;
-    boolean t3 = false;
-    boolean t4 = false;
+    private boolean t1 = false;
+
+    private boolean t2 = false;
+
+    private boolean t3 = false;
+
+    private boolean t4 = false;
+
+    private boolean u = false;
+
+    private boolean s = false;
+
+    private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+    private TextButton tower1 = new TextButton("T1", skin);
+    private TextButton tower2 = new TextButton("T2", skin);
+    private TextButton tower3 = new TextButton("T3", skin);
+    private TextButton tower4 = new TextButton("T4", skin);
+    private TextButton upgrade = new TextButton("^", skin);
+    private TextButton sell = new TextButton("$$$", skin);
+
+    private LogicController logicController;
 
     /**
-     * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den GameLogicController.
+     * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
      * @param mainController Der Maincontrroller.
      * @param playerProfile  Das Spielerprofil.
      */
-    public GameScreen(MainController mainController, Game game, Profile playerProfile) {
-        super(mainController, game);
-        this.gameState = new Gamestate();
+    public GameScreen(MainController mainController, LogicController logicController) {
+        super(mainController);
+        this.logicController = logicController;
+        this.gameState = logicController.getGamestate();
         gameState.registerObserver(this);
-        this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
-        gameLogicController.setGameScreen(this);
-        gameLogicController.initializeCollisionMap(MAP_PATH);
         this.players = gameState.getPlayers();
-        gameState.getPlayerByNumber(localPlayerNumber).registerObserver(this);
-    }
-
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, Gamestate gameState) {
-        this(mainController, game, playerProfile);
-        this.gameState = gameState;
-        this.gameLogicController = new GameLogicController(mainController, gameState, playerProfile);
-        gameLogicController.setGameScreen(this);
-    }
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient) {
-        super(mainController, game);
-        this.gameState = new Gamestate();
-        this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
-        gameLogicController.setGameScreen(this);
-    }
-
-    // TODO: Konstruktoren so anpassen, dass ein Spiel als Client tatsächlich geladen und fortgesetzt werden kann, bzw. in die LogicController verschieben
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameClient gameClient, Gamestate gamestate) {
-        this(mainController, game, playerProfile, gameClient);
-        gameClient.refreshLocalGameState();
-        this.gameState = gamestate;
-        this.gameLogicController = new ClientGameLogicController(mainController, gameState, playerProfile, gameClient);
-        gameLogicController.setGameScreen(this);
-    }
-
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameServer gameServer) {
-        super(mainController, game);
-        this.gameState = new Gamestate();
-        this.gameLogicController = new ServerGameLogicController(mainController, gameState, playerProfile, gameServer);
-        gameLogicController.setGameScreen(this);
-    }
-
-    public GameScreen(MainController mainController, Game game, Profile playerProfile, GameServer gameServer, Gamestate gameState) {
-        super(mainController, game);
-        this.gameState = gameState;
-        this.gameLogicController = new ServerGameLogicController(mainController, gameState, playerProfile, gameServer);
-        gameLogicController.setGameScreen(this);
+        for (Player player : gameState.getPlayers()) {
+            player.registerObserver(this);
+        }
     }
 
 
@@ -215,6 +186,9 @@ public class GameScreen extends BaseScreen implements GameView {
         InputProcessor inputProcessorCam = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
+
+                int localPlayerNumber = logicController.getLocalPlayerNumber();
+
                 if (keycode == Input.Keys.LEFT)
                     keyLeftDown = true;
                 if (keycode == Input.Keys.RIGHT)
@@ -223,6 +197,98 @@ public class GameScreen extends BaseScreen implements GameView {
                     keyUpDown = true;
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
+                if (keycode == Input.Keys.I) {
+
+                    logicController.sendEnemy(REGULAR_ENEMY, localPlayerNumber, localPlayerNumber);
+                }
+                if (keycode == Input.Keys.O) {
+                    logicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
+                }
+                if (keycode == Input.Keys.Q) {
+                    tower1.setColor(Color.GREEN);
+                    t1 = true;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.W) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.GREEN);
+                    t2 = true;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.E) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.GREEN);
+                    t3 = true;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.R) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.GREEN);
+                    t4 = true;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.D) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.GREEN);
+                    u = true;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.S) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.GREEN);
+                    s = true;
+                }
+
                 return false;
             }
 
@@ -265,17 +331,30 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
-                if (button == LEFT) {
+                int xCoordinate = logicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = logicController.getYCoordinateByPosition(position.y);
+
+                int localPlayerNumber = logicController.getLocalPlayerNumber();
+
+                if (button == RIGHT) {
                     returnvalue = true;
-                } else if (button == RIGHT) {
-                    int xCoordinate = gameLogicController.getXCoordinateByPosition(position.x);
-                    int yCoordinate = gameLogicController.getYCoordinateByPosition(position.y);
-                    if (gameLogicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, 0)) {
-                        // TODO: Mit Baumenü ersetzen
-                        gameLogicController.buildRegularTower(xCoordinate, yCoordinate);
-                    } else if (gameLogicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        // TODO: Mit Upgrade- bzw. Verkaufsmenü ersetzen
-                        gameLogicController.sellTower(xCoordinate, yCoordinate, 0);
+                } else if (button == LEFT) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        if (t1) {
+                            logicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t2) {
+                            logicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t3) {
+                            logicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t4) {
+                            logicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        }
+                    } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
+                        if (s) {
+                            logicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (u) {
+                            logicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
+                        }
                     }
                     returnvalue = true;
                 }
@@ -324,18 +403,22 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void update(float deltaTime) {
         if (!isPause()) {
-            gameLogicController.update(deltaTime);
+            logicController.update(deltaTime);
         }
     }
 
     @Override
     public void update() {
-        Player localPlayer = players.get(localPlayerNumber);
+        Player localPlayer = players.get(logicController.getLocalPlayerNumber());
 
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
         resourcesLabel.setText(localPlayer.getResources());
-        roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
+        if (gameState.isEndlessGame()) {
+            roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
+        } else {
+            roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
+        }
     }
 
     /**
@@ -381,7 +464,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (gameObject.isRemoved()) {
                     objectsToRemove.add(gameObject);
                 } else {
-                    if (isPause()) {
+                    if (isPause() | gameState.isGameOver()) {
                         gameObject.setAnimated(false);
                     } else {
                         gameObject.setAnimated(true);
@@ -443,7 +526,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Label.LabelStyle roundLabelStyle = new Label.LabelStyle();
         liveLabelStyle.font = getBitmapFont();
 
-        Player localPlayer = players.get(localPlayerNumber);
+        Player localPlayer = players.get(logicController.getLocalPlayerNumber());
 
         // score
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
@@ -462,12 +545,14 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.row();
         // Rounds
         statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
-        roundsLabel = new Label((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds(), liveLabelStyle);
+        String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
+        System.out.println();
+        roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1.png")));
         Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1_selected.png")));
         Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2.png")));
@@ -501,82 +586,103 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
-                    System.out.println("Tower 1 Ausgewählt");
-                    //tower1.setColor(Color.GREEN);
-                    tower1.setChecked(true);
-                }
-                else{
-                    //tower1.setColor(Color.valueOf("ffffffff"));
-                    tower1.setChecked(false);
-                }
-                t1 = !t1;
+                    tower1.setColor(Color.GREEN);
+                    t1 = true;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
             }
         });
         tower2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
-                    System.out.println("Tower 2 Ausgewählt");
-                    //tower2.setColor(Color.GREEN);
-                    tower2.setChecked(true);
-                }
-                else{
-                    //tower2.setColor(Color.valueOf("ffffffff"));
-                    tower2.setChecked(false);
-                }
-                t2 = !t2;
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.GREEN);
+                t2 = true;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         tower3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!t1 && !t2 && !t3 && !t4) {
-                    System.out.println("Tower 3 Ausgewählt");
-                    //tower3.setColor(Color.GREEN);
-                    tower3.setChecked(true);
-                }
-                else{
-                    //tower3.setColor(Color.valueOf("ffffffff"));
-                    tower3.setChecked(false);
-                }
-                t3 = !t3;
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.GREEN);
+                t3 = true;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    //System.out.println(tower4.getColor());
-                    if(!t1 && !t2 && !t3 && !t4) {
-                        System.out.println("Tower 4 Ausgewählt");
-                        tower4.setColor(Color.GREEN);
-                    }
-                    else{
-                        tower4.setColor(Color.valueOf("ffffffff"));
-                    }
-                    t4 = !t4;
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.GREEN);
+                t4 = true;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         upgrade.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (upgrade.getColor().equals(Color.valueOf("ffffffff"))) {
-                    System.out.println("Upgrader gestartet");
-                    upgrade.setColor(Color.GOLD);
-                } else {
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                }
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.GREEN);
+                u = true;
+                sell.setColor(Color.valueOf("ffffffff"));
+                s = false;
             }
         });
         sell.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (sell.getColor().equals(Color.valueOf("ffffffff"))) {
-                    System.out.println("Der Händler wartet auf das angebot");
-                    sell.setColor(Color.YELLOW);
-                } else {
-                    sell.setColor(Color.valueOf("ffffffff"));
-                }
+                tower1.setColor(Color.valueOf("ffffffff"));
+                t1 = false;
+                tower2.setColor(Color.valueOf("ffffffff"));
+                t2 = false;
+                tower3.setColor(Color.valueOf("ffffffff"));
+                t3 = false;
+                tower4.setColor(Color.valueOf("ffffffff"));
+                t4 = false;
+                upgrade.setColor(Color.valueOf("ffffffff"));
+                u = false;
+                sell.setColor(Color.GREEN);
+                s = true;
             }
         });
         //Towerbuttons der Tabelle hinzufügen

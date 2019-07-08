@@ -58,11 +58,11 @@ public class GameServer extends Connector {
     private boolean lookingForPlayers = true;
 
     private boolean gameRunning = false;
-    
+
     private int numberOfPlayers = 2;
-    
+
     private boolean[] slotsFilled = new boolean[numberOfPlayers];
-    
+
     private HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
 
     /**
@@ -198,10 +198,10 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyRequest) {
                     final SendEnemyRequest request = (SendEnemyRequest) object;
-                    final boolean successful = logicController.sendEnemy(request.getEnemyType());
+                    final boolean successful = logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer());
 
                     if (successful) {
-                        server.sendToAllTCP(new SendEnemyResponse(successful, request.getEnemyType()));
+                        server.sendToAllTCP(new SendEnemyResponse(successful, request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer()));
                     } else {
                         connection.sendTCP(new SendEnemyResponse(successful));
                     }
@@ -254,13 +254,13 @@ public class GameServer extends Connector {
             @Override
             public void connected(Connection connection) {
                 int playerNumber = findNextFreePlayerNumber();
-                
+
                 connectionAndPlayerNumbers.put(connection.getID(), playerNumber);
 
                 if (playerNumber >= slotsFilled.length) {
                     lookingForPlayers = false;
                 }
-                                
+
                 GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, playerNames, playerProfilePicturePaths);
                 server.sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
                 getGameInfoResponse.setUpdate(false);
@@ -335,22 +335,25 @@ public class GameServer extends Connector {
 
     /**
      * TODO: Diese Methode passt, glaube ich, noch nicht so ganz. --JKR
-     * Sendet an alle Clients eine Nachricht, dass ein Gegner geschickt wurde
+     * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType Der Typ des zu schickenden Gegners
+     * @param enemyType      Der Typ des zu schickenden Gegners
+     * @param playerToSendTo
+     * @param sendingPlayer
      */
     @Override
-    public void sendEnemy(int enemyType) {
-        server.sendToAllTCP(new SendEnemyResponse(true, enemyType));
+    public void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer) {
+        server.sendToAllTCP(new SendEnemyResponse(true, enemyType, playerToSendTo, sendingPlayer));
+
     }
 
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
     }
-    
+
     private int findNextFreePlayerNumber() {
         int returnValue = -1;
-        
+
         for (int i = 0; i < slotsFilled.length; i++) {
             if (!slotsFilled[i]) {
                 returnValue = i;
@@ -358,7 +361,7 @@ public class GameServer extends Connector {
                 break;
             }
         }
-        
+
         return returnValue;
     }
 }
