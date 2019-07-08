@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
@@ -316,7 +317,8 @@ public class GameClient extends Connector implements ClientInterface {
                         // Update-Code kommt hierhin
                     } else {
                         localPlayerNumber = response.getAllocatedPlayerNumber();
-                        mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL);
+
+                        Gdx.app.postRunnable(() -> mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL));
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -284,7 +285,7 @@ public class GameServer extends Connector {
                 getGameInfoResponse.setUpdate(false);
                 connection.sendTCP(getGameInfoResponse);
                 if (!lookingForPlayers) {
-                    mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL);
+                    Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL));
                 }
             }
 
