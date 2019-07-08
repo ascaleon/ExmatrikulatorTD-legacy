@@ -123,6 +123,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private boolean s = false;
 
+    private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+    private TextButton tower1 = new TextButton("T1", skin);
+    private TextButton tower2 = new TextButton("T2", skin);
+    private TextButton tower3 = new TextButton("T3", skin);
+    private TextButton tower4 = new TextButton("T4", skin);
+    private TextButton upgrade = new TextButton("^", skin);
+    private TextButton sell = new TextButton("$$$", skin);
+
     private LogicController logicController;
 
     /**
@@ -184,6 +192,91 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.O) {
                     logicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
+                if (keycode == Input.Keys.Q) {
+                    tower1.setColor(Color.GREEN);
+                    t1 = true;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.W) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.GREEN);
+                    t2 = true;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.E) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.GREEN);
+                    t3 = true;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.R) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.GREEN);
+                    t4 = true;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.D) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.GREEN);
+                    u = true;
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
+                if (keycode == Input.Keys.S) {
+                    tower1.setColor(Color.valueOf("ffffffff"));
+                    t1 = false;
+                    tower2.setColor(Color.valueOf("ffffffff"));
+                    t2 = false;
+                    tower3.setColor(Color.valueOf("ffffffff"));
+                    t3 = false;
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4 = false;
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                    sell.setColor(Color.GREEN);
+                    s = true;
+                }
+
                 return false;
             }
 
@@ -447,18 +540,13 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.row();
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+
         TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         //towerSelect.setDebug(true);
 
         //Die einzelnen Towerbuttons
-        TextButton tower1 = new TextButton("T1", skin);
-        TextButton tower2 = new TextButton("T2", skin);
-        TextButton tower3 = new TextButton("T3", skin);
-        TextButton tower4 = new TextButton("T4", skin);
-        TextButton upgrade = new TextButton("^", skin);
-        TextButton sell = new TextButton("$$$", skin);
+
 //        tower1.setSize(10, 10);
 //        tower2.setSize(10, 10);
 //        tower3.setSize(10, 10);
