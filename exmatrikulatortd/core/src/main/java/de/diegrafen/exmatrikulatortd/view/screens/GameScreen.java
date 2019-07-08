@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -122,6 +123,10 @@ public class GameScreen extends BaseScreen implements GameView {
     private float touchDownX, touchDownY;
 
     private  InputMultiplexer multiplexer;
+
+    private final Table defaultScreen = new Table();
+
+    private Group pauseGroup;
 
     boolean t1 = false;
     boolean t2 = false;
@@ -422,7 +427,7 @@ public class GameScreen extends BaseScreen implements GameView {
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
-        final Table defaultScreen = new Table();
+//        final Table defaultScreen = new Table();
         defaultScreen.setFillParent(true);
 
         final Table statsTable = new Table();
@@ -578,19 +583,20 @@ public class GameScreen extends BaseScreen implements GameView {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(exitButton.getColor().equals(Color.valueOf("ffffffff"))) {
+                if(isPause()== false) {
                     System.out.println("Pausiert");
-                    exitButton.setColor(255,0,0,255);
-                    exitButton.setText(">");
+                    //exitButton.setColor(255,0,0,255);
+                    //exitButton.setText(">");
                     //Gdx.files.internal("ui-skin/glassy-ui.png");
                     //Gdx.app.exit();
                     setPause(!isPause());
                     pauseScreen();
                 }
                 else{
-                    exitButton.setColor(Color.valueOf("ffffffff"));
-                    exitButton.setText("| |");
+                    //exitButton.setColor(Color.valueOf("ffffffff"));
+                    //exitButton.setText("| |");
                     setPause(!isPause());
+                    pauseScreen();
                 }
 
             }
@@ -708,14 +714,40 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     private void pauseScreen() {
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         if(isPause() == true){
-            Group pauseGroup = new Group();
-            Image semiTBG = new Image(new Texture(Gdx.files.internal("ui-skin/glassy-ui.png")));
+            pauseGroup = new Group();
+            Image semiTBG = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+            //semiTBG.setSize(500,500);
+            semiTBG.setBounds(0,0, mapWidth, mapHeight);
+            Table buttonTable = new Table();
+            TextButton resume = new TextButton("Resume", skin);
+            resume.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    setPause(!isPause());
+                    pauseGroup.setVisible(false);
+                    defaultScreen.setVisible(true);
+                }
+            });
+            buttonTable.add(resume).top().center().row();
+            TextButton back2main = new TextButton("Menu", skin);
+            back2main.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    System.out.println("Menu nicht gefunden");
+                }
+            });
+            buttonTable.add(back2main).top().center().row();
             pauseGroup.addActor(semiTBG);
+            //semiTBG.setAlign(MIDDLE);
+            pauseGroup.addActor(buttonTable);
+            //pauseGroup.
+            defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
         }
         else{
-
+            pauseGroup.setVisible(false);
         }
     }
 }
