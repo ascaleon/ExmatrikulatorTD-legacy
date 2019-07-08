@@ -23,7 +23,9 @@ public class Assets {
 
     public static final String HEAVY_ENEMY_ASSETS = "sprites/objects/enemies/monster_golem1.png";
 
-    public static final String MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+
+    public static final String MULTIPLAYER_MAP_PATH = "sprites/gamemap/multiplayer_map.tmx";
 
     //public static final String REGULAR_ENEMY_TEXTURE = "sprites/objects/enemies/Lorenzo.png";
 

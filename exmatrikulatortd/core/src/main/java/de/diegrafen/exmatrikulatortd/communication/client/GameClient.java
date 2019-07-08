@@ -7,6 +7,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
@@ -21,6 +22,7 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
@@ -50,6 +52,8 @@ public class GameClient extends Connector implements ClientInterface {
     private List<String> receivedSessionInfo;
 
     private int localPlayerNumber;
+
+    private MainController mainController;
 
     /**
      * Erzeugt einen neuen GameClient
@@ -309,7 +313,7 @@ public class GameClient extends Connector implements ClientInterface {
                         // Update-Code kommt hierhin
                     } else {
                         localPlayerNumber = response.getAllocatedPlayerNumber();
-                        System.out.println("Allocated Player Number: " + localPlayerNumber);
+                        mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL);
                     }
                 }
             }
@@ -326,5 +330,13 @@ public class GameClient extends Connector implements ClientInterface {
 
     public List<String> getReceivedSessionInfo() {
         return receivedSessionInfo;
+    }
+
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

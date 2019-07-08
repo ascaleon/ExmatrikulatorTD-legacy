@@ -169,6 +169,7 @@ public class MainController {
      */
     public void createServer() {
         this.gameServer = new GameServer();
+        this.gameServer.setMainController(this);
     }
 
     /**
@@ -177,6 +178,7 @@ public class MainController {
     public void createClient() {
         if (gameClient == null) {
             this.gameClient = new GameClient();
+            this.gameClient.setMainController(this);
         } else {
             /*
             // Code, um Server-Funktionalität zu testen.
@@ -239,7 +241,7 @@ public class MainController {
      * Startet den GameServer
      */
     public void startServer() {
-        gameServer.startServer();
+        gameServer.startServer(2);
     }
 
     /**
@@ -261,7 +263,7 @@ public class MainController {
     /**
      * Lädt ein Einzelspieler-Spiel
      *
-     * @param gamestate Der Spielzustand, der geladen werden soll
+     * @param saveState Der Spielzustand, der geladen werden soll
      */
     public void loadSinglePlayerGame(Gamestate gamestate) {
         game.setScreen(new GameScreen(this, game, currentProfile, gamestate));
@@ -291,7 +293,7 @@ public class MainController {
     /**
      * Lädt ein Multiplayerspiel als Server
      *
-     * @param gamestate Der Spielzustand, der geladen werden soll
+     * @param saveState Der Spielzustand, der geladen werden soll
      */
     public void loadMultiPlayerServerGame(Gamestate gamestate) {
         game.setScreen(new GameScreen(this, game, currentProfile, gameServer, gamestate));

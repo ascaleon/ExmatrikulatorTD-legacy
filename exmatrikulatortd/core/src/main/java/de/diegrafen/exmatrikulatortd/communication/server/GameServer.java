@@ -6,6 +6,7 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.ServerDiscoveryHandler;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
@@ -45,6 +47,8 @@ public class GameServer extends Connector {
      */
     private Server server;
 
+    private MainController mainController;
+
     /**
      * Der Logik-Controller, mit dem der GameServer interagiert
      */
@@ -58,11 +62,11 @@ public class GameServer extends Connector {
     private boolean lookingForPlayers = true;
 
     private boolean gameRunning = false;
-    
-    private int numberOfPlayers = 2;
-    
-    private boolean[] slotsFilled = new boolean[numberOfPlayers];
-    
+
+    private int numberOfPlayers;
+
+    private boolean[] slotsFilled;
+
     private HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
 
     /**
@@ -74,7 +78,6 @@ public class GameServer extends Connector {
         this.server = new Server();
         this.connected = false;
         registerObjects(server.getKryo());
-        slotsFilled[0] = true;
         attachGetGameInfoRequestListener();
         System.out.println("Server created!");
     }
@@ -85,21 +88,23 @@ public class GameServer extends Connector {
      *
      * @return true, wenn das Starten erfolgreich war, ansonsten false
      */
-    public boolean startServer() {
+    public boolean startServer(int numberOfPlayers) {
         try {
             server.bind(tcpPort, udpPort);
             System.out.println("Server started!");
+            this.numberOfPlayers = numberOfPlayers;
+            slotsFilled = new boolean[numberOfPlayers];
+            slotsFilled[0] = true;
             server.setDiscoveryHandler(new ServerDiscoveryHandler() {
                 @Override
                 public boolean onDiscoverHost(DatagramChannel datagramChannel, InetSocketAddress fromAddress) throws IOException {
-
-                    boolean lookingForPlayers = true;
 
                     String mapName = "map1";
 
                     String numberOfPlayers = Integer.toString(2);
 
-                    if (lookingForPlayers) {
+                    if (openSlotsLeft() > 0) {
+                        lookingForPlayers = true;
                         String newData = mapName + "\n" + numberOfPlayers;
 
                         ByteBuffer buf = ByteBuffer.allocate(48);
@@ -121,6 +126,18 @@ public class GameServer extends Connector {
         }
 
         return connected = true;
+    }
+
+    private int openSlotsLeft() {
+        int openSlots = 0;
+
+        for (int i = 0; i < slotsFilled.length; i++) {
+            if (slotsFilled[i]) {
+                openSlots++;
+            }
+        }
+
+        return openSlots;
     }
 
     /**
@@ -198,10 +215,10 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyRequest) {
                     final SendEnemyRequest request = (SendEnemyRequest) object;
-                    final boolean successful = logicController.sendEnemy(request.getEnemyType());
+                    final boolean successful = logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer());
 
                     if (successful) {
-                        server.sendToAllTCP(new SendEnemyResponse(successful, request.getEnemyType()));
+                        server.sendToAllTCP(new SendEnemyResponse(successful, request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer()));
                     } else {
                         connection.sendTCP(new SendEnemyResponse(successful));
                     }
@@ -253,18 +270,21 @@ public class GameServer extends Connector {
             List<String> playerProfilePicturePaths = new LinkedList<>();
             @Override
             public void connected(Connection connection) {
-                int playerNumber = findNextFreePlayerNumber();
-                
+                int playerNumber = allocatePlayerNumber();
+
                 connectionAndPlayerNumbers.put(connection.getID(), playerNumber);
 
-                if (playerNumber >= slotsFilled.length) {
+                if (openSlotsLeft() <= 0) {
                     lookingForPlayers = false;
                 }
-                                
+
                 GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, playerNames, playerProfilePicturePaths);
                 server.sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
                 getGameInfoResponse.setUpdate(false);
                 connection.sendTCP(getGameInfoResponse);
+                if (!lookingForPlayers) {
+                    mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL);
+                }
             }
 
             @Override
@@ -335,22 +355,25 @@ public class GameServer extends Connector {
 
     /**
      * TODO: Diese Methode passt, glaube ich, noch nicht so ganz. --JKR
-     * Sendet an alle Clients eine Nachricht, dass ein Gegner geschickt wurde
+     * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType Der Typ des zu schickenden Gegners
+     * @param enemyType      Der Typ des zu schickenden Gegners
+     * @param playerToSendTo
+     * @param sendingPlayer
      */
     @Override
-    public void sendEnemy(int enemyType) {
-        server.sendToAllTCP(new SendEnemyResponse(true, enemyType));
+    public void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer) {
+        server.sendToAllTCP(new SendEnemyResponse(true, enemyType, playerToSendTo, sendingPlayer));
+
     }
 
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
     }
-    
-    private int findNextFreePlayerNumber() {
+
+    private int allocatePlayerNumber() {
         int returnValue = -1;
-        
+
         for (int i = 0; i < slotsFilled.length; i++) {
             if (!slotsFilled[i]) {
                 returnValue = i;
@@ -358,7 +381,15 @@ public class GameServer extends Connector {
                 break;
             }
         }
-        
+
         return returnValue;
+    }
+
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }
