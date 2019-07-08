@@ -133,7 +133,7 @@ public class GameServer extends Connector {
         int openSlots = 0;
 
         for (int i = 0; i < slotsFilled.length; i++) {
-            if (slotsFilled[i]) {
+            if (!slotsFilled[i]) {
                 openSlots++;
             }
         }
@@ -284,6 +284,8 @@ public class GameServer extends Connector {
                 server.sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
                 getGameInfoResponse.setUpdate(false);
                 connection.sendTCP(getGameInfoResponse);
+                System.out.println("Looking for Players? " + lookingForPlayers);
+                System.out.println("Looking for Players? " + lookingForPlayers);
                 if (!lookingForPlayers) {
                     Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL));
                 }

@@ -714,8 +714,6 @@ public class GameLogicController implements LogicController {
             }
         }
 
-        System.out.println(gamestate.getCollisionMatrix().size());
-
         for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
 
             int mapCellXCoordinate = mapCell.getxCoordinate();
@@ -726,8 +724,6 @@ public class GameLogicController implements LogicController {
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
             }
             if (mapCellXCoordinate < numberOfColumns - 1) {
-                System.out.println(mapCellXCoordinate);
-                System.out.println(numberOfColumns);
                 mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
             }
             if (mapCellYCoordinate > 0) {
