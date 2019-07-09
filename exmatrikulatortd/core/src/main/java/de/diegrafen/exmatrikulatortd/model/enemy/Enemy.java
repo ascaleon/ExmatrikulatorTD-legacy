@@ -150,17 +150,6 @@ public class Enemy extends ObservableModel {
         this.respawning = enemy.isRespawning();
     }
 
-
-
-    private Coordinates getStartPosition() {
-        return attackedPlayer.getWayPoints().get(0);
-    }
-
-    private Coordinates getEndPosition() {
-        int size = attackedPlayer.getWayPoints().size();
-        return attackedPlayer.getWayPoints().get(size - 1);
-    }
-
     public void setAttackedPlayer(Player attackedPlayer) {
         this.attackedPlayer = attackedPlayer;
     }
@@ -189,36 +178,12 @@ public class Enemy extends ObservableModel {
         return name;
     }
 
-    public float getxSpawnPosition() {
-        return getStartPosition().getxCoordinate() * gameState.getTileSize();
-    }
-
-    public float getySpawnPosition() {
-        return getStartPosition().getyCoordinate() * gameState.getTileSize();
-    }
-
-    public int getEndXPosition() {
-        return getEndPosition().getXCoordinate() * gameState.getTileSize();
-    }
-
-    public int getNextXPosition() {
-        return attackedPlayer.getWayPoints().get(wayPointIndex).getXCoordinate() * gameState.getTileSize();
-    }
-
-    public float getNextYPosition() {
-        return attackedPlayer.getWayPoints().get(wayPointIndex).getYCoordinate() * gameState.getTileSize();
-    }
-
     public Player getAttackedPlayer() {
         return attackedPlayer;
     }
 
     public int getAmountOfDamageToPlayer() {
         return amountOfDamageToPlayer;
-    }
-
-    public Gamestate getGameState() {
-        return gameState;
     }
 
     public void setGameState(Gamestate gameState) {
@@ -245,25 +210,12 @@ public class Enemy extends ObservableModel {
         return wayPointIndex;
     }
 
-    public void setWayPointIndex(int wayPointIndex) {
-
-        this.wayPointIndex = wayPointIndex;
-    }
-
     public void incrementWayPointIndex() {
         wayPointIndex++;
     }
 
     public boolean isRespawning() {
         return respawning;
-    }
-
-    public Coordinates getCurrentMapCell() {
-        return currentMapCell;
-    }
-
-    public void setCurrentMapCell(Coordinates currentMapCell) {
-        this.currentMapCell = currentMapCell;
     }
 
     public float getCurrentHitPoints() {
@@ -311,10 +263,6 @@ public class Enemy extends ObservableModel {
         return baseSpeed;
     }
 
-    public void setBaseSpeed(float baseSpeed) {
-        this.baseSpeed = baseSpeed;
-    }
-
     public float getCurrentSpeed() {
         return currentSpeed;
     }
@@ -325,10 +273,6 @@ public class Enemy extends ObservableModel {
 
     public float getBaseArmor() {
         return baseArmor;
-    }
-
-    public void setBaseArmor(float baseArmor) {
-        this.baseArmor = baseArmor;
     }
 
     public float getCurrentArmor() {
@@ -349,10 +293,6 @@ public class Enemy extends ObservableModel {
 
     public float getBaseMaxHitPoints() {
         return baseMaxHitPoints;
-    }
-
-    public void setBaseMaxHitPoints(float baseMaxHitPoints) {
-        this.baseMaxHitPoints = baseMaxHitPoints;
     }
 
     public float getCurrentMaxHitPoints() {

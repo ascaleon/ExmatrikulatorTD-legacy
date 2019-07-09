@@ -138,7 +138,6 @@ public final class WaveFactory {
         for (int i = 0; i < enemiesPerWave / 2; i++) {
             addEnemyToWaveEnemies(HEAVY_ENEMY, waveEnemies, wave);
         }
-        Collections.shuffle(waveEnemies);
         wave.setEnemies(waveEnemies);
         return wave;
     }
@@ -157,7 +156,6 @@ public final class WaveFactory {
         for (int i = 0; i < enemiesPerWave / 2; i++) {
             addEnemyToWaveEnemies(FAST_ENEMY, waveEnemies, wave);
         }
-        Collections.shuffle(waveEnemies);
         wave.setEnemies(waveEnemies);
         return wave;
     }

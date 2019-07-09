@@ -27,7 +27,9 @@ public class Assets {
 
     public static final String HEAVY_ENEMY_ASSETS = "monster_golem";
 
-    public static final String MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+
+    public static final String MULTIPLAYER_MAP_PATH = "sprites/gamemap/multiplayer_map.tmx";
 
     public static final String FIREBALL_ASSETS = "sprites/objects/projectiles/fireball/fireball.atlas";
 }

@@ -33,20 +33,18 @@ public class Gamestate extends BaseModel implements Observable {
      */
     static final long serialVersionUID = 48546846516547L;
 
-    private int tileSize = 64;
+    private int tileWidth;
+
+    private int tileHeight;
 
     /**
      * Der Name der Map
      */
     private String mapName;
 
-    private int mapWidth = 20 * tileSize;
+    private int numberOfColumns;
 
-    private int numberOfColumns = 20;
-
-    private int mapHeight = 20 * tileSize;
-
-    private int numberOfRows = 20;
+    private int numberOfRows;
 
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
@@ -115,7 +113,7 @@ public class Gamestate extends BaseModel implements Observable {
         this.observers = new LinkedList<>();
 
         this.players = new LinkedList<>(players);
-        this.players.forEach(player -> player.setWaves(waves));
+        this.players.forEach(player -> player.copyWaves(waves));
         this.numberOfRounds = waves.size();
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.newRound = true;
@@ -168,28 +166,12 @@ public class Gamestate extends BaseModel implements Observable {
         return players.get(playerNumber);
     }
 
-    public int getMapWidth() {
-        return mapWidth;
-    }
-
-    public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
-    }
-
     public int getNumberOfColumns() {
         return numberOfColumns;
     }
 
     public void setNumberOfColumns(int numberOfColumns) {
         this.numberOfColumns = numberOfColumns;
-    }
-
-    public int getMapHeight() {
-        return mapHeight;
-    }
-
-    public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
     }
 
     public int getNumberOfRows() {
@@ -208,10 +190,6 @@ public class Gamestate extends BaseModel implements Observable {
         return collisionMatrix;
     }
 
-    public void setCollisionMatrix(List<Coordinates> collisionMatrix) {
-        this.collisionMatrix = collisionMatrix;
-    }
-
     public int getRoundNumber() {
         return roundNumber;
     }
@@ -222,10 +200,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     public int getNumberOfRounds() {
         return numberOfRounds;
-    }
-
-    public void setNumberOfRounds(int numberOfRounds) {
-        this.numberOfRounds = numberOfRounds;
     }
 
     public boolean isActive() {
@@ -244,44 +218,12 @@ public class Gamestate extends BaseModel implements Observable {
         return collisionMatrix.get(listIndex);
     }
 
-    public int getTileSize() {
-        return tileSize;
-    }
-
     public void removeTower(Tower tower) {
         towers.remove(tower);
     }
 
     public List<Tower> getTowers() {
         return towers;
-    }
-
-    public String getMapName() {
-        return mapName;
-    }
-
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
-    }
-
-    public void setTileSize(int tileSize) {
-        this.tileSize = tileSize;
-    }
-
-    public void setEnemies(List<Enemy> enemies) {
-        this.enemies = enemies;
-    }
-
-    public void setTowers(List<Tower> towers) {
-        this.towers = towers;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty;
     }
 
     public boolean isNewRound() {
@@ -357,5 +299,21 @@ public class Gamestate extends BaseModel implements Observable {
 
     public void setGameMode(int gameMode) {
         this.gameMode = gameMode;
+    }
+
+    public int getTileWidth() {
+        return tileWidth;
+    }
+
+    public void setTileWidth(int tileWidth) {
+        this.tileWidth = tileWidth;
+    }
+
+    public int getTileHeight() {
+        return tileHeight;
+    }
+
+    public void setTileHeight(int tileHeight) {
+        this.tileHeight = tileHeight;
     }
 }

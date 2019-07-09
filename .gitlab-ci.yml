@@ -19,8 +19,6 @@ build:
   artifacts:
     paths:
       - exmatrikulatortd/desktop/build/libs/*
-  only:
-  - master
     
 unitTests:
   stage: test
