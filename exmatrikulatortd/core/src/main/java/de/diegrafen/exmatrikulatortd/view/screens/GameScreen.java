@@ -9,10 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -28,6 +25,7 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
+import javafx.event.EventType;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -136,12 +134,12 @@ public class GameScreen extends BaseScreen implements GameView {
     private boolean s = false;
 
     private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-    private TextButton tower1 = new TextButton("T1", skin);
-    private TextButton tower2 = new TextButton("T2", skin);
-    private TextButton tower3 = new TextButton("T3", skin);
-    private TextButton tower4 = new TextButton("T4", skin);
-    private TextButton upgrade = new TextButton("^", skin);
-    private TextButton sell = new TextButton("$$$", skin);
+    private ImageButton tower1;
+    private ImageButton tower2;
+    private ImageButton tower3;
+    private TextButton tower4;
+    private TextButton upgrade;
+    private TextButton sell;
 
     private LogicController logicController;
 
@@ -205,11 +203,17 @@ public class GameScreen extends BaseScreen implements GameView {
                     logicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 if (keycode == Input.Keys.Q) {
-                    tower1.setColor(Color.GREEN);
-                    t1 = true;
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                    if(t1 != true) {
+                        tower1.setChecked(true);
+                        t1 = true;
+                    }
+                    else {
+                        tower1.setChecked(false);
+                        t3= false;
+                    }
+                    tower2.setChecked(false);
                     t2 = false;
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    tower3.setChecked(false);
                     t3 = false;
                     tower4.setColor(Color.valueOf("ffffffff"));
                     t4 = false;
@@ -219,11 +223,17 @@ public class GameScreen extends BaseScreen implements GameView {
                     s = false;
                 }
                 if (keycode == Input.Keys.W) {
-                    tower1.setColor(Color.valueOf("ffffffff"));
+                    tower1.setChecked(false);
                     t1 = false;
-                    tower2.setColor(Color.GREEN);
-                    t2 = true;
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    if(t2 != true) {
+                        tower2.setChecked(true);
+                        t2 = true;
+                    }
+                    else{
+                        tower2.setChecked(false);
+                        t2 = false;
+                    }
+                    tower3.setChecked(false);
                     t3 = false;
                     tower4.setColor(Color.valueOf("ffffffff"));
                     t4 = false;
@@ -233,12 +243,18 @@ public class GameScreen extends BaseScreen implements GameView {
                     s = false;
                 }
                 if (keycode == Input.Keys.E) {
-                    tower1.setColor(Color.valueOf("ffffffff"));
+                    tower1.setChecked(false);
                     t1 = false;
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                    tower2.setChecked(false);
                     t2 = false;
-                    tower3.setColor(Color.GREEN);
-                    t3 = true;
+                    if(t3!= true) {
+                        tower3.setChecked(true);
+                        t3 = true;
+                    }
+                    else{
+                        tower3.setChecked(false);
+                        t3 = false;
+                    }
                     tower4.setColor(Color.valueOf("ffffffff"));
                     t4 = false;
                     upgrade.setColor(Color.valueOf("ffffffff"));
@@ -247,46 +263,64 @@ public class GameScreen extends BaseScreen implements GameView {
                     s = false;
                 }
                 if (keycode == Input.Keys.R) {
-                    tower1.setColor(Color.valueOf("ffffffff"));
+                    tower1.setChecked(false);
                     t1 = false;
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                    tower2.setChecked(false);
                     t2 = false;
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    tower3.setChecked(false);
                     t3 = false;
-                    tower4.setColor(Color.GREEN);
-                    t4 = true;
+                    if(t4 != true) {
+                        tower4.setColor(Color.GREEN);
+                        t4 = true;
+                    }
+                    else{
+                        tower4.setColor(Color.valueOf("ffffffff"));
+                        t4= false;
+                    }
                     upgrade.setColor(Color.valueOf("ffffffff"));
                     u = false;
                     sell.setColor(Color.valueOf("ffffffff"));
                     s = false;
                 }
                 if (keycode == Input.Keys.D) {
-                    tower1.setColor(Color.valueOf("ffffffff"));
+                    tower1.setChecked(false);
                     t1 = false;
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                    tower2.setChecked(false);
                     t2 = false;
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    tower3.setChecked(false);
                     t3 = false;
                     tower4.setColor(Color.valueOf("ffffffff"));
                     t4 = false;
-                    upgrade.setColor(Color.GREEN);
-                    u = true;
+                    if(u != true) {
+                        upgrade.setColor(Color.GREEN);
+                        u = true;
+                    }
+                    else{
+                        upgrade.setColor(Color.valueOf("ffffffff"));
+                        u = false;
+                    }
                     sell.setColor(Color.valueOf("ffffffff"));
                     s = false;
                 }
                 if (keycode == Input.Keys.S) {
-                    tower1.setColor(Color.valueOf("ffffffff"));
+                    tower1.setChecked(false);
                     t1 = false;
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                    tower2.setChecked(false);
                     t2 = false;
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    tower3.setChecked(false);
                     t3 = false;
                     tower4.setColor(Color.valueOf("ffffffff"));
                     t4 = false;
                     upgrade.setColor(Color.valueOf("ffffffff"));
                     u = false;
-                    sell.setColor(Color.GREEN);
-                    s = true;
+                    if(s != true) {
+                        sell.setColor(Color.GREEN);
+                        s = true;
+                    }
+                    else{
+                        sell.setColor(Color.valueOf("ffffffff"));
+                        s = false;
+                    }
                 }
 
                 return false;
@@ -564,12 +598,12 @@ public class GameScreen extends BaseScreen implements GameView {
         //towerSelect.setDebug(true);
 
         //Die einzelnen Towerbuttons
-        ImageButton tower1 = new ImageButton(towerImage1, towerImage1, towerImage1_selected);
-        ImageButton tower2 = new ImageButton(towerImage2, towerImage2, towerImage2_selected);
-        ImageButton tower3 = new ImageButton(towerImage3, towerImage3, towerImage3_selected);
-        TextButton tower4 = new TextButton("T4", skin);
-        TextButton upgrade = new TextButton("^", skin);
-        TextButton sell = new TextButton("$$$", skin);
+        tower1 = new ImageButton(towerImage1, towerImage1, towerImage1_selected);
+        tower2 = new ImageButton(towerImage2, towerImage2, towerImage2_selected);
+        tower3 = new ImageButton(towerImage3, towerImage3, towerImage3_selected);
+        tower4 = new TextButton("T4", skin);
+        upgrade = new TextButton("^", skin);
+        sell = new TextButton("$$$", skin);
 //        tower1.setSize(10, 10);
 //        tower2.setSize(10, 10);
 //        tower3.setSize(10, 10);
@@ -586,11 +620,17 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    tower1.setColor(Color.GREEN);
+                if(t1 != true) {
+                    tower1.setChecked(true);
                     t1 = true;
-                    tower2.setColor(Color.valueOf("ffffffff"));
+                }
+                else {
+                    tower1.setChecked(false);
+                    t3= false;
+                }
+                    tower2.setChecked(false);
                     t2 = false;
-                    tower3.setColor(Color.valueOf("ffffffff"));
+                    tower3.setChecked(false);
                     t3 = false;
                     tower4.setColor(Color.valueOf("ffffffff"));
                     t4 = false;
@@ -603,11 +643,17 @@ public class GameScreen extends BaseScreen implements GameView {
         tower2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                tower1.setColor(Color.valueOf("ffffffff"));
+                tower1.setChecked(false);
                 t1 = false;
-                tower2.setColor(Color.GREEN);
-                t2 = true;
-                tower3.setColor(Color.valueOf("ffffffff"));
+                if(t2 != true) {
+                    tower2.setChecked(true);
+                    t2 = true;
+                }
+                else{
+                    tower2.setChecked(false);
+                    t2 = false;
+                }
+                tower3.setChecked(false);
                 t3 = false;
                 tower4.setColor(Color.valueOf("ffffffff"));
                 t4 = false;
@@ -620,12 +666,18 @@ public class GameScreen extends BaseScreen implements GameView {
         tower3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                tower1.setColor(Color.valueOf("ffffffff"));
+                tower1.setChecked(false);
                 t1 = false;
-                tower2.setColor(Color.valueOf("ffffffff"));
+                tower2.setChecked(false);
                 t2 = false;
-                tower3.setColor(Color.GREEN);
-                t3 = true;
+                if(t3!= true) {
+                    tower3.setChecked(true);
+                    t3 = true;
+                }
+                else{
+                    tower3.setChecked(false);
+                    t3 = false;
+                }
                 tower4.setColor(Color.valueOf("ffffffff"));
                 t4 = false;
                 upgrade.setColor(Color.valueOf("ffffffff"));
@@ -637,14 +689,20 @@ public class GameScreen extends BaseScreen implements GameView {
         tower4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                tower1.setColor(Color.valueOf("ffffffff"));
+                tower1.setChecked(false);
                 t1 = false;
-                tower2.setColor(Color.valueOf("ffffffff"));
+                tower2.setChecked(false);
                 t2 = false;
-                tower3.setColor(Color.valueOf("ffffffff"));
+                tower3.setChecked(false);
                 t3 = false;
-                tower4.setColor(Color.GREEN);
-                t4 = true;
+                if(t4 != true) {
+                    tower4.setColor(Color.GREEN);
+                    t4 = true;
+                }
+                else{
+                    tower4.setColor(Color.valueOf("ffffffff"));
+                    t4= false;
+                }
                 upgrade.setColor(Color.valueOf("ffffffff"));
                 u = false;
                 sell.setColor(Color.valueOf("ffffffff"));
@@ -654,16 +712,22 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                tower1.setColor(Color.valueOf("ffffffff"));
+                tower1.setChecked(false);
                 t1 = false;
-                tower2.setColor(Color.valueOf("ffffffff"));
+                tower2.setChecked(false);
                 t2 = false;
-                tower3.setColor(Color.valueOf("ffffffff"));
+                tower3.setChecked(false);
                 t3 = false;
                 tower4.setColor(Color.valueOf("ffffffff"));
                 t4 = false;
-                upgrade.setColor(Color.GREEN);
-                u = true;
+                if(u != true) {
+                    upgrade.setColor(Color.GREEN);
+                    u = true;
+                }
+                else{
+                    upgrade.setColor(Color.valueOf("ffffffff"));
+                    u = false;
+                }
                 sell.setColor(Color.valueOf("ffffffff"));
                 s = false;
             }
@@ -671,18 +735,24 @@ public class GameScreen extends BaseScreen implements GameView {
         sell.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                tower1.setColor(Color.valueOf("ffffffff"));
+                tower1.setChecked(false);
                 t1 = false;
-                tower2.setColor(Color.valueOf("ffffffff"));
+                tower2.setChecked(false);
                 t2 = false;
-                tower3.setColor(Color.valueOf("ffffffff"));
+                tower3.setChecked(false);
                 t3 = false;
                 tower4.setColor(Color.valueOf("ffffffff"));
                 t4 = false;
                 upgrade.setColor(Color.valueOf("ffffffff"));
                 u = false;
-                sell.setColor(Color.GREEN);
-                s = true;
+                if(s != true) {
+                    sell.setColor(Color.GREEN);
+                    s = true;
+                }
+                else{
+                    sell.setColor(Color.valueOf("ffffffff"));
+                    s = false;
+                }
             }
         });
         //Towerbuttons der Tabelle hinzufügen
