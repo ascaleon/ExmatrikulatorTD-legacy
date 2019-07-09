@@ -203,124 +203,22 @@ public class GameScreen extends BaseScreen implements GameView {
                     logicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 if (keycode == Input.Keys.Q) {
-                    if(t1 != true) {
-                        tower1.setChecked(true);
-                        t1 = true;
-                    }
-                    else {
-                        tower1.setChecked(false);
-                        t3= false;
-                    }
-                    tower2.setChecked(false);
-                    t2 = false;
-                    tower3.setChecked(false);
-                    t3 = false;
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4 = false;
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
+                    buttonManager(tower1);
                 }
                 if (keycode == Input.Keys.W) {
-                    tower1.setChecked(false);
-                    t1 = false;
-                    if(t2 != true) {
-                        tower2.setChecked(true);
-                        t2 = true;
-                    }
-                    else{
-                        tower2.setChecked(false);
-                        t2 = false;
-                    }
-                    tower3.setChecked(false);
-                    t3 = false;
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4 = false;
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
+                    buttonManager(tower2);
                 }
                 if (keycode == Input.Keys.E) {
-                    tower1.setChecked(false);
-                    t1 = false;
-                    tower2.setChecked(false);
-                    t2 = false;
-                    if(t3!= true) {
-                        tower3.setChecked(true);
-                        t3 = true;
-                    }
-                    else{
-                        tower3.setChecked(false);
-                        t3 = false;
-                    }
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4 = false;
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
+                    buttonManager(tower3);
                 }
                 if (keycode == Input.Keys.R) {
-                    tower1.setChecked(false);
-                    t1 = false;
-                    tower2.setChecked(false);
-                    t2 = false;
-                    tower3.setChecked(false);
-                    t3 = false;
-                    if(t4 != true) {
-                        tower4.setColor(Color.GREEN);
-                        t4 = true;
-                    }
-                    else{
-                        tower4.setColor(Color.valueOf("ffffffff"));
-                        t4= false;
-                    }
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
+                    buttonManager(tower4);
                 }
                 if (keycode == Input.Keys.D) {
-                    tower1.setChecked(false);
-                    t1 = false;
-                    tower2.setChecked(false);
-                    t2 = false;
-                    tower3.setChecked(false);
-                    t3 = false;
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4 = false;
-                    if(u != true) {
-                        upgrade.setColor(Color.GREEN);
-                        u = true;
-                    }
-                    else{
-                        upgrade.setColor(Color.valueOf("ffffffff"));
-                        u = false;
-                    }
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
+                    buttonManager(upgrade);
                 }
                 if (keycode == Input.Keys.S) {
-                    tower1.setChecked(false);
-                    t1 = false;
-                    tower2.setChecked(false);
-                    t2 = false;
-                    tower3.setChecked(false);
-                    t3 = false;
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4 = false;
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                    if(s != true) {
-                        sell.setColor(Color.GREEN);
-                        s = true;
-                    }
-                    else{
-                        sell.setColor(Color.valueOf("ffffffff"));
-                        s = false;
-                    }
+                    buttonManager(sell);
                 }
 
                 return false;
@@ -604,155 +502,42 @@ public class GameScreen extends BaseScreen implements GameView {
         tower4 = new TextButton("T4", skin);
         upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
-//        tower1.setSize(10, 10);
-//        tower2.setSize(10, 10);
-//        tower3.setSize(10, 10);
-//        tower4.setSize(10, 10);
-
-        //Nur nen paar parameter, ka ob die überhaupt noch gebraucht werden
-        //tower1.getLabel().setFontScale(1, 1);
-        //tower2.getLabel().setFontScale(1,1);
-        //tower3.getLabel().setFontScale(1,1);
-        //tower4.getLabel().setFontScale(1,1);
-        //tower4.setColor(Color.WHITE);
 
         //InputListener für die Buttons
-        tower1.addListener(new ChangeListener() {
+        tower1.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if(t1 != true) {
-                    tower1.setChecked(true);
-                    t1 = true;
-                }
-                else {
-                    tower1.setChecked(false);
-                    t3= false;
-                }
-                    tower2.setChecked(false);
-                    t2 = false;
-                    tower3.setChecked(false);
-                    t3 = false;
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4 = false;
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(tower1);
             }
         });
-        tower2.addListener(new ChangeListener() {
+        tower2.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                tower1.setChecked(false);
-                t1 = false;
-                if(t2 != true) {
-                    tower2.setChecked(true);
-                    t2 = true;
-                }
-                else{
-                    tower2.setChecked(false);
-                    t2 = false;
-                }
-                tower3.setChecked(false);
-                t3 = false;
-                tower4.setColor(Color.valueOf("ffffffff"));
-                t4 = false;
-                upgrade.setColor(Color.valueOf("ffffffff"));
-                u = false;
-                sell.setColor(Color.valueOf("ffffffff"));
-                s = false;
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(tower2);
             }
         });
-        tower3.addListener(new ChangeListener() {
+        tower3.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                tower1.setChecked(false);
-                t1 = false;
-                tower2.setChecked(false);
-                t2 = false;
-                if(t3!= true) {
-                    tower3.setChecked(true);
-                    t3 = true;
-                }
-                else{
-                    tower3.setChecked(false);
-                    t3 = false;
-                }
-                tower4.setColor(Color.valueOf("ffffffff"));
-                t4 = false;
-                upgrade.setColor(Color.valueOf("ffffffff"));
-                u = false;
-                sell.setColor(Color.valueOf("ffffffff"));
-                s = false;
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(tower3);
             }
         });
-        tower4.addListener(new ChangeListener() {
+        tower4.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                tower1.setChecked(false);
-                t1 = false;
-                tower2.setChecked(false);
-                t2 = false;
-                tower3.setChecked(false);
-                t3 = false;
-                if(t4 != true) {
-                    tower4.setColor(Color.GREEN);
-                    t4 = true;
-                }
-                else{
-                    tower4.setColor(Color.valueOf("ffffffff"));
-                    t4= false;
-                }
-                upgrade.setColor(Color.valueOf("ffffffff"));
-                u = false;
-                sell.setColor(Color.valueOf("ffffffff"));
-                s = false;
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(tower4);
             }
         });
-        upgrade.addListener(new ChangeListener() {
+        upgrade.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                tower1.setChecked(false);
-                t1 = false;
-                tower2.setChecked(false);
-                t2 = false;
-                tower3.setChecked(false);
-                t3 = false;
-                tower4.setColor(Color.valueOf("ffffffff"));
-                t4 = false;
-                if(u != true) {
-                    upgrade.setColor(Color.GREEN);
-                    u = true;
-                }
-                else{
-                    upgrade.setColor(Color.valueOf("ffffffff"));
-                    u = false;
-                }
-                sell.setColor(Color.valueOf("ffffffff"));
-                s = false;
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(upgrade);
             }
         });
-        sell.addListener(new ChangeListener() {
+        sell.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                tower1.setChecked(false);
-                t1 = false;
-                tower2.setChecked(false);
-                t2 = false;
-                tower3.setChecked(false);
-                t3 = false;
-                tower4.setColor(Color.valueOf("ffffffff"));
-                t4 = false;
-                upgrade.setColor(Color.valueOf("ffffffff"));
-                u = false;
-                if(s != true) {
-                    sell.setColor(Color.GREEN);
-                    s = true;
-                }
-                else{
-                    sell.setColor(Color.valueOf("ffffffff"));
-                    s = false;
-                }
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(sell);
             }
         });
         //Towerbuttons der Tabelle hinzufügen
@@ -900,6 +685,99 @@ public class GameScreen extends BaseScreen implements GameView {
         }
         if (cameraDown < 0) {
             getCamera().position.y = cameraHalfHeight;
+        }
+    }
+
+    private void buttonManager(Actor a){
+        tower1.setChecked(false);
+        tower2.setChecked(false);
+        tower3.setChecked(false);
+        tower4.setColor(Color.valueOf("ffffffff"));
+        upgrade.setColor(Color.valueOf("ffffffff"));
+        sell.setColor(Color.valueOf("ffffffff"));
+        if(a == tower1){
+            if(!t1) {
+                tower1.setChecked(true);
+                t1 = true;
+                t2 = false;
+                t3 = false;
+                t4 = false;
+                u = false;
+                s = false;
+            }
+            else{
+                t1 = false;
+            }
+        }
+        else if(a == tower2){
+            if(!t2) {
+                tower2.setChecked(true);
+                t1 = false;
+                t2 = true;
+                t3 = false;
+                t4 = false;
+                u = false;
+                s = false;
+            }
+            else {
+                t2 = false;
+            }
+        }
+        else if(a == tower3){
+            if(!t3) {
+                tower3.setChecked(true);
+                t1 = false;
+                t2 = false;
+                t3 = true;
+                t4 = false;
+                u = false;
+                s = false;
+            }
+            else{
+                t3 = false;
+            }
+        }
+        else if(a == tower4){
+            if(!t4) {
+                tower4.setColor(Color.GREEN);
+                t1 = false;
+                t2 = false;
+                t3 = false;
+                t4 = true;
+                u = false;
+                s = false;
+            }
+            else{
+                t4 = false;
+            }
+        }
+        else if(a == upgrade){
+            if(!u) {
+                upgrade.setColor(Color.YELLOW);
+                t1 = false;
+                t2 = false;
+                t3 = false;
+                t4 = false;
+                u = true;
+                s = false;
+            }
+            else{
+                u = false;
+            }
+        }
+        else if(a == sell){
+            if(!s) {
+                sell.setColor(Color.YELLOW);
+                t1 = false;
+                t2 = false;
+                t3 = false;
+                t4 = false;
+                u = false;
+                s = true;
+            }
+            else{
+                s = false;
+            }
         }
     }
 
