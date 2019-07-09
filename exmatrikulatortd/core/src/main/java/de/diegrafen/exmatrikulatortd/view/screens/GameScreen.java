@@ -12,8 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
-import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
-import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
@@ -29,7 +27,6 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.ENDLESS_SINGLE_PLAYER_GAME;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 
 /**
@@ -777,10 +774,6 @@ public class GameScreen extends BaseScreen implements GameView {
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
         gameObject.dispose();
-    }
-
-    public void setPlayers(List<Player> players) {
-        this.players = players;
     }
 
     private void resetCameraToBorders() {

@@ -2,17 +2,17 @@ package de.diegrafen.exmatrikulatortd.model;
 
 public interface ObservableUnit extends Observable {
 
-    String getName ();
+    String getName();
 
-    String getAssetsName ();
+    String getAssetsName();
 
-    float getxPosition ();
+    float getxPosition();
 
-    float getyPosition ();
+    float getyPosition();
 
-    float getTargetxPosition ();
+    float getTargetxPosition();
 
-    float getTargetyPosition ();
+    float getTargetyPosition();
 
-    boolean isRemoved ();
+    boolean isRemoved();
 }

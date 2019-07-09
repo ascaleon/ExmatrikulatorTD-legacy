@@ -30,6 +30,8 @@ public class Wave extends BaseModel {
      */
     private int waveNumber;
 
+    private int enemySpawnIndex = 0;
+
     /**
      * Die Gegner, die die Welle beinhaltet
      */
@@ -88,5 +90,13 @@ public class Wave extends BaseModel {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public int getEnemySpawnIndex() {
+        return enemySpawnIndex;
+    }
+
+    public void setEnemySpawnIndex(int enemySpawnIndex) {
+        this.enemySpawnIndex = enemySpawnIndex;
     }
 }

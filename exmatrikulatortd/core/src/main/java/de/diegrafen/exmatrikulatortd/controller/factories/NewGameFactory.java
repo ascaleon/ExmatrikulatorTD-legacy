@@ -59,7 +59,7 @@ public final class NewGameFactory {
     }
 
     private static Gamestate createStandardSinglePlayerGame() {
-        Player player = new Player();
+        Player player = new Player(0);
         List<Wave> waves = new LinkedList<>();
 
         Gamestate gamestate = new Gamestate();
@@ -89,7 +89,7 @@ public final class NewGameFactory {
         Gamestate gamestate = new Gamestate();
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = new Player();
+            Player player = new Player(i);
 
             player.setCurrentLives(25);
             player.setMaxLives(25);
@@ -109,7 +109,7 @@ public final class NewGameFactory {
         Gamestate gamestate = new Gamestate();
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = new Player();
+            Player player = new Player(i);
             List<Wave> waves = new LinkedList<>();
 
             waves.add(createWave(REGULAR_AND_HEAVY_WAVE));

@@ -9,6 +9,7 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_AND_HEAVY_WAVE;
@@ -107,15 +108,18 @@ public class Player extends BaseModel implements Observable {
 
     private boolean victorious;
 
+    private boolean lost;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
-    public Player() {
+    public Player(int playerNumber) {
         this.attackingEnemies = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.wayPoints = new ArrayList<>();
         this.waves = new ArrayList<>();
         this.observers = new ArrayList<>();
+        this.playerNumber = playerNumber;
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
@@ -126,17 +130,6 @@ public class Player extends BaseModel implements Observable {
         this.resources = 1000;
         this.score = 0;
         this.difficulty = EASY;
-
-        // TODO: Wegpunkte automatisch über die Karte erstellen lassen
-        wayPoints.add(new Coordinates(0, 20 - 14));
-        wayPoints.add(new Coordinates(3, 20 - 14));
-        wayPoints.add(new Coordinates(3, 20 - 17));
-        wayPoints.add(new Coordinates(17, 20 - 17));
-        wayPoints.add(new Coordinates(17, 20 - 13));
-        wayPoints.add(new Coordinates(10, 20 - 13));
-        wayPoints.add(new Coordinates(10, 20 - 4));
-        wayPoints.add(new Coordinates(17, 20 - 4));
-        wayPoints.add(new Coordinates(17, 20 - 2));
     }
 
     public void addEnemy(Enemy attackingEnemy) {
@@ -302,4 +295,20 @@ public class Player extends BaseModel implements Observable {
     public boolean isVictorious() {
         return victorious;
     }
+
+    public void copyWaves(List<Wave> waves) {
+        this.waves = new LinkedList<>();
+        for (Wave wave : waves) {
+            this.waves.add(new Wave(wave));
+        }
+    }
+
+    public boolean hasLost() {
+        return lost;
+    }
+
+    public void setLost(boolean lost) {
+        this.lost = lost;
+    }
+
 }
