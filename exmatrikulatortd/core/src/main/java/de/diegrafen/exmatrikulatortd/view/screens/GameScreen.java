@@ -803,7 +803,8 @@ public class GameScreen extends BaseScreen implements GameView {
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println("Menu nicht gefunden");
+                    logicController.exitGame(false);
+                    //System.out.println("Menu nicht gefunden");
                 }
             });
             buttonTable.add(back2main).top().center().row();

@@ -84,4 +84,6 @@ public interface LogicController {
     int getLocalPlayerNumber();
 
     boolean hasCellTower(int xCoordinate, int yCoordinate);
+
+    public void exitGame(boolean saveBeforeExit);
 }
