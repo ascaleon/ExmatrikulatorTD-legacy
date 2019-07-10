@@ -3,7 +3,6 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -16,16 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.compression.lzma.Base;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
-import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
-import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.persistence.GameStateDao;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
-import javafx.event.EventType;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -36,9 +31,7 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.ENDLESS_SINGLE_PLAYER_GAME;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
-import static de.diegrafen.exmatrikulatortd.util.Assets.MAP_PATH;
 
 /**
  * Der GameScreen wird während des aktuellen Spiels angezeigt.
