@@ -29,5 +29,5 @@ unitTests:
   script:
     - ./gradlew test
     - ./gradlew check jacocoTestReport 
-    - mv core/build/reports/tests/test/ ../report/
-    - cat ../report/index.html | grep -o '<tfoot>.*</tfoot>'
+    - mv core/build/reports/jacacoco/test/ ../report/
+    - cat ../report/index.html
