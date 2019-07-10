@@ -16,7 +16,7 @@ build:
   stage: build
   script:
   - ./gradlew desktop:dist
-  - mv exmatrikulatortd/desktop/build/libs/ jars/
+  - mv desktop/build/libs/ ../jars/
   artifacts:
     paths:
       - jars
@@ -29,4 +29,4 @@ unitTests:
   script:
     - ./gradlew test
     - ./gradlew check jacocoTestReport 
-    - mv exmatrikulatortd/core/build/reports/tests/test/ report/
+    - mv /core/build/reports/tests/test/ ../report/
