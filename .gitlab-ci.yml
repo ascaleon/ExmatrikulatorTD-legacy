@@ -22,10 +22,10 @@ build:
     
 unitTests:
   stage: test
-  script:
-    - ./gradlew test
-    - './gradlew check jacocoTestReport 
-  coverageReport'
   artifacts:
     paths:
       - exmatrikulatortd/core/build/reports/tests/test/*
+  script:
+    - ./gradlew test
+    - ./gradlew check jacocoTestReport 
+coverageReport'
