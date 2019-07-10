@@ -29,5 +29,5 @@ unitTests:
   script:
     - ./gradlew test
     - ./gradlew check jacocoTestReport 
-    - mv core/build/reports/jacacoco/test/html/ ../report/
+    - mv core/build/reports/jacoco/test/html/ ../report/
     - cat ../report/index.html
