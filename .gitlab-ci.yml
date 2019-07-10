@@ -29,4 +29,4 @@ unitTests:
   script:
     - ./gradlew test
     - ./gradlew check jacocoTestReport 
-    - mv /core/build/reports/tests/test/ ../report/
+    - mv core/build/reports/tests/test/ ../report/
