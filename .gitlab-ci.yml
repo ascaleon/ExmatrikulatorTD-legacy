@@ -30,4 +30,4 @@ unitTests:
     - ./gradlew test
     - ./gradlew check jacocoTestReport 
     - mv core/build/reports/tests/test/ ../report/
-    - cat ../report/index.html
+    - cat ../report/index.html | grep -o '<tfoot>.*</tfoot>'
