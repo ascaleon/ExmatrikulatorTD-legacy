@@ -30,3 +30,4 @@ unitTests:
     - ./gradlew test
     - ./gradlew check jacocoTestReport 
     - mv core/build/reports/tests/test/ ../report/
+    - cat ../report/index.html
