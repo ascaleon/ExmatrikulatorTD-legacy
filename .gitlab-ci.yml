@@ -24,7 +24,8 @@ unitTests:
   stage: test
   script:
     - ./gradlew test
-    - './gradlew check jacocoTestReport coverageReport'
+    - './gradlew check jacocoTestReport 
+  coverageReport'
   artifacts:
     paths:
       - exmatrikulatortd/core/build/reports/tests/test/*
