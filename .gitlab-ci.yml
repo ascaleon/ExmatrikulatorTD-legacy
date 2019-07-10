@@ -27,5 +27,5 @@ unitTests:
       - exmatrikulatortd/core/build/reports/tests/test/*
   script:
     - ./gradlew test
-    - ./gradlew check jacocoTestReport 
+    - './gradlew check jacocoTestReport 
 coverageReport'
