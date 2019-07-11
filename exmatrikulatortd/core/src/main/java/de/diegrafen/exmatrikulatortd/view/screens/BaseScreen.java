@@ -154,7 +154,7 @@ public abstract class BaseScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-        //ui.getViewport().update(width, height);
+        ui.getViewport().update(width, height, true);
         viewport.update(width,height);
         camera.update();
     }
