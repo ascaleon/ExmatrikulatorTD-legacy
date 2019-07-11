@@ -159,6 +159,7 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME);
+                showMainMenu(selectGameModeTable);
             }
         });
 

@@ -1141,7 +1141,13 @@ public class GameLogicController implements LogicController {
      * @param saveBeforeExit Gibt an, ob das Spiel vorher gespeichert werden soll
      */
     public void exitGame(boolean saveBeforeExit) {
-        mainController.setEndScreen(gamestate);
+        gameScreen.dispose();
+        if (saveBeforeExit) {
+            SaveState saveState = new SaveState(new Date(), multiplayer, profile, gamestate, localPlayerNumber);
+            saveStateDao.create(saveState);
+        }
+        //mainController.setEndScreen(gamestate);
+        mainController.showMenuScreen();
     }
 
     public int getLocalPlayerNumber() {
