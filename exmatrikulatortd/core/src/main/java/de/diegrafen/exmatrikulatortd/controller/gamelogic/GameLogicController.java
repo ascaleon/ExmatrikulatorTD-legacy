@@ -1143,7 +1143,7 @@ public class GameLogicController implements LogicController {
     public void exitGame(boolean saveBeforeExit) {
         gameScreen.dispose();
         if (saveBeforeExit) {
-            SaveState saveState = new SaveState(new Date(), isMultiplayer(), profile, gamestate, localPlayerNumber);
+            SaveState saveState = new SaveState(new Date(), multiplayer, profile, gamestate, localPlayerNumber);
             saveStateDao.create(saveState);
         }
         //mainController.setEndScreen(gamestate);
