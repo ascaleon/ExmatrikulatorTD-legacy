@@ -19,7 +19,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
  * @version 13.06.2019 21:41
  */
 @Entity
-@Table(name = "points")
+@Table(name = "waypoints")
 @SecondaryTable(name = "collision_matrix")
 @NamedQueries({
         @NamedQuery(name="Coordinates.findAll",
@@ -58,6 +58,12 @@ public class Coordinates extends BaseModel {
     @Column(table = "collision_matrix")
     private boolean isBuildable;
 
+    @Column(table = "waypoints")
+    private int waypointIndex;
+
+    @Column(table = "waypoints")
+    private int playerNumber;
+
     /**
      * Der mit der Koordinate assoziierte Turm
      */
@@ -94,13 +100,19 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
-        this.enemiesInMapCell = new ArrayList<>();
-        this.neighbours = new ArrayList<>();
     }
 
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
         this(xCoordinate, yCoordinate);
         this.buildableByPlayer = buildableByPlayer;
+        this.enemiesInMapCell = new ArrayList<>();
+        this.neighbours = new ArrayList<>();
+    }
+
+    public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex) {
+        this(xCoordinate, yCoordinate);
+        this.playerNumber = playerNumber;
+        this.waypointIndex = waypointIndex;
     }
 
     public int getXCoordinate() {
@@ -154,5 +166,21 @@ public class Coordinates extends BaseModel {
     @Override
     public String toString () {
         return "xPosition: " + xCoordinate + ", yPosition: " + yCoordinate;
+    }
+
+    public int getWaypointIndex() {
+        return waypointIndex;
+    }
+
+    public void setWaypointIndex(int waypointIndex) {
+        this.waypointIndex = waypointIndex;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
     }
 }

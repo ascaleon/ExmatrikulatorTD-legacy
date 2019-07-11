@@ -33,6 +33,7 @@ public class ServerGameLogicController extends GameLogicController {
     public ServerGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
                                      int gamemode, GameServer gameServer) {
         super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
+        System.out.println("Ohai?");
         this.gameServer = gameServer;
         gameServer.attachRequestListeners(this);
     }

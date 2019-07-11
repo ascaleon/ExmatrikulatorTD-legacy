@@ -20,7 +20,7 @@ public class Projectile extends ObservableModel {
 
     private float damage;
 
-    private float splashPercentage;
+    private float splashAmount;
 
     private float splashRadius;
 
@@ -46,15 +46,34 @@ public class Projectile extends ObservableModel {
     public Projectile() {
     }
 
-    public Projectile(String name, String assetsName, int attackType, float damage, float splashPercentage, float splashRadius, float speed) {
+    // TODO: Könnte tatsächlich obsolet geworden sein
+    public Projectile(String name, String assetsName, int attackType, float damage, float splashAmount, float splashRadius, float speed) {
         this.name = name;
         this.assetsName = assetsName;
         this.attackType = attackType;
         this.damage = damage;
-        this.splashPercentage = splashPercentage;
+        this.splashAmount = splashAmount;
         this.splashRadius = splashRadius;
         this.speed = speed;
         this.applyingDebuffs = new LinkedList<>();
+    }
+
+    public Projectile(Tower tower) {
+        this.name = tower.getProjectileName();
+        this.assetsName = tower.getProjectileAssetsName();
+        this.attackType = tower.getAttackType();
+        this.damage = tower.getCurrentAttackDamage();
+        this.splashAmount = tower.getSplashAmount();
+        this.splashRadius = tower.getSplashRadius();
+        this.speed = tower.getProjectileSpeed();
+        this.xPosition = tower.getxPosition();
+        this.yPosition = tower.getyPosition();
+        this.target = tower.getCurrentTarget();
+        this.towerThatShot = tower;
+        this.targetxPosition = tower.getCurrentTarget().getxPosition();
+        this.targetyPosition = tower.getCurrentTarget().getyPosition();
+        this.applyingDebuffs = new LinkedList<>();
+        tower.getAttackDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
     }
 
     @Override
@@ -75,8 +94,8 @@ public class Projectile extends ObservableModel {
         return damage;
     }
 
-    public float getSplashPercentage() {
-        return splashPercentage;
+    public float getsplashAmount() {
+        return splashAmount;
     }
 
     public float getSplashRadius() {
@@ -109,10 +128,6 @@ public class Projectile extends ObservableModel {
         return target;
     }
 
-    public void setTarget(Enemy target) {
-        this.target = target;
-    }
-
     public float getTargetxPosition() {
         return targetxPosition;
     }
@@ -133,16 +148,8 @@ public class Projectile extends ObservableModel {
         return applyingDebuffs;
     }
 
-    public void addDebuff(Debuff debuff) {
-        this.applyingDebuffs.add(debuff);
-    }
-
     public Tower getTowerThatShot() {
         return towerThatShot;
-    }
-
-    public void setTowerThatShot(Tower towerThatShot) {
-        this.towerThatShot = towerThatShot;
     }
 
     public int getAttackType() {

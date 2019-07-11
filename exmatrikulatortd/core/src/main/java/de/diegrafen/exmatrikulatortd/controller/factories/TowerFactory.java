@@ -9,6 +9,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Buff;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.model.tower.AttackStyle.IMMEDIATE;
 import static de.diegrafen.exmatrikulatortd.model.tower.AttackStyle.PROJECTILE;
@@ -42,13 +43,12 @@ public final class TowerFactory {
     public static final int AURA_TOWER = 4;
 
     public static final String AURA_TOWER_DESCRIPTION = "Motiviert andere Lehrende in der Umgebung, mehr Stoff in der Prüfung dranzunehmen.";
-
+    
 
     /**
      * Versteckter Konstruktor
      */
     private TowerFactory() {
-
     }
 
     /**
@@ -88,13 +88,21 @@ public final class TowerFactory {
      * @return Der erzeugte normalen Turm
      */
     private static Tower createRegularTower() {
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        LinkedList<Debuff> debuffs = new LinkedList<>();
-        debuffs.add(slowDebuff);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
         LinkedList<Aura> auras = new LinkedList<>();
+        List<Debuff> attackDebuffs = new LinkedList<>();
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
+        
+        debuffs.add(slowDebuff);
         auras.add(slowAura);
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, PROJECTILE, 100, 2 * TILE_SIZE, 3, NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS);
+        attackDebuffs.add(frostDebuff);
+
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, 2 * TILE_SIZE, 3,
+                NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
+                "Feuerball", FIREBALL_ASSETS, 300);
     }
 
     /**
@@ -103,13 +111,22 @@ public final class TowerFactory {
      * @return Der erzeugte Verlangsamungsturm
      */
     private static Tower createSlowTower() {
-        Debuff slowDebuff = new Debuff("Slow-Effekt",AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        LinkedList<Debuff> debuffs = new LinkedList<>();
-        debuffs.add(slowDebuff);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
         LinkedList<Aura> auras = new LinkedList<>();
+        List<Debuff> attackDebuffs = new LinkedList<>();
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
+
+        debuffs.add(slowDebuff);
         auras.add(slowAura);
-        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, PROJECTILE, 100, 2 * TILE_SIZE, 3, PIERCING, auras, 0, 300, 150, 600, 1, 3, SLOW_TOWER_ASSETS);
+        attackDebuffs.add(frostDebuff);
+
+        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100,
+                2 * TILE_SIZE, 3, PIERCING, auras, 0, 300, 150, 600,
+                1, 3, SLOW_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
+                "Feuerball", FIREBALL_ASSETS, 300);
     }
 
 
@@ -119,7 +136,19 @@ public final class TowerFactory {
      * @return Der erzeugte Corruption-Turm
      */
     private static Tower createCorruptionTower() {
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, IMMEDIATE, 100, 2 * TILE_SIZE, 3, LOGIC, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS);
+        LinkedList<Aura> auras = new LinkedList<>();
+        List<Debuff> attackDebuffs = new LinkedList<>();
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
+
+        debuffs.add(slowDebuff);
+        auras.add(slowAura);
+        attackDebuffs.add(frostDebuff);
+
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, LOGIC, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
     }
 
     /**
@@ -128,7 +157,19 @@ public final class TowerFactory {
      * @return Der erzeugte Explosiv-Turm
      */
     private static Tower createExplosiveTower() {
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, PROJECTILE, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS);
+        LinkedList<Aura> auras = new LinkedList<>();
+        List<Debuff> attackDebuffs = new LinkedList<>();
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
+
+        debuffs.add(slowDebuff);
+        auras.add(slowAura);
+        attackDebuffs.add(frostDebuff);
+
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
     }
 
     /**
@@ -137,6 +178,21 @@ public final class TowerFactory {
      * @return Der erzeugte Aura-Turm
      */
     private static Tower createAuraTower() {
-        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, IMMEDIATE, 100, 2 * TILE_SIZE, 3, PIERCING, new LinkedList<>(), 4 * TILE_SIZE, 300, 150, 600, 1, 3, AURA_TOWER_ASSETS);
+        LinkedList<Aura> auras = new LinkedList<>();
+        List<Debuff> attackDebuffs = new LinkedList<>();
+        LinkedList<Debuff> debuffs = new LinkedList<>();
+
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
+        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
+        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
+
+        debuffs.add(slowDebuff);
+        auras.add(slowAura);
+        attackDebuffs.add(frostDebuff);
+
+        return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100,
+                2 * TILE_SIZE, 3, PIERCING, new LinkedList<>(),
+                4 * TILE_SIZE, 300, 150, 600, 1,
+                3, AURA_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
     }
 }

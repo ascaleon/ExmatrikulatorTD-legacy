@@ -16,16 +16,18 @@ build:
   stage: build
   script:
   - ./gradlew desktop:dist
+  - mv desktop/build/libs/ ../jars/
   artifacts:
     paths:
-      - exmatrikulatortd/desktop/build/libs/*
-  only:
-  - master
+      - jars
     
 unitTests:
   stage: test
-  script:
-    - ./gradlew test
   artifacts:
     paths:
-      - exmatrikulatortd/core/build/reports/tests/test/*
+    - report
+  script:
+    - ./gradlew test
+    - ./gradlew check jacocoTestReport 
+    - mv core/build/reports/jacoco/test/html/ ../report/
+    - cat ../report/index.html

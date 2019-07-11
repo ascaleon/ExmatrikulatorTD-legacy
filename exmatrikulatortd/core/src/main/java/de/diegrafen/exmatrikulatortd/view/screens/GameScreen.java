@@ -653,10 +653,6 @@ public class GameScreen extends BaseScreen implements GameView {
         gameObject.dispose();
     }
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
     private void resetCameraToBorders() {
         float cameraHalfWidth = getCamera().viewportWidth * .5f;
         float cameraHalfHeight = getCamera().viewportHeight * .5f;

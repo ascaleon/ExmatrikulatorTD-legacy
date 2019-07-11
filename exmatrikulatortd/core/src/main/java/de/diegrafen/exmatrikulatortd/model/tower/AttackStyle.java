@@ -6,5 +6,5 @@ package de.diegrafen.exmatrikulatortd.model.tower;
  */
 public enum AttackStyle {
     PROJECTILE,
-    IMMEDIATE
+    IMMEDIATE,
 }
