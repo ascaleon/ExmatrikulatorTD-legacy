@@ -484,6 +484,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Drawable towerImage2_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2_selected.png")));
         Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3.png")));
         Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3_selected.png")));
+        Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
         TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         //towerSelect.setDebug(true);
@@ -545,9 +546,9 @@ public class GameScreen extends BaseScreen implements GameView {
 
         //Exit
         final Table exit = new Table();
-        TextButton exitButton = new TextButton("| |", skin);
+        ImageButton exitButton = new ImageButton(menuImage);
         exitButton.setSize(10,10);
-        exitButton.getLabel().setFontScale(1,1);
+        //exitButton.getLabel().setFontScale(1,1);
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
