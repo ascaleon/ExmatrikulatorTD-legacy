@@ -13,7 +13,7 @@ public class GetGameInfoResponse extends Response {
     private List<String> playerProfilePicturePaths;
 
     public GetGameInfoResponse() {
-
+        super();
     }
 
     public GetGameInfoResponse(boolean update, int allocatedPlayerNumber, List<String> playerNames, List<String> playerProfilePicturePaths) {

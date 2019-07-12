@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
+import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
@@ -10,6 +11,7 @@ import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 
 /**
@@ -54,6 +56,17 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         gameClient.upgradeTower(xCoordinate, yCoordinate, playerNumber);
     }
 
+    @Override
+    public void upgradeTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber) {
+        Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
+        Player owningPlayer = getGamestate().getPlayerByNumber(playerNumber);
+        Tower tower = mapCell.getTower();
+        owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
+        TowerUpgrader.upgradeTower(tower);
+        owningPlayer.notifyObserver();
+        tower.notifyObserver();
+    }
+
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
@@ -67,6 +80,17 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         gameClient.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
     }
 
+    @Override
+    public void sendEnemyFromServer(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+        Enemy enemy = createNewEnemy(enemyType);
+        Player sendingPlayer = getGamestate().getPlayerByNumber(sendingPlayerNumber);
+        Player playerToSendTo = getGamestate().getPlayerByNumber(playerToSendToNumber);
+
+        playerToSendTo.getWaves().get(getGamestate().getRoundNumber() + 1).addEnemy(enemy);
+        sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
+        sendingPlayer.notifyObserver();
+    }
+
     /**
      * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
      *
@@ -78,9 +102,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        System.out.println("x: " + xCoordinate);
-        System.out.println("y: " + yCoordinate);
-        System.out.println("Player: " + playerNumber);
         gameClient.buildTower(towerType, xCoordinate, yCoordinate, playerNumber);
     }
 
@@ -93,6 +114,26 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         player.setResources(playerResources - towerPrice);
         addTower(tower, xCoordinate, yCoordinate, playerNumber);
         player.notifyObserver();
+    }
+
+    /**
+     * Verkauft einen Turm
+     *
+     * @param xCoordinate  Die x-Koordinate des Turms
+     * @param yCoordinate  Die y-Koordinate des Turms
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
+     */
+    @Override
+    public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+        gameClient.sellTower(xCoordinate, yCoordinate, playerNumber);
+    }
+
+    @Override
+    public void sellTowerByServer(int xCoordinate, int yCoordinate, int playerNumber) {
+        Tower tower = getMapCellByXandYCoordinates(xCoordinate, yCoordinate).getTower();
+        tower.getOwner().addToResources(tower.getSellPrice());
+        tower.getOwner().notifyObserver();
+        removeTower(tower);
     }
 
     /**

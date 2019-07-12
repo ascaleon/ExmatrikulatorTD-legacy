@@ -84,6 +84,7 @@ public class GameLogicController implements LogicController {
         this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
         this.gameServer = gameServer;
         this.server = true;
+        gameServer.attachRequestListeners(this);
     }
 
 
@@ -853,7 +854,7 @@ public class GameLogicController implements LogicController {
         gameScreen.displayErrorMessage("Turmausbau fehlgeschlagen.");
     }
 
-    private Coordinates getMapCellByXandYCoordinates(int xCoordinate, int yCoordinate) {
+    Coordinates getMapCellByXandYCoordinates(int xCoordinate, int yCoordinate) {
 
         yCoordinate *= gamestate.getNumberOfColumns();
 
@@ -959,7 +960,6 @@ public class GameLogicController implements LogicController {
             int playerResources = player.getResources();
             if (playerResources >= towerPrice) {
                 if (server) {
-                    System.out.println("Blah!");
                     gameServer.buildTower(towerType, xCoordinate, yCoordinate, playerNumber);
                 }
                 player.setResources(playerResources - towerPrice);
@@ -1004,7 +1004,6 @@ public class GameLogicController implements LogicController {
             onTheMap = false;
         } else {
             onTheMap = xCoordinate < gamestate.getNumberOfColumns() & yCoordinate < gamestate.getNumberOfRows();
-            System.out.println("Blargh! " + onTheMap);
         }
 
         return onTheMap;
@@ -1043,6 +1042,9 @@ public class GameLogicController implements LogicController {
             tower.getOwner().addToResources(tower.getSellPrice());
             tower.getOwner().notifyObserver();
             removeTower(tower);
+            if (server) {
+                gameServer.sellTower(xCoordinate, yCoordinate, playerNumber);
+            }
         }
     }
 
@@ -1051,7 +1053,7 @@ public class GameLogicController implements LogicController {
      *
      * @param tower Der zu entfernende Turm
      */
-    private void removeTower(Tower tower) {
+    void removeTower(Tower tower) {
         tower.setRemoved(true);
         tower.getOwner().removeTower(tower);
         tower.getPosition().setTower(null);
@@ -1085,6 +1087,9 @@ public class GameLogicController implements LogicController {
             TowerUpgrader.upgradeTower(tower);
             owningPlayer.notifyObserver();
             tower.notifyObserver();
+            if (server) {
+                gameServer.upgradeTower(xCoordinate, yCoordinate, playerNumber);
+            }
         }
     }
 
@@ -1107,6 +1112,9 @@ public class GameLogicController implements LogicController {
                 sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
                 sendingPlayer.notifyObserver();
                 System.out.println("Enemy added!");
+                if (server) {
+                    gameServer.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
+                }
             }
         } else {
             displayErrorMessage("Nicht genug Geld vorhanden, um diesen Gegner zu senden!", sendingPlayerNumber);

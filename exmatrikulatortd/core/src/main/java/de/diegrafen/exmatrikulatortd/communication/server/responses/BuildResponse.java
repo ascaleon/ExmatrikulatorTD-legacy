@@ -10,8 +10,6 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
  */
 public class BuildResponse extends Response {
 
-    private boolean successful;
-
     private int towerType;
 
     private int xCoordinate;
@@ -21,23 +19,14 @@ public class BuildResponse extends Response {
     private int playerNumber;
 
     public BuildResponse() {
-
+        super();
     }
 
-    public BuildResponse(boolean successful, int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        this.successful = successful;
+    public BuildResponse(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         this.towerType = towerType;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
         this.playerNumber = playerNumber;
-    }
-
-    public BuildResponse(boolean successful) {
-        this.successful = successful;
-    }
-
-    public boolean wasSuccessful() {
-        return successful;
     }
 
     public int getTowerType() {

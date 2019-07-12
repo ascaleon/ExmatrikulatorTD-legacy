@@ -170,10 +170,10 @@ public class GameServer extends Connector implements ServerInterface {
     private void attachBuildRequestListener(final LogicController logicController) {
         server.addListener(new Listener() {
             public void received(Connection connection, Object object) {
+                System.out.println("I received something!");
                 if (object instanceof BuildRequest) {
                     final BuildRequest request = (BuildRequest) object;
-                    System.out.println("Request received!");
-                    logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
+                    Gdx.app.postRunnable(() -> logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                 }
             }
         });
@@ -189,7 +189,7 @@ public class GameServer extends Connector implements ServerInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellRequest) {
                     final SellRequest request = (SellRequest) object;
-                    logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
+                    Gdx.app.postRunnable(() -> logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                 }
             }
         });
@@ -205,7 +205,8 @@ public class GameServer extends Connector implements ServerInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyRequest) {
                     final SendEnemyRequest request = (SendEnemyRequest) object;
-                    logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer());
+                    Gdx.app.postRunnable(() -> logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer()));
+
                 }
             }
         });
@@ -221,7 +222,8 @@ public class GameServer extends Connector implements ServerInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof UpgradeRequest) {
                     final UpgradeRequest request = (UpgradeRequest) object;
-                    logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
+                    Gdx.app.postRunnable(() -> logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
+
                 }
             }
         });
@@ -307,7 +309,7 @@ public class GameServer extends Connector implements ServerInterface {
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        server.sendToAllTCP(new BuildResponse(true, towerType, xCoordinate, yCoordinate, playerNumber));
+        server.sendToAllTCP(new BuildResponse(towerType, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
@@ -319,7 +321,7 @@ public class GameServer extends Connector implements ServerInterface {
      */
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        server.sendToAllTCP(new SellResponse(true, xCoordinate, yCoordinate, playerNumber));
+        server.sendToAllTCP(new SellResponse(xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
@@ -331,7 +333,7 @@ public class GameServer extends Connector implements ServerInterface {
      */
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        server.sendToAllTCP(new UpgradeResponse(true, xCoordinate, yCoordinate, playerNumber));
+        server.sendToAllTCP(new UpgradeResponse(xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
@@ -344,8 +346,7 @@ public class GameServer extends Connector implements ServerInterface {
      */
     @Override
     public void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer) {
-        server.sendToAllTCP(new SendEnemyResponse(true, enemyType, playerToSendTo, sendingPlayer));
-
+        server.sendToAllTCP(new SendEnemyResponse(enemyType, playerToSendTo, sendingPlayer));
     }
 
     public void setNumberOfPlayers(int numberOfPlayers) {

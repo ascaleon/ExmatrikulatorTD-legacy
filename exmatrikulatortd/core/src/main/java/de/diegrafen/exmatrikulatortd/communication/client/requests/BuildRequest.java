@@ -21,7 +21,7 @@ public class BuildRequest extends Request {
     private int playerNumber;
 
     public BuildRequest() {
-
+        super();
     }
 
     public BuildRequest(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {

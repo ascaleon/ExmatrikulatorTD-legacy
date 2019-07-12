@@ -189,7 +189,6 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
                 if (keycode == Input.Keys.I) {
-
                     logicController.sendEnemy(REGULAR_ENEMY, localPlayerNumber, localPlayerNumber);
                 }
                 if (keycode == Input.Keys.O) {

@@ -95,7 +95,9 @@ public class GameClient extends Connector implements ClientInterface {
      * @param request Die zu sendende Anfrage
      */
     private void sendRequest(Request request) {
-        client.sendTCP(request);
+        int bytesSent = client.sendTCP(request);
+        System.out.println("Bytes sent: " + bytesSent);
+
     }
 
     /**
@@ -238,12 +240,7 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellResponse) {
                     final SellResponse response = (SellResponse) object;
-
-                    if (response.wasSuccessful()) {
-                        logicController.sellTower(response.getxCoordinate(),response.getyCoordinate(),response.getPlayerNumber());
-                    } //else {
-                    //logicController.sellFailed() ?
-                    //}
+                    Gdx.app.postRunnable(() -> logicController.sellTowerByServer(response.getxCoordinate(),response.getyCoordinate(),response.getPlayerNumber()));
                 }
             }
         });
@@ -258,12 +255,8 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyResponse) {
                     final SendEnemyResponse response = (SendEnemyResponse) object;
+                    Gdx.app.postRunnable(() -> logicController.sendEnemyFromServer(response.getEnemyType(), response.getPlayerToSendTo(), response.getSendingPlayer()));
 
-                    if(response.wasSuccessful()) {
-                        logicController.sendEnemy(response.getEnemyType(), response.getPlayerToSendTo(), response.getSendingPlayer());
-                    } else{
-                        logicController.sendFailed();
-                    }
                 }
             }
         });
@@ -278,12 +271,8 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof UpgradeResponse) {
                     final UpgradeResponse response = (UpgradeResponse) object;
+                    Gdx.app.postRunnable(() -> logicController.upgradeTowerFromServer(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
 
-                    if (response.wasSuccessful()) {
-                        logicController.upgradeTower(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber());
-                    } else {
-                        logicController.upgradeFailed();
-                    }
                 }
             }
         });
@@ -298,10 +287,7 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof GetServerStateResponse) {
                     GetServerStateResponse response = (GetServerStateResponse) object;
-
-                    if (response.getGamestate() != null) {
-                        logicController.setGamestate(response.getGamestate());
-                    }
+                    logicController.setGamestate(response.getGamestate());
                 }
             }
         });

@@ -11,27 +11,19 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  */
 public class SendEnemyResponse extends Response {
 
-    private boolean successful;
-
     private int enemyType;
 
     private int playerToSendTo;
 
     private int sendingPlayer;
 
-    public SendEnemyResponse(boolean successful) {
-        this.successful = successful;
+    public SendEnemyResponse() {
     }
 
-    public SendEnemyResponse(boolean successful, int enemyType, int playerToSendTo, int sendingPlayer) {
-        this.successful = successful;
+    public SendEnemyResponse(int enemyType, int playerToSendTo, int sendingPlayer) {
         this.enemyType = enemyType;
         this.playerToSendTo = playerToSendTo;
         this.sendingPlayer = sendingPlayer;
-    }
-
-    public boolean wasSuccessful() {
-        return successful;
     }
 
     public int getEnemyType() {
