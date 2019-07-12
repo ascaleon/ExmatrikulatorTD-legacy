@@ -5,9 +5,12 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 
 /**
  * Spiellogik-Controller für Multiplayer-Spiele als Client
@@ -15,7 +18,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 05:29
  */
-public class ClientGameLogicController extends GameLogicController {
+public class ClientGameLogicController extends GameLogicController implements ClientLogicController {
 
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
@@ -47,10 +50,8 @@ public class ClientGameLogicController extends GameLogicController {
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
+    public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
         gameClient.upgradeTower(xCoordinate, yCoordinate, playerNumber);
-        // TODO: Rückgabewerte anpassen
-        return true;
     }
 
     /**
@@ -62,10 +63,36 @@ public class ClientGameLogicController extends GameLogicController {
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+    public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
         gameClient.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
-        // TODO: Rückgabewerte anpassen
-        return true;
+    }
+
+    /**
+     * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
+     *
+     * @param towerType    Der Typ des zu bauenden Turms
+     * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
+     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
+     */
+    @Override
+    public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+        System.out.println("x: " + xCoordinate);
+        System.out.println("y: " + yCoordinate);
+        System.out.println("Player: " + playerNumber);
+        gameClient.buildTower(towerType, xCoordinate, yCoordinate, playerNumber);
+    }
+
+    @Override
+    public void addTowerByServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+        Tower tower = createNewTower(towerType);
+        int towerPrice = tower.getPrice();
+        Player player = getGamestate().getPlayerByNumber(playerNumber);
+        int playerResources = player.getResources();
+        player.setResources(playerResources - towerPrice);
+        addTower(tower, xCoordinate, yCoordinate, playerNumber);
+        player.notifyObserver();
     }
 
     /**

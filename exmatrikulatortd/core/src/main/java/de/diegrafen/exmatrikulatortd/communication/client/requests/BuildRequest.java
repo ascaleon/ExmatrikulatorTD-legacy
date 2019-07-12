@@ -20,6 +20,10 @@ public class BuildRequest extends Request {
 
     private int playerNumber;
 
+    public BuildRequest() {
+
+    }
+
     public BuildRequest(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         super();
         this.towerType = towerType;

@@ -20,6 +20,10 @@ public class BuildResponse extends Response {
 
     private int playerNumber;
 
+    public BuildResponse() {
+
+    }
+
     public BuildResponse(boolean successful, int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         this.successful = successful;
         this.towerType = towerType;

@@ -31,7 +31,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 14:03
  */
-public class GameServer extends Connector {
+public class GameServer extends Connector implements ServerInterface {
 
     /**
      * Der Port, über den TCP-Verbindungen entgegengenommen werden
@@ -172,13 +172,8 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof BuildRequest) {
                     final BuildRequest request = (BuildRequest) object;
-                    final boolean successful = logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
-
-                    if (successful) {
-                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                    } else {
-                        connection.sendTCP(new BuildResponse(successful));
-                    }
+                    System.out.println("Request received!");
+                    logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
                 }
             }
         });
@@ -194,13 +189,7 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellRequest) {
                     final SellRequest request = (SellRequest) object;
-                    final boolean successful = logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
-
-                    if (successful) {
-                        server.sendToAllTCP(new SellResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                    } else {
-                        connection.sendTCP(new SellResponse(successful));
-                    }
+                    logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
                 }
             }
         });
@@ -216,13 +205,7 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyRequest) {
                     final SendEnemyRequest request = (SendEnemyRequest) object;
-                    final boolean successful = logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer());
-
-                    if (successful) {
-                        server.sendToAllTCP(new SendEnemyResponse(successful, request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer()));
-                    } else {
-                        connection.sendTCP(new SendEnemyResponse(successful));
-                    }
+                    logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer());
                 }
             }
         });
@@ -238,13 +221,7 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof UpgradeRequest) {
                     final UpgradeRequest request = (UpgradeRequest) object;
-                    final boolean successful = logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
-
-                    if (successful) {
-                        server.sendToAllTCP(new UpgradeResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                    } else {
-                        connection.sendTCP(new UpgradeResponse(successful));
-                    }
+                    logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
                 }
             }
         });
@@ -396,5 +373,10 @@ public class GameServer extends Connector {
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
+    }
+
+    @Override
+    public void sendErrorMessage(String errorMessage) {
+
     }
 }

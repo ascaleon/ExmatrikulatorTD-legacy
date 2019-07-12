@@ -12,6 +12,7 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -48,7 +49,7 @@ public class GameClient extends Connector implements ClientInterface {
 
     private boolean connected;
 
-    private LogicController logicController;
+    private ClientLogicController clientLogicController;
 
     private List<String> receivedSessionInfo;
 
@@ -201,7 +202,7 @@ public class GameClient extends Connector implements ClientInterface {
      *
      * @param logicController Der LogicController, an den empfangene Antworten weitergeleitet werden
      */
-    public void attachResponseListeners(final LogicController logicController) {
+    public void attachResponseListeners(final ClientLogicController logicController) {
         attachBuildResponseListener(logicController);
         attachGetServerStateResponseListener(logicController);
         attachSellResponseListener(logicController);
@@ -213,17 +214,16 @@ public class GameClient extends Connector implements ClientInterface {
      *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
-    private void attachBuildResponseListener(final LogicController logicController) {
+    private void attachBuildResponseListener(final ClientLogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof BuildResponse) {
                     final BuildResponse response = (BuildResponse) object;
 
-                    if (response.wasSuccessful()) {
-                        logicController.buildTower(response.getTowerType(), response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber());
-                    } else {
-                        logicController.buildFailed();
-                    }
+                    Gdx.app.postRunnable(() -> logicController.addTowerByServer(response.getTowerType(),
+                            response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
+
+                    System.out.println("Response received!");
                 }
             }
         });
@@ -233,7 +233,7 @@ public class GameClient extends Connector implements ClientInterface {
      *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
-    private void attachSellResponseListener(final LogicController logicController) {
+    private void attachSellResponseListener(final ClientLogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellResponse) {
@@ -253,7 +253,7 @@ public class GameClient extends Connector implements ClientInterface {
      *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
-    private void attachSendEnemyResponseListener(final LogicController logicController) {
+    private void attachSendEnemyResponseListener(final ClientLogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyResponse) {
@@ -273,7 +273,7 @@ public class GameClient extends Connector implements ClientInterface {
      *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
-    private void attachUpgradeResponseListener(final LogicController logicController) {
+    private void attachUpgradeResponseListener(final ClientLogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof UpgradeResponse) {
@@ -293,7 +293,7 @@ public class GameClient extends Connector implements ClientInterface {
      *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
-    private void attachGetServerStateResponseListener(final LogicController logicController) {
+    private void attachGetServerStateResponseListener(final ClientLogicController logicController) {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof GetServerStateResponse) {

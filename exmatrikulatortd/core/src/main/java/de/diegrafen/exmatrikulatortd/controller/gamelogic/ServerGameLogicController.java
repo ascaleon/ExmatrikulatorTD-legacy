@@ -48,22 +48,19 @@ public class ServerGameLogicController extends GameLogicController {
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
+    public void buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
+        super.buildTower(towerType, xPosition, yPosition, playerNumber);
 
-        boolean successful = super.buildTower(towerType, xPosition, yPosition, playerNumber);
+        super.buildTower(towerType,xPosition,yPosition,playerNumber);
 
-        if (successful) {
-            gameServer.buildTower(towerType, xPosition, yPosition, playerNumber);
-        }
-
-        return successful;
+        gameServer.buildTower(towerType, xPosition, yPosition, playerNumber);
 
     }
 
     @Override
-    public boolean sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
+    public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
         // TODO: Methode nach Muster von buildTower implementieren
-        return super.sellTower(xCoordinate, yCoordinate, playerNumber);
+        super.sellTower(xCoordinate, yCoordinate, playerNumber);
     }
 
     /**
@@ -72,12 +69,11 @@ public class ServerGameLogicController extends GameLogicController {
      * @param xPosition
      * @param yPosition
      * @param playerNumber
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean upgradeTower(int xPosition, int yPosition, int playerNumber) {
+    public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
         // TODO: Methode nach Muster von buildTower implementieren
-        return super.upgradeTower(xPosition, yPosition, playerNumber);
+        super.upgradeTower(xPosition, yPosition, playerNumber);
     }
 
     /**
@@ -89,8 +85,8 @@ public class ServerGameLogicController extends GameLogicController {
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
-    public boolean sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
-        return super.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
+    public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+        super.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
     }
 
     /**

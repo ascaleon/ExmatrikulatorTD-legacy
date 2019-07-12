@@ -20,6 +20,7 @@ import de.diegrafen.exmatrikulatortd.view.screens.*;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -271,7 +272,7 @@ public class MainController {
      * Erzeugt ein Multiplayer-Spiel als Server
      */
     public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode) {
-        this.currentLogicController = new ServerGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameServer);
+        this.currentLogicController = new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameServer);
     }
 
     /**
@@ -298,7 +299,7 @@ public class MainController {
         //highScoreDao.create(highscore2);
         //highScoreDao.create(highscore3);
 
-        return highScoreDao.findHighestScores(limit);
+        return new LinkedList<>(); //highScoreDao.findHighestScores(limit);
     }
 
     public void showScreen(Screen screen) {

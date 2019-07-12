@@ -33,7 +33,7 @@ public interface LogicController {
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
      * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
-    boolean buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber);
+    void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Verkauft einen Turm
@@ -43,7 +43,7 @@ public interface LogicController {
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
      */
-    boolean sellTower(int xCoordinate, int yCoordinate, int playerNumber);
+    void sellTower(int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Rüstet einen Turm auf
@@ -53,7 +53,7 @@ public interface LogicController {
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
-    boolean upgradeTower(int xCoordinate, int yCoordinate, int playerNumber);
+    void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber);
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
@@ -61,7 +61,7 @@ public interface LogicController {
      * @param enemyType Der Typ des zu schickenden Gegners
      * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
-    boolean sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer);
+    void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer);
 
     boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber);
 
@@ -76,6 +76,8 @@ public interface LogicController {
     void upgradeFailed();
 
     void setGamestate(Gamestate gamestate);
+
+    void displayErrorMessage(String errorMessage, int playerNumber);
 
     Gamestate getGamestate();
 
