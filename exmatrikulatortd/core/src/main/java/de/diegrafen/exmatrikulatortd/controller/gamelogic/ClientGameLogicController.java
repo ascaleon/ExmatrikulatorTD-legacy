@@ -143,6 +143,12 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     }
 
+    @Override
+    public void displayErrorMessage(String errorMessage, int playerNumber) {
+        if (playerNumber == getLocalPlayerNumber()) {
+            getGameScreen().displayErrorMessage(errorMessage);
+        }
+    }
 
     /**
      * Beendet das Spiel

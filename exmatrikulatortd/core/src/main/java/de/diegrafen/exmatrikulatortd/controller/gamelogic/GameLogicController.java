@@ -347,7 +347,7 @@ public class GameLogicController implements LogicController {
             if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
                 applyDamageToPlayer(enemy);
                 if (enemy.isRespawning()) {
-                    addEnemy(new Enemy(enemy), enemy.getAttackedPlayer().getPlayerNumber());
+                    addEnemy(new Enemy(enemy, 0), enemy.getAttackedPlayer().getPlayerNumber());
                 }
                 break;
             }
@@ -839,21 +839,6 @@ public class GameLogicController implements LogicController {
         return (int) yPosition / gamestate.getTileHeight();
     }
 
-    @Override
-    public void buildFailed() {
-        gameScreen.displayErrorMessage("Bauen fehlgeschlagen.");
-    }
-
-    @Override
-    public void sendFailed() {
-        gameScreen.displayErrorMessage("Gegner senden fehlgeschlagen.");
-    }
-
-    @Override
-    public void upgradeFailed() {
-        gameScreen.displayErrorMessage("Turmausbau fehlgeschlagen.");
-    }
-
     Coordinates getMapCellByXandYCoordinates(int xCoordinate, int yCoordinate) {
 
         yCoordinate *= gamestate.getNumberOfColumns();
@@ -970,6 +955,7 @@ public class GameLogicController implements LogicController {
                 displayErrorMessage("Nicht genug Ressourcen!", playerNumber);
             }
         } else {
+            System.out.println("Hallo?");
             displayErrorMessage("Hier kann nicht gebaut werden!", playerNumber);
         }
     }
@@ -987,8 +973,10 @@ public class GameLogicController implements LogicController {
         } else {
             Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
             if (mapCell.getTower() != null) {
+                System.out.println("Hier steht bereits ein Turm!");
                 buildable = false;
             } else if (mapCell.getBuildableByPlayer() != playerNumber) {
+                System.out.println("Du darfst hier nicht bauen!");
                 buildable = false;
             }
         }
@@ -1143,6 +1131,8 @@ public class GameLogicController implements LogicController {
     public void displayErrorMessage(String errorMessage, int playerNumber) {
         if (playerNumber == localPlayerNumber) {
             gameScreen.displayErrorMessage(errorMessage);
+        } else if (server) {
+            gameServer.sendErrorMessage(errorMessage, playerNumber);
         }
     }
 

@@ -210,6 +210,20 @@ public class GameClient extends Connector implements ClientInterface {
         attachSellResponseListener(logicController);
         attachSendEnemyResponseListener(logicController);
         attachUpgradeResponseListener(logicController);
+        attachErrorResponseListener(logicController);
+    }
+
+    private void attachErrorResponseListener(ClientLogicController logicController) {
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof ErrorResponse) {
+                    final ErrorResponse response = (ErrorResponse) object;
+
+                    logicController.displayErrorMessage(response.getErrorMessage(), response.getPlayerNumber());
+                }
+            }
+        });
     }
 
     /**

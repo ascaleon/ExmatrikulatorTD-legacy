@@ -12,6 +12,7 @@ import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -238,7 +239,7 @@ public class GameServer extends Connector implements ServerInterface {
         server.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof GetServerStateRequest) {
-                    connection.sendTCP(logicController.getGamestate());
+                    connection.sendTCP(new GetServerStateResponse(logicController.getGamestate()));
                 }
             }
         });
@@ -349,6 +350,10 @@ public class GameServer extends Connector implements ServerInterface {
         server.sendToAllTCP(new SendEnemyResponse(enemyType, playerToSendTo, sendingPlayer));
     }
 
+    public void broadcastServerState(Gamestate gamestate) {
+        server.sendToAllTCP(new GetServerStateResponse(gamestate));
+    }
+
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
     }
@@ -377,7 +382,7 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     @Override
-    public void sendErrorMessage(String errorMessage) {
-
+    public void sendErrorMessage(String errorMessage, int playerNumber) {
+        server.sendToAllTCP(new ErrorResponse(errorMessage, playerNumber));
     }
 }

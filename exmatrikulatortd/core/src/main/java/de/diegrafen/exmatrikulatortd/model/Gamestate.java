@@ -124,10 +124,10 @@ public class Gamestate extends BaseModel implements Observable {
      */
     public Gamestate() {
         players = new ArrayList<>();
-        enemies = new ArrayList<>();
-        towers = new ArrayList<>();
-        projectiles = new ArrayList<>();
-        collisionMatrix = new ArrayList<>();
+        enemies = new LinkedList<>();
+        towers = new LinkedList<>();
+        projectiles = new LinkedList<>();
+        collisionMatrix = new LinkedList<>();
         this.observers = new LinkedList<>();
 
         this.newRound = true;
@@ -136,6 +136,44 @@ public class Gamestate extends BaseModel implements Observable {
         this.roundEnded = true;
         this.numberOfRounds = 5;
         this.gameOver = false;
+    }
+
+    Gamestate(Gamestate gamestate) {
+        this.tileWidth = gamestate.getTileWidth();
+        this.tileHeight = gamestate.getTileHeight();
+        this.numberOfColumns = gamestate.getNumberOfColumns();
+        this.numberOfRows = gamestate.getNumberOfRows();
+        this.roundNumber = gamestate.getRoundNumber();
+        this.numberOfRounds = gamestate.getNumberOfRounds();
+        this.gameOver = gamestate.isGameOver();
+        this.timeUntilNextRound = gamestate.getTimeUntilNextRound();
+        this.roundEnded = gamestate.isRoundEnded();
+        this.endlessGame = gamestate.isEndlessGame();
+        this.gameMode = gamestate.getGameMode();
+        this.observers = new ArrayList<>();
+
+        this.players = new ArrayList<>();
+        this.enemies = new LinkedList<>();
+        this.towers = new LinkedList<>();
+        this.projectiles = new LinkedList<>();
+        this.collisionMatrix = new LinkedList<>();
+
+        gamestate.getPlayers().forEach(player -> players.add(new Player(player, this)));
+
+        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
+            Coordinates coordinates = new Coordinates(mapCell);
+            this.collisionMatrix.add(coordinates);
+            Tower tower = coordinates.getTower();
+            if (tower != null) {
+                this.towers.add(tower);
+                Player owner = players.get(coordinates.getBuildableByPlayer());
+                owner.addTower(tower);
+                tower.setOwner(owner);
+                towers.add(tower);
+            }
+
+        }
+        gamestate.getProjectiles().forEach(projectile -> projectiles.add(new Projectile(projectile)));
     }
 
     public void addEnemy (Enemy enemy) {

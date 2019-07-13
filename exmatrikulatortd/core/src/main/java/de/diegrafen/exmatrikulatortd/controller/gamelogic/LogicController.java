@@ -69,12 +69,6 @@ public interface LogicController {
 
     int getYCoordinateByPosition(float yPosition);
 
-    void buildFailed();
-
-    void sendFailed();
-
-    void upgradeFailed();
-
     void setGamestate(Gamestate gamestate);
 
     void displayErrorMessage(String errorMessage, int playerNumber);

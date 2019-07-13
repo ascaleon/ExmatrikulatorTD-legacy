@@ -13,8 +13,8 @@ import de.diegrafen.exmatrikulatortd.model.Profile;
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 20:43
+ * @deprecated
  */
-
 public class ServerGameLogicController extends GameLogicController {
 
     /**
@@ -26,7 +26,6 @@ public class ServerGameLogicController extends GameLogicController {
      * Konstruktor für den Spiellogik-Controller
      *
      * @param mainController Der Haupt-Controller der Anwendung
-     * @param gamestate      Der Spielzustand, mit dem der Controller initialisiert wird
      * @param profile        Das Spieler-Profil
      * @param gameServer     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
@@ -50,17 +49,14 @@ public class ServerGameLogicController extends GameLogicController {
     @Override
     public void buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
         super.buildTower(towerType, xPosition, yPosition, playerNumber);
-
-        super.buildTower(towerType,xPosition,yPosition,playerNumber);
-
         gameServer.buildTower(towerType, xPosition, yPosition, playerNumber);
-
     }
 
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
         // TODO: Methode nach Muster von buildTower implementieren
         super.sellTower(xCoordinate, yCoordinate, playerNumber);
+        gameServer.sellTower(xCoordinate, yCoordinate, playerNumber);
     }
 
     /**
@@ -72,8 +68,8 @@ public class ServerGameLogicController extends GameLogicController {
      */
     @Override
     public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
-        // TODO: Methode nach Muster von buildTower implementieren
         super.upgradeTower(xPosition, yPosition, playerNumber);
+        gameServer.upgradeTower(xPosition, yPosition, playerNumber);
     }
 
     /**
@@ -87,6 +83,7 @@ public class ServerGameLogicController extends GameLogicController {
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
         super.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
+        gameServer.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
     }
 
     /**
@@ -103,7 +100,7 @@ public class ServerGameLogicController extends GameLogicController {
      * Sendet den aktuellen Spielzustand zum Client
      */
     public void sendServerStateToClient() {
-
+        gameServer.broadcastServerState(getGamestate());
     }
 
 }

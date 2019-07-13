@@ -643,8 +643,8 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     @Override
-    public void displayErrorMessage(String message) {
-
+    public void displayErrorMessage(String errorMessage) {
+        System.err.println(errorMessage);
     }
 
     private void removeGameObject(GameObject gameObject) {
