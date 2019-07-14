@@ -45,15 +45,18 @@ public class SaveState extends BaseModel {
 
     private int localPlayerNumber;
 
+    private String mapPath;
+
     public SaveState() {
     }
 
-    public SaveState(Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber) {
+    public SaveState(Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber, String mapPath) {
         this.saveDate = saveDate;
         this.multiplayer = multiplayer;
         this.profile = profile;
         this.gamestate = gamestate;
         this.localPlayerNumber = localPlayerNumber;
+        this.mapPath = mapPath;
     }
 
     public Date getSaveDate() {
@@ -94,5 +97,9 @@ public class SaveState extends BaseModel {
 
     public void setLocalPlayerNumber(int localPlayerNumber) {
         this.localPlayerNumber = localPlayerNumber;
+    }
+
+    public String getMapPath() {
+        return mapPath;
     }
 }

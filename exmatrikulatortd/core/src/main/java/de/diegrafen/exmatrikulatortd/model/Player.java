@@ -104,15 +104,21 @@ public class Player extends BaseModel implements Observable {
      * Der Schwierigkeitsgrad des Spieles
      */
     @Enumerated(EnumType.ORDINAL)
-    private Difficulty difficulty = MEDIUM;
+    private Difficulty difficulty;
 
     private boolean victorious;
 
     private boolean lost;
 
+
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
+    public Player() {
+
+    }
+
     public Player(int playerNumber) {
         this.attackingEnemies = new ArrayList<>();
         this.towers = new ArrayList<>();
@@ -130,6 +136,38 @@ public class Player extends BaseModel implements Observable {
         this.resources = 1000;
         this.score = 0;
         this.difficulty = EASY;
+    }
+
+    /**
+     * Copy-Konstruktor für den Ladevorgang
+     * @param player
+     * @param gamestate
+     */
+    public Player(Player player, Gamestate gamestate) {
+        this.playerNumber = player.getPlayerNumber();
+        this.playerName = player.getPlayerName();
+        this.score = player.getScore();
+        this.resources = player.getResources();
+        this.maxLives = player.getMaxLives();
+        this.currentLives = player.getCurrentLives();
+        this.timeSinceLastSpawn = player.getTimeSinceLastSpawn();
+        this.enemiesSpawned = player.isEnemiesSpawned();
+        this.difficulty = player.getDifficulty();
+        this.victorious = player.isVictorious();
+        this.lost = player.hasLost();
+        this.towers = new LinkedList<>();
+
+        this.wayPoints = new LinkedList<>();
+        player.getWayPoints().forEach(waypoint -> wayPoints.add(new Coordinates(waypoint)));
+
+        this.waves = new LinkedList<>();
+        player.getWaves().forEach(wave -> waves.add(new Wave(wave)));
+
+        this.attackingEnemies = new LinkedList<>();
+        player.getAttackingEnemies().stream().map(Enemy::new).forEach(newEnemy -> {
+            attackingEnemies.add(newEnemy);
+            gamestate.addEnemy(newEnemy);
+        });
     }
 
     public void addEnemy(Enemy attackingEnemy) {

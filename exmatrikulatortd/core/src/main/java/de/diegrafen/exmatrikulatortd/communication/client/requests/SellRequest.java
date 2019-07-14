@@ -14,6 +14,10 @@ public class SellRequest extends Request{
 
     private int playerNumber;
 
+    public SellRequest() {
+        super();
+    }
+
     public SellRequest(int xCoordinate, int yCoordinate, int playerNumber) {
         super();
         this.xCoordinate = xCoordinate;

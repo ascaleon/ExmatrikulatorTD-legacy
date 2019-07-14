@@ -240,6 +240,10 @@ public class Tower extends ObservableModel {
 
     }
 
+    public Tower(Tower tower) {
+
+    }
+
     public Player getOwner() {
         return owner;
     }
@@ -269,21 +273,21 @@ public class Tower extends ObservableModel {
     }
 
     public float getxPosition() {
-        return position.getXCoordinate() * position.getTileSize();
+        return position.getXCoordinate() * gamestate.getTileWidth();
     }
 
     public float getyPosition() {
-        return position.getYCoordinate() * position.getTileSize();
+        return position.getYCoordinate() * gamestate.getTileHeight();
     }
 
     @Override
     public float getTargetxPosition() {
-        return position.getXCoordinate() * position.getTileSize();
+        return position.getXCoordinate() * gamestate.getTileWidth();
     }
 
     @Override
     public float getTargetyPosition() {
-        return position.getYCoordinate() * position.getTileSize();
+        return position.getYCoordinate() * gamestate.getTileHeight();
     }
 
     public int getSellPrice() {

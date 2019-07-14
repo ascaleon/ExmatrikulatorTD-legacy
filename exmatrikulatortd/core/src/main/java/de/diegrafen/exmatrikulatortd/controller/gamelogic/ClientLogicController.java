@@ -2,9 +2,11 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 public interface ClientLogicController extends LogicController {
 
-    public void buildFailed();
+    void addTowerByServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber);
 
-    public void sendFailed();
+    void sellTowerByServer(int xCoordinate, int yCoordinate, int playerNumber);
 
-    public void upgradeFailed();
+    void sendEnemyFromServer(int enemyType, int playerToSendTo, int sendingPlayer);
+
+    void upgradeTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber);
 }
