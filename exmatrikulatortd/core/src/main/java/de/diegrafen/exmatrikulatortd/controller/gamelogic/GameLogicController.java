@@ -94,7 +94,28 @@ public class GameLogicController implements LogicController {
      */
     public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
                                int gamemode, GameView gameScreen, String mapPath) {
+
         this.mainController = mainController;
+        this.profile = profile;
+        this.mapPath = mapPath;
+        this.gameStateDao = new GameStateDao();
+        this.saveStateDao = new SaveStateDao();
+        this.localPlayerNumber = localPlayerNumber;
+        this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
+        System.out.println("Multiplayer? " + multiplayer);
+        this.gameScreen = gameScreen;
+        this.gameScreen.setLogicController(this);
+
+
+        this.gamestate = createGameState(gamemode, numberOfPlayers);
+        this.gameScreen.setGameState(gamestate);
+        this.gamestate.registerObserver(gameScreen);
+        this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        initializeMap(mapPath);
+        this.gameScreen.loadMap(mapPath);
+    }
+
+    private Gamestate createGameState(int gamemode, int numberOfPlayers) {
 
         List<Player> players = new LinkedList<>();
 
@@ -112,30 +133,14 @@ public class GameLogicController implements LogicController {
             i++;
         }
 
-        this.gamestate = new Gamestate(players, waves);
-        this.profile = profile;
-        this.mapPath = mapPath;
+        Gamestate gamestate = new Gamestate(players, waves);
 
-        this.gameStateDao = new GameStateDao();
-        this.saveStateDao = new SaveStateDao();
-        this.localPlayerNumber = localPlayerNumber;
-        this.gamestate.setGameMode(gamemode);
+        gamestate.setGameMode(gamemode);
         if (gamemode == ENDLESS_SINGLE_PLAYER_GAME | gamemode == MULTIPLAYER_ENDLESS_GAME) {
-            this.gamestate.setEndlessGame(true);
+            gamestate.setEndlessGame(true);
         }
-        this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
-        System.out.println("Multiplayer? " + multiplayer);
-        this.gameScreen = gameScreen;
 
-        this.gameScreen.setLogicController(this);
-        this.gameScreen.setGameState(gamestate);
-        this.gamestate.registerObserver(gameScreen);
-        this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
-        initializeMap(mapPath);
-        this.gameScreen.loadMap(mapPath);
-        //this.gamestate.notifyObserver();
-
-        //gameStateDao.create(this.gamestate);
+        return gamestate;
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
