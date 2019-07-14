@@ -70,6 +70,8 @@ public class Enemy extends ObservableModel {
 
     private boolean respawning;
 
+
+
     @ManyToOne
     @JoinColumn(name = "wave_id")
     private Wave wave;
@@ -145,9 +147,14 @@ public class Enemy extends ObservableModel {
         this.assetsName = enemy.getAssetsName();
         this.xPosition = enemy.getxPosition();
         this.yPosition = enemy.getyPosition();
-        this.wayPointIndex = 0;
+        this.wayPointIndex = enemy.getWayPointIndex();
 
         this.respawning = enemy.isRespawning();
+    }
+
+    public Enemy(Enemy enemy, int wayPointIndex) {
+        this(enemy);
+        this.wayPointIndex = wayPointIndex;
     }
 
     public void setAttackedPlayer(Player attackedPlayer) {

@@ -76,6 +76,30 @@ public class Projectile extends ObservableModel {
         tower.getAttackDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
     }
 
+    public Projectile(Projectile projectile) {
+        this.name = projectile.getName();
+        this.assetsName = projectile.getAssetsName();
+        this.attackType = projectile.getAttackType();
+        this.damage = projectile.getDamage();
+        this.splashAmount = projectile.getsplashAmount();
+        this.splashRadius = projectile.getSplashRadius();
+        this.speed = projectile.getSpeed();
+        this.xPosition = projectile.getxPosition();
+        this.yPosition = projectile.getyPosition();
+        this.targetxPosition = projectile.getTargetxPosition();
+        this.targetyPosition = projectile.getTargetyPosition();
+
+        this.applyingDebuffs = new LinkedList<>();
+
+
+        projectile.getApplyingDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
+
+
+        // target; ?
+
+        // towerThatShot; ?
+    }
+
     @Override
     public String getName() {
         return name;

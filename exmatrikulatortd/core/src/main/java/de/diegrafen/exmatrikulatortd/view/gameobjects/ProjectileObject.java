@@ -1,6 +1,5 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,8 +9,6 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 
 public class ProjectileObject extends BaseObject {
-
-    private double angle = 0;
 
     private Animation<TextureRegion> flyingAnimation;
 
@@ -43,7 +40,7 @@ public class ProjectileObject extends BaseObject {
         super.draw(spriteBatch, deltaTime);
 
 
-        angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 90;
+        double angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 90;
 
         TextureRegion currentFrame;
 

@@ -17,6 +17,10 @@ public class SendEnemyRequest extends Request {
 
     private int sendingPlayer;
 
+    public SendEnemyRequest() {
+        super();
+    }
+
     public SendEnemyRequest(int enemyType, int playerToSendTo, int sendingPlayer) {
         this.enemyType = enemyType;
         this.playerToSendTo = playerToSendTo;

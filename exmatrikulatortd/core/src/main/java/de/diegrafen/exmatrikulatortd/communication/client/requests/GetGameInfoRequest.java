@@ -9,6 +9,7 @@ public class GetGameInfoRequest extends Request {
     private String profilePicturePath;
 
     public GetGameInfoRequest() {
+        super();
     }
 
     public GetGameInfoRequest(String playerName, String difficulty, String profilePicturePath) {

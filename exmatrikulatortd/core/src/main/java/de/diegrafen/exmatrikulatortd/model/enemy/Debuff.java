@@ -1,10 +1,8 @@
 package de.diegrafen.exmatrikulatortd.model.enemy;
 
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -57,9 +55,9 @@ public class Debuff extends BaseModel implements Cloneable {
      * Konstruktor, der alle Attribute initialisiert
      *
      * @param duration       Die Dauer des Debuffs
-     * @param armorModifier  Der Rüstungsmodifikator des Debuffs
-     * @param speedModifier  Der Geschwindigkeitsmodifikator des Debuffs
-     * @param healthModifier Der Gesundheitsmodifikator des Debuffs
+     * @param armorBonus  Der Rüstungsmodifikator des Debuffs
+     * @param speedMultiplier  Der Geschwindigkeitsmodifikator des Debuffs
+     * @param healthBonus Der Gesundheitsmodifikator des Debuffs
      */
 
 
@@ -81,7 +79,7 @@ public class Debuff extends BaseModel implements Cloneable {
     /**
      * Kopier-Konstruktor
      *
-     * @param debuff
+     * @param debuff Der Debuff, der kopiert werden soll.
      */
     public Debuff(Debuff debuff) {
         this.name = debuff.getName();

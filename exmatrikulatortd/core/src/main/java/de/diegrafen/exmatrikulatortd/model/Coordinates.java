@@ -48,12 +48,14 @@ public class Coordinates extends BaseModel {
 
     /**
      * Der assoziierte Spielzustand
+     * @deprecated
      */
     @ManyToOne
     private Gamestate gameState;
 
     /**
      * Gibt an, ob das Spielfeld an der angegebenen Stelle bebaubar ist.
+     * @deprecated
      */
     @Column(table = "collision_matrix")
     private boolean isBuildable;
@@ -71,6 +73,9 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
+    /**
+     * @deprecated
+     */
     @OneToMany(mappedBy="currentMapCell")
     private List<Enemy> enemiesInMapCell;
 
@@ -82,8 +87,6 @@ public class Coordinates extends BaseModel {
      * Gibt an, welcher Spieler an der Koordinate bauen darf
      */
     private int buildableByPlayer;
-
-    private int tileSize = TILE_SIZE;
 
     /**
      * Default-Konstruktor. Wird von JPA benötigt.
@@ -113,6 +116,15 @@ public class Coordinates extends BaseModel {
         this(xCoordinate, yCoordinate);
         this.playerNumber = playerNumber;
         this.waypointIndex = waypointIndex;
+    }
+
+    public Coordinates(Coordinates coordinates) {
+        this.xCoordinate = coordinates.getXCoordinate();
+        this.yCoordinate = coordinates.getYCoordinate();
+        this.playerNumber = coordinates.getPlayerNumber();
+        this.buildableByPlayer = coordinates.getBuildableByPlayer();
+        this.waypointIndex = coordinates.getWaypointIndex();
+        this.tower = new Tower(tower);
     }
 
     public int getXCoordinate() {
@@ -157,10 +169,6 @@ public class Coordinates extends BaseModel {
 
     public void addNeighbour (Coordinates neighbour) {
         this.neighbours.add(neighbour);
-    }
-
-    public int getTileSize() {
-        return tileSize;
     }
 
     @Override

@@ -12,15 +12,18 @@ public class GetGameInfoResponse extends Response {
 
     private List<String> playerProfilePicturePaths;
 
-    public GetGameInfoResponse() {
+    private String mapPath;
 
+    public GetGameInfoResponse() {
+        super();
     }
 
-    public GetGameInfoResponse(boolean update, int allocatedPlayerNumber, List<String> playerNames, List<String> playerProfilePicturePaths) {
+    public GetGameInfoResponse(boolean update, int allocatedPlayerNumber, List<String> playerNames, List<String> playerProfilePicturePaths, String mapPath) {
         this.update = update;
         this.allocatedPlayerNumber = allocatedPlayerNumber;
         this.playerNames = playerNames;
         this.playerProfilePicturePaths = playerProfilePicturePaths;
+        this.mapPath = mapPath;
     }
 
     public boolean isUpdate() {
@@ -41,5 +44,9 @@ public class GetGameInfoResponse extends Response {
 
     public List<String> getPlayerProfilePicturePaths() {
         return playerProfilePicturePaths;
+    }
+
+    public String getMapPath() {
+        return mapPath;
     }
 }
