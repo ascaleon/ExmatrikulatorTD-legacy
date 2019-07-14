@@ -1,12 +1,8 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
-import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
+import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
 /**
  * Interface für Controller der Spiellogik
@@ -31,7 +27,6 @@ public interface LogicController {
      * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber);
 
@@ -41,7 +36,6 @@ public interface LogicController {
      * @param xCoordinate  Die x-Koordinate des Turms
      * @param yCoordinate  Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
      */
     void sellTower(int xCoordinate, int yCoordinate, int playerNumber);
 
@@ -51,7 +45,6 @@ public interface LogicController {
      * @param xCoordinate  Die x-Koordinate des Turms
      * @param yCoordinate  Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber);
 
@@ -59,7 +52,6 @@ public interface LogicController {
      * Schickt einen Gegner zum gegnerischen Spieler
      *
      * @param enemyType Der Typ des zu schickenden Gegners
-     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer);
 
@@ -69,23 +61,25 @@ public interface LogicController {
 
     int getYCoordinateByPosition(float yPosition);
 
-    void buildFailed();
-
-    void sendFailed();
-
-    void upgradeFailed();
-
     void setGamestate(Gamestate gamestate);
 
     void displayErrorMessage(String errorMessage, int playerNumber);
 
     Gamestate getGamestate();
 
-    GameScreen getGameScreen();
+    GameView getGameScreen();
 
     int getLocalPlayerNumber();
 
     boolean hasCellTower(int xCoordinate, int yCoordinate);
 
-    public void exitGame(boolean saveBeforeExit);
+    void exitGame(boolean saveBeforeExit);
+
+    Player getLocalPlayer();
+
+    void initializeMap(String mapPath);
+
+    boolean isPause();
+
+    void setPause(boolean pause);
 }

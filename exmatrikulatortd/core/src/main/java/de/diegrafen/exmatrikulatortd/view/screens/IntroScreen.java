@@ -1,6 +1,5 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
-import com.badlogic.gdx.Game;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 /**
@@ -15,11 +14,20 @@ public class IntroScreen extends BaseScreen {
 
     @Override
     public void init () {
-        //System.out.println("Dies ist der MenuScreen!");
-        //getMainController().createNewSinglePlayerGame();
+        System.out.println("Dies ist der IntroScreen!");
     }
 
     private void showIntro () {
 
+    }
+
+    /**
+     * Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
+     *
+     * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
+     */
+    @Override
+    public void update(float deltaTime) {
+        getMainController().showMenuScreen();
     }
 }

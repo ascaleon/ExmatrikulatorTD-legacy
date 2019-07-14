@@ -138,6 +138,10 @@ public class Gamestate extends BaseModel implements Observable {
         this.gameOver = false;
     }
 
+    public Gamestate(Gamestate gamestate) {
+
+    }
+
     public void addEnemy (Enemy enemy) {
         enemies.add(enemy);
     }

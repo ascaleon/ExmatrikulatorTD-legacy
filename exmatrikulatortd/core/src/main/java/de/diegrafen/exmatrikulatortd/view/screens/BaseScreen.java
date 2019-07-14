@@ -1,19 +1,13 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.*;
-import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 /**
@@ -27,11 +21,6 @@ public abstract class BaseScreen implements Screen {
     private Viewport stageViewport;
 
     /**
-     * Das Spielobjekt.
-    */
-    private Game game;
-
-    /**
      * Die Kamera.
      */
     private OrthographicCamera camera;
@@ -40,11 +29,6 @@ public abstract class BaseScreen implements Screen {
      * Der MainController ist für die Verwaltung der Screens und Interaktion mit anderen Komponenten zuständig.
      */
     private MainController mainController;
-
-    /**
-     * Der GameLogicController ist für die Logik des Spiels zuständig.
-     */
-    GameLogicController gameLogicController;
 
     /**
      * Die Stage verwaltet den Viewport und Eingabe-Events.
@@ -57,31 +41,18 @@ public abstract class BaseScreen implements Screen {
 
     private BitmapFont bitmapFont = new BitmapFont();
 
-    private OrthographicCamera stageCamera;
-
-    private boolean pause = false;
-
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
      */
-    public BaseScreen (MainController mainController) {
+    BaseScreen(MainController mainController) {
         this.camera = new OrthographicCamera();
-        this.stageCamera = new OrthographicCamera();
         viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera); //new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
-        stageViewport = new ScreenViewport(stageCamera);
+        stageViewport = new ScreenViewport(new OrthographicCamera());
 
         this.spriteBatch = new SpriteBatch();
         this.mainController = mainController;
-        //this.game = game;
         ui = new Stage(stageViewport);
-    }
-
-    /**
-     * Der Konstruktor ohne MainController und Game erstellt lediglich eine neue Stage.
-     */
-    public BaseScreen () {
-        ui = new Stage(new ScreenViewport());
     }
 
     /**
@@ -90,18 +61,6 @@ public abstract class BaseScreen implements Screen {
      */
     @Override
     public void show() {
-        // Set Debug Mode
-        //ui.setDebugAll(gameController.isDebugOn());
-
-        // Map the controller
-        InputMultiplexer input = new InputMultiplexer();
-        //input.addProcessor(ui);
-
-        // Add an input processor to toggle debug mode via F3.
-        //input.addProcessor(new DebugProcessor(ui, gameController));
-        //Gdx.input.setInputProcessor(input);
-
-        // Screen-specific initialization
         init();
     }
 
@@ -109,8 +68,7 @@ public abstract class BaseScreen implements Screen {
      * Der Screen wird initialisiert.
      */
     public void init() {
-        //camera = new OrthographicCamera();
-        //camera.setToOrtho(false, 800, 480);
+
     }
 
     /**
@@ -200,43 +158,23 @@ public abstract class BaseScreen implements Screen {
         this.mainController = mainController;
     }
 
-    public SpriteBatch getSpriteBatch() {
+    SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
 
-    public void setSpriteBatch(SpriteBatch spriteBatch) {
-        this.spriteBatch = spriteBatch;
-    }
-
-    public OrthographicCamera getCamera() {
+    OrthographicCamera getCamera() {
         return camera;
     }
 
-    public Viewport getViewport() {
-        return viewport;
-    }
-
-    public void setViewport(Viewport viewport) {
-        this.viewport = viewport;
-    }
-
-    public Stage getUi() {
+    Stage getUi() {
         return ui;
     }
 
-    public BitmapFont getBitmapFont() {
+    BitmapFont getBitmapFont() {
         return bitmapFont;
     }
 
-    public Viewport getStageViewport() {
+    Viewport getStageViewport() {
         return stageViewport;
-    }
-
-    public boolean isPause() {
-        return pause;
-    }
-
-    public void setPause(boolean pause) {
-        this.pause = pause;
     }
 }

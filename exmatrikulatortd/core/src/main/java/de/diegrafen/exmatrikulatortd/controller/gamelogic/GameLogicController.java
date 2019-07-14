@@ -13,8 +13,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.*;
 import de.diegrafen.exmatrikulatortd.persistence.*;
 import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
-import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
-import sun.applet.Main;
+import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
 import java.util.*;
 
@@ -23,7 +22,6 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
-import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.DISTANCE_TOLERANCE;
 import static java.awt.geom.Point2D.distance;
@@ -49,7 +47,7 @@ public class GameLogicController implements LogicController {
     /**
      * Der Spielbildschirm
      */
-    private GameScreen gameScreen;
+    private GameView gameScreen;
 
     /**
      * Das lokale Spieler-Profil
@@ -76,20 +74,26 @@ public class GameLogicController implements LogicController {
 
     private boolean server;
 
-    private boolean client;
+    private boolean pause;
 
+    private String mapPath;
 
+    /**
+     *
+     */
     public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                               int gamemode, GameServer gameServer) {
-        this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
+                               int gamemode, GameView gameScreen, String mapPath, GameServer gameServer) {
+        this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath);
         this.gameServer = gameServer;
         this.server = true;
         gameServer.attachRequestListeners(this);
     }
 
-
+    /**
+     *
+     */
     public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                               int gamemode) {
+                               int gamemode, GameView gameScreen, String mapPath) {
         this.mainController = mainController;
 
         List<Player> players = new LinkedList<>();
@@ -110,6 +114,8 @@ public class GameLogicController implements LogicController {
 
         this.gamestate = new Gamestate(players, waves);
         this.profile = profile;
+        this.mapPath = mapPath;
+
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
         this.localPlayerNumber = localPlayerNumber;
@@ -119,23 +125,50 @@ public class GameLogicController implements LogicController {
         }
         this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
         System.out.println("Multiplayer? " + multiplayer);
-        this.gameScreen = new GameScreen(mainController, this);
-        this.mainController.showScreen(gameScreen);
-        if ((gamemode <= ENDLESS_SINGLE_PLAYER_GAME)) {
-            initializeMap(SINGLEPLAYER_MAP_PATH);
-        } else {
-            initializeMap(MULTIPLAYER_MAP_PATH);
-        }
+        this.gameScreen = gameScreen;
 
-        this.gamestate.notifyObserver();
+        this.gameScreen.setLogicController(this);
+        this.gameScreen.setGameState(gamestate);
+        this.gamestate.registerObserver(gameScreen);
+        this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        initializeMap(mapPath);
+        this.gameScreen.loadMap(mapPath);
+        //this.gamestate.notifyObserver();
+
         //gameStateDao.create(this.gamestate);
     }
 
+    public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
+        this(mainController, saveState, gameView);
+        this.gameServer = gameServer;
+        this.server = true;
+        gameServer.attachRequestListeners(this);
+
+    }
+
+    public GameLogicController(MainController mainController, SaveState saveState, GameView gameView) {
+        this.mainController = mainController;
+        this.gamestate = new Gamestate(saveState.getGamestate());
+        this.profile = saveState.getProfile();
+        this.mapPath = saveState.getMapPath();
+        this.localPlayerNumber = saveState.getLocalPlayerNumber();
+        this.multiplayer = saveState.isMultiplayer();
+        this.gameScreen = gameView;
+
+        this.gameScreen.setLogicController(this);
+        this.gameScreen.setGameState(gamestate);
+        this.gamestate.registerObserver(gameScreen);
+        this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        initializeMap(mapPath);
+        this.gameScreen.loadMap(mapPath);
+    }
+
+    /**
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
+     */
     @Override
     public void update(float deltaTime) {
-        // FIXME: Bestimmung, wann das Spiel zuende ist, fixen
-
-        if (!gamestate.isGameOver() && !gameScreen.isPause()) {
+        if (!gamestate.isGameOver() && !pause) {
             determineNewRound();
             if (gamestate.isRoundEnded()) {
                 determineGameOver();
@@ -196,6 +229,9 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    /**
+     *
+     */
     private void addDebuffToEnemy(Enemy enemy, Debuff debuff) {
         for (Debuff debuffToCheck : enemy.getDebuffs()) {
             if (debuff.getName().equals(debuffToCheck.getName())) {
@@ -206,6 +242,9 @@ public class GameLogicController implements LogicController {
         enemy.addDebuff(new Debuff(debuff));
     }
 
+    /**
+     *
+     */
     private void addBuffToTower(Tower tower, Buff buff) {
         for (Buff buffToCheck : tower.getBuffs()) {
             if (buff.getName().equals(buffToCheck.getName())) {
@@ -216,7 +255,15 @@ public class GameLogicController implements LogicController {
         tower.addBuff(new Buff(buff));
     }
 
-    // TODO: System zum Ermitteln von Türmen und Gegnern verbessern
+    /**
+     *
+     * Ermittelt eine Liste von Türmen in einem Umkreis um einen Punkt.
+     *
+     * @param xPosition Die x-Position des Umkreises, in dem gesucht wird
+     * @param yPosition Die y-Position des Umkreises, in dem gesucht wird
+     * @param range Der Radius, in dem gesucht werden soll
+     * @return Die Liste der gefundenen Türme
+     */
     private List<Tower> getTowersInRange(float xPosition, float yPosition, float range) {
         List<Tower> towersInRange = new LinkedList<>();
 
@@ -251,6 +298,12 @@ public class GameLogicController implements LogicController {
         return enemiesInRange;
     }
 
+    /**
+     * Gibt alle Gegner zurück, die sich Flächenschaden-Radius eines Projektils befinden
+     *
+     * @param projectile Das Projektil, das den Flächenschaden verursacht
+     * @return Die Liste der ermittelten Gegner
+     */
     private List<Enemy> getEnemiesInSplashRadius(Projectile projectile) {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
@@ -263,16 +316,37 @@ public class GameLogicController implements LogicController {
         return enemiesInRange;
     }
 
+    /**
+     * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Projektils befindet.
+     *
+     * @param enemy Der Gegner, der geprüft werden soll.
+     * @param projectile Das Projektil, von dem der Flächenschaden ausgeht.
+     * @return @code{true}, wenn sich der Gegner im Radius befindet. Ansonsten @code{false}
+     */
     private boolean isEnemeyInSplashRadius(Enemy enemy, Projectile projectile) {
         double distance = distance(projectile.getxPosition(), projectile.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
         return distance <= projectile.getSplashRadius();
     }
 
+    /**
+     * Überprüft, ob sich ein Gegner in Reichweite eines Turmes befindet.
+     *
+     * @param enemy Der Gegner, der geprüft werden soll.
+     * @param tower Der Turm, dessen Reichweite geprüft werden soll
+     * @param range Die Reichweite des Turms
+     * @return @code{true}, wenn sich der Gegner im Radius befindet. Ansonsten @code{false}
+     */
     private boolean isEnemyInRangeOfTower(Enemy enemy, Tower tower, float range) {
         double distance = distance(tower.getxPosition(), tower.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
         return distance <= range;
     }
 
+    /**
+     *
+     * Wendet die Buffs aller Türme auf diese an.
+     *
+     * @param deltaTime Die Zeit, die seit dem letzten Rendern vergangen ist
+     */
     private void applyBuffsToTowers(float deltaTime) {
         for (Tower tower : gamestate.getTowers()) {
 
@@ -294,9 +368,13 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    /**
+     *
+     * Wendet die Buffs aller Gegner auf diese an.
+     *
+     * @param deltaTime Die Zeit, die seit dem letzten Rendern vergangen ist
+     */
     private void applyDebuffsToEnemies(float deltaTime) {
-
-
         for (Enemy enemy : gamestate.getEnemies()) {
 
             List<Debuff> debuffsToRemove = new LinkedList<>();
@@ -746,11 +824,9 @@ public class GameLogicController implements LogicController {
      *
      * @param mapPath Der Dateipfad der zu ladenden Karte
      */
-    private void initializeMap(String mapPath) {
+    public void initializeMap(String mapPath) {
 
         TiledMap tiledMap = new TmxMapLoader().load(mapPath);
-
-        gameScreen.loadMap(mapPath);
 
         int numberOfColumns = (int) tiledMap.getProperties().get("width");
         int numberOfRows = (int) tiledMap.getProperties().get("height");
@@ -837,21 +913,6 @@ public class GameLogicController implements LogicController {
      */
     public int getYCoordinateByPosition(float yPosition) {
         return (int) yPosition / gamestate.getTileHeight();
-    }
-
-    @Override
-    public void buildFailed() {
-        gameScreen.displayErrorMessage("Bauen fehlgeschlagen.");
-    }
-
-    @Override
-    public void sendFailed() {
-        gameScreen.displayErrorMessage("Gegner senden fehlgeschlagen.");
-    }
-
-    @Override
-    public void upgradeFailed() {
-        gameScreen.displayErrorMessage("Turmausbau fehlgeschlagen.");
     }
 
     Coordinates getMapCellByXandYCoordinates(int xCoordinate, int yCoordinate) {
@@ -948,7 +1009,6 @@ public class GameLogicController implements LogicController {
      * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
@@ -1025,7 +1085,6 @@ public class GameLogicController implements LogicController {
      * @param xCoordinate  Die x-Koordinate des Turms
      * @param yCoordinate  Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
-     * @return Wenn das Verkaufen erfolgreich war, true, ansonsten false
      */
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
@@ -1069,7 +1128,6 @@ public class GameLogicController implements LogicController {
      * @param xCoordinate  Die x-Koordinate des Turms
      * @param yCoordinate  Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
@@ -1143,10 +1201,14 @@ public class GameLogicController implements LogicController {
     public void displayErrorMessage(String errorMessage, int playerNumber) {
         if (playerNumber == localPlayerNumber) {
             gameScreen.displayErrorMessage(errorMessage);
+        } else {
+            System.out.println(playerNumber);
+            System.out.println(localPlayerNumber);
+            gameServer.sendErrorMessage(errorMessage, playerNumber);
         }
     }
 
-    public GameScreen getGameScreen() {
+    public GameView getGameScreen() {
         return gameScreen;
     }
 
@@ -1158,14 +1220,31 @@ public class GameLogicController implements LogicController {
     public void exitGame(boolean saveBeforeExit) {
         gameScreen.dispose();
         if (saveBeforeExit) {
-            SaveState saveState = new SaveState(new Date(), multiplayer, profile, gamestate, localPlayerNumber);
+            SaveState saveState = new SaveState(new Date(), multiplayer, profile, gamestate, localPlayerNumber, mapPath);
             //saveStateDao.create(saveState);
         }
         //mainController.setEndScreen(gamestate);
         mainController.showMenuScreen();
     }
 
+    @Override
+    public Player getLocalPlayer() {
+        return gamestate.getPlayers().get(localPlayerNumber);
+    }
+
     public int getLocalPlayerNumber() {
         return localPlayerNumber;
+    }
+
+    void setLocalPlayerNumber(int localPlayerNumber) {
+        this.localPlayerNumber = localPlayerNumber;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 }

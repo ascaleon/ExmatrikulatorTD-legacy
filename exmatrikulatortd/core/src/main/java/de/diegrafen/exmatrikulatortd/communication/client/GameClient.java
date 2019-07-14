@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
 import com.badlogic.gdx.Gdx;
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
 import com.esotericsoftware.kryonet.Connection;
@@ -9,14 +8,9 @@ import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientLogicController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -29,7 +23,6 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
 /**
- *
  * Diese Klasse realisiert die Netzwerkkommunikation für Client-Instanzen. Über die Implementierung der
  * Schnittstellen ConnectorInterface bzw. ClientInterface kann ein LogicController Spielzüge an
  * den Server senden. Antworten bzw. Nachrichten werden vom GameClient sodann an den LogicController
@@ -70,7 +63,7 @@ public class GameClient extends Connector implements ClientInterface {
         client.setDiscoveryHandler(new ClientDiscoveryHandler() {
 
             @Override
-            public DatagramPacket onRequestNewDatagramPacket(){
+            public DatagramPacket onRequestNewDatagramPacket() {
                 return new DatagramPacket(new byte[48], 48);
             }
 
@@ -102,14 +95,14 @@ public class GameClient extends Connector implements ClientInterface {
 
     /**
      * Gibt eine Liste von InetAddresses zurueck, die entdeckte Server im lokalen Netzwerk enthaelt.
+     *
      * @return @code{List<InetAddress>} mit gefundenen Servern
      */
-    public List<InetAddress> discoverLocalServers(){
-        return client.discoverHosts(udpPort,5000);
+    public List<InetAddress> discoverLocalServers() {
+        return client.discoverHosts(udpPort, 5000);
     }
 
     /**
-     *
      * @param towerType    Der Typ des zu bauenden Turms
      * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
@@ -135,7 +128,6 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
-     *
      * @param xCoordinate  Die x-Koordinate des Turms
      * @param yCoordinate  Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
@@ -150,8 +142,6 @@ public class GameClient extends Connector implements ClientInterface {
      * Schickt einen Gegner zum gegnerischen Spieler
      *
      * @param enemyType      Der Typ des zu schickenden Gegners
-     * @param playerToSendTo
-     * @param sendingPlayer
      */
     @Override
     public void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer) {
@@ -165,6 +155,11 @@ public class GameClient extends Connector implements ClientInterface {
     @Override
     public void refreshLocalGameState() {
         sendRequest(new GetServerStateRequest());
+    }
+
+    @Override
+    public void reportReadiness() {
+        sendRequest(new ClientReadyRequest());
     }
 
     /**
@@ -198,22 +193,47 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
-     *
      * Fügt eine Reihe von Listenern zum Client hinzu, die darauf warten, dass eine Nachricht vom Server eintrifft
      * und eine entsprechende Aktion beim zugewiesenen LogicController auslösen
      *
      * @param logicController Der LogicController, an den empfangene Antworten weitergeleitet werden
      */
     public void attachResponseListeners(final ClientLogicController logicController) {
+        this.clientLogicController = logicController;
+
         attachBuildResponseListener(logicController);
         attachGetServerStateResponseListener(logicController);
         attachSellResponseListener(logicController);
         attachSendEnemyResponseListener(logicController);
         attachUpgradeResponseListener(logicController);
+        attachStartGameReponseListener(logicController);
+        attachErrorResponseListener(logicController);
+    }
+
+    private void attachErrorResponseListener(ClientLogicController logicController) {
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof ErrorResponse) {
+                    ErrorResponse response = (ErrorResponse) object;
+                    logicController.displayErrorMessage(response.getErrorMessage(), response.getPlayerNumber());
+                }
+            }
+        });
+    }
+
+    private void attachStartGameReponseListener(ClientLogicController logicController) {
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof StartGameResponse) {
+                    mainController.showScreen(logicController.getGameScreen());
+                }
+            }
+        });
     }
 
     /**
-     *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
     private void attachBuildResponseListener(final ClientLogicController logicController) {
@@ -232,7 +252,6 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
-     *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
     private void attachSellResponseListener(final ClientLogicController logicController) {
@@ -240,14 +259,13 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellResponse) {
                     final SellResponse response = (SellResponse) object;
-                    Gdx.app.postRunnable(() -> logicController.sellTowerByServer(response.getxCoordinate(),response.getyCoordinate(),response.getPlayerNumber()));
+                    Gdx.app.postRunnable(() -> logicController.sellTowerByServer(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
                 }
             }
         });
     }
 
     /**
-     *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
     private void attachSendEnemyResponseListener(final ClientLogicController logicController) {
@@ -263,7 +281,6 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
-     *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
     private void attachUpgradeResponseListener(final ClientLogicController logicController) {
@@ -279,7 +296,6 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     /**
-     *
      * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
      */
     private void attachGetServerStateResponseListener(final ClientLogicController logicController) {
@@ -304,19 +320,11 @@ public class GameClient extends Connector implements ClientInterface {
                     } else {
                         localPlayerNumber = response.getAllocatedPlayerNumber();
 
-                        Gdx.app.postRunnable(() -> mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL));
+                        Gdx.app.postRunnable(() -> mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL, response.getMapPath()));
                     }
                 }
             }
         });
-    }
-
-    /**
-     * Gibt an, ob der GameClient mit einem Server verbunden ist
-     * @return true, wenn der Client verbunden ist, ansonsten false.
-     */
-    public boolean isConnected() {
-        return connected;
     }
 
     public List<String> getReceivedSessionInfo() {
