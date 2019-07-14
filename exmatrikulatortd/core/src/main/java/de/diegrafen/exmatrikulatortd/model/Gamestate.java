@@ -138,7 +138,7 @@ public class Gamestate extends BaseModel implements Observable {
         this.gameOver = false;
     }
 
-    Gamestate(Gamestate gamestate) {
+    public Gamestate(Gamestate gamestate) {
         this.tileWidth = gamestate.getTileWidth();
         this.tileHeight = gamestate.getTileHeight();
         this.numberOfColumns = gamestate.getNumberOfColumns();

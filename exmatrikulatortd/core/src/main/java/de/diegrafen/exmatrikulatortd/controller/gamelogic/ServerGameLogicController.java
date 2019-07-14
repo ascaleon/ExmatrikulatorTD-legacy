@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import com.badlogic.gdx.Game;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
@@ -7,6 +8,7 @@ import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
 /**
  * Spiellogik-Controller für Multiplayer-Spiele als Server
@@ -15,6 +17,7 @@ import de.diegrafen.exmatrikulatortd.model.Profile;
  * @version 15.06.2019 20:43
  * @deprecated
  */
+
 public class ServerGameLogicController extends GameLogicController {
 
     /**
@@ -30,9 +33,8 @@ public class ServerGameLogicController extends GameLogicController {
      * @param gameServer     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ServerGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                                     int gamemode, GameServer gameServer) {
-        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
-        System.out.println("Ohai?");
+                                     int gamemode, GameView gameView, String mapPath, GameServer gameServer) {
+        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath);
         this.gameServer = gameServer;
         gameServer.attachRequestListeners(this);
     }
@@ -44,46 +46,41 @@ public class ServerGameLogicController extends GameLogicController {
      * @param xPosition    Die x-Koordinate des Turms
      * @param yPosition    Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, für die der Turm gebaut werden soll
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
     public void buildTower(int towerType, int xPosition, int yPosition, int playerNumber) {
         super.buildTower(towerType, xPosition, yPosition, playerNumber);
+
+        super.buildTower(towerType,xPosition,yPosition,playerNumber);
+
         gameServer.buildTower(towerType, xPosition, yPosition, playerNumber);
+
     }
 
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
         // TODO: Methode nach Muster von buildTower implementieren
         super.sellTower(xCoordinate, yCoordinate, playerNumber);
-        gameServer.sellTower(xCoordinate, yCoordinate, playerNumber);
     }
 
     /**
      * Rüstet einen Turm auf
      *
-     * @param xPosition
-     * @param yPosition
-     * @param playerNumber
      */
     @Override
     public void upgradeTower(int xPosition, int yPosition, int playerNumber) {
+        // TODO: Methode nach Muster von buildTower implementieren
         super.upgradeTower(xPosition, yPosition, playerNumber);
-        gameServer.upgradeTower(xPosition, yPosition, playerNumber);
     }
 
     /**
      * Schickt einen Gegner zum gegnerischen Spieler
      *
      * @param enemyType            Der Typ des zu schickenden Gegners
-     * @param playerToSendToNumber
-     * @param sendingPlayerNumber
-     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
         super.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
-        gameServer.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
     }
 
     /**
@@ -100,7 +97,6 @@ public class ServerGameLogicController extends GameLogicController {
      * Sendet den aktuellen Spielzustand zum Client
      */
     public void sendServerStateToClient() {
-        gameServer.broadcastServerState(getGamestate());
-    }
 
+    }
 }

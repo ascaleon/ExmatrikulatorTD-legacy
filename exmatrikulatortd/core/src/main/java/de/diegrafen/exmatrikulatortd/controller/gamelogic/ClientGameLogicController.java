@@ -2,14 +2,11 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
-import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Player;
-import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
@@ -31,15 +28,21 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * Konstruktor für den Spiellogik-Controller
      *
      * @param mainController Der Haupt-Controller der Anwendung
-     * @param gamestate      Der Spielzustand, mit dem der Controller initialisiert wird
      * @param profile        Das Spieler-Profil
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ClientGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-        int gamemode, GameClient gameClient) {
-        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode);
+                                     int gamemode, GameView gameView, String mapPath, GameClient gameClient) {
+        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
+    }
+
+    public ClientGameLogicController(MainController mainController, SaveState saveState, int allocatedPlayerNumber, GameView gameView, GameClient gameClient) {
+        super(mainController, saveState, gameView);
+        this.gameClient = gameClient;
+        gameClient.attachResponseListeners(this);
+        setLocalPlayerNumber(allocatedPlayerNumber);
     }
 
 
@@ -49,7 +52,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * @param xCoordinate  Die x-Koordinate des Turms
      * @param yCoordinate  Die y-Koordinate des Turms
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
-     * @return Wenn das Aufrüsten erfolgreich war, true, ansonsten false
      */
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
@@ -71,9 +73,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * Schickt einen Gegner zum gegnerischen Spieler
      *
      * @param enemyType            Der Typ des zu schickenden Gegners
-     * @param playerToSendToNumber
-     * @param sendingPlayerNumber
-     * @return Wenn das Schicken erfolgreich war, true, ansonsten false
      */
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
@@ -98,7 +97,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * @param xCoordinate  Die x-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param yCoordinate  Die y-Koordinate der Stelle, an der der Turm gebaut werden soll
      * @param playerNumber Die Nummer der Spielerin, die den Turm bauen will
-     * @return Wenn das Bauen erfolgreich war, true, ansonsten false
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
@@ -143,12 +141,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     }
 
-    @Override
-    public void displayErrorMessage(String errorMessage, int playerNumber) {
-        if (playerNumber == getLocalPlayerNumber()) {
-            getGameScreen().displayErrorMessage(errorMessage);
-        }
-    }
 
     /**
      * Beendet das Spiel
@@ -156,6 +148,5 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     public void exitGame() {
         gameClient.shutdown();
         super.exitGame(false);
-
     }
 }
