@@ -1,10 +1,8 @@
 package de.diegrafen.exmatrikulatortd.model.tower;
 
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -31,14 +29,14 @@ public class Buff extends BaseModel {
     private float duration;
 
     /**
-     * Modifikator der Angriffsgeschwindikgeit
+     * Multiplikator der Angriffsgeschwindikgeit
      */
-    private float attackSpeedModifier;
+    private float attackSpeedMultiplier;
 
     /**
-     * Modifikator des Angriffsschadens
+     * Multiplikator des Angriffsschadens
      */
-    private float attackDamageModifier;
+    private float attackDamageMultiplier;
 
     private boolean permanent;
 
@@ -51,27 +49,27 @@ public class Buff extends BaseModel {
     /**
      * Konstruktor, der alle Attribute initialisiert
      * @param duration Die Dauer des Buffs
-     * @param attackSpeedModifier Der Angriffsgeschwindigkeitsmodifikator des Buffs
-     * @param attackDamageModifier Der Angriffsschadensmodifikator des Buffs
+     * @param attackSpeedMultiplier Der Angriffsgeschwindigkeitsmultiplikator des Buffs
+     * @param attackDamageMultiplier Der Angriffsschadensmultiplikator des Buffs
      */
-    public Buff(String name, float duration, float attackSpeedModifier, float attackDamageModifier, boolean permanent) {
+    public Buff(String name, float duration, float attackSpeedMultiplier, float attackDamageMultiplier, boolean permanent) {
         this.name = name;
         this.duration = duration;
-        this.attackSpeedModifier = attackSpeedModifier;
-        this.attackDamageModifier = attackDamageModifier;
+        this.attackSpeedMultiplier = attackSpeedMultiplier;
+        this.attackDamageMultiplier = attackDamageMultiplier;
         this.permanent = permanent;
     }
 
     /**
      * Kopier-Konstruktor
      *
-     * @param buff
+     * @param buff Der Buff, der kopiert werden soll
      */
     public Buff(Buff buff) {
         this.name = buff.getName();
         this.duration = buff.getDuration();
-        this.attackSpeedModifier = buff.getAttackSpeedModifier();
-        this.attackDamageModifier = buff.getAttackDamageModifier();
+        this.attackSpeedMultiplier = buff.getAttackSpeedMultiplier();
+        this.attackDamageMultiplier = buff.getAttackDamageMultiplier();
         this.permanent = buff.isPermanent();
     }
 
@@ -91,27 +89,15 @@ public class Buff extends BaseModel {
         this.duration = duration;
     }
 
-    public float getAttackSpeedModifier() {
-        return attackSpeedModifier;
+    public float getAttackSpeedMultiplier() {
+        return attackSpeedMultiplier;
     }
 
-    public void setAttackSpeedModifier(float attackSpeedModifier) {
-        this.attackSpeedModifier = attackSpeedModifier;
-    }
-
-    public float getAttackDamageModifier() {
-        return attackDamageModifier;
-    }
-
-    public void setAttackDamageModifier(float attackDamageModifier) {
-        this.attackDamageModifier = attackDamageModifier;
+    public float getAttackDamageMultiplier() {
+        return attackDamageMultiplier;
     }
 
     public boolean isPermanent() {
         return permanent;
-    }
-
-    public void setPermanent(boolean permanent) {
-        this.permanent = permanent;
     }
 }

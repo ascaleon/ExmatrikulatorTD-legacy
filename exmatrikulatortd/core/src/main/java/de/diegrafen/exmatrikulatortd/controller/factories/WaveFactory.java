@@ -17,7 +17,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
  */
 public final class WaveFactory {
 
-    private static int enemiesPerWave = 10;
+    private static int enemiesPerWave = 20;
 
     public static final int REGULAR_WAVE = 0;
 

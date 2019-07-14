@@ -403,4 +403,3 @@ public class GameServer extends Connector implements ServerInterface {
         server.sendToAllTCP(new ErrorResponse(errorMessage, playerNumber));
     }
 }
->>>>>>> 3825ea28ca601436345c1a8e7ff4c546a034b642
