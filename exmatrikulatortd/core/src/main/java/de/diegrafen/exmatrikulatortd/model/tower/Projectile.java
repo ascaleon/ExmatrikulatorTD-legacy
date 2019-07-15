@@ -16,9 +16,11 @@ public class Projectile extends ObservableModel {
 
     private String assetsName;
 
+    private int attackType;
+
     private float damage;
 
-    private float splashPercentage;
+    private float splashAmount;
 
     private float splashRadius;
 
@@ -31,24 +33,71 @@ public class Projectile extends ObservableModel {
     @OneToOne
     private Enemy target;
 
+    @OneToOne
+    private Tower towerThatShot;
+
     private float targetxPosition;
 
     private float targetyPosition;
 
-    @OneToMany(orphanRemoval = true, cascade= CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Debuff> applyingDebuffs;
 
     public Projectile() {
     }
 
-    public Projectile(String name, String assetsName, float damage, float splashPercentage, float splashRadius, float speed) {
+    // TODO: Könnte tatsächlich obsolet geworden sein
+    public Projectile(String name, String assetsName, int attackType, float damage, float splashAmount, float splashRadius, float speed) {
         this.name = name;
         this.assetsName = assetsName;
+        this.attackType = attackType;
         this.damage = damage;
-        this.splashPercentage = splashPercentage;
+        this.splashAmount = splashAmount;
         this.splashRadius = splashRadius;
         this.speed = speed;
         this.applyingDebuffs = new LinkedList<>();
+    }
+
+    public Projectile(Tower tower) {
+        this.name = tower.getProjectileName();
+        this.assetsName = tower.getProjectileAssetsName();
+        this.attackType = tower.getAttackType();
+        this.damage = tower.getCurrentAttackDamage();
+        this.splashAmount = tower.getSplashAmount();
+        this.splashRadius = tower.getSplashRadius();
+        this.speed = tower.getProjectileSpeed();
+        this.xPosition = tower.getxPosition();
+        this.yPosition = tower.getyPosition();
+        this.target = tower.getCurrentTarget();
+        this.towerThatShot = tower;
+        this.targetxPosition = tower.getCurrentTarget().getxPosition();
+        this.targetyPosition = tower.getCurrentTarget().getyPosition();
+        this.applyingDebuffs = new LinkedList<>();
+        tower.getAttackDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
+    }
+
+    public Projectile(Projectile projectile) {
+        this.name = projectile.getName();
+        this.assetsName = projectile.getAssetsName();
+        this.attackType = projectile.getAttackType();
+        this.damage = projectile.getDamage();
+        this.splashAmount = projectile.getsplashAmount();
+        this.splashRadius = projectile.getSplashRadius();
+        this.speed = projectile.getSpeed();
+        this.xPosition = projectile.getxPosition();
+        this.yPosition = projectile.getyPosition();
+        this.targetxPosition = projectile.getTargetxPosition();
+        this.targetyPosition = projectile.getTargetyPosition();
+
+        this.applyingDebuffs = new LinkedList<>();
+
+
+        projectile.getApplyingDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
+
+
+        // target; ?
+
+        // towerThatShot; ?
     }
 
     @Override
@@ -65,40 +114,20 @@ public class Projectile extends ObservableModel {
         return assetsName;
     }
 
-    public void setAssetsName(String assetsName) {
-        this.assetsName = assetsName;
-    }
-
     public float getDamage() {
         return damage;
     }
 
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    public float getSplashPercentage() {
-        return splashPercentage;
-    }
-
-    public void setSplashPercentage(float splashPercentage) {
-        this.splashPercentage = splashPercentage;
+    public float getsplashAmount() {
+        return splashAmount;
     }
 
     public float getSplashRadius() {
         return splashRadius;
     }
 
-    public void setSplashRadius(float splashRadius) {
-        this.splashRadius = splashRadius;
-    }
-
     public float getSpeed() {
         return speed;
-    }
-
-    public void setSpeed(float speed) {
-        this.speed = speed;
     }
 
     @Override
@@ -123,10 +152,6 @@ public class Projectile extends ObservableModel {
         return target;
     }
 
-    public void setTarget(Enemy target) {
-        this.target = target;
-    }
-
     public float getTargetxPosition() {
         return targetxPosition;
     }
@@ -147,15 +172,11 @@ public class Projectile extends ObservableModel {
         return applyingDebuffs;
     }
 
-    public void setApplyingDebuffs(List<Debuff> applyingDebuffs) {
-        this.applyingDebuffs = applyingDebuffs;
+    public Tower getTowerThatShot() {
+        return towerThatShot;
     }
 
-    public void addDebuff(Debuff debuff) {
-        this.applyingDebuffs.add(debuff);
-    }
-
-    public void removeDebuff(Debuff debuff) {
-        this.applyingDebuffs.remove(debuff);
+    public int getAttackType() {
+        return attackType;
     }
 }

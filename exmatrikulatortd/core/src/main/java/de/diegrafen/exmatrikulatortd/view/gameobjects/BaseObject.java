@@ -1,13 +1,8 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.compression.lzma.Base;
-import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
 /**
@@ -63,17 +58,19 @@ public abstract class BaseObject implements GameObject {
 
     private float stateTime = 0f;
 
+    private boolean animated;
+
     BaseObject(ObservableUnit observable) {
         this.observable = observable;
         this.name = observable.getName();
         this.assetsName = observable.getAssetsName();
-        //this.currentSprite = new Texture(observable.getAssetsName());
         this.xPosition = observable.getxPosition();
         this.yPosition = observable.getyPosition();
         this.xTargetPosition = observable.getTargetxPosition();
         this.yTargetPosition = observable.getTargetyPosition();
         this.removed = false;
         observable.registerObserver(this);
+        initializeSprite();
     }
 
     /**
@@ -90,6 +87,7 @@ public abstract class BaseObject implements GameObject {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.removed = false;
+        this.animated = true;
     }
 
     /**
@@ -102,16 +100,15 @@ public abstract class BaseObject implements GameObject {
             observable.removeObserver(this);
             observable = null;
             stateTime = 0f;
+        } else if (!assetsName.equals(observable.getAssetsName())) {
+            this.assetsName = observable.getAssetsName();
+            initializeSprite();
         } else {
-            setxPosition(observable.getxPosition());
-            setyPosition(observable.getyPosition());
-            setxTargetPosition(observable.getTargetxPosition());
-            setyTargetPosition(observable.getTargetyPosition());
+            xPosition = observable.getxPosition();
+            yPosition = observable.getyPosition();
+            xTargetPosition = observable.getTargetxPosition();
+            yTargetPosition = observable.getTargetyPosition();
         }
-    }
-
-    void removeObject() {
-        dispose();
     }
 
     /**
@@ -126,7 +123,7 @@ public abstract class BaseObject implements GameObject {
     /**
      * Initialisiert die Darstellung des Spielobjektes
      */
-    private void initializeSprite() {
+    void initializeSprite() {
 
     }
 
@@ -142,19 +139,19 @@ public abstract class BaseObject implements GameObject {
         }
     }
 
-    public TextureAtlas getTextureAtlas() {
+    TextureAtlas getTextureAtlas() {
         return textureAtlas;
     }
 
-    public void setTextureAtlas(TextureAtlas textureAtlas) {
+    void setTextureAtlas(TextureAtlas textureAtlas) {
         this.textureAtlas = textureAtlas;
     }
 
-    public Texture getCurrentSprite() {
+    Texture getCurrentSprite() {
         return currentSprite;
     }
 
-    public void setCurrentSprite(Texture currentSprite) {
+    void setCurrentSprite(Texture currentSprite) {
         this.currentSprite = currentSprite;
     }
 
@@ -162,16 +159,8 @@ public abstract class BaseObject implements GameObject {
         return xPosition;
     }
 
-    public void setxPosition(float xPosition) {
-        this.xPosition = xPosition;
-    }
-
     public float getyPosition() {
         return yPosition;
-    }
-
-    public void setyPosition(float yPosition) {
-        this.yPosition = yPosition;
     }
 
     public String getName() {
@@ -182,49 +171,45 @@ public abstract class BaseObject implements GameObject {
         this.name = name;
     }
 
-    public void setNewPosition(float xPosition, float yPosition) {
-        this.xPosition = xPosition - currentSprite.getWidth() / 2;
-        this.yPosition = yPosition - currentSprite.getHeight() / 2;
-    }
-
     @Override
     public boolean isRemoved() {
         return removed;
     }
 
-    public void setRemoved(boolean removed) {
+    void setRemoved(boolean removed) {
         this.removed = removed;
     }
 
-    public String getAssetsName() {
+    String getAssetsName() {
         return assetsName;
     }
 
-    public float getxTargetPosition() {
+    float getxTargetPosition() {
         return xTargetPosition;
     }
 
-    public void setxTargetPosition(float xTargetPosition) {
-        this.xTargetPosition = xTargetPosition;
-    }
-
-    public float getyTargetPosition() {
+    float getyTargetPosition() {
         return yTargetPosition;
     }
 
-    public void setyTargetPosition(float yTargetPosition) {
-        this.yTargetPosition = yTargetPosition;
-    }
-
-    public boolean isPlayDeathAnimation() {
+    boolean isPlayDeathAnimation() {
         return playDeathAnimation;
     }
 
-    public float getStateTime() {
+    float getStateTime() {
         return stateTime;
     }
 
-    public void setStateTime(float stateTime) {
+    void setStateTime(float stateTime) {
         this.stateTime = stateTime;
+    }
+
+    boolean isAnimated() {
+        return animated;
+    }
+
+    @Override
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
     }
 }

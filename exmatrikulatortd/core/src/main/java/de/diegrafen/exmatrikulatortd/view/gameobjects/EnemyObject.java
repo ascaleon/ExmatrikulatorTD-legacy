@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
+import static de.diegrafen.exmatrikulatortd.util.Assets.ENEMY_SPRITE_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 
 /**
@@ -45,18 +46,28 @@ public class EnemyObject extends BaseObject {
 
     public EnemyObject(ObservableUnit observableUnit) {
         super(observableUnit);
+    }
 
-        setTextureAtlas(new TextureAtlas(observableUnit.getAssetsName()));
+    /**
+     * Initialisiert die Darstellung des Spielobjektes
+     */
+    @Override
+    void initializeSprite() {
+        super.initializeSprite();
+
+        String assetsName = getAssetsName();
+
+        setTextureAtlas(new TextureAtlas(ENEMY_SPRITE_PATH + assetsName + ".atlas"));
 
         //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
 
-        walkLeftAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveLeft"), Animation.PlayMode.LOOP_PINGPONG);
+        walkLeftAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveLeft"), Animation.PlayMode.LOOP_PINGPONG);
 
-        walkRightAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveRight"), Animation.PlayMode.LOOP_PINGPONG);
+        walkRightAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveRight"), Animation.PlayMode.LOOP_PINGPONG);
 
-        walkUpAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveUp"), Animation.PlayMode.LOOP_PINGPONG);
+        walkUpAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveUp"), Animation.PlayMode.LOOP_PINGPONG);
 
-        walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(getName() + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
+        walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
 
         //die = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "die"), Animation.PlayMode.LOOP);
     }
@@ -84,7 +95,9 @@ public class EnemyObject extends BaseObject {
 
         double angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 180;
 
-        setStateTime(getStateTime() + deltaTime);
+        if (isAnimated()) {
+            setStateTime(getStateTime() + deltaTime);
+        }
 
         TextureRegion currentFrame;
 

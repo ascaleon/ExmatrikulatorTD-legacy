@@ -10,6 +10,10 @@ public class GetServerStateResponse extends Response {
 
     private Gamestate gamestate;
 
+    public GetServerStateResponse() {
+        super();
+    }
+
     public GetServerStateResponse(Gamestate gamestate) {
         super();
         this.gamestate = gamestate;

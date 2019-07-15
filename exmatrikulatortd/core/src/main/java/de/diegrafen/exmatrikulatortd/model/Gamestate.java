@@ -33,25 +33,18 @@ public class Gamestate extends BaseModel implements Observable {
      */
     static final long serialVersionUID = 48546846516547L;
 
-    private int tileSize = 64;
+    private int tileWidth;
+
+    private int tileHeight;
 
     /**
      * Der Name der Map
      */
     private String mapName;
 
-    private int mapWidth = 20 * tileSize;
+    private int numberOfColumns;
 
-    private int numberOfColumns = 20;
-
-    private int mapHeight = 20 * tileSize;
-
-    private int numberOfRows = 20;
-
-    /**
-     * Die Spielerinnennummer der lokalen Spielinstanz. Hierüber lässt sich auf die jeweiligen Spielinformationen zugreifen.
-     */
-    private transient int localPlayerNumber;
+    private int numberOfRows;
 
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
@@ -103,15 +96,27 @@ public class Gamestate extends BaseModel implements Observable {
 
     private boolean roundEnded;
 
+    private boolean endlessGame = false;
+
     private transient List<Observer> observers;
+
+    private int gameMode;
 
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
-    public Gamestate (List<Player> players, Difficulty difficulty) {
-        this.players = players;
-        this.difficulty = difficulty;
+    public Gamestate (List<Player> players, List<Wave> waves) {
+        this.enemies = new ArrayList<>();
+        this.towers = new ArrayList<>();
+        this.projectiles = new ArrayList<>();
+        this.collisionMatrix = new ArrayList<>();
+        this.observers = new LinkedList<>();
+
+        this.players = new LinkedList<>(players);
+        this.players.forEach(player -> player.copyWaves(waves));
+        this.numberOfRounds = waves.size();
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
+        this.newRound = true;
     }
 
     /**
@@ -119,37 +124,64 @@ public class Gamestate extends BaseModel implements Observable {
      */
     public Gamestate() {
         players = new ArrayList<>();
-        enemies = new ArrayList<>();
-        towers = new ArrayList<>();
-        projectiles = new ArrayList<>();
-        collisionMatrix = new ArrayList<>();
+        enemies = new LinkedList<>();
+        towers = new LinkedList<>();
+        projectiles = new LinkedList<>();
+        collisionMatrix = new LinkedList<>();
         this.observers = new LinkedList<>();
 
         this.newRound = true;
         this.roundNumber = 0;
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.roundEnded = true;
-        this.numberOfRounds = 3;
+        this.numberOfRounds = 5;
         this.gameOver = false;
+    }
+
+    public Gamestate(Gamestate gamestate) {
+        this.tileWidth = gamestate.getTileWidth();
+        this.tileHeight = gamestate.getTileHeight();
+        this.numberOfColumns = gamestate.getNumberOfColumns();
+        this.numberOfRows = gamestate.getNumberOfRows();
+        this.roundNumber = gamestate.getRoundNumber();
+        this.numberOfRounds = gamestate.getNumberOfRounds();
+        this.gameOver = gamestate.isGameOver();
+        this.timeUntilNextRound = gamestate.getTimeUntilNextRound();
+        this.roundEnded = gamestate.isRoundEnded();
+        this.endlessGame = gamestate.isEndlessGame();
+        this.gameMode = gamestate.getGameMode();
+        this.observers = new ArrayList<>();
+
+        this.players = new ArrayList<>();
+        this.enemies = new LinkedList<>();
+        this.towers = new LinkedList<>();
+        this.projectiles = new LinkedList<>();
+        this.collisionMatrix = new LinkedList<>();
+
+        gamestate.getPlayers().forEach(player -> players.add(new Player(player, this)));
+
+        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
+            Coordinates coordinates = new Coordinates(mapCell);
+            this.collisionMatrix.add(coordinates);
+            Tower tower = coordinates.getTower();
+            if (tower != null) {
+                this.towers.add(tower);
+                Player owner = players.get(coordinates.getBuildableByPlayer());
+                owner.addTower(tower);
+                tower.setOwner(owner);
+                towers.add(tower);
+            }
+
+        }
+        gamestate.getProjectiles().forEach(projectile -> projectiles.add(new Projectile(projectile)));
     }
 
     public void addEnemy (Enemy enemy) {
         enemies.add(enemy);
     }
 
-    public void addEnemy (Enemy enemy, Player player) {
-        enemy.setAttackedPlayer(player);
-        player.addEnemy(enemy);
-        enemies.add(enemy);
-    }
-
-
     public List<Enemy> getEnemies() {
         return enemies;
-    }
-
-    public int getLocalPlayerNumber() {
-        return localPlayerNumber;
     }
 
     public List<Player> getPlayers() {
@@ -172,32 +204,12 @@ public class Gamestate extends BaseModel implements Observable {
         return players.get(playerNumber);
     }
 
-    public void setLocalPlayerNumber(int localPlayerNumber) {
-        this.localPlayerNumber = localPlayerNumber;
-    }
-
-    public int getMapWidth() {
-        return mapWidth;
-    }
-
-    public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
-    }
-
     public int getNumberOfColumns() {
         return numberOfColumns;
     }
 
     public void setNumberOfColumns(int numberOfColumns) {
         this.numberOfColumns = numberOfColumns;
-    }
-
-    public int getMapHeight() {
-        return mapHeight;
-    }
-
-    public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
     }
 
     public int getNumberOfRows() {
@@ -216,10 +228,6 @@ public class Gamestate extends BaseModel implements Observable {
         return collisionMatrix;
     }
 
-    public void setCollisionMatrix(List<Coordinates> collisionMatrix) {
-        this.collisionMatrix = collisionMatrix;
-    }
-
     public int getRoundNumber() {
         return roundNumber;
     }
@@ -230,10 +238,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     public int getNumberOfRounds() {
         return numberOfRounds;
-    }
-
-    public void setNumberOfRounds(int numberOfRounds) {
-        this.numberOfRounds = numberOfRounds;
     }
 
     public boolean isActive() {
@@ -252,44 +256,12 @@ public class Gamestate extends BaseModel implements Observable {
         return collisionMatrix.get(listIndex);
     }
 
-    public int getTileSize() {
-        return tileSize;
-    }
-
     public void removeTower(Tower tower) {
         towers.remove(tower);
     }
 
     public List<Tower> getTowers() {
         return towers;
-    }
-
-    public String getMapName() {
-        return mapName;
-    }
-
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
-    }
-
-    public void setTileSize(int tileSize) {
-        this.tileSize = tileSize;
-    }
-
-    public void setEnemies(List<Enemy> enemies) {
-        this.enemies = enemies;
-    }
-
-    public void setTowers(List<Tower> towers) {
-        this.towers = towers;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty;
     }
 
     public boolean isNewRound() {
@@ -349,5 +321,37 @@ public class Gamestate extends BaseModel implements Observable {
     @Override
     public void notifyObserver() {
         observers.forEach(Observer::update);
+    }
+
+    public boolean isEndlessGame() {
+        return endlessGame;
+    }
+
+    public void setEndlessGame(boolean endlessGame) {
+        this.endlessGame = endlessGame;
+    }
+
+    public int getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(int gameMode) {
+        this.gameMode = gameMode;
+    }
+
+    public int getTileWidth() {
+        return tileWidth;
+    }
+
+    public void setTileWidth(int tileWidth) {
+        this.tileWidth = tileWidth;
+    }
+
+    public int getTileHeight() {
+        return tileHeight;
+    }
+
+    public void setTileHeight(int tileHeight) {
+        this.tileHeight = tileHeight;
     }
 }

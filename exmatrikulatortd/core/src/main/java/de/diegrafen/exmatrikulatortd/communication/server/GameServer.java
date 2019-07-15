@@ -1,13 +1,13 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.ServerDiscoveryHandler;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
+import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 
@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MULTIPLAYER_MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
@@ -28,7 +30,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 14:03
  */
-public class GameServer extends Connector {
+public class GameServer extends Connector implements ServerInterface {
 
     /**
      * Der Port, über den TCP-Verbindungen entgegengenommen werden
@@ -45,25 +47,30 @@ public class GameServer extends Connector {
      */
     private Server server;
 
+    private MainController mainController;
+
     /**
      * Der Logik-Controller, mit dem der GameServer interagiert
      */
     private LogicController logicController;
 
-    /**
-     * Gibt an, ob der GameServer verbunden ist
-     */
-    private boolean connected;
-
     private boolean lookingForPlayers = true;
 
     private boolean gameRunning = false;
-    
-    private int numberOfPlayers = 2;
-    
-    private boolean[] slotsFilled = new boolean[numberOfPlayers];
-    
+
+    private int numberOfPlayers;
+
+    private boolean[] slotsFilled;
+
+    private boolean[] playersReady;
+
+    private String[] playerNames;
+
+    private String[] profilePicturePaths;
+
     private HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
+
+    private String mapPath = MULTIPLAYER_MAP_PATH;
 
     /**
      * Erzeugt einen neuen GameServer
@@ -72,9 +79,7 @@ public class GameServer extends Connector {
         this.tcpPort = TCP_PORT;
         this.udpPort = UDP_PORT;
         this.server = new Server();
-        this.connected = false;
         registerObjects(server.getKryo());
-        slotsFilled[0] = true;
         attachGetGameInfoRequestListener();
         System.out.println("Server created!");
     }
@@ -83,24 +88,26 @@ public class GameServer extends Connector {
     /**
      * Startet den GameServer
      *
-     * @return true, wenn das Starten erfolgreich war, ansonsten false
      */
-    public boolean startServer() {
+    public void startServer(int numberOfPlayers) {
         try {
             server.bind(tcpPort, udpPort);
             System.out.println("Server started!");
+            this.numberOfPlayers = numberOfPlayers;
+            playersReady = new boolean[numberOfPlayers];
+            slotsFilled = new boolean[numberOfPlayers];
+            slotsFilled[0] = true;
             server.setDiscoveryHandler(new ServerDiscoveryHandler() {
                 @Override
                 public boolean onDiscoverHost(DatagramChannel datagramChannel, InetSocketAddress fromAddress) throws IOException {
 
-                    boolean lookingForPlayers = true;
-
-                    String mapName = "map1";
+                    //String mapName = "map1";
 
                     String numberOfPlayers = Integer.toString(2);
 
-                    if (lookingForPlayers) {
-                        String newData = mapName + "\n" + numberOfPlayers;
+                    if (openSlotsLeft() > 0) {
+                        lookingForPlayers = true;
+                        String newData = mapPath + "\n" + numberOfPlayers;
 
                         ByteBuffer buf = ByteBuffer.allocate(48);
                         buf.clear();
@@ -117,10 +124,19 @@ public class GameServer extends Connector {
             server.start();
         } catch (final java.io.IOException e) {
             e.printStackTrace();
-            return false;
+        }
+    }
+
+    private int openSlotsLeft() {
+        int openSlots = 0;
+
+        for (boolean slotFilled : slotsFilled) {
+            if (!slotFilled) {
+                openSlots++;
+            }
         }
 
-        return connected = true;
+        return openSlots;
     }
 
     /**
@@ -137,11 +153,30 @@ public class GameServer extends Connector {
      * @param logicController Der zu assoziierende LogicController
      */
     public void attachRequestListeners(final LogicController logicController) {
+        this.logicController = logicController;
+
         attachBuildRequestListener(logicController);
         attachSellRequestListener(logicController);
         attachSendEnemyRequestListener(logicController);
         attachUpgradeRequestListener(logicController);
         attachGetServerStateRequestListener(logicController);
+        attachClientReadyRequestListener(logicController);
+    }
+
+    private void attachClientReadyRequestListener(LogicController logicController) {
+        server.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof ClientReadyRequest) {
+                    playersReady[connectionAndPlayerNumbers.get(connection.getID())] = true;
+
+                    if (areAllPlayersReady()) {
+                        server.sendToAllTCP(new StartGameResponse());
+                        mainController.showScreen(logicController.getGameScreen());
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -154,13 +189,7 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof BuildRequest) {
                     final BuildRequest request = (BuildRequest) object;
-                    final boolean successful = logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
-
-                    if (successful) {
-                        server.sendToAllTCP(new BuildResponse(successful, request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                    } else {
-                        connection.sendTCP(new BuildResponse(successful));
-                    }
+                    Gdx.app.postRunnable(() -> logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                 }
             }
         });
@@ -176,13 +205,7 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellRequest) {
                     final SellRequest request = (SellRequest) object;
-                    final boolean successful = logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
-
-                    if (successful) {
-                        server.sendToAllTCP(new SellResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                    } else {
-                        connection.sendTCP(new SellResponse(successful));
-                    }
+                    Gdx.app.postRunnable(() -> logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
                 }
             }
         });
@@ -198,13 +221,8 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof SendEnemyRequest) {
                     final SendEnemyRequest request = (SendEnemyRequest) object;
-                    final boolean successful = logicController.sendEnemy(request.getEnemyType());
+                    Gdx.app.postRunnable(() -> logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer()));
 
-                    if (successful) {
-                        server.sendToAllTCP(new SendEnemyResponse(successful, request.getEnemyType()));
-                    } else {
-                        connection.sendTCP(new SendEnemyResponse(successful));
-                    }
                 }
             }
         });
@@ -220,13 +238,8 @@ public class GameServer extends Connector {
             public void received(Connection connection, Object object) {
                 if (object instanceof UpgradeRequest) {
                     final UpgradeRequest request = (UpgradeRequest) object;
-                    final boolean successful = logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber());
+                    Gdx.app.postRunnable(() -> logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
 
-                    if (successful) {
-                        server.sendToAllTCP(new UpgradeResponse(successful, request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                    } else {
-                        connection.sendTCP(new UpgradeResponse(successful));
-                    }
                 }
             }
         });
@@ -253,18 +266,24 @@ public class GameServer extends Connector {
             List<String> playerProfilePicturePaths = new LinkedList<>();
             @Override
             public void connected(Connection connection) {
-                int playerNumber = findNextFreePlayerNumber();
-                
+
+                int playerNumber = allocatePlayerNumber();
+
                 connectionAndPlayerNumbers.put(connection.getID(), playerNumber);
 
-                if (playerNumber >= slotsFilled.length) {
+                if (openSlotsLeft() <= 0) {
                     lookingForPlayers = false;
                 }
-                                
-                GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, playerNames, playerProfilePicturePaths);
+
+                GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, playerNames, playerProfilePicturePaths, mapPath);
                 server.sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
                 getGameInfoResponse.setUpdate(false);
                 connection.sendTCP(getGameInfoResponse);
+                System.out.println("Looking for Players? " + lookingForPlayers);
+                System.out.println("Looking for Players? " + lookingForPlayers);
+                if (!lookingForPlayers) {
+                    Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
+                }
             }
 
             @Override
@@ -281,19 +300,10 @@ public class GameServer extends Connector {
             @Override
             public void received(Connection connection, Object object) {
                 if (object instanceof GetGameInfoRequest) {
-                    connection.sendTCP(new GetGameInfoResponse(true, 1, playerNames, playerProfilePicturePaths));
+                    connection.sendTCP(new GetGameInfoResponse(true, 1, playerNames, playerProfilePicturePaths, mapPath));
                 }
             }
         });
-    }
-
-    /**
-     * Gibt an, ob der Server verbunden ist
-     *
-     * @return Gibt zurück, ob der Server verbunden ist
-     */
-    public boolean isConnected() {
-        return connected;
     }
 
     /**
@@ -306,7 +316,7 @@ public class GameServer extends Connector {
      */
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        server.sendToAllTCP(new BuildResponse(true, towerType, xCoordinate, yCoordinate, playerNumber));
+        server.sendToAllTCP(new BuildResponse(towerType, xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
@@ -318,7 +328,7 @@ public class GameServer extends Connector {
      */
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        server.sendToAllTCP(new SellResponse(true, xCoordinate, yCoordinate, playerNumber));
+        server.sendToAllTCP(new SellResponse(xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
@@ -330,27 +340,45 @@ public class GameServer extends Connector {
      */
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
-        server.sendToAllTCP(new UpgradeResponse(true, xCoordinate, yCoordinate, playerNumber));
+        server.sendToAllTCP(new UpgradeResponse(xCoordinate, yCoordinate, playerNumber));
     }
 
     /**
-     * TODO: Diese Methode passt, glaube ich, noch nicht so ganz. --JKR
-     * Sendet an alle Clients eine Nachricht, dass ein Gegner geschickt wurde
+     * Schickt einen Gegner zum gegnerischen Spieler
      *
-     * @param enemyType Der Typ des zu schickenden Gegners
+     * @param enemyType      Der Typ des zu schickenden Gegners
+     * @param playerToSendTo Die Nummer der Spielerin, an die der Gegner geschickt werden soll
+     * @param sendingPlayer  Die Nummer der sendenden Spielerin
      */
     @Override
-    public void sendEnemy(int enemyType) {
-        server.sendToAllTCP(new SendEnemyResponse(true, enemyType));
+    public void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer) {
+        server.sendToAllTCP(new SendEnemyResponse(enemyType, playerToSendTo, sendingPlayer));
     }
 
-    public void setNumberOfPlayers(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
+    @Override
+    public void setServerReady() {
+        playersReady[0] = true;
+
+        if (areAllPlayersReady()) {
+            server.sendToAllTCP(new StartGameResponse());
+            mainController.showScreen(logicController.getGameScreen());
+        }
     }
-    
-    private int findNextFreePlayerNumber() {
+
+    private boolean areAllPlayersReady() {
+
+        boolean allPlayersReady = true;
+
+        for (boolean isPlayerReady : playersReady) {
+            allPlayersReady &= isPlayerReady;
+        }
+
+        return allPlayersReady;
+    }
+
+    private int allocatePlayerNumber() {
         int returnValue = -1;
-        
+
         for (int i = 0; i < slotsFilled.length; i++) {
             if (!slotsFilled[i]) {
                 returnValue = i;
@@ -358,7 +386,20 @@ public class GameServer extends Connector {
                 break;
             }
         }
-        
+
         return returnValue;
+    }
+
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
+    @Override
+    public void sendErrorMessage(String errorMessage, int playerNumber) {
+        server.sendToAllTCP(new ErrorResponse(errorMessage, playerNumber));
     }
 }

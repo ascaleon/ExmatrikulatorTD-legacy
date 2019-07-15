@@ -13,12 +13,29 @@ public class SendEnemyRequest extends Request {
 
     private int enemyType;
 
-    public SendEnemyRequest(int enemyType) {
+    private int playerToSendTo;
+
+    private int sendingPlayer;
+
+    public SendEnemyRequest() {
         super();
+    }
+
+    public SendEnemyRequest(int enemyType, int playerToSendTo, int sendingPlayer) {
         this.enemyType = enemyType;
+        this.playerToSendTo = playerToSendTo;
+        this.sendingPlayer = sendingPlayer;
     }
 
     public int getEnemyType() {
         return enemyType;
+    }
+
+    public int getPlayerToSendTo() {
+        return this.playerToSendTo;
+    }
+
+    public int getSendingPlayer() {
+        return this.sendingPlayer;
     }
 }

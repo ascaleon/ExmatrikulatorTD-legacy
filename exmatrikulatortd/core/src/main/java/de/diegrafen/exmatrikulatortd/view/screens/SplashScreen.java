@@ -1,6 +1,5 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
-import com.badlogic.gdx.Game;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 /**
@@ -9,8 +8,8 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  */
 public class SplashScreen extends BaseScreen {
 
-    public SplashScreen (MainController mainController, Game game) {
-        super(mainController, game);
+    public SplashScreen (MainController mainController) {
+        super(mainController);
     }
 
     @Override
@@ -27,7 +26,7 @@ public class SplashScreen extends BaseScreen {
     @Override
     public void update(float delta) {
         if (getMainController().areAssetsLoaded()) {
-            getMainController().showMenuScreen();
+            getMainController().showIntroScreen();
         }
     }
 

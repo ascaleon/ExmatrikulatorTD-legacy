@@ -11,6 +11,8 @@ public class Assets {
 
     public static final String REGULAR_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 
+    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "sprites/objects/towers/WanderingEye2@64x64.png";
+
     public static final String SLOW_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 
     public static final String CORRUPTION_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
@@ -19,11 +21,15 @@ public class Assets {
 
     public static final String AURA_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 
-    public static final String REGULAR_ENEMY_ASSETS = "sprites/objects/enemies/monster_cacto.atlas";
+    public static final String ENEMY_SPRITE_PATH = "sprites/objects/enemies/";
 
-    public static final String HEAVY_ENEMY_ASSETS = "sprites/objects/enemies/monster_golem.atlas";
+    public static final String REGULAR_ENEMY_ASSETS = "monster_cacto";
 
-    public static final String MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+    public static final String HEAVY_ENEMY_ASSETS = "monster_golem";
+
+    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+
+    public static final String MULTIPLAYER_MAP_PATH = "sprites/gamemap/multiplayer_map.tmx";
 
     public static final String FIREBALL_ASSETS = "sprites/objects/projectiles/fireball/fireball.atlas";
 }

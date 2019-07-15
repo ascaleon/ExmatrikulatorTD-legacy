@@ -1,27 +1,21 @@
 package de.diegrafen.exmatrikulatortd.controller;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Server;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Highscore;
-import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
+import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
-import de.diegrafen.exmatrikulatortd.view.screens.EndScreen;
-import de.diegrafen.exmatrikulatortd.view.screens.GameScreen;
-import de.diegrafen.exmatrikulatortd.view.screens.MenuScreen;
-import de.diegrafen.exmatrikulatortd.view.screens.SplashScreen;
+import de.diegrafen.exmatrikulatortd.view.screens.*;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -83,6 +77,10 @@ public class MainController {
      */
     private GameClient gameClient;
 
+    private LogicController currentLogicController;
+
+    private Screen introScreen;
+
     /**
      * Erzeugt einen neuen Maincontroller, das ein Game-Objekt verwaltet
      *
@@ -90,8 +88,9 @@ public class MainController {
      */
     public MainController(Game game) {
         this.game = game;
-        this.splashScreen = new SplashScreen(this, game);
-        this.menuScreen = new MenuScreen(this, game);
+        this.splashScreen = new SplashScreen(this);
+        this.menuScreen = new MenuScreen(this);
+        this.introScreen = new IntroScreen(this);
         this.assetManager = new AssetManager();
         this.profileDao = new ProfileDao();
         this.highScoreDao = new HighscoreDao();
@@ -133,7 +132,7 @@ public class MainController {
      * @param gamestate Der Spielzustand, dessen Informationen angezeigt werden sollen
      */
     public void setEndScreen(Gamestate gamestate) {
-        game.setScreen(new EndScreen(this, game, gamestate));
+        game.setScreen(new EndScreen(this, gamestate));
     }
 
     /**
@@ -158,7 +157,6 @@ public class MainController {
     /**
      * Legt ein Profil als aktuelles Profil fest
      *
-     * @return Das festzulegende Profil
      */
     public void setCurrentProfile(Profile currentProfile) {
         this.currentProfile = currentProfile;
@@ -169,6 +167,7 @@ public class MainController {
      */
     public void createServer() {
         this.gameServer = new GameServer();
+        this.gameServer.setMainController(this);
     }
 
     /**
@@ -177,45 +176,25 @@ public class MainController {
     public void createClient() {
         if (gameClient == null) {
             this.gameClient = new GameClient();
+            this.gameClient.setMainController(this);
         } else {
-            /*
-            // Code, um Server-Funktionalität zu testen.
-            List<InetAddress> servers  = gameClient.discoverLocalServers();
 
-
-            // TODO: Empfangene Informationen müssen geparst werden
-            for (InetAddress inetAddress : servers) {
-                System.out.println(inetAddress.getHostAddress());
-            }
-
-            for (String string : gameClient.getReceivedSessionInfo()) {
-                System.out.println(string);
-            }
-
-            if (!servers.isEmpty()) {
-                gameClient.connect(servers.get(0).getHostName());
-            } else {
-                System.out.println("Keine Server gefunden!");
-            }
-             */
         }
     }
 
     public List<String> getLocalGameServers() {
 
-        List<String> serverList = new ArrayList<>();
-
         // Code, um Server-Funktionalität zu testen.
-        List<InetAddress> servers  = gameClient.discoverLocalServers();
+        List<InetAddress> servers = gameClient.discoverLocalServers();
 
 
         // TODO: Empfangene Informationen müssen geparst werden
         //for (InetAddress inetAddress : servers) {
-            //System.out.println(inetAddress.getHostAddress());
-            //serverList.add(inetAddress.getHostAddress());
+        //System.out.println(inetAddress.getHostAddress());
+        //serverList.add(inetAddress.getHostAddress());
         //}
 
-        serverList = gameClient.getReceivedSessionInfo();
+        List<String> serverList = gameClient.getReceivedSessionInfo();
 
         for (String string : serverList) {
             System.out.println(string);
@@ -239,7 +218,7 @@ public class MainController {
      * Startet den GameServer
      */
     public void startServer() {
-        gameServer.startServer();
+        gameServer.startServer(2);
     }
 
     /**
@@ -254,47 +233,59 @@ public class MainController {
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
-    public void createNewSinglePlayerGame() {
-        game.setScreen(new GameScreen(this, game, currentProfile));
+    public void createNewSinglePlayerGame(int gamemode, String mapPath) {
+        GameView gameScreen = new GameScreen(this);
+        new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
+        showScreen(gameScreen);
     }
 
     /**
      * Lädt ein Einzelspieler-Spiel
      *
-     * @param gamestate Der Spielzustand, der geladen werden soll
+     * @param saveState Der Spielzustand, der geladen werden soll
      */
-    public void loadSinglePlayerGame(Gamestate gamestate) {
-        game.setScreen(new GameScreen(this, game, currentProfile, gamestate));
+    public void loadSinglePlayerGame(SaveState saveState) {
+        GameView gameScreen = new GameScreen(this);
+        new GameLogicController(this, saveState, gameScreen);
+        showScreen(gameScreen);
     }
 
     /**
      * Erzeugt ein neues Multiplayer-Spiel als Client
      */
-    public void createNewMultiplayerClientGame() {
-        new GameScreen(this, game, currentProfile, gameClient);
+    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+        GameView gameScreen = new GameScreen(this);
+        new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
+        showScreen(gameScreen);
     }
 
     /**
      * Lädt ein Multiplayerspiel als Client
      */
-    public void loadMultiPlayerClientGame() {
-        game.setScreen(new GameScreen(this, game, currentProfile, new Gamestate()));
+    public void loadMultiPlayerClientGame(SaveState saveState, int allocatedPlayerNumber) {
+        GameView gameScreen = new GameScreen(this);
+        new ClientGameLogicController(this, saveState, allocatedPlayerNumber, gameScreen, gameClient);
+        showScreen(gameScreen);
     }
 
     /**
      * Erzeugt ein Multiplayer-Spiel als Server
      */
-    public void createNewMultiplayerServerGame() {
-        new GameScreen(this, game, currentProfile, gameServer);
+    public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+        GameView gameScreen = new GameScreen(this);
+        new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer);
+        showScreen(gameScreen);
     }
 
     /**
      * Lädt ein Multiplayerspiel als Server
      *
-     * @param gamestate Der Spielzustand, der geladen werden soll
+     * @param saveState Der Spielzustand, der geladen werden soll
      */
-    public void loadMultiPlayerServerGame(Gamestate gamestate) {
-        game.setScreen(new GameScreen(this, game, currentProfile, gameServer, gamestate));
+    public void loadMultiPlayerServerGame(SaveState saveState) {
+        GameView gameScreen = new GameScreen(this);
+        new GameLogicController(this, saveState, gameScreen, gameServer);
+        showScreen(gameScreen);
     }
 
     public List<Highscore> retrieveHighscores(int limit) {
@@ -311,7 +302,14 @@ public class MainController {
         //highScoreDao.create(highscore2);
         //highScoreDao.create(highscore3);
 
-        return highScoreDao.findHighestScores(limit);
+        return new LinkedList<>(); //highScoreDao.findHighestScores(limit);
     }
 
+    public void showScreen(Screen screen) {
+        game.setScreen(screen);
+    }
+
+    public void showIntroScreen() {
+        game.setScreen(introScreen);
+    }
 }

@@ -2,10 +2,7 @@ package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 /**
  *
@@ -18,6 +15,14 @@ public class TowerObject extends BaseObject {
 
     public TowerObject (ObservableUnit observableUnit) {
         super(observableUnit);
+    }
+
+    /**
+     * Initialisiert die Darstellung des Spielobjektes
+     */
+    @Override
+    void initializeSprite() {
+        super.initializeSprite();
         setCurrentSprite(new Texture(getAssetsName()));
     }
 

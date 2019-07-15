@@ -23,8 +23,8 @@ public class EndScreen extends BaseScreen {
      * @param mainController
      * @param gameState
      */
-    public EndScreen (MainController mainController, Game game, Gamestate gameState) {
-        super(mainController, game);
+    public EndScreen (MainController mainController, Gamestate gameState) {
+        super(mainController);
         this.gameState = gameState;
     }
 

@@ -9,11 +9,13 @@ import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_AND_HEAVY_WAVE;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_WAVE;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.createWave;
+import static de.diegrafen.exmatrikulatortd.model.Difficulty.*;
 
 /**
  * Die Spielerklasse. Verwaltet die Informationen über den Spieler wie Name, Anzahl der Leben und die erzielten Punkte
@@ -32,7 +34,7 @@ public class Player extends BaseModel implements Observable {
      * Der Zustand des laufenden Spiels
      */
     @ManyToOne
-    @JoinColumn(name="gamestate_id")
+    @JoinColumn(name = "gamestate_id")
     private Gamestate gameState;
 
     /**
@@ -68,19 +70,19 @@ public class Player extends BaseModel implements Observable {
     /**
      * Die Türme des Spielers
      */
-    @OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Tower> towers;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     private List<Wave> waves;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy="attackedPlayer", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "attackedPlayer", cascade = CascadeType.ALL)
     private List<Enemy> attackingEnemies;
 
     /**
@@ -99,14 +101,31 @@ public class Player extends BaseModel implements Observable {
     private transient List<Observer> observers;
 
     /**
+     * Der Schwierigkeitsgrad des Spieles
+     */
+    @Enumerated(EnumType.ORDINAL)
+    private Difficulty difficulty;
+
+    private boolean victorious;
+
+    private boolean lost;
+
+
+
+    /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
-    public Player () {
+    public Player() {
+
+    }
+
+    public Player(int playerNumber) {
         this.attackingEnemies = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.wayPoints = new ArrayList<>();
         this.waves = new ArrayList<>();
         this.observers = new ArrayList<>();
+        this.playerNumber = playerNumber;
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
@@ -116,28 +135,46 @@ public class Player extends BaseModel implements Observable {
         this.maxLives = 25;
         this.resources = 1000;
         this.score = 0;
-
-        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-        waves.add(createWave(REGULAR_WAVE));
-        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-
-        // TODO: Wegpunkte automatisch über die Karte erstellen lassen
-        wayPoints.add(new Coordinates(0,20-14));
-        wayPoints.add(new Coordinates(3,20-14));
-        wayPoints.add(new Coordinates(3,20-17));
-        wayPoints.add(new Coordinates(17,20-17));
-        wayPoints.add(new Coordinates(17,20-13));
-        wayPoints.add(new Coordinates(10,20-13));
-        wayPoints.add(new Coordinates(10,20-4));
-        wayPoints.add(new Coordinates(17,20-4));
-        wayPoints.add(new Coordinates(17,20-2));
+        this.difficulty = EASY;
     }
 
-    public void addEnemy (Enemy attackingEnemy) {
+    /**
+     * Copy-Konstruktor für den Ladevorgang
+     * @param player
+     * @param gamestate
+     */
+    public Player(Player player, Gamestate gamestate) {
+        this.playerNumber = player.getPlayerNumber();
+        this.playerName = player.getPlayerName();
+        this.score = player.getScore();
+        this.resources = player.getResources();
+        this.maxLives = player.getMaxLives();
+        this.currentLives = player.getCurrentLives();
+        this.timeSinceLastSpawn = player.getTimeSinceLastSpawn();
+        this.enemiesSpawned = player.isEnemiesSpawned();
+        this.difficulty = player.getDifficulty();
+        this.victorious = player.isVictorious();
+        this.lost = player.hasLost();
+        this.towers = new LinkedList<>();
+
+        this.wayPoints = new LinkedList<>();
+        player.getWayPoints().forEach(waypoint -> wayPoints.add(new Coordinates(waypoint)));
+
+        this.waves = new LinkedList<>();
+        player.getWaves().forEach(wave -> waves.add(new Wave(wave)));
+
+        this.attackingEnemies = new LinkedList<>();
+        player.getAttackingEnemies().stream().map(Enemy::new).forEach(newEnemy -> {
+            attackingEnemies.add(newEnemy);
+            gamestate.addEnemy(newEnemy);
+        });
+    }
+
+    public void addEnemy(Enemy attackingEnemy) {
         this.attackingEnemies.add(attackingEnemy);
     }
 
-    public void addTower (Tower tower) {
+    public void addTower(Tower tower) {
         towers.add(tower);
     }
 
@@ -149,15 +186,8 @@ public class Player extends BaseModel implements Observable {
         this.wayPoints = wayPoints;
     }
 
-    public Coordinates getWayPointByIndex (int index) {
+    public Coordinates getWayPointByIndex(int index) {
         return wayPoints.get(index);
-    }
-
-    /**
-     * Fügt der nächsten Welle einen Gegner hinzu
-     */
-    public void addEnemyToNextWave () {
-
     }
 
     public int getMaxLives() {
@@ -193,15 +223,15 @@ public class Player extends BaseModel implements Observable {
         return resources;
     }
 
-    public void setResources (int resources) {
+    public void setResources(int resources) {
         this.resources = resources;
     }
 
-    public void addToResources (int resources) {
+    public void addToResources(int resources) {
         this.resources += resources;
     }
 
-    public void addToScore (int score) {
+    public void addToScore(int score) {
         this.score += score;
     }
 
@@ -287,4 +317,36 @@ public class Player extends BaseModel implements Observable {
     public void notifyObserver() {
         observers.forEach(Observer::update);
     }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void setVictorious(boolean victorious) {
+        this.victorious = victorious;
+    }
+
+    public boolean isVictorious() {
+        return victorious;
+    }
+
+    public void copyWaves(List<Wave> waves) {
+        this.waves = new LinkedList<>();
+        for (Wave wave : waves) {
+            this.waves.add(new Wave(wave));
+        }
+    }
+
+    public boolean hasLost() {
+        return lost;
+    }
+
+    public void setLost(boolean lost) {
+        this.lost = lost;
+    }
+
 }

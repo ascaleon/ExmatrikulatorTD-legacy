@@ -14,6 +14,10 @@ public class UpgradeRequest extends Request {
 
     private int playerNumber;
 
+    public UpgradeRequest() {
+        super();
+    }
+
     public UpgradeRequest(int xCoordinate, int yCoordinate, int playerNumber) {
         super();
         this.xCoordinate = xCoordinate;

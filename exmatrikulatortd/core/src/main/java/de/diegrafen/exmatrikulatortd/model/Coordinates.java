@@ -19,7 +19,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
  * @version 13.06.2019 21:41
  */
 @Entity
-@Table(name = "points")
+@Table(name = "waypoints")
 @SecondaryTable(name = "collision_matrix")
 @NamedQueries({
         @NamedQuery(name="Coordinates.findAll",
@@ -48,15 +48,23 @@ public class Coordinates extends BaseModel {
 
     /**
      * Der assoziierte Spielzustand
+     * @deprecated
      */
     @ManyToOne
     private Gamestate gameState;
 
     /**
      * Gibt an, ob das Spielfeld an der angegebenen Stelle bebaubar ist.
+     * @deprecated
      */
     @Column(table = "collision_matrix")
     private boolean isBuildable;
+
+    @Column(table = "waypoints")
+    private int waypointIndex;
+
+    @Column(table = "waypoints")
+    private int playerNumber;
 
     /**
      * Der mit der Koordinate assoziierte Turm
@@ -65,6 +73,9 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
+    /**
+     * @deprecated
+     */
     @OneToMany(mappedBy="currentMapCell")
     private List<Enemy> enemiesInMapCell;
 
@@ -76,8 +87,6 @@ public class Coordinates extends BaseModel {
      * Gibt an, welcher Spieler an der Koordinate bauen darf
      */
     private int buildableByPlayer;
-
-    private int tileSize = TILE_SIZE;
 
     /**
      * Default-Konstruktor. Wird von JPA benötigt.
@@ -94,29 +103,36 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
-        this.enemiesInMapCell = new ArrayList<Enemy>();
-        this.neighbours = new ArrayList<Coordinates>();
     }
 
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
         this(xCoordinate, yCoordinate);
         this.buildableByPlayer = buildableByPlayer;
+        this.enemiesInMapCell = new ArrayList<>();
+        this.neighbours = new ArrayList<>();
+    }
+
+    public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex) {
+        this(xCoordinate, yCoordinate);
+        this.playerNumber = playerNumber;
+        this.waypointIndex = waypointIndex;
+    }
+
+    public Coordinates(Coordinates coordinates) {
+        this.xCoordinate = coordinates.getXCoordinate();
+        this.yCoordinate = coordinates.getYCoordinate();
+        this.playerNumber = coordinates.getPlayerNumber();
+        this.buildableByPlayer = coordinates.getBuildableByPlayer();
+        this.waypointIndex = coordinates.getWaypointIndex();
+        this.tower = new Tower(tower);
     }
 
     public int getXCoordinate() {
         return xCoordinate;
     }
 
-    public void setXCoordinate(int xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
     public int getYCoordinate() {
         return yCoordinate;
-    }
-
-    public void setYCoordinate(int yCoordinate) {
-        this.yCoordinate = yCoordinate;
     }
 
     public int getxCoordinate() {
@@ -135,22 +151,6 @@ public class Coordinates extends BaseModel {
         this.yCoordinate = yCoordinate;
     }
 
-    public Gamestate getGameState() {
-        return gameState;
-    }
-
-    public void setGameState(Gamestate gameState) {
-        this.gameState = gameState;
-    }
-
-    public boolean isBuildable() {
-        return isBuildable;
-    }
-
-    public void setBuildable(boolean buildable) {
-        isBuildable = buildable;
-    }
-
     public Tower getTower() {
         return tower;
     }
@@ -163,52 +163,32 @@ public class Coordinates extends BaseModel {
         return buildableByPlayer;
     }
 
-    public void setBuildableByPlayer(int buildableByPlayer) {
-        this.buildableByPlayer = buildableByPlayer;
-    }
-
-    public List<Enemy> getEnemiesInMapCell() {
-        return enemiesInMapCell;
-    }
-
-    public void setEnemiesInMapCell(List<Enemy> enemiesInMapCell) {
-        this.enemiesInMapCell = enemiesInMapCell;
-    }
-
     public List<Coordinates> getNeighbours() {
         return neighbours;
-    }
-
-    public void setNeighbours (List<Coordinates> neighbours) {
-        this.neighbours = neighbours;
     }
 
     public void addNeighbour (Coordinates neighbour) {
         this.neighbours.add(neighbour);
     }
 
-    public void removeNeighbour (Coordinates neighbour) {
-        this.neighbours.remove(neighbour);
-    }
-
-    public void addToEnemiesOnCell(Enemy enemy) {
-        enemiesInMapCell.add(enemy);
-    }
-
-    public void removeFromEnemiesOnCell(Enemy enemy) {
-        enemiesInMapCell.remove(enemy);
-    }
-
-    public int getTileSize() {
-        return tileSize;
-    }
-
-    public void setTileSize(int tileSize) {
-        this.tileSize = tileSize;
-    }
-
     @Override
     public String toString () {
         return "xPosition: " + xCoordinate + ", yPosition: " + yCoordinate;
+    }
+
+    public int getWaypointIndex() {
+        return waypointIndex;
+    }
+
+    public void setWaypointIndex(int waypointIndex) {
+        this.waypointIndex = waypointIndex;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
     }
 }

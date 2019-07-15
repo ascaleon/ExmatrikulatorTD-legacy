@@ -17,7 +17,7 @@ public final class NewGameFactory {
 
     public static final int ENDLESS_SINGLE_PLAYER_GAME = 1;
 
-    public static final int MULTIPLAYER_DUELL = 2;
+    public static final int MULTIPLAYER_DUEL = 2;
 
     public static final int MULTIPLAYER_STANDARD_GAME = 3;
 
@@ -43,7 +43,7 @@ public final class NewGameFactory {
             }
         } else if (numberOfPlayers > 1 & numberOfPlayers <= MAX_PLAYERS) {
             switch (gameMode) {
-                case MULTIPLAYER_DUELL:
+                case MULTIPLAYER_DUEL:
                     gamestate = createMultiPlayerDuell(numberOfPlayers);
                     break;
                 case MULTIPLAYER_STANDARD_GAME:
@@ -59,7 +59,7 @@ public final class NewGameFactory {
     }
 
     private static Gamestate createStandardSinglePlayerGame() {
-        Player player = new Player();
+        Player player = new Player(0);
         List<Wave> waves = new LinkedList<>();
 
         Gamestate gamestate = new Gamestate();
@@ -89,7 +89,7 @@ public final class NewGameFactory {
         Gamestate gamestate = new Gamestate();
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = new Player();
+            Player player = new Player(i);
 
             player.setCurrentLives(25);
             player.setMaxLives(25);
@@ -109,7 +109,7 @@ public final class NewGameFactory {
         Gamestate gamestate = new Gamestate();
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = new Player();
+            Player player = new Player(i);
             List<Wave> waves = new LinkedList<>();
 
             waves.add(createWave(REGULAR_AND_HEAVY_WAVE));

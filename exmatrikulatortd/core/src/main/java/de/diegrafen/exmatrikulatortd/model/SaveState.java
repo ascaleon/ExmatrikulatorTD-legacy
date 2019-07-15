@@ -5,6 +5,7 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -27,7 +28,7 @@ public class SaveState extends BaseModel {
     /**
      * Gibt an, ob es sich um einen Multiplayer-Spielstand handelt
      */
-    private boolean isMultiplayer;
+    private boolean multiplayer;
 
     /**
      * Das mit dem Spielstand assoziierte Profil
@@ -42,4 +43,63 @@ public class SaveState extends BaseModel {
     @OneToOne
     private Gamestate gamestate;
 
+    private int localPlayerNumber;
+
+    private String mapPath;
+
+    public SaveState() {
+    }
+
+    public SaveState(Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber, String mapPath) {
+        this.saveDate = saveDate;
+        this.multiplayer = multiplayer;
+        this.profile = profile;
+        this.gamestate = gamestate;
+        this.localPlayerNumber = localPlayerNumber;
+        this.mapPath = mapPath;
+    }
+
+    public Date getSaveDate() {
+        return saveDate;
+    }
+
+    public void setSaveDate(Date saveDate) {
+        this.saveDate = saveDate;
+    }
+
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
+    public void setMultiplayer(boolean multiplayer) {
+        this.multiplayer = multiplayer;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public Gamestate getGamestate() {
+        return gamestate;
+    }
+
+    public void setGamestate(Gamestate gamestate) {
+        this.gamestate = gamestate;
+    }
+
+    public int getLocalPlayerNumber() {
+        return localPlayerNumber;
+    }
+
+    public void setLocalPlayerNumber(int localPlayerNumber) {
+        this.localPlayerNumber = localPlayerNumber;
+    }
+
+    public String getMapPath() {
+        return mapPath;
+    }
 }

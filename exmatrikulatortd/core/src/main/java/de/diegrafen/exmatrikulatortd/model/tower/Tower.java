@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.model.tower;
 
 import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import javax.persistence.*;
@@ -60,14 +61,13 @@ public class Tower extends ObservableModel {
      */
     private float currentAttackSpeed;
 
-    // TODO: Für Buffs müssen Attribute geschaffen werden, die den aktuellen Wert von Geschwindigkeit, Schaden etc. abbilden
-    //private float currentAttackSpeed;
-
     /**
      * Der Angriffstyp des Turmes
      */
+    private int attackType;
+
     @Enumerated(EnumType.STRING)
-    private AttackType attackType;
+    private AttackStyle attackStyle;
 
     /**
      * Der Aura-Typ des Turmes
@@ -138,10 +138,9 @@ public class Tower extends ObservableModel {
     private List<Buff> buffs;
 
     /**
-     * Variable, die den Zeitpunkt des letzten Suchens nach einem Gegner abspeichert. Wird nicht in der Datenbank
-     * gespeichert.
+     * Variable, die den Zeitpunkt des letzten Suchens nach einem Gegner abspeichert.
      */
-    private transient float timeSinceLastSearch = 0;
+    private float timeSinceLastSearch = 0;
 
     /**
      * Variable, die angibt, wie lange der Turm noch warten muss, bis er das nächste Mal angreifen darf.
@@ -153,6 +152,19 @@ public class Tower extends ObservableModel {
      * Die Bezeichnung der Assets, die mit der grafischen Darstellung des Turmes assoziiert sind
      */
     private String assetsName;
+
+    private float splashAmount;
+
+    private float splashRadius;
+
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<Debuff> attackDebuffs;
+
+    private String projectileName;
+
+    private String projectileAssetsName;
+
+    private float projectileSpeed;
 
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
@@ -180,12 +192,16 @@ public class Tower extends ObservableModel {
      * @param maxUpgradeLevel
      * @param assetsName
      */
-    public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange, float baseAttackSpeed, AttackType attackType, List<Aura> auras, float auraRange, int price, int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName) {
+    public Tower(String name, String descriptionText, int towerType, float baseAttackDamage,
+                 float attackRange, float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price,
+                 int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName,
+                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs) {
         super();
 
         this.name = name;
         this.descriptionText = descriptionText;
         this.towerType = towerType;
+        this.attackStyle = AttackStyle.IMMEDIATE;
         this.baseAttackDamage = baseAttackDamage;
         this.currentAttackDamage = baseAttackDamage;
         this.attackRange = attackRange;
@@ -203,6 +219,29 @@ public class Tower extends ObservableModel {
         this.timeSinceLastSearch = 5f;
         this.cooldown = baseAttackSpeed / 2;
         this.assetsName = assetsName;
+        this.splashAmount = splashAmount;
+        this.splashRadius = splashRadius;
+        this.attackDebuffs = attackDebuffs;
+    }
+
+    public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange,
+                 float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price, int sellPrice,
+                 int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, float splashAmount,
+                 float splashRadius, List<Debuff> attackDebuffs, String projectileName, String projectileAssetsName,
+                 float projectileSpeed) {
+        this(name, descriptionText, towerType, baseAttackDamage,
+                attackRange, baseAttackSpeed, attackType, auras, auraRange, price,
+                sellPrice, upgradePrice, upgradeLevel, maxUpgradeLevel, assetsName,
+                splashAmount, splashRadius, attackDebuffs);
+        this.attackStyle = AttackStyle.PROJECTILE;
+        this.projectileName = projectileName;
+        this.projectileAssetsName = projectileAssetsName;
+        this.projectileSpeed = projectileSpeed;
+
+    }
+
+    public Tower(Tower tower) {
+
     }
 
     public Player getOwner() {
@@ -234,21 +273,21 @@ public class Tower extends ObservableModel {
     }
 
     public float getxPosition() {
-        return position.getXCoordinate() * position.getTileSize();
+        return position.getXCoordinate() * gamestate.getTileWidth();
     }
 
     public float getyPosition() {
-        return position.getYCoordinate() * position.getTileSize();
+        return position.getYCoordinate() * gamestate.getTileHeight();
     }
 
     @Override
     public float getTargetxPosition() {
-        return position.getXCoordinate() * position.getTileSize();
+        return position.getXCoordinate() * gamestate.getTileWidth();
     }
 
     @Override
     public float getTargetyPosition() {
-        return position.getYCoordinate() * position.getTileSize();
+        return position.getYCoordinate() * gamestate.getTileHeight();
     }
 
     public int getSellPrice() {
@@ -299,11 +338,11 @@ public class Tower extends ObservableModel {
         this.name = towerName;
     }
 
-    public AttackType getAttackType() {
+    public int getAttackType() {
         return attackType;
     }
 
-    public void setAttackType(AttackType attackType) {
+    public void setAttackType(int attackType) {
         this.attackType = attackType;
     }
 
@@ -414,5 +453,53 @@ public class Tower extends ObservableModel {
 
     public void setCurrentAttackSpeed(float currentAttackSpeed) {
         this.currentAttackSpeed = currentAttackSpeed;
+    }
+
+    public AttackStyle getAttackStyle() {
+        return attackStyle;
+    }
+
+    public List<Debuff> getAttackDebuffs() {
+        return attackDebuffs;
+    }
+
+    public String getDescriptionText() {
+        return descriptionText;
+    }
+
+    public float getSplashAmount() {
+        return splashAmount;
+    }
+
+    public float getSplashRadius() {
+        return splashRadius;
+    }
+
+    public void setSplashRadius(float splashRadius) {
+        this.splashRadius = splashRadius;
+    }
+
+    public String getProjectileAssetsName() {
+        return this.projectileAssetsName;
+    }
+
+    public String getProjectileName() {
+        return projectileName;
+    }
+
+    public void setProjectileName(String projectileName) {
+        this.projectileName = projectileName;
+    }
+
+    public void setProjectileAssetsName(String projectileAssetsName) {
+        this.projectileAssetsName = projectileAssetsName;
+    }
+
+    public float getProjectileSpeed() {
+        return projectileSpeed;
+    }
+
+    public void setProjectileSpeed(float projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
     }
 }
