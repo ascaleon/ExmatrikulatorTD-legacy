@@ -102,7 +102,7 @@ public class EnemyObject extends BaseObject {
             if (!deathAnimation.isAnimationFinished(getStateTime())) {
                 currentFrame = deathAnimation.getKeyFrame(getStateTime());
             } else {
-                setRemoved(true);
+                removeObjectFromGame();
                 return;
             }
         } else {

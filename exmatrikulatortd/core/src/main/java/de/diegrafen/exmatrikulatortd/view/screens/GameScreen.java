@@ -365,7 +365,6 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         }
         objectsToRemove.forEach(this::removeGameObject);
-
         getSpriteBatch().end();
     }
 
@@ -398,7 +397,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         int sizeX = 100;
         int sizeY = 100;
-
 
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
@@ -437,7 +435,6 @@ public class GameScreen extends BaseScreen implements GameView {
         // Rounds
         statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
-        System.out.println();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();

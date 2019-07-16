@@ -26,6 +26,7 @@ public class SplashScreen extends BaseScreen {
     @Override
     public void update(float delta) {
         if (getMainController().areAssetsLoaded()) {
+            if (getMainController().isDatabaseLoaded())
             getMainController().showIntroScreen();
         }
     }

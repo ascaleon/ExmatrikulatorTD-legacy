@@ -45,7 +45,7 @@ public class TowerObject extends BaseObject {
         super.draw(spriteBatch, deltaTime);
 
         if (isPlayDeathAnimation()) {
-            setRemoved(true);
+            removeObjectFromGame();
             return;
         }
 

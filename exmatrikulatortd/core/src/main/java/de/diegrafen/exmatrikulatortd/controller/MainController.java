@@ -81,6 +81,8 @@ public class MainController {
 
     private Screen introScreen;
 
+    private boolean databaseLoaded;
+
     /**
      * Erzeugt einen neuen Maincontroller, das ein Game-Objekt verwaltet
      *
@@ -311,5 +313,13 @@ public class MainController {
 
     public void showIntroScreen() {
         game.setScreen(introScreen);
+    }
+
+    public boolean isDatabaseLoaded() {
+        return databaseLoaded;
+    }
+
+    public void setDatabaseLoaded(boolean databaseLoaded) {
+        this.databaseLoaded = databaseLoaded;
     }
 }

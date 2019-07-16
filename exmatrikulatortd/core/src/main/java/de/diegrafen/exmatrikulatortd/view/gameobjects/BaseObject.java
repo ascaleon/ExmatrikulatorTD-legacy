@@ -176,8 +176,8 @@ public abstract class BaseObject implements GameObject {
         return removed;
     }
 
-    void setRemoved(boolean removed) {
-        this.removed = removed;
+    void removeObjectFromGame() {
+        this.removed = true;
     }
 
     String getAssetsName() {
@@ -211,5 +211,9 @@ public abstract class BaseObject implements GameObject {
     @Override
     public void setAnimated(boolean animated) {
         this.animated = animated;
+    }
+
+    public ObservableUnit getObservable() {
+        return observable;
     }
 }
