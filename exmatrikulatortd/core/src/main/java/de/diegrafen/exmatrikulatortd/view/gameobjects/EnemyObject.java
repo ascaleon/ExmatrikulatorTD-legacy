@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,8 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
-import static de.diegrafen.exmatrikulatortd.util.Assets.ENEMY_SPRITE_PATH;
-import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
 /**
  * Das Spielobjekt eines Gegners
@@ -34,20 +34,8 @@ public class EnemyObject extends BaseObject {
 
     private TextureAtlas deathAnimationAtlas;
 
-    /**
-     * Konstruktor für Gegner-Objekte
-     *
-     * @param name       Der Name des Spielobjektes
-     * @param assetsName Die mit dem Objekt assoziierten Assets
-     * @param xPosition  Die x-Position
-     * @param yPosition  Die y-Position
-     */
-    public EnemyObject(String name, String assetsName, float xPosition, float yPosition) {
-        super(name, assetsName, xPosition, yPosition);
-    }
-
-    public EnemyObject(ObservableUnit observableUnit) {
-        super(observableUnit);
+    public EnemyObject(ObservableUnit observableUnit, AssetManager assetManager) {
+        super(observableUnit, assetManager);
     }
 
     /**
@@ -59,9 +47,9 @@ public class EnemyObject extends BaseObject {
 
         String assetsName = getAssetsName();
 
-        setTextureAtlas(new TextureAtlas(ENEMY_SPRITE_PATH + assetsName + ".atlas"));
+        setTextureAtlas(getAssetManager().get(getEnemyAssetPath(assetsName), TextureAtlas.class));
 
-        deathAnimationAtlas = new TextureAtlas("sprites/objects/projectiles/mine/explosion.atlas");
+        deathAnimationAtlas = getAssetManager().get(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
 
         //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
 
@@ -121,14 +109,5 @@ public class EnemyObject extends BaseObject {
         }
 
         spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
-    }
-
-    /**
-     * Entfernt das Spielobjekt
-     */
-    @Override
-    public void dispose() {
-        super.dispose();
-        deathAnimationAtlas.dispose();
     }
 }

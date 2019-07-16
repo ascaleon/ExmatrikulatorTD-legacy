@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapProperties;
@@ -106,8 +107,8 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      * @param mainController Der Maincontrroller.
      */
-    public GameScreen(MainController mainController) {
-        super(mainController);
+    public GameScreen(MainController mainController, AssetManager assetManager) {
+        super(mainController, assetManager);
     }
 
 
@@ -579,7 +580,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addTower(ObservableUnit observableUnit) {
-        gameObjects.add(new TowerObject(observableUnit));
+        gameObjects.add(new TowerObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -589,7 +590,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addEnemy(ObservableUnit observableUnit) {
-        gameObjects.add(new EnemyObject(observableUnit));
+        gameObjects.add(new EnemyObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -599,7 +600,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addProjectile(ObservableUnit observableUnit) {
-        gameObjects.add(new ProjectileObject(observableUnit));
+        gameObjects.add(new ProjectileObject(observableUnit, getAssetManager()));
     }
 
     @Override

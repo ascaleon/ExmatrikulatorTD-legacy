@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -13,17 +14,14 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
  */
 public abstract class BaseObject implements GameObject {
 
+    private AssetManager assetManager;
+
     private ObservableUnit observable;
 
     /**
      * Die Texturen des Objektes
      */
     private TextureAtlas textureAtlas;
-
-    /**
-     * Der aktuelle Sprite. Relevant für Animationen
-     */
-    private Texture currentSprite;
 
     /**
      * Die aktuelle X-Position
@@ -60,7 +58,8 @@ public abstract class BaseObject implements GameObject {
 
     private boolean animated;
 
-    BaseObject(ObservableUnit observable) {
+    BaseObject(ObservableUnit observable, AssetManager assetManager) {
+        this.assetManager = assetManager;
         this.observable = observable;
         this.name = observable.getName();
         this.assetsName = observable.getAssetsName();
@@ -71,23 +70,6 @@ public abstract class BaseObject implements GameObject {
         this.removed = false;
         observable.registerObserver(this);
         initializeSprite();
-    }
-
-    /**
-     * Konstruktor für Spiel-Objekte
-     *
-     * @param name       Der Name des Spielobjektes
-     * @param assetsName Die mit dem Objekt assoziierten Assets
-     * @param xPosition  Die x-Position
-     * @param yPosition  Die y-Position
-     */
-    BaseObject(String name, String assetsName, float xPosition, float yPosition) {
-        this.name = name;
-        this.currentSprite = new Texture(assetsName);
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
-        this.removed = false;
-        this.animated = true;
     }
 
     /**
@@ -131,12 +113,7 @@ public abstract class BaseObject implements GameObject {
      * Entfernt das Spielobjekt
      */
     public void dispose() {
-        if (currentSprite != null) {
-            currentSprite.dispose();
-        }
-        if (textureAtlas != null) {
-            textureAtlas.dispose();
-        }
+
     }
 
     TextureAtlas getTextureAtlas() {
@@ -145,14 +122,6 @@ public abstract class BaseObject implements GameObject {
 
     void setTextureAtlas(TextureAtlas textureAtlas) {
         this.textureAtlas = textureAtlas;
-    }
-
-    Texture getCurrentSprite() {
-        return currentSprite;
-    }
-
-    void setCurrentSprite(Texture currentSprite) {
-        this.currentSprite = currentSprite;
     }
 
     public float getxPosition() {
@@ -213,7 +182,7 @@ public abstract class BaseObject implements GameObject {
         this.animated = animated;
     }
 
-    public ObservableUnit getObservable() {
-        return observable;
+    public AssetManager getAssetManager() {
+        return assetManager;
     }
 }
