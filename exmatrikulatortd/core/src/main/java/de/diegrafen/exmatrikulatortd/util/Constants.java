@@ -14,7 +14,7 @@ public final class Constants {
 
     public static final int TCP_PORT = 9002;
 
-    public static final float TIME_BETWEEN_SPAWNS = 1f;
+    public static final float TIME_BETWEEN_SPAWNS = 1;
 
     public static final float TIME_BETWEEN_ROUNDS = 5f;
 

@@ -181,17 +181,16 @@ public final class TowerFactory {
         LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
+        LinkedList<Buff> buffs = new LinkedList<>();
 
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
+        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 1.2f, 1, false);
+        buffs.add(hasteBuff);
+        Aura hasteAura = new Aura(200, debuffs, buffs);
 
-        debuffs.add(slowDebuff);
-        auras.add(slowAura);
-        attackDebuffs.add(frostDebuff);
+        auras.add(hasteAura);
 
         return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100,
-                2 * TILE_SIZE, 3, PIERCING, new LinkedList<>(),
+                2 * TILE_SIZE, 3, PIERCING, auras,
                 4 * TILE_SIZE, 300, 150, 600, 1,
                 3, AURA_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
     }
