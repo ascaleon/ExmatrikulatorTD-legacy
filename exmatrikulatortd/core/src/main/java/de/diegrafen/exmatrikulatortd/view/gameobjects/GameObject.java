@@ -29,4 +29,6 @@ public interface GameObject extends Observer {
      * Entfernt das Spielobjekt
      */
     void dispose();
+
+    float getyPosition();
 }

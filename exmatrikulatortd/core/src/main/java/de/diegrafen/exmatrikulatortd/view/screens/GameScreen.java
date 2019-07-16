@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -20,8 +21,7 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
@@ -67,6 +67,7 @@ public class GameScreen extends BaseScreen implements GameView {
      * Eine Liste aller Spielobjekte
      */
     private List<GameObject> gameObjects;
+
     private boolean keyDownDown = false;
     private boolean keyUpDown = false;
     private boolean keyRightDown = false;
@@ -102,8 +103,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private LogicController logicController;
 
-    private int numberofTowers = 0;
-
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -124,7 +123,7 @@ public class GameScreen extends BaseScreen implements GameView {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
 
-        this.gameObjects = new LinkedList<>();
+        this.gameObjects = new ArrayList<>();
 
         getCamera().setToOrtho(false, width, height);
 
@@ -352,6 +351,8 @@ public class GameScreen extends BaseScreen implements GameView {
         getSpriteBatch().begin();
 
         List<GameObject> objectsToRemove = new ArrayList<>();
+
+        gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
 
         if (gameObjects != null) {
             for (GameObject gameObject : gameObjects) {
@@ -583,7 +584,6 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void addTower(ObservableUnit observableUnit) {
         gameObjects.add(0, new TowerObject(observableUnit, getAssetManager()));
-        numberofTowers++;
     }
 
     /**
@@ -593,7 +593,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addEnemy(ObservableUnit observableUnit) {
-        gameObjects.add(numberofTowers, new EnemyObject(observableUnit, getAssetManager()));
+        gameObjects.add(new EnemyObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -619,9 +619,6 @@ public class GameScreen extends BaseScreen implements GameView {
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
         gameObject.dispose();
-        if (gameObject instanceof TowerObject) {
-            numberofTowers--;
-        }
     }
 
     private void resetCameraToBorders() {

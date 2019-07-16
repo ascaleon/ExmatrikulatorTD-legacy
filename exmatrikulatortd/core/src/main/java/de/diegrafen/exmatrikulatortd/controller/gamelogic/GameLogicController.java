@@ -207,8 +207,7 @@ public class GameLogicController implements LogicController {
             auraRefreshTimer -= deltaTime;
             return;
         } else {
-            auraRefreshTimer = AURA_REFRESH_RATE;
-            auraRefreshTimer -= deltaTime;
+            auraRefreshTimer = AURA_REFRESH_RATE - deltaTime;
         }
 
         for (Tower tower : gamestate.getTowers()) {
@@ -326,7 +325,7 @@ public class GameLogicController implements LogicController {
      *
      * @param enemy Der Gegner, der geprüft werden soll.
      * @param projectile Das Projektil, von dem der Flächenschaden ausgeht.
-     * @return @code{true}, wenn sich der Gegner im Radius befindet. Ansonsten @code{false}
+     * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
      */
     private boolean isEnemeyInSplashRadius(Enemy enemy, Projectile projectile) {
         double distance = distance(projectile.getxPosition(), projectile.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
@@ -339,7 +338,7 @@ public class GameLogicController implements LogicController {
      * @param enemy Der Gegner, der geprüft werden soll.
      * @param tower Der Turm, dessen Reichweite geprüft werden soll
      * @param range Die Reichweite des Turms
-     * @return @code{true}, wenn sich der Gegner im Radius befindet. Ansonsten @code{false}
+     * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
      */
     private boolean isEnemyInRangeOfTower(Enemy enemy, Tower tower, float range) {
         double distance = distance(tower.getxPosition(), tower.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
@@ -426,6 +425,7 @@ public class GameLogicController implements LogicController {
         for (Enemy enemy : gamestate.getEnemies()) {
             if (Math.floor(getDistanceToNextPoint(enemy)) <= DISTANCE_TOLERANCE) {
                 enemy.incrementWayPointIndex();
+                setTargetToNextWayPoint(enemy);
             }
             if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
                 applyDamageToPlayer(enemy);
@@ -447,11 +447,11 @@ public class GameLogicController implements LogicController {
      * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     private void moveProjectiles(float deltaTime) {
-        List<Projectile> projectilesThatHit = new ArrayList<>();
+        List<Projectile> projectilesThatHit = new LinkedList<>();
 
         for (Projectile projectile : gamestate.getProjectiles()) {
 
-            if (Math.floor(getDistanceToTarget(projectile)) <= DISTANCE_TOLERANCE) {
+            if (projectileHasHit(projectile)) {
                 projectilesThatHit.add(projectile);
                 continue;
             }
@@ -463,22 +463,27 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    private boolean projectileHasHit(Projectile projectile) {
+        return Math.floor(getDistanceToTarget(projectile)) <= DISTANCE_TOLERANCE;
+    }
+
+    private void setTargetToNextWayPoint(Enemy enemy) {
+        if (enemy.getWayPointIndex() < enemy.getAttackedPlayer().getWayPoints().size()) {
+            Coordinates nextWayPoint = enemy.getAttackedPlayer().getWayPoints().get(enemy.getWayPointIndex());
+            enemy.setTargetxPosition(nextWayPoint.getXCoordinate() * gamestate.getTileWidth());
+            enemy.setTargetyPosition(nextWayPoint.getYCoordinate() * gamestate.getTileHeight());
+        }
+    }
 
     private void moveInTargetDirection(Enemy enemy, float deltaTime) {
         // FIXME: Bei Verschieben des Fensters wird die "Kollision" mit Wegpunkten nicht korrekt berechnet
         // Hierfür könnte eine Aktualisierung des Spielzustandes, unabhängig von der der View, tatsächlich Sinn ergeben...
-        Coordinates nextWayPoint = enemy.getAttackedPlayer().getWayPoints().get(enemy.getWayPointIndex());
-
         float xPosition = enemy.getxPosition();
         float yPosition = enemy.getyPosition();
-        float targetxPosition = nextWayPoint.getXCoordinate() * gamestate.getTileWidth();
-        float targetyPosition = nextWayPoint.getYCoordinate() * gamestate.getTileHeight();
         float currentSpeed = enemy.getCurrentSpeed();
 
-        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
+        float angle = (float) Math.atan2(enemy.getTargetyPosition() - yPosition, enemy.getTargetxPosition() - xPosition);
 
-        enemy.setTargetxPosition(targetxPosition);// + tileSize / 2;
-        enemy.setTargetyPosition(targetyPosition);// + tileSize / 2;
         enemy.setxPosition(xPosition + (float) Math.cos(angle) * currentSpeed * deltaTime);
         enemy.setyPosition(yPosition + (float) Math.sin(angle) * currentSpeed * deltaTime);
     }
@@ -535,7 +540,6 @@ public class GameLogicController implements LogicController {
             }
             tower.setCurrentTarget(null);
         }
-
     }
 
     private void removeProjectile(Projectile projectileToRemove) {
@@ -583,32 +587,39 @@ public class GameLogicController implements LogicController {
 
         for (Tower tower : gamestate.getTowers()) {
 
+            if (!isTargetStillInTowerRange(tower)) {
+                findTargetforTower(tower, deltaTime);
+            }
+
             if (tower.getCooldown() > 0) {
                 tower.setCooldown(tower.getCooldown() - deltaTime);
-            }
+            } else {
 
-            Enemy newTarget = null;
-
-            if (!isTargetStillInTowerRange(tower)) {
-                tower.setCurrentTarget(null);
-                float timeSinceLastSearch = tower.getTimeSinceLastSearch();
-                if (timeSinceLastSearch >= SEARCH_TARGET_INTERVAL) {
-                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, tower.getAttackRange());
-                    enemiesInRange.sort(new DistanceComparator(tower.getxPosition(), tower.getyPosition()));
-                    if (!enemiesInRange.isEmpty()) {
-                        newTarget = enemiesInRange.get(0);
-                    }
-                    tower.setCurrentTarget(newTarget);
-                    tower.setTimeSinceLastSearch(0);
-                } else {
-                    tower.setTimeSinceLastSearch(timeSinceLastSearch + deltaTime);
+                if (tower.getCurrentTarget() != null) {
+                    letTowerAttack(tower);
                 }
-            }
 
-            if (tower.getCurrentTarget() != null) {
-                letTowerAttack(tower);
+                tower.setCooldown(tower.getCurrentAttackSpeed());
             }
         }
+    }
+
+    private void findTargetforTower(Tower tower, float deltaTime) {
+
+        float timeSinceLastSearch = tower.getTimeSinceLastSearch();
+
+        if (timeSinceLastSearch >= SEARCH_TARGET_INTERVAL) {
+            tower.setCurrentTarget(findClosestEnemy(tower));
+            tower.setTimeSinceLastSearch(0);
+        } else {
+            tower.setTimeSinceLastSearch(timeSinceLastSearch + deltaTime);
+        }
+    }
+
+    private Enemy findClosestEnemy(Tower tower) {
+        List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, tower.getAttackRange());
+        enemiesInRange.sort(new DistanceComparator(tower.getxPosition(), tower.getyPosition()));
+        return !enemiesInRange.isEmpty() ? enemiesInRange.get(0) : null;
     }
 
     private void letTowerAttack(Tower tower) {
@@ -623,8 +634,6 @@ public class GameLogicController implements LogicController {
                     enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
                     calculateDamageImpact(enemy, tower);
             }
-
-            tower.setCooldown(tower.getCurrentAttackSpeed());
         }
     }
 
@@ -984,6 +993,7 @@ public class GameLogicController implements LogicController {
         Coordinates startCoordinates = enemy.getAttackedPlayer().getWayPoints().get(0);
         enemy.setxPosition(startCoordinates.getXCoordinate() * gamestate.getTileWidth());// + tileSize / 2;
         enemy.setyPosition(startCoordinates.getYCoordinate() * gamestate.getTileHeight());// + tileSize / 2;
+        setTargetToNextWayPoint(enemy);
     }
 
     void addTower(Tower tower, int xPosition, int yPosition, int playerNumber) {
