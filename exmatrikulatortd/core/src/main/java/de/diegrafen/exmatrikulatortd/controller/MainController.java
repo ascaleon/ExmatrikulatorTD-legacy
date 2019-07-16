@@ -131,7 +131,7 @@ public class MainController {
      */
     public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
-        profileDao.create(profile);
+        //profileDao.create(profile);
     }
 
     /**
@@ -273,8 +273,8 @@ public class MainController {
         highScoreDao.create(highscore2);
         highScoreDao.create(highscore3);*/
 
-        //return new LinkedList<>();
-        return highScoreDao.findHighestScores(limit);
+        return new LinkedList<>();
+        //return highScoreDao.findHighestScores(limit);
     }
 
     public void showScreen(Screen screen) {

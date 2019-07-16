@@ -70,7 +70,7 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
 	 */
 	private void startDatabaseInitialization() {
 		new Thread(() -> {
-			getSessionFactory(); // Initialisiert die Datenbank
+			//getSessionFactory(); // Initialisiert die Datenbank
 			mainController.setDatabaseLoaded(true);
 		}).start();
 	}
