@@ -102,6 +102,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private LogicController logicController;
 
+    private int numberofTowers = 0;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -580,7 +582,8 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addTower(ObservableUnit observableUnit) {
-        gameObjects.add(new TowerObject(observableUnit, getAssetManager()));
+        gameObjects.add(0, new TowerObject(observableUnit, getAssetManager()));
+        numberofTowers++;
     }
 
     /**
@@ -590,7 +593,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addEnemy(ObservableUnit observableUnit) {
-        gameObjects.add(new EnemyObject(observableUnit, getAssetManager()));
+        gameObjects.add(numberofTowers, new EnemyObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -616,6 +619,9 @@ public class GameScreen extends BaseScreen implements GameView {
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
         gameObject.dispose();
+        if (gameObject instanceof TowerObject) {
+            numberofTowers--;
+        }
     }
 
     private void resetCameraToBorders() {

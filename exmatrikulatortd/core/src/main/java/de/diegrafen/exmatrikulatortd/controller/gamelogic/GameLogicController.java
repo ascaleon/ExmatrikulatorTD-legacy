@@ -719,11 +719,11 @@ public class GameLogicController implements LogicController {
                 gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
             }
 
-            List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
-            for (Projectile remainingProjectile : remainingProjectiles) {
-                removeProjectile(remainingProjectile);
-                remainingProjectile.notifyObserver();
-            }
+//            List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
+//            for (Projectile remainingProjectile : remainingProjectiles) {
+//                removeProjectile(remainingProjectile);
+//                remainingProjectile.notifyObserver();
+//            }
 
             gamestate.notifyObserver();
             //gameStateDao.update(gamestate);

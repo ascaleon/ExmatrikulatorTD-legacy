@@ -502,4 +502,15 @@ public class Tower extends ObservableModel {
     public void setProjectileSpeed(float projectileSpeed) {
         this.projectileSpeed = projectileSpeed;
     }
+
+    //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
+    @Override
+    public float getCurrentMaxHitPoints() {
+        return 0;
+    }
+
+    @Override
+    public float getCurrentHitPoints() {
+        return 0;
+    }
 }

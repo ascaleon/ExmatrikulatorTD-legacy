@@ -1,14 +1,13 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
@@ -32,7 +31,13 @@ public class EnemyObject extends BaseObject {
 
     private Animation<TextureRegion> deathAnimation;
 
-    private TextureAtlas deathAnimationAtlas;
+    private int healthBarMaxWitdth = 64;
+
+    private int currentHealthBarWidth = healthBarMaxWitdth;
+
+    private Texture greenHealthBar;
+        
+    private Texture redHealthBar;
 
     public EnemyObject(ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
@@ -46,22 +51,18 @@ public class EnemyObject extends BaseObject {
         super.initializeSprite();
 
         String assetsName = getAssetsName();
-
+        TextureAtlas deathAnimationAtlas = getAssetManager().get(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
         setTextureAtlas(getAssetManager().get(getEnemyAssetPath(assetsName), TextureAtlas.class));
 
-        deathAnimationAtlas = getAssetManager().get(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
-
-        //standing = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
-
+        //standingAnimation = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);
         walkLeftAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveLeft"), Animation.PlayMode.LOOP_PINGPONG);
-
         walkRightAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveRight"), Animation.PlayMode.LOOP_PINGPONG);
-
         walkUpAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveUp"), Animation.PlayMode.LOOP_PINGPONG);
-
         walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
-
         deathAnimation = new Animation<>(0.125f, deathAnimationAtlas.findRegions("explosion"), Animation.PlayMode.LOOP);
+
+        greenHealthBar = new Texture(createProceduralPixmap(1, 1,0,1,0));
+        redHealthBar = new Texture(createProceduralPixmap(1, 1,1,0,0));
     }
 
     /**
@@ -69,6 +70,12 @@ public class EnemyObject extends BaseObject {
      */
     public void update() {
         super.update();
+        if (getObservable() != null) {
+            currentHealthBarWidth = (int) (healthBarMaxWitdth * getObservable().getCurrentHitPoints() / getObservable().getCurrentMaxHitPoints());
+        } else {
+            currentHealthBarWidth = 0;
+            healthBarMaxWitdth = 0;
+        }
     }
 
     /**
@@ -87,12 +94,14 @@ public class EnemyObject extends BaseObject {
         }
 
         if (isPlayDeathAnimation()) {
+
             if (!deathAnimation.isAnimationFinished(getStateTime())) {
                 currentFrame = deathAnimation.getKeyFrame(getStateTime());
             } else {
                 removeObjectFromGame();
                 return;
             }
+
         } else {
 
             double angle = (Math.atan2(getyTargetPosition() - getyPosition(), getxTargetPosition() - getxPosition()) * 180 / Math.PI) + 180;
@@ -109,5 +118,17 @@ public class EnemyObject extends BaseObject {
         }
 
         spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
+        int healthBarHeight = 10;
+        spriteBatch.draw(redHealthBar,getxPosition(),getyPosition() + 64, healthBarMaxWitdth, healthBarHeight);
+        spriteBatch.draw(greenHealthBar,getxPosition(),getyPosition() + 64, currentHealthBarWidth, healthBarHeight);
+    }
+
+    private Pixmap createProceduralPixmap (int width, int height, int r, int g, int b) {
+        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+
+        pixmap.setColor(r, g, b, 1);
+        pixmap.fill();
+
+        return pixmap;
     }
 }

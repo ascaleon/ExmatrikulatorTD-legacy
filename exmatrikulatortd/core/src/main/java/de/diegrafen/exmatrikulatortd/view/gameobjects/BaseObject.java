@@ -185,4 +185,8 @@ public abstract class BaseObject implements GameObject {
     public AssetManager getAssetManager() {
         return assetManager;
     }
+
+    public ObservableUnit getObservable() {
+        return observable;
+    }
 }

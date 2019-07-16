@@ -15,4 +15,8 @@ public interface ObservableUnit extends Observable {
     float getTargetyPosition();
 
     boolean isRemoved();
+
+    float getCurrentMaxHitPoints();
+
+    float getCurrentHitPoints();
 }

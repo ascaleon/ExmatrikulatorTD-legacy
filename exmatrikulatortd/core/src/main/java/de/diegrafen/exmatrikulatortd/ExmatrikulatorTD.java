@@ -40,9 +40,9 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
 	@Override
 	public void create () {
 		assetManager = new AssetManager();
+		mainController = new MainController(this);
 		Assets.queueAssets(assetManager);
 		startDatabaseInitialization();
-        mainController = new MainController(this);
         mainController.showSplashScreen();
 	}
 
@@ -72,6 +72,7 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
 		new Thread(() -> {
 			//getSessionFactory(); // Initialisiert die Datenbank
 			mainController.setDatabaseLoaded(true);
+			System.out.println(mainController.isDatabaseLoaded());
 		}).start();
 	}
 }
