@@ -313,4 +313,8 @@ public class Enemy extends ObservableModel {
     public String getDescription() {
         return description;
     }
+
+    public void clearDebuffs() {
+        debuffs.clear();
+    }
 }

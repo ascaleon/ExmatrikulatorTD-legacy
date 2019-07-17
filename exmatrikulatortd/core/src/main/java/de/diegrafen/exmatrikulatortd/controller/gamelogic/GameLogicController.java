@@ -175,7 +175,7 @@ public class GameLogicController implements LogicController {
     public void update(float deltaTime2) {
 
         //System.out.println(deltaTime);
-        float deltaTime = Math.min(deltaTime2, 1f / MAX_FPS);
+        float deltaTime = Math.min(deltaTime2, 1f / MIN_FPS);
 
         if (!gamestate.isGameOver() && !pause) {
             determineNewRound();
@@ -534,14 +534,15 @@ public class GameLogicController implements LogicController {
     }
 
     private void calculateDamageImpact(Enemy enemy, Tower tower) {
+        enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
         if (enemy.getCurrentHitPoints() <= 0) {
             Player attackedPlayer = enemy.getAttackedPlayer();
             if (attackedPlayer != null) {
                 attackedPlayer.addToResources(enemy.getBounty());
                 attackedPlayer.addToScore(enemy.getPointsGranted());
                 attackedPlayer.notifyObserver();
-                removeEnemy(enemy);
             }
+            removeEnemy(enemy);
             tower.setCurrentTarget(null);
         }
     }
@@ -635,7 +636,6 @@ public class GameLogicController implements LogicController {
                     addProjectile(tower);
                     break;
                 case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
-                    enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
                     calculateDamageImpact(enemy, tower);
             }
         }
@@ -648,9 +648,12 @@ public class GameLogicController implements LogicController {
     }
 
     private void removeEnemy(Enemy enemy) {
-        enemy.getAttackedPlayer().removeEnemy(enemy);
-        enemy.setAttackedPlayer(null);
-        enemy.setDebuffs(new LinkedList<>());
+        Player attackedPlayer = enemy.getAttackedPlayer();
+        if (attackedPlayer != null) {
+            enemy.getAttackedPlayer().removeEnemy(enemy);
+            enemy.setAttackedPlayer(null);
+        }
+        enemy.clearDebuffs();
         gamestate.removeEnemy(enemy);
         enemy.setGameState(null);
         enemy.setRemoved(true);
@@ -684,9 +687,7 @@ public class GameLogicController implements LogicController {
      * @param deltaTime Die Zeit seit dem letzten Rendern.
      */
     private void spawnWave(float deltaTime) {
-        float timeUntilNextRound = gamestate.getTimeUntilNextRound();
-        if (timeUntilNextRound <= 0) {
-
+        if (isActiveRound()) {
             int roundNumber = gamestate.getRoundNumber();
 
             for (Player player : gamestate.getPlayers()) {
@@ -718,8 +719,7 @@ public class GameLogicController implements LogicController {
                 }
             }
         }
-
-        gamestate.setTimeUntilNextRound(timeUntilNextRound - deltaTime);
+        gamestate.setTimeUntilNextRound(gamestate.getTimeUntilNextRound() - deltaTime);
         gamestate.notifyObserver();
     }
 
