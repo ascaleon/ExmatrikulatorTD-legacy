@@ -3,8 +3,8 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 /**
  * Interface für einen Spiellogik-Controller, über den ein Spielclient Befehle vom Gameserver
  * lokal ausführen kann
- * @author Jan Romann <jan.romann@uni-bremen.de>
  *
+ * @author Jan Romann <jan.romann@uni-bremen.de>
  */
 public interface ClientLogicController extends LogicController {
 
@@ -33,11 +33,11 @@ public interface ClientLogicController extends LogicController {
      * Sendet einen Gegner von einer Spielerin an eine andere Spielerin. Da angenommen wird, dass die Prüfung des
      * Spielzuges bereits durch den Server erfolgt ist, wird nicht überprüft, ob der Spielzug legal ist.
      *
-     * @param enemyType      Die Nummer des Gegnertyps
-     * @param playerToSendTo Die Nummer der Spielerin, an die der Gegner geschickt wird
-     * @param sendingPlayer  Die Nummer der Spielerin, die den Turm geschickt hat
+     * @param enemyType            Die Nummer des Gegnertyps
+     * @param playerToSendToNumber Die Nummer der Spielerin, an die der Gegner geschickt wird
+     * @param sendingPlayerNumber  Die Nummer der Spielerin, die den Turm geschickt hat
      */
-    void sendEnemyFromServer(int enemyType, int playerToSendTo, int sendingPlayer);
+    void sendEnemyFromServer(int enemyType, int playerToSendToNumber, int sendingPlayerNumber);
 
     /**
      * Rüstet einen Turm auf. Da angenommen wird, dass die Prüfung des

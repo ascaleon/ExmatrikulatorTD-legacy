@@ -69,15 +69,29 @@ public class GameScreen extends BaseScreen implements GameView {
     private List<GameObject> gameObjects;
 
     private boolean keyDownDown = false;
+
     private boolean keyUpDown = false;
+
     private boolean keyRightDown = false;
+
     private boolean keyLeftDown = false;
+
     private Label scoreLabel;
+
     private Label resourcesLabel;
+
     private Label livesLabel;
+
     private Label roundsLabel;
-    private float touchDownX, touchDownY;
+
+    private Label timelabel;
+
+    private float touchDownX;
+
+    private float touchDownY;
+
     private InputMultiplexer multiplexer;
+
     private Group pauseGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
@@ -310,6 +324,7 @@ public class GameScreen extends BaseScreen implements GameView {
         } else {
             roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
         }
+        timelabel.setText((int) Math.max(0, gameState.getTimeUntilNextRound()));
     }
 
     /**
@@ -420,26 +435,32 @@ public class GameScreen extends BaseScreen implements GameView {
         Player localPlayer = logicController.getLocalPlayer();
 
         // score
-        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).right().padLeft(10).expandX();
         scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
         statsTable.add(scoreLabel).left().align(RIGHT);
         statsTable.row();
         // money
-        statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Geld: ", infoLabelsStyle)).right().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         statsTable.add(resourcesLabel).left().align(RIGHT);
         statsTable.row();
         // lives
-        statsTable.add(new Label("Leben: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Leben: ", infoLabelsStyle)).right().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
         statsTable.row();
         // Rounds
-        statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Semester: ", infoLabelsStyle)).right().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
+        // Time
+        statsTable.row().pad(10, 0, 10, 0);
+        statsTable.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
+        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+        timelabel = new Label(timeLabelText, liveLabelStyle);
+        statsTable.add(timelabel).left().align(RIGHT);
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
         //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));

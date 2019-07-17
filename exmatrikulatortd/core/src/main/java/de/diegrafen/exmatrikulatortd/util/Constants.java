@@ -8,6 +8,8 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public final class Constants {
 
+    public static final float MAX_FPS = 60;
+
     public static final String GAME_TITLE = "Exmatrikulator TD";
 
     public static final int UDP_PORT = 9001;
@@ -16,7 +18,7 @@ public final class Constants {
 
     public static final float TIME_BETWEEN_SPAWNS = 1;
 
-    public static final float TIME_BETWEEN_ROUNDS = 5f;
+    public static final float TIME_BETWEEN_ROUNDS = 15f;
 
     public static final float DISTANCE_TOLERANCE = 3f;
 

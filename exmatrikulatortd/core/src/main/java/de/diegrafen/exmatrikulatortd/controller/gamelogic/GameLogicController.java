@@ -88,7 +88,6 @@ public class GameLogicController implements LogicController {
         this.server = true;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
-        System.out.println("Ohai?");
     }
 
     /**
@@ -104,7 +103,6 @@ public class GameLogicController implements LogicController {
         this.saveStateDao = new SaveStateDao();
         this.localPlayerNumber = localPlayerNumber;
         this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
-        System.out.println("Multiplayer? " + multiplayer);
         this.gameScreen = gameScreen;
         this.gameScreen.setLogicController(this);
 
@@ -112,6 +110,7 @@ public class GameLogicController implements LogicController {
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+
         initializeMap(mapPath);
         this.gameScreen.loadMap(mapPath);
     }
@@ -170,10 +169,14 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
+     * @param deltaTime2 Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime2) {
+
+        //System.out.println(deltaTime);
+        float deltaTime = Math.min(deltaTime2, 1f / MAX_FPS);
+
         if (!gamestate.isGameOver() && !pause) {
             determineNewRound();
             if (gamestate.isRoundEnded()) {
@@ -717,6 +720,7 @@ public class GameLogicController implements LogicController {
         }
 
         gamestate.setTimeUntilNextRound(timeUntilNextRound - deltaTime);
+        gamestate.notifyObserver();
     }
 
     /**
@@ -728,12 +732,6 @@ public class GameLogicController implements LogicController {
             if (gamestate.getRoundNumber() < gamestate.getNumberOfRounds()) {
                 gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
             }
-
-//            List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
-//            for (Projectile remainingProjectile : remainingProjectiles) {
-//                removeProjectile(remainingProjectile);
-//                remainingProjectile.notifyObserver();
-//            }
 
             gamestate.notifyObserver();
             //gameStateDao.update(gamestate);
@@ -1029,6 +1027,11 @@ public class GameLogicController implements LogicController {
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
 
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde darf nicht gebaut werden!", playerNumber);
+            return;
+        }
+
         if (checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, playerNumber)) {
             Tower tower = createNewTower(towerType);
             int towerPrice = tower.getPrice();
@@ -1105,6 +1108,11 @@ public class GameLogicController implements LogicController {
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde darf nicht verkauft werden!", playerNumber);
+            return;
+        }
+
         Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
 
         Tower tower = mapCell.getTower();
@@ -1148,6 +1156,11 @@ public class GameLogicController implements LogicController {
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde darf nicht aufgerüstet werden!", playerNumber);
+            return;
+        }
+
         Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
         Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
         Tower tower = mapCell.getTower();
@@ -1176,6 +1189,11 @@ public class GameLogicController implements LogicController {
      */
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde dürfen keine Gegner geschickt werden!", sendingPlayerNumber);
+            return;
+        }
 
         Enemy enemy = createNewEnemy(enemyType);
         Player sendingPlayer = gamestate.getPlayerByNumber(sendingPlayerNumber);
@@ -1267,8 +1285,17 @@ public class GameLogicController implements LogicController {
         this.pause = pause;
     }
 
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
     @Override
     public void gameConnectionLost() {
         exitGame(false);
+    }
+
+    private boolean isActiveRound() {
+        // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
+        return gamestate.getTimeUntilNextRound() < 0;
     }
 }
