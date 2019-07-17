@@ -222,10 +222,27 @@ public class MenuScreen extends BaseScreen {
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
 
         Table profilesTable = new Table();
+        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, scrollPaneStyle);
         java.util.List<Profile> profiles = getMainController().retrieveProfiles();
 
         TextButton createNewProfile = new TextButton("Neues Profil", skin);
         TextButton backButton = new TextButton("Zurück", skin);
+
+        profilesTable.pad(10).defaults().expandX().space(4);
+
+        for (Profile profile : profiles) {
+            profilesTable.row();
+            // @TODO Profilbild hinzufuegen
+            Table rowTable = new TextButton(profile.getProfileName() + " mag es " + profile.getPreferredDifficulty(), skin);
+            profilesTable.add(rowTable);
+            rowTable.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    System.out.println("ok");
+                }
+            });
+        }
 
         selectProfileMenuTable.setFillParent(true);
         selectProfileMenuTable.setVisible(false);
@@ -247,6 +264,8 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
+        selectProfileMenuTable.add(profilesTableScrollPane).fillX().uniformX();
+        selectProfileMenuTable.row().pad(10, 0, 10, 0);
         selectProfileMenuTable.add(createNewProfile).fillX().uniformX();
         selectProfileMenuTable.row();
         selectProfileMenuTable.add(backButton).fillX().uniformX();
@@ -420,16 +439,16 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createNewProfileMenuTable(Stack menuStack) {
-        newProfileMenuTable=new Table();
+        newProfileMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        TextField profileNameTextField=new TextField("",skin);
-        SelectBox difficultySelectBox=new SelectBox(skin);
+        TextField profileNameTextField = new TextField("", skin);
+        SelectBox difficultySelectBox = new SelectBox(skin);
         TextButton createProfileButton = new TextButton("Profil erstellen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         profileNameTextField.setMessageText("Name");
         profileNameTextField.setMaxLength(255);
-        difficultySelectBox.setItems(Difficulty.EASY,Difficulty.MEDIUM,Difficulty.HARD,Difficulty.TESTMODE);
+        difficultySelectBox.setItems(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD, Difficulty.TESTMODE);
 
         newProfileMenuTable.setFillParent(true);
         newProfileMenuTable.setVisible(false);
@@ -438,13 +457,13 @@ public class MenuScreen extends BaseScreen {
         createProfileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                final String profileName=profileNameTextField.getText();
-                if(!profileName.isEmpty()){
-                    getMainController().createNewProfile(profileName,(Difficulty)difficultySelectBox.getSelected(),"");
+                final String profileName = profileNameTextField.getText();
+                if (!profileName.isEmpty()) {
+                    getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
                     profileNameTextField.setColor(Color.WHITE);
                     profileNameTextField.setText("");
                     showSelectProfileMenu(newProfileMenuTable);
-                } else{
+                } else {
                     profileNameTextField.setColor(Color.RED);
                     System.out.println("Textfield ist leer");
                 }
@@ -466,7 +485,6 @@ public class MenuScreen extends BaseScreen {
         newProfileMenuTable.add(createProfileButton);
         newProfileMenuTable.row().pad(10, 0, 10, 0);
         newProfileMenuTable.add(backButton).fillX().uniformX();
-        //newProfileMenuTable.row();
     }
 
     @Override
