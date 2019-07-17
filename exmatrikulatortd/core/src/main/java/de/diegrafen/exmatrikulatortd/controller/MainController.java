@@ -259,6 +259,13 @@ public class MainController {
         showScreen(gameScreen);
     }
 
+    public List<Profile> retrieveProfiles(){
+        //createNewProfile("Tommy Shelby",Difficulty.EASY,"tommy.png");
+        //Profile p=profileDao.retrieve(1L);
+        //System.out.println(p.getProfileName());
+        return new LinkedList<>();
+    }
+
     public List<Highscore> retrieveHighscores(int limit) {
 
 /*        createNewProfile("Sherlock Holmes", Difficulty.EASY, "sherlock.png.");

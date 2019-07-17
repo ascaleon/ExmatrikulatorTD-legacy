@@ -14,11 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
+import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
-import sun.tools.jconsole.Tab;
+import de.diegrafen.exmatrikulatortd.model.Profile;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
@@ -37,6 +37,8 @@ public class MenuScreen extends BaseScreen {
     private Table selectGameModeTable;
 
     private Table selectProfileMenuTable;
+
+    private Table newProfileMenuTable;
 
     private Table highScoreMenuTable;
 
@@ -79,6 +81,7 @@ public class MenuScreen extends BaseScreen {
         createSelectClientOrServerMenu(menuStack);
         createServerListTable(menuStack);
         createSelectProfileMenuTable(menuStack);
+        createNewProfileMenuTable(menuStack);
         createHighscoreMenuTable(menuStack);
         createPreferenceMenuTable(menuStack);
 
@@ -214,15 +217,27 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
-    private void createSelectProfileMenuTable(Stack menuStack){
-        selectProfileMenuTable=new Table();
+    private void createSelectProfileMenuTable(Stack menuStack) {
+        selectProfileMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        TextButton backButton=new TextButton("Zurück", skin);
+
+        Table profilesTable = new Table();
+        java.util.List<Profile> profiles = getMainController().retrieveProfiles();
+
+        TextButton createNewProfile = new TextButton("Neues Profil", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
 
         selectProfileMenuTable.setFillParent(true);
         selectProfileMenuTable.setVisible(false);
         menuStack.addActor(selectProfileMenuTable);
         selectProfileMenuTable.row().pad(10, 0, 10, 0);
+
+        createNewProfile.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showNewProfileMenu(selectProfileMenuTable);
+            }
+        });
 
         backButton.addListener(new ChangeListener() {
             @Override
@@ -232,6 +247,8 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
+        selectProfileMenuTable.add(createNewProfile).fillX().uniformX();
+        selectProfileMenuTable.row();
         selectProfileMenuTable.add(backButton).fillX().uniformX();
         selectProfileMenuTable.row();
     }
@@ -402,6 +419,56 @@ public class MenuScreen extends BaseScreen {
         hostAddress = "blah";
     }
 
+    private void createNewProfileMenuTable(Stack menuStack) {
+        newProfileMenuTable=new Table();
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        TextField profileNameTextField=new TextField("",skin);
+        SelectBox difficultySelectBox=new SelectBox(skin);
+        TextButton createProfileButton = new TextButton("Profil erstellen", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        profileNameTextField.setMessageText("Name");
+        profileNameTextField.setMaxLength(255);
+        difficultySelectBox.setItems(Difficulty.EASY,Difficulty.MEDIUM,Difficulty.HARD,Difficulty.TESTMODE);
+
+        newProfileMenuTable.setFillParent(true);
+        newProfileMenuTable.setVisible(false);
+        menuStack.addActor(newProfileMenuTable);
+
+        createProfileButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                final String profileName=profileNameTextField.getText();
+                if(!profileName.isEmpty()){
+                    getMainController().createNewProfile(profileName,(Difficulty)difficultySelectBox.getSelected(),"");
+                    profileNameTextField.setColor(Color.WHITE);
+                    profileNameTextField.setText("");
+                    showSelectProfileMenu(newProfileMenuTable);
+                } else{
+                    profileNameTextField.setColor(Color.RED);
+                    System.out.println("Textfield ist leer");
+                }
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showSelectProfileMenu(newProfileMenuTable);
+                backButton.setChecked(false);
+            }
+        });
+
+        newProfileMenuTable.add(profileNameTextField).fill();
+        newProfileMenuTable.row().pad(10, 0, 10, 0);
+        newProfileMenuTable.add(difficultySelectBox).fill();
+        newProfileMenuTable.row().pad(10, 0, 10, 0);
+        newProfileMenuTable.add(createProfileButton);
+        newProfileMenuTable.row().pad(10, 0, 10, 0);
+        newProfileMenuTable.add(backButton).fillX().uniformX();
+        //newProfileMenuTable.row();
+    }
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -433,23 +500,28 @@ public class MenuScreen extends BaseScreen {
         callingTable.setVisible(false);
     }
 
+    private void showClientOrServerMenu(Table callingTable) {
+        clientOrServerMenuTable.setVisible(true);
+        callingTable.setVisible(false);
+    }
+
+    private void showSelectProfileMenu(Table callingTable) {
+        selectProfileMenuTable.setVisible(true);
+        callingTable.setVisible(false);
+    }
+
+    private void showNewProfileMenu(Table callingTable) {
+        newProfileMenuTable.setVisible(true);
+        callingTable.setVisible(false);
+    }
+
     private void showHighScoreMenu(Table callingTable) {
         highScoreMenuTable.setVisible(true);
         callingTable.setVisible(false);
     }
 
-    private void showSelectProfileMenu(Table callingTable){
-        selectProfileMenuTable.setVisible(true);
-        callingTable.setVisible(false);
-    }
-
     private void showPreferencesMenu(Table callingTable) {
         preferencesMenuTable.setVisible(true);
-        callingTable.setVisible(false);
-    }
-
-    private void showClientOrServerMenu(Table callingTable) {
-        clientOrServerMenuTable.setVisible(true);
         callingTable.setVisible(false);
     }
 
