@@ -36,6 +36,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
+        gameClient.reportFinishedLoading();
     }
 
     public ClientGameLogicController(MainController mainController, SaveState saveState, int allocatedPlayerNumber, GameView gameView, GameClient gameClient) {
@@ -104,7 +105,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     @Override
-    public void addTowerByServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+    public void addTowerFromServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         Tower tower = createNewTower(towerType);
         int towerPrice = tower.getPrice();
         Player player = getGamestate().getPlayerByNumber(playerNumber);
@@ -127,7 +128,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     @Override
-    public void sellTowerByServer(int xCoordinate, int yCoordinate, int playerNumber) {
+    public void sellTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber) {
         Tower tower = getMapCellByXandYCoordinates(xCoordinate, yCoordinate).getTower();
         tower.getOwner().addToResources(tower.getSellPrice());
         tower.getOwner().notifyObserver();
@@ -141,12 +142,12 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     }
 
-
     /**
      * Beendet das Spiel
      */
-    public void exitGame() {
-        gameClient.shutdown();
+    @Override
+    public void exitGame(boolean saveBeforeExit) {
         super.exitGame(false);
+        gameClient.shutdown();
     }
 }

@@ -87,6 +87,8 @@ public class GameLogicController implements LogicController {
         this.gameServer = gameServer;
         this.server = true;
         gameServer.attachRequestListeners(this);
+        gameServer.serverFinishedLoading();
+        System.out.println("Ohai?");
     }
 
     /**
@@ -105,7 +107,6 @@ public class GameLogicController implements LogicController {
         System.out.println("Multiplayer? " + multiplayer);
         this.gameScreen = gameScreen;
         this.gameScreen.setLogicController(this);
-
 
         this.gamestate = createGameState(gamemode, numberOfPlayers);
         this.gameScreen.setGameState(gamestate);
@@ -1238,6 +1239,9 @@ public class GameLogicController implements LogicController {
             SaveState saveState = new SaveState(new Date(), multiplayer, profile, gamestate, localPlayerNumber, mapPath);
             //saveStateDao.create(saveState);
         }
+        if (server) {
+            gameServer.shutdown();
+        }
         //mainController.setEndScreen(gamestate);
         mainController.showMenuScreen();
     }
@@ -1261,5 +1265,10 @@ public class GameLogicController implements LogicController {
 
     public void setPause(boolean pause) {
         this.pause = pause;
+    }
+
+    @Override
+    public void gameConnectionLost() {
+        exitGame(false);
     }
 }

@@ -49,7 +49,7 @@ public class MainController {
     /**
      * Menü-Bildschirm
      */
-    private final MenuScreen menuScreen;
+    private MenuScreen menuScreen;
 
     /**
      * Splashscreen
@@ -75,6 +75,10 @@ public class MainController {
 
     private boolean databaseLoaded;
 
+    private String hostAdress = "";
+
+    private boolean host;
+
     /**
      * Erzeugt einen neuen Maincontroller, das ein Game-Objekt verwaltet
      *
@@ -84,7 +88,7 @@ public class MainController {
         this.game = game;
         System.out.println(game.getAssetManager());
         this.splashScreen = new SplashScreen(this, game.getAssetManager());
-        this.menuScreen = new MenuScreen(this, game.getAssetManager());
+        //this.menuScreen = new MenuScreen(this, game.getAssetManager());
         this.introScreen = new IntroScreen(this, game.getAssetManager());
         this.profileDao = new ProfileDao();
         this.highScoreDao = new HighscoreDao();
@@ -110,6 +114,7 @@ public class MainController {
      * Zeigt das Hauptmenü an
      */
     public void showMenuScreen() {
+        menuScreen = new MenuScreen(this, game.getAssetManager());
         game.setScreen(menuScreen);
     }
 
@@ -140,6 +145,7 @@ public class MainController {
     public void createServer() {
         this.gameServer = new GameServer();
         this.gameServer.setMainController(this);
+        this.host = true;
     }
 
     /**
@@ -180,9 +186,16 @@ public class MainController {
         return serverList;
     }
 
-    public void shutdownClient() {
-        this.gameClient.shutdown();
-        //this.gameClient = null;
+    public void shutdownConnections() {
+        if (gameClient != null) {
+            gameClient.shutdown();
+            gameClient = null;
+        }
+        if (gameServer != null) {
+            gameServer.shutdown();
+            gameServer = null;
+        }
+
     }
 
     /**
@@ -197,8 +210,8 @@ public class MainController {
      *
      * @param host Die IP-Adresse des Servers
      */
-    public void connectToServer(String host) {
-        gameClient.connect(host);
+    public boolean connectToServer(String host) {
+        return gameClient.connect(host);
     }
 
     /**
@@ -227,7 +240,7 @@ public class MainController {
     public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
-        showScreen(gameScreen);
+        //showScreen(gameScreen);
     }
 
     /**
@@ -245,7 +258,7 @@ public class MainController {
     public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer);
-        showScreen(gameScreen);
+        //showScreen(gameScreen);
     }
 
     /**
@@ -291,5 +304,21 @@ public class MainController {
 
     public void setDatabaseLoaded(boolean databaseLoaded) {
         this.databaseLoaded = databaseLoaded;
+    }
+
+    public String getHostAdress() {
+        return hostAdress;
+    }
+
+    public void setHostAdress(String hostAdress) {
+        this.hostAdress = hostAdress;
+    }
+
+    public void toggleReady() {
+        if (host) {
+            gameServer.setServerReady();
+        } else {
+            gameClient.reportReadiness();
+        }
     }
 }

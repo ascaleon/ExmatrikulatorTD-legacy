@@ -28,4 +28,5 @@ public interface ClientInterface extends ConnectorInterface {
 
     void reportReadiness();
 
+    void reportFinishedLoading();
 }

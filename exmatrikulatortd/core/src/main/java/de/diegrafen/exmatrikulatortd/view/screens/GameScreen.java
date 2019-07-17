@@ -118,8 +118,6 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void init() {
-        super.init();
-
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
 

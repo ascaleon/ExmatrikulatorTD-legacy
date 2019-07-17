@@ -62,6 +62,8 @@ public class GameServer extends Connector implements ServerInterface {
 
     private boolean[] slotsFilled;
 
+    private boolean[] playersfinishedLoading;
+
     private boolean[] playersReady;
 
     private String[] playerNames;
@@ -70,7 +72,12 @@ public class GameServer extends Connector implements ServerInterface {
 
     private HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
 
+    /**
+     * Der zum Starten des Spiels verwendete Kartenpfad
+     */
     private String mapPath = MULTIPLAYER_MAP_PATH;
+
+    private String mapName = "Die Magieakademie";
 
     /**
      * Erzeugt einen neuen GameServer
@@ -80,14 +87,16 @@ public class GameServer extends Connector implements ServerInterface {
         this.udpPort = UDP_PORT;
         this.server = new Server();
         registerObjects(server.getKryo());
+        // TODO: Listener besser organisieren!
         attachGetGameInfoRequestListener();
+        attachClientReadyRequestListener();
         System.out.println("Server created!");
     }
 
 
     /**
      * Startet den GameServer
-     *
+     * @param numberOfPlayers Die maximale Anzahl an Spielerinnen, die sich mit dem Server verbinden können
      */
     public void startServer(int numberOfPlayers) {
         try {
@@ -95,19 +104,18 @@ public class GameServer extends Connector implements ServerInterface {
             System.out.println("Server started!");
             this.numberOfPlayers = numberOfPlayers;
             playersReady = new boolean[numberOfPlayers];
+            playersfinishedLoading = new boolean[numberOfPlayers];
             slotsFilled = new boolean[numberOfPlayers];
             slotsFilled[0] = true;
             server.setDiscoveryHandler(new ServerDiscoveryHandler() {
                 @Override
                 public boolean onDiscoverHost(DatagramChannel datagramChannel, InetSocketAddress fromAddress) throws IOException {
 
-                    //String mapName = "map1";
-
                     String numberOfPlayers = Integer.toString(2);
 
                     if (openSlotsLeft() > 0) {
                         lookingForPlayers = true;
-                        String newData = mapPath + "\n" + numberOfPlayers;
+                        String newData = mapName + "\n" + numberOfPlayers;
 
                         ByteBuffer buf = ByteBuffer.allocate(48);
                         buf.clear();
@@ -127,6 +135,10 @@ public class GameServer extends Connector implements ServerInterface {
         }
     }
 
+    /**
+     * Zählt, wie viele Spielerinnen-Slots noch offen sind
+     * @return Die Anzahl der offenen Spielerinnen-Slots
+     */
     private int openSlotsLeft() {
         int openSlots = 0;
 
@@ -155,28 +167,60 @@ public class GameServer extends Connector implements ServerInterface {
     public void attachRequestListeners(final LogicController logicController) {
         this.logicController = logicController;
 
+        attachClientFinishedLoadingRequest(logicController);
         attachBuildRequestListener(logicController);
         attachSellRequestListener(logicController);
         attachSendEnemyRequestListener(logicController);
         attachUpgradeRequestListener(logicController);
         attachGetServerStateRequestListener(logicController);
-        attachClientReadyRequestListener(logicController);
+        // TODO: Die letzten Listener scheinen nicht mehr erreicht zu werden
     }
 
-    private void attachClientReadyRequestListener(LogicController logicController) {
+    private void attachClientFinishedLoadingRequest(LogicController logicController) {
+        server.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof FinishedLoadingRequest) {
+                    System.out.println("FinishedLoadingRequest erhalten!");
+                    playersfinishedLoading[connectionAndPlayerNumbers.get(connection.getID())] = true;
+                    System.err.println(connection.getID() + " ist bereit!");
+                    if (haveAllPlayersFinishedLoading()) {
+                        gameRunning = true;
+                        server.sendToAllTCP(new StartGameResponse());
+                        //gameRunning = true;
+                        Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
+                        }
+                    }
+                }
+            });
+        }
+
+    private void attachClientReadyRequestListener() {
         server.addListener(new Listener() {
             @Override
             public void received(Connection connection, Object object) {
                 if (object instanceof ClientReadyRequest) {
                     playersReady[connectionAndPlayerNumbers.get(connection.getID())] = true;
 
+                    System.out.println("ClientReadyRequest erhalten!");
                     if (areAllPlayersReady()) {
-                        server.sendToAllTCP(new StartGameResponse());
-                        mainController.showScreen(logicController.getGameScreen());
+                        server.sendToAllTCP(new AllPlayersReadyResponse());
+                        //mainController.showLoadScreen();
+                        Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
                     }
                 }
             }
         });
+    }
+
+    private boolean haveAllPlayersFinishedLoading() {
+        boolean allPlayersFinishedLoading = true;
+
+        for (boolean hasPlayerFinishedLoading : playersfinishedLoading) {
+            allPlayersFinishedLoading &= hasPlayerFinishedLoading;
+        }
+
+        return allPlayersFinishedLoading;
     }
 
     /**
@@ -196,6 +240,7 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     /**
+     * mainController.showScreen(logicController.getGameScreen());
      * Fügt einen Request-Listener für das Verkaufen eines Turms hinzu und assoziiert ihn mit einem LogicController
      *
      * @param logicController Der zu assoziierende LogicController
@@ -261,9 +306,12 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     private void attachGetGameInfoRequestListener() {
+
+        // TODO: Alle RequestListener in einem zusammenfassen
         server.addListener(new Listener() {
             List<String> playerNames = new LinkedList<>();
             List<String> playerProfilePicturePaths = new LinkedList<>();
+
             @Override
             public void connected(Connection connection) {
 
@@ -280,10 +328,9 @@ public class GameServer extends Connector implements ServerInterface {
                 getGameInfoResponse.setUpdate(false);
                 connection.sendTCP(getGameInfoResponse);
                 System.out.println("Looking for Players? " + lookingForPlayers);
-                System.out.println("Looking for Players? " + lookingForPlayers);
-                if (!lookingForPlayers) {
-                    Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
-                }
+                //if (!lookingForPlayers) {
+                    //gameRunning = true;
+                //}
             }
 
             @Override
@@ -293,7 +340,9 @@ public class GameServer extends Connector implements ServerInterface {
                     connectionAndPlayerNumbers.remove(connection.getID());
                     lookingForPlayers = true;
                 } else {
-                    // TODO: Hier irgendwie das Triggern einer "Player left"-Message einbauen
+                    Gdx.app.postRunnable(logicController::gameConnectionLost);
+                    gameRunning = false;
+                    server.close();
                 }
             }
 
@@ -359,12 +408,18 @@ public class GameServer extends Connector implements ServerInterface {
     public void setServerReady() {
         playersReady[0] = true;
 
+        System.out.println(areAllPlayersReady());
+
         if (areAllPlayersReady()) {
-            server.sendToAllTCP(new StartGameResponse());
-            mainController.showScreen(logicController.getGameScreen());
+            server.sendToAllTCP(new AllPlayersReadyResponse());
+            Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
         }
     }
 
+    /**
+     * Überprüft, ob alle Spielerinnen bereit sind
+     * @return {@code true}, wenn alle Spielerinnen bereit sind, ansonsten {@code false}
+     */
     private boolean areAllPlayersReady() {
 
         boolean allPlayersReady = true;
@@ -391,15 +446,26 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     public MainController getMainController() {
-        return mainController;
+        return this.mainController;
     }
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+
     @Override
     public void sendErrorMessage(String errorMessage, int playerNumber) {
         server.sendToAllTCP(new ErrorResponse(errorMessage, playerNumber));
+    }
+
+    @Override
+    public void serverFinishedLoading() {
+        playersfinishedLoading[0] = true;
+        if (haveAllPlayersFinishedLoading()) {
+            gameRunning = true;
+            server.sendToAllTCP(new StartGameResponse());
+            Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
+        }
     }
 }
