@@ -1285,10 +1285,6 @@ public class GameLogicController implements LogicController {
         this.pause = pause;
     }
 
-    public boolean isMultiplayer() {
-        return multiplayer;
-    }
-
     @Override
     public void gameConnectionLost() {
         exitGame(false);
