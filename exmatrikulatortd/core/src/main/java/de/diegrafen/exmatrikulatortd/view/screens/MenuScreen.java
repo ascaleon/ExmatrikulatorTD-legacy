@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
+import sun.tools.jconsole.Tab;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -33,11 +34,13 @@ public class MenuScreen extends BaseScreen {
 
     private Table mainMenuTable;
 
-    private Table preferencesMenuTable;
-
     private Table selectGameModeTable;
 
+    private Table selectProfileMenuTable;
+
     private Table highScoreMenuTable;
+
+    private Table preferencesMenuTable;
 
     private Table clientOrServerMenuTable;
 
@@ -72,11 +75,12 @@ public class MenuScreen extends BaseScreen {
         menuStack.setFillParent(true);
 
         createMainMenuTable(menuStack);
-        createPreferenceMenuTable(menuStack);
         createSelectGameModeTable(menuStack);
-        createHighscoreMenuTable(menuStack);
         createSelectClientOrServerMenu(menuStack);
         createServerListTable(menuStack);
+        createSelectProfileMenuTable(menuStack);
+        createHighscoreMenuTable(menuStack);
+        createPreferenceMenuTable(menuStack);
 
         stage.addActor(menuStack);
     }
@@ -108,6 +112,13 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSetSelectGameModeMenu(mainMenuTable);
+            }
+        });
+
+        selectProfile.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showSelectProfileMenu(mainMenuTable);
             }
         });
 
@@ -201,6 +212,28 @@ public class MenuScreen extends BaseScreen {
                 backButton.setChecked(false);
             }
         });
+    }
+
+    private void createSelectProfileMenuTable(Stack menuStack){
+        selectProfileMenuTable=new Table();
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        TextButton backButton=new TextButton("Zurück", skin);
+
+        selectProfileMenuTable.setFillParent(true);
+        selectProfileMenuTable.setVisible(false);
+        menuStack.addActor(selectProfileMenuTable);
+        selectProfileMenuTable.row().pad(10, 0, 10, 0);
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showMainMenu(selectProfileMenuTable);
+                backButton.setChecked(false);
+            }
+        });
+
+        selectProfileMenuTable.add(backButton).fillX().uniformX();
+        selectProfileMenuTable.row();
     }
 
     private void createHighscoreMenuTable(Stack menuStack) {
@@ -352,7 +385,7 @@ public class MenuScreen extends BaseScreen {
 
         Skin basicSkin = createBasicSkin();
 
-        for (String server: serverList) {
+        for (String server : serverList) {
             String[] lines = server.split("\n");
             // FIXME: Formatierung passt noch nicht so ganz.
             serverListTable.row();
@@ -405,6 +438,11 @@ public class MenuScreen extends BaseScreen {
         callingTable.setVisible(false);
     }
 
+    private void showSelectProfileMenu(Table callingTable){
+        selectProfileMenuTable.setVisible(true);
+        callingTable.setVisible(false);
+    }
+
     private void showPreferencesMenu(Table callingTable) {
         preferencesMenuTable.setVisible(true);
         callingTable.setVisible(false);
@@ -450,7 +488,6 @@ public class MenuScreen extends BaseScreen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
-
 
 
 }
