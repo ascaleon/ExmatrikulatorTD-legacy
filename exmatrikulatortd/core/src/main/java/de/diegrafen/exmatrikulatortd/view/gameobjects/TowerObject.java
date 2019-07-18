@@ -1,8 +1,11 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
+
+import static de.diegrafen.exmatrikulatortd.util.Assets.getTowerAssetPath;
 
 /**
  *
@@ -13,8 +16,10 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
  */
 public class TowerObject extends BaseObject {
 
-    public TowerObject (ObservableUnit observableUnit) {
-        super(observableUnit);
+    private Texture currentSprite;
+
+    public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
+        super(observableUnit, assetManager);
     }
 
     /**
@@ -23,7 +28,7 @@ public class TowerObject extends BaseObject {
     @Override
     void initializeSprite() {
         super.initializeSprite();
-        setCurrentSprite(new Texture(getAssetsName()));
+        currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
 
     /**
@@ -45,19 +50,11 @@ public class TowerObject extends BaseObject {
         super.draw(spriteBatch, deltaTime);
 
         if (isPlayDeathAnimation()) {
-            setRemoved(true);
+            removeObjectFromGame();
             return;
         }
 
-        spriteBatch.draw(getCurrentSprite(), getxPosition(), getyPosition());
-    }
-
-    /**
-     * Entfernt das Spielobjekt
-     */
-    @Override
-    public void dispose() {
-        super.dispose();
+        spriteBatch.draw(currentSprite, getxPosition(), getyPosition());
     }
 
 }

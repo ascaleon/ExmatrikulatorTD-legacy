@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -48,8 +49,8 @@ public class MenuScreen extends BaseScreen {
 
     private String hostAddress = "";
 
-    public MenuScreen(MainController mainController) {
-        super(mainController);
+    public MenuScreen(MainController mainController, AssetManager assetManager) {
+        super(mainController, assetManager);
         stage = new Stage(new ScreenViewport());
         this.serverList = new LinkedList<>();
     }

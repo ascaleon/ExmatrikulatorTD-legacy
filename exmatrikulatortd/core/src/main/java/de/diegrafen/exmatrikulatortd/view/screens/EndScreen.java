@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.assets.AssetManager;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -23,8 +24,8 @@ public class EndScreen extends BaseScreen {
      * @param mainController
      * @param gameState
      */
-    public EndScreen (MainController mainController, Gamestate gameState) {
-        super(mainController);
+    public EndScreen (MainController mainController, AssetManager assetManager, Gamestate gameState) {
+        super(mainController, assetManager);
         this.gameState = gameState;
     }
 

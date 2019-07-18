@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
+import com.badlogic.gdx.assets.AssetManager;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 
 /**
@@ -8,8 +9,8 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
  */
 public class IntroScreen extends BaseScreen {
 
-    public IntroScreen (MainController mainController) {
-        super(mainController);
+    public IntroScreen (MainController mainController, AssetManager assetManager) {
+        super(mainController, assetManager);
     }
 
     @Override

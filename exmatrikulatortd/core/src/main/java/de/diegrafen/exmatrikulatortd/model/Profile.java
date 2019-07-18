@@ -55,10 +55,11 @@ public class Profile extends BaseModel {
         this.saveStates = new ArrayList<>();
     }
 
-    public Profile(String profileName, Difficulty preferredDifficulty) {
+    public Profile(String profileName, Difficulty preferredDifficulty, String profilePicturePath) {
         this();
         this.profileName = profileName;
         this.preferredDifficulty = preferredDifficulty;
+        this.profilePicturePath = profilePicturePath;
     }
 
     public String getProfileName() {

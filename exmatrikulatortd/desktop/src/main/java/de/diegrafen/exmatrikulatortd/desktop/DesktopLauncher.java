@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.title = GAME_TITLE;
 		config.height = 720;
 		config.width = 1280;
+		config.resizable = false;
 		//config.fullscreen = true;
 		new LwjglApplication(new ExmatrikulatorTD(), config);
 	}
