@@ -11,9 +11,9 @@ import java.util.Comparator;
  */
 public class DistanceComparator implements Comparator<ObservableUnit> {
 
-    private float xPosition;
+    private final float xPosition;
 
-    private float yPosition;
+    private final float yPosition;
 
     public DistanceComparator(float xPosition, float yPosition) {
         this.xPosition = xPosition;

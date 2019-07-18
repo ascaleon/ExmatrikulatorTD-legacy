@@ -20,7 +20,7 @@ public final class TowerUpgrader {
 
     }
 
-    public static boolean upgradeTower(Tower tower) {
+    public static void upgradeTower(Tower tower) {
 
         int towerType = tower.getTowerType();
 
@@ -48,7 +48,6 @@ public final class TowerUpgrader {
             tower.notifyObserver();
         }
 
-        return successful;
     }
 
     private static boolean upgradeRegularTower(Tower tower) {

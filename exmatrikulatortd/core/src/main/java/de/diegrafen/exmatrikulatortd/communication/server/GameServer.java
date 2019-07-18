@@ -35,17 +35,17 @@ public class GameServer extends Connector implements ServerInterface {
     /**
      * Der Port, über den TCP-Verbindungen entgegengenommen werden
      */
-    private int tcpPort;
+    private final int tcpPort;
 
     /**
      * Der Port, über den UDP-Verbindungen entgegengenommen werden
      */
-    private int udpPort;
+    private final int udpPort;
 
     /**
      * Der Server, über den die Kommunikation abläuft
      */
-    private Server server;
+    private final Server server;
 
     private MainController mainController;
 
@@ -70,14 +70,14 @@ public class GameServer extends Connector implements ServerInterface {
 
     private String[] profilePicturePaths;
 
-    private HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
+    private final HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
 
     /**
      * Der zum Starten des Spiels verwendete Kartenpfad
      */
-    private String mapPath = MULTIPLAYER_MAP_PATH;
+    private final String mapPath = MULTIPLAYER_MAP_PATH;
 
-    private String mapName = "Die Magieakademie";
+    private final String mapName = "Die Magieakademie";
 
     /**
      * Erzeugt einen neuen GameServer
@@ -309,8 +309,8 @@ public class GameServer extends Connector implements ServerInterface {
 
         // TODO: Alle RequestListener in einem zusammenfassen
         server.addListener(new Listener() {
-            List<String> playerNames = new LinkedList<>();
-            List<String> playerProfilePicturePaths = new LinkedList<>();
+            final List<String> playerNames = new LinkedList<>();
+            final List<String> playerProfilePicturePaths = new LinkedList<>();
 
             @Override
             public void connected(Connection connection) {

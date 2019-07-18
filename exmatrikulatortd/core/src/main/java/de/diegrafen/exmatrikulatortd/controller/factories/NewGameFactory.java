@@ -11,7 +11,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
 
 public final class NewGameFactory {
 
-    public static final int MAX_PLAYERS = 2;
+    private static final int MAX_PLAYERS = 2;
 
     public static final int STANDARD_SINGLE_PLAYER_GAME = 0;
 

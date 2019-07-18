@@ -4,7 +4,6 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
@@ -17,7 +16,7 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
  */
 public final class WaveFactory {
 
-    private static int enemiesPerWave = 20;
+    private static final int enemiesPerWave = 20;
 
     public static final int REGULAR_WAVE = 0;
 
@@ -89,7 +88,7 @@ public final class WaveFactory {
         for (int i = 0; i < enemiesPerWave; i++) {
             Enemy enemy = createNewEnemy(REGULAR_ENEMY);
             wave.addEnemy(enemy);
-            enemy.setWave(wave);
+            //enemy.setWave(wave);
         }
         return wave;
     }
@@ -104,7 +103,7 @@ public final class WaveFactory {
         for (int i = 0; i < enemiesPerWave; i++) {
             Enemy enemy = createNewEnemy(HEAVY_ENEMY);
             wave.addEnemy(enemy);
-            enemy.setWave(wave);
+            //enemy.setWave(wave);
         }
         return wave;
     }
@@ -119,7 +118,7 @@ public final class WaveFactory {
         for (int i = 0; i < enemiesPerWave; i++) {
             Enemy enemy = createNewEnemy(REGULAR_ENEMY);
             wave.addEnemy(enemy);
-            enemy.setWave(wave);
+            //enemy.setWave(wave);
         }
         return wave;
     }
@@ -185,14 +184,14 @@ public final class WaveFactory {
         Wave wave = new Wave();
         Enemy enemy = createNewEnemy(BOSS_ENEMY);
         wave.addEnemy(enemy);
-        enemy.setWave(wave);
+        //enemy.setWave(wave);
         return wave;
     }
 
     private static void addEnemyToWaveEnemies(int enemyType, List<Enemy> waveEnemies, Wave wave) {
         Enemy enemy = createNewEnemy(enemyType);
         waveEnemies.add(enemy);
-        enemy.setWave(wave);
+        //enemy.setWave(wave);
     }
 
 }

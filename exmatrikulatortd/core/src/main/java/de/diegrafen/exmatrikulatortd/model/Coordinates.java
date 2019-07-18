@@ -1,14 +1,12 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
  *
@@ -46,20 +44,6 @@ public class Coordinates extends BaseModel {
      */
     private int yCoordinate;
 
-    /**
-     * Der assoziierte Spielzustand
-     * @deprecated
-     */
-    @ManyToOne
-    private Gamestate gameState;
-
-    /**
-     * Gibt an, ob das Spielfeld an der angegebenen Stelle bebaubar ist.
-     * @deprecated
-     */
-    @Column(table = "collision_matrix")
-    private boolean isBuildable;
-
     @Column(table = "waypoints")
     private int waypointIndex;
 
@@ -73,13 +57,8 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
-    /**
-     * @deprecated
-     */
-    @OneToMany(mappedBy="currentMapCell")
-    private List<Enemy> enemiesInMapCell;
-
     @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Coordinates> neighbours;
 
 
@@ -100,7 +79,7 @@ public class Coordinates extends BaseModel {
      * @param xCoordinate
      * @param yCoordinate
      */
-    public Coordinates(int xCoordinate, int yCoordinate) {
+    private Coordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
@@ -108,7 +87,6 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
         this(xCoordinate, yCoordinate);
         this.buildableByPlayer = buildableByPlayer;
-        this.enemiesInMapCell = new ArrayList<>();
         this.neighbours = new ArrayList<>();
     }
 
@@ -118,13 +96,18 @@ public class Coordinates extends BaseModel {
         this.waypointIndex = waypointIndex;
     }
 
+
+
     public Coordinates(Coordinates coordinates) {
         this.xCoordinate = coordinates.getXCoordinate();
         this.yCoordinate = coordinates.getYCoordinate();
         this.playerNumber = coordinates.getPlayerNumber();
         this.buildableByPlayer = coordinates.getBuildableByPlayer();
         this.waypointIndex = coordinates.getWaypointIndex();
-        this.tower = new Tower(tower);
+        if (coordinates.getTower() != null) {
+            this.tower = new Tower(coordinates.getTower());
+        }
+        this.neighbours = null;
     }
 
     public int getXCoordinate() {
@@ -163,10 +146,6 @@ public class Coordinates extends BaseModel {
         return buildableByPlayer;
     }
 
-    public List<Coordinates> getNeighbours() {
-        return neighbours;
-    }
-
     public void addNeighbour (Coordinates neighbour) {
         this.neighbours.add(neighbour);
     }
@@ -180,11 +159,7 @@ public class Coordinates extends BaseModel {
         return waypointIndex;
     }
 
-    public void setWaypointIndex(int waypointIndex) {
-        this.waypointIndex = waypointIndex;
-    }
-
-    public int getPlayerNumber() {
+    private int getPlayerNumber() {
         return playerNumber;
     }
 

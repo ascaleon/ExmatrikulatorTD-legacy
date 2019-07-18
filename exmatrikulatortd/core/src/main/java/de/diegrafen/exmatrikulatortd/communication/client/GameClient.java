@@ -5,7 +5,6 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
@@ -34,11 +33,11 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
  */
 public class GameClient extends Connector implements ClientInterface {
 
-    private Client client;
+    private final Client client;
 
-    private int tcpPort;
+    private final int tcpPort;
 
-    private int udpPort;
+    private final int udpPort;
 
     private boolean connected;
 

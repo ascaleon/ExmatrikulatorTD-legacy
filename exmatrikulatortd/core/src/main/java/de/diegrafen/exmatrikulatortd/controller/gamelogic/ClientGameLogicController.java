@@ -22,7 +22,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
      */
-    private GameClient gameClient;
+    private final GameClient gameClient;
 
     /**
      * Konstruktor für den Spiellogik-Controller
@@ -132,7 +132,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      */
     @Override
     public void addTowerFromServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        Tower tower = createNewTower(towerType);
+        Tower tower = createNewTower(towerType, getGamestate().getTileWidth(), getGamestate().getTileHeight());
         int towerPrice = tower.getPrice();
         Player player = getGamestate().getPlayerByNumber(playerNumber);
         int playerResources = player.getResources();

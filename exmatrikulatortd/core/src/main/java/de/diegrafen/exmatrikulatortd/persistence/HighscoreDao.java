@@ -3,7 +3,6 @@ package de.diegrafen.exmatrikulatortd.persistence;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
 import org.hibernate.Session;
 
-import javax.persistence.NamedQuery;
 import java.util.List;
 
 /**

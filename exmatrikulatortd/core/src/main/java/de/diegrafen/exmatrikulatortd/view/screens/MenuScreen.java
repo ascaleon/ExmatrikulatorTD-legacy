@@ -102,6 +102,13 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
+        selectProfile.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().loadSinglePlayerGame();
+            }
+        });
+
         preferences.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

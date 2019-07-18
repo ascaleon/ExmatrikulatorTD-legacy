@@ -1,20 +1,18 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
 
 /**
@@ -25,7 +23,6 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
  * @version 13.06.2019 21:36
  */
 @Entity
-@Table(name = "Gamestates")
 public class Gamestate extends BaseModel implements Observable {
 
     /**
@@ -49,29 +46,28 @@ public class Gamestate extends BaseModel implements Observable {
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
      */
-    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade=CascadeType.ALL)
     private List<Player> players;
 
     /**
      * Die Kollisionsmatrix, mit der bestimmt wird, ob ein Turm an einer bestimmten Stelle auf dem Spielfeld gebaut werden kann
      */
-    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
-    private List<Coordinates> collisionMatrix;
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Coordinates> collisionMatrix;
 
-    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
-    private List<Enemy> enemies;
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Enemy> enemies;
 
-    @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
-    private List<Tower> towers;
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Tower> towers;
 
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
-    private List<Projectile> projectiles;
-
-    /**
-     * Der Schwierigkeitsgrad des Spieles
-     */
-    @Enumerated(EnumType.ORDINAL)
-    private Difficulty difficulty;
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Projectile> projectiles;
 
     /**
      * Die aktuelle Rundennummer
@@ -81,10 +77,11 @@ public class Gamestate extends BaseModel implements Observable {
     /**
      * Die Anzahl der Runden
      */
-    private int numberOfRounds;
+    private final int numberOfRounds;
 
     /**
      * Gibt an, ob das Spiel gerade aktiv ist
+     * TODO: Könnte obsolet sein.
      */
     private boolean active;
 
@@ -98,7 +95,7 @@ public class Gamestate extends BaseModel implements Observable {
 
     private boolean endlessGame = false;
 
-    private transient List<Observer> observers;
+    private final transient List<Observer> observers;
 
     private int gameMode;
 
@@ -106,6 +103,7 @@ public class Gamestate extends BaseModel implements Observable {
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
     public Gamestate (List<Player> players, List<Wave> waves) {
+        //TODO: Redundanz verringern (vgl. den Standardkonstruktor
         this.enemies = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.projectiles = new ArrayList<>();
@@ -138,14 +136,21 @@ public class Gamestate extends BaseModel implements Observable {
         this.gameOver = false;
     }
 
+    /**
+     * Kopier-Konstruktor. Kopiert bis auf die ID alle Attribute
+     * @param gamestate Der Spielzustand, der kopiert werden soll.
+     */
     public Gamestate(Gamestate gamestate) {
         this.tileWidth = gamestate.getTileWidth();
         this.tileHeight = gamestate.getTileHeight();
+        this.mapName = gamestate.getMapName();
         this.numberOfColumns = gamestate.getNumberOfColumns();
         this.numberOfRows = gamestate.getNumberOfRows();
         this.roundNumber = gamestate.getRoundNumber();
         this.numberOfRounds = gamestate.getNumberOfRounds();
+        this.active = gamestate.isActive();
         this.gameOver = gamestate.isGameOver();
+        this.newRound = gamestate.isNewRound();
         this.timeUntilNextRound = gamestate.getTimeUntilNextRound();
         this.roundEnded = gamestate.isRoundEnded();
         this.endlessGame = gamestate.isEndlessGame();
@@ -158,22 +163,48 @@ public class Gamestate extends BaseModel implements Observable {
         this.projectiles = new LinkedList<>();
         this.collisionMatrix = new LinkedList<>();
 
-        gamestate.getPlayers().forEach(player -> players.add(new Player(player, this)));
+        // TODO: Kopierkonstruktor vereinfachen, wenn möglich.
+
+        gamestate.getPlayers().forEach(player -> {
+            players.add(new Player(player, this));
+            System.out.println(player.getPlayerNumber());
+        });
+
+        gamestate.getProjectiles().forEach(projectile -> projectiles.add(new Projectile(projectile)));
 
         for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
             Coordinates coordinates = new Coordinates(mapCell);
             this.collisionMatrix.add(coordinates);
             Tower tower = coordinates.getTower();
             if (tower != null) {
-                this.towers.add(tower);
+                tower.setPosition(coordinates);
                 Player owner = players.get(coordinates.getBuildableByPlayer());
                 owner.addTower(tower);
                 tower.setOwner(owner);
-                towers.add(tower);
+                this.towers.add(tower);
+            }
+        }
+
+        for (int i = 0; i < gamestate.getProjectiles().size(); i++) {
+            Projectile projectile = gamestate.getProjectiles().get(i);
+            int enemyIndex = gamestate.getEnemies().indexOf(projectile.getTarget());
+            int towerIndex = gamestate.getTowers().indexOf(projectile.getTowerThatShot());
+
+            Enemy enemy = null;
+
+            if (enemyIndex >= 0) {
+                enemy = enemies.get(enemyIndex);
+                this.projectiles.get(i).setTarget(enemy);
             }
 
+            if (towerIndex >= 0) {
+                Tower tower = towers.get(towerIndex);
+                this.projectiles.get(i).setTowerThatShot(tower);
+                if (enemy != null) {
+                    tower.setCurrentTarget(enemy);
+                }
+            }
         }
-        gamestate.getProjectiles().forEach(projectile -> projectiles.add(new Projectile(projectile)));
     }
 
     public void addEnemy (Enemy enemy) {
@@ -353,5 +384,9 @@ public class Gamestate extends BaseModel implements Observable {
 
     public void setTileHeight(int tileHeight) {
         this.tileHeight = tileHeight;
+    }
+
+    public String getMapName() {
+        return mapName;
     }
 }

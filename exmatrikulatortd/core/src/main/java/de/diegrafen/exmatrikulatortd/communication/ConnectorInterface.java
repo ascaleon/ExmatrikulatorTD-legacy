@@ -1,13 +1,5 @@
 package de.diegrafen.exmatrikulatortd.communication;
 
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
-
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
-
 public interface ConnectorInterface {
 
     /**

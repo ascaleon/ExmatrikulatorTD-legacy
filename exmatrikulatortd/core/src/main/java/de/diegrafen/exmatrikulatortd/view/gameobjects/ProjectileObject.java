@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
-import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Assets.getProjectileAssetPath;
 
 public class ProjectileObject extends BaseObject {

@@ -66,7 +66,7 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Eine Liste aller Spielobjekte
      */
-    private List<GameObject> gameObjects;
+    private final List<GameObject> gameObjects;
 
     private boolean keyDownDown = false;
 
@@ -107,7 +107,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private boolean s = false;
 
-    private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
     private ImageButton tower1;
     private ImageButton tower2;
     private ImageButton tower3;
@@ -124,8 +124,8 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     public GameScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
+        this.gameObjects = new ArrayList<>();
     }
-
 
     /**
      * Die Initialisierung erstellt den SpriteBatch und lädt Texturen.
@@ -134,8 +134,6 @@ public class GameScreen extends BaseScreen implements GameView {
     public void init() {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-
-        this.gameObjects = new ArrayList<>();
 
         getCamera().setToOrtho(false, width, height);
 
@@ -391,7 +389,6 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void dispose() {
         super.dispose();
-        gameObjects.forEach(GameObject::dispose);
         tiledMap.dispose();
     }
 
@@ -637,7 +634,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
-        gameObject.dispose();
     }
 
     private void resetCameraToBorders() {
@@ -768,7 +764,7 @@ public class GameScreen extends BaseScreen implements GameView {
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(false);
+                    logicController.exitGame(true);
                     //System.out.println("Menu nicht gefunden");
                 }
             });
