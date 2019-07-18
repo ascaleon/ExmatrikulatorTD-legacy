@@ -11,7 +11,10 @@ import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
+import org.hibernate.Session;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.LinkedList;
@@ -260,17 +263,16 @@ public class MainController {
     }
 
     public List<Profile> retrieveProfiles(){
-        //createNewProfile("Tommy Shelby",Difficulty.EASY,"tommy.png");
-        List<Profile> profiles=new LinkedList<>();
-        long i=0;
-        Profile p;
-        while((p=profileDao.retrieve(i))!=null){
-            profiles.add(p);
-            System.out.println(p.getProfileName());
-            i++;
-        }
-        //return new LinkedList<>();
-        return profiles;
+        /*try{
+            return profileDao.openCurrentSession().createQuery("from Profiles").list();
+        } catch (final Exception e){
+            return new LinkedList<>();
+        }*/
+        final Session session=profileDao.openCurrentSession();
+        CriteriaBuilder criteriaBuilder=session.getCriteriaBuilder();
+        CriteriaQuery<Profile> criteriaQuery=criteriaBuilder.createQuery(Profile.class);
+        criteriaQuery.from(Profile.class);
+        return session.createQuery(criteriaQuery).getResultList();
     }
 
     public List<Highscore> retrieveHighscores(int limit) {

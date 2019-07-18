@@ -99,7 +99,6 @@ public class MenuScreen extends BaseScreen {
         TextButton exit = new TextButton("Spiel verlassen", skin);
 
         mainMenuTable.setFillParent(true);
-        //table.setDebug(true);
         menuStack.addActor(mainMenuTable);
         mainMenuTable.add(newGame).fillX().uniformX();
         mainMenuTable.row().pad(10, 0, 10, 0);
@@ -221,6 +220,7 @@ public class MenuScreen extends BaseScreen {
         System.out.println("createSelectProfileMenuTable");
         selectProfileMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin basicSkin = createBasicSkin();
 
         Table profilesTable = new Table();
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
@@ -235,12 +235,12 @@ public class MenuScreen extends BaseScreen {
         for (Profile profile : profiles) {
             profilesTable.row();
             // @TODO Profilbild hinzufuegen
-            Table rowTable = new TextButton(profile.getProfileName() + " mag es " + profile.getPreferredDifficulty(), skin);
+            Table rowTable = new TextButton(profile.getProfileName() + " mag es " + profile.getPreferredDifficulty(), basicSkin);
             profilesTable.add(rowTable);
             rowTable.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println("ok");
+                    System.out.println(profile.getProfileName()+" angeklickt");
                 }
             });
         }
