@@ -3,7 +3,9 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -16,10 +18,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,6 +105,8 @@ public class GameScreen extends BaseScreen implements GameView {
     private TextButton sell;
 
     private LogicController logicController;
+
+    private ProgressBar playerHealth;
 
     private int numberofTowers = 0;
 
@@ -307,6 +313,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
+        playerHealth.setValue(localPlayer.getCurrentLives());
         resourcesLabel.setText(localPlayer.getResources());
         if (gameState.isEndlessGame()) {
             roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
@@ -442,6 +449,30 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
 
+        Pixmap pixRed = new Pixmap(100,20, Pixmap.Format.RGBA8888);
+        pixRed.setColor(Color.RED);
+        //pixRed.setColor(255,0,0, 200);
+        pixRed.fill();
+        TextureRegionDrawable redBG = new TextureRegionDrawable(new TextureRegion(new Texture(pixRed)));
+        pixRed.dispose();
+        Pixmap pixHidden = new Pixmap(0,20, Pixmap.Format.RGBA8888);
+        pixHidden.setColor(Color.GREEN);
+        pixHidden.fill();
+        TextureRegionDrawable hiddenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixHidden)));
+        pixHidden.dispose();
+        Pixmap pixGreen = new Pixmap(100, 20 , Pixmap.Format.RGBA8888);
+        pixGreen.setColor(Color.GREEN);
+        pixGreen.fill();
+        TextureRegionDrawable greenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixGreen)));
+        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
+        progressBarStyle.background = redBG;
+        progressBarStyle.knob = hiddenBar;
+        progressBarStyle.knobBefore = greenBar;
+
+        playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, progressBarStyle);
+        playerHealth.setValue(localPlayer.getCurrentLives());
+        playerHealth.setAnimateDuration(1);
+
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
         //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1.png")));
@@ -451,7 +482,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3.png")));
         Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3_selected.png")));
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
-        TextButtonStyle style = new TextButtonStyle();
+        //TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         //towerSelect.setDebug(true);
 
@@ -463,6 +494,8 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
 
+        TooltipManager ttm = new TooltipManager();
+        ttm.instant();
         //InputListener für die Buttons
         // TODO: Code-Redundanz durch Refactoring entfernen
         tower1.addListener(new ClickListener() {
@@ -501,6 +534,14 @@ public class GameScreen extends BaseScreen implements GameView {
                 buttonManager(sell);
             }
         });
+        //Infolables der Buttons
+        tower1.addListener(new TextTooltip("Turm der ersten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
+        tower2.addListener(new TextTooltip("Turm der zweiten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
+        tower3.addListener(new TextTooltip("Turm der dritten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
+        tower4.addListener(new TextTooltip("Turm der vierten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
+        upgrade.addListener(new TextTooltip("Verbessert die Stufe eines Turmes" + "\n"  +"Kosten: 300",ttm, skin));
+        sell.addListener(new TextTooltip("Entlasse einen Turm aus deinen Diensten",ttm, skin));
+
         //Towerbuttons der Tabelle hinzufügen
         towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
@@ -562,6 +603,7 @@ public class GameScreen extends BaseScreen implements GameView {
 //        defaultScreen.row();
         defaultScreen.add(statsTable).top().right().expandX().colspan(4);
         defaultScreen.row();
+        defaultScreen.add(playerHealth).right().top().row();
 
         //defaultScreen.add(new ProgressBar(0, localPlayer.getAttackingEnemies().size(), 1, false, skin)).top().expandX();
         defaultScreen.add().expand().colspan(3);
@@ -770,6 +812,42 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    public void endOfGameScreen(){
+        Group endScreenGroup = new Group();
+        Player localPlayer = logicController.getLocalPlayer();
+
+        Image loose = new Image(new Texture(Gdx.files.internal("loose.png")));
+        Image win = new Image(new Texture(Gdx.files.internal("win.png")));
+
+        loose.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        win.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
+        Table buttonTable = new Table();
+
+        TextButton back2main = new TextButton("Menu", skin);
+        back2main.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                logicController.exitGame(false);
+            }
+        });
+
+        buttonTable.add(scoreLabel).center().row();
+        buttonTable.add(back2main).top().center().row();
+        buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/2);
+
+        if(localPlayer.isVictorious()){
+            endScreenGroup.addActor(win);
+        }
+        else if(!localPlayer.isVictorious()){
+            endScreenGroup.addActor(loose);
+        }
+
+        endScreenGroup.addActor(buttonTable);
+    }
+
+    public void popUpMessage(String message){
+    }
     @Override
     public void setGameState(Gamestate gameState) {
         this.gameState = gameState;
