@@ -1,0 +1,173 @@
+tower_mage.png
+size: 128, 1216
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 0
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 0
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 64
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 1
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 128
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 2
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 192
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 3
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 256
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 4
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 320
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 5
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 384
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 6
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 448
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 7
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 512
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 8
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 576
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 9
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 640
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 10
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 704
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 11
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 768
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 12
+tower_mage_attackRight
+  rotate: false
+  xy: 0, 832
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: 13
+tower_mage_idle
+  rotate: false
+  xy: 0, 896
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 0
+tower_mage_idle
+  rotate: false
+  xy: 64, 896
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 1
+tower_mage_idle
+  rotate: false
+  xy: 0, 960
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 2
+tower_mage_idle
+  rotate: false
+  xy: 64, 960
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 3
+tower_mage_idle
+  rotate: false
+  xy: 0, 1024
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 4
+tower_mage_idle
+  rotate: false
+  xy: 64, 1024
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 5
+tower_mage_idle
+  rotate: false
+  xy: 0, 1088
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 6
+tower_mage_idle
+  rotate: false
+  xy: 64, 1088
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 7
+tower_mage_idle
+  rotate: false
+  xy: 0, 1152
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 8
+tower_mage_idle
+  rotate: false
+  xy: 64, 1152
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 9

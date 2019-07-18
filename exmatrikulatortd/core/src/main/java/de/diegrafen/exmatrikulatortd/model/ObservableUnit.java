@@ -15,4 +15,6 @@ public interface ObservableUnit extends Observable {
     float getTargetyPosition();
 
     boolean isRemoved();
+
+    boolean isAttacking();
 }

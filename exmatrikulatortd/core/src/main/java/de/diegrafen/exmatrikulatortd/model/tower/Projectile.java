@@ -30,6 +30,8 @@ public class Projectile extends ObservableModel {
 
     private float yPosition;
 
+    private boolean isAttacking;
+
     @OneToOne
     private Enemy target;
 
@@ -179,4 +181,6 @@ public class Projectile extends ObservableModel {
     public int getAttackType() {
         return attackType;
     }
+
+    public boolean isAttacking(){return this.isAttacking;}
 }

@@ -9,9 +9,11 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public class Assets {
 
-    public static final String REGULAR_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
+    public static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
-    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "sprites/objects/towers/WanderingEye2@64x64.png";
+    public static final String REGULAR_TOWER_ASSETS = "tower_mage";
+
+    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "tower_mage";
 
     public static final String SLOW_TOWER_ASSETS = "sprites/objects/towers/WanderingEye@64x64.png";
 

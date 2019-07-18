@@ -50,6 +50,7 @@ public abstract class BaseObject implements GameObject {
      */
     private String name;
 
+
     private String assetsName;
 
     private boolean removed;
@@ -108,6 +109,7 @@ public abstract class BaseObject implements GameObject {
             yPosition = observable.getyPosition();
             xTargetPosition = observable.getTargetxPosition();
             yTargetPosition = observable.getTargetyPosition();
+
         }
     }
 
@@ -211,5 +213,9 @@ public abstract class BaseObject implements GameObject {
     @Override
     public void setAnimated(boolean animated) {
         this.animated = animated;
+    }
+
+    public ObservableUnit getObservable() {
+        return observable;
     }
 }

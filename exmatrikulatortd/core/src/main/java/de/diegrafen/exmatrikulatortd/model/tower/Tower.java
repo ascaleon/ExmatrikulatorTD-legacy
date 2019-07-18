@@ -166,6 +166,8 @@ public class Tower extends ObservableModel {
 
     private float projectileSpeed;
 
+    private Boolean attacking;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -502,4 +504,14 @@ public class Tower extends ObservableModel {
     public void setProjectileSpeed(float projectileSpeed) {
         this.projectileSpeed = projectileSpeed;
     }
+
+    public void setAttacking(Boolean b) {
+        this.attacking = b;
+    }
+
+    public boolean isAttacking(){
+        return this.attacking;
+    }
+
 }
+

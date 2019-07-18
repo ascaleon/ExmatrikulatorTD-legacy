@@ -70,6 +70,8 @@ public class Enemy extends ObservableModel {
 
     private boolean respawning;
 
+    private boolean isAttacking;
+
 
 
     @ManyToOne
@@ -313,4 +315,6 @@ public class Enemy extends ObservableModel {
     public String getDescription() {
         return description;
     }
+
+    public boolean isAttacking(){return this.isAttacking;}
 }
