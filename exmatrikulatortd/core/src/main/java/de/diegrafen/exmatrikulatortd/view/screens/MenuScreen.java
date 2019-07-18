@@ -218,6 +218,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createSelectProfileMenuTable(Stack menuStack) {
+        System.out.println("createSelectProfileMenuTable");
         selectProfileMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
 
@@ -465,7 +466,6 @@ public class MenuScreen extends BaseScreen {
                     showSelectProfileMenu(newProfileMenuTable);
                 } else {
                     profileNameTextField.setColor(Color.RED);
-                    System.out.println("Textfield ist leer");
                 }
             }
         });
@@ -508,44 +508,41 @@ public class MenuScreen extends BaseScreen {
 
     }
 
-    private void showMainMenu(Table callingTable) {
-        mainMenuTable.setVisible(true);
+    private void showMenu(final Table menu,final Table callingTable){
+        menu.setVisible(true);
         callingTable.setVisible(false);
+    }
+
+    private void showMainMenu(Table callingTable) {
+        showMenu(mainMenuTable,callingTable);
     }
 
     private void showSetSelectGameModeMenu(Table callingTable) {
-        selectGameModeTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(selectGameModeTable,callingTable);
     }
 
     private void showClientOrServerMenu(Table callingTable) {
-        clientOrServerMenuTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(clientOrServerMenuTable,callingTable);
     }
 
     private void showSelectProfileMenu(Table callingTable) {
-        selectProfileMenuTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(selectProfileMenuTable,callingTable);
     }
 
     private void showNewProfileMenu(Table callingTable) {
-        newProfileMenuTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(newProfileMenuTable,callingTable);
     }
 
     private void showHighScoreMenu(Table callingTable) {
-        highScoreMenuTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(highScoreMenuTable,callingTable);
     }
 
     private void showPreferencesMenu(Table callingTable) {
-        preferencesMenuTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(preferencesMenuTable,callingTable);
     }
 
     private void showServerListMenu(Table callingTable) {
-        serverListMenuTable.setVisible(true);
-        callingTable.setVisible(false);
+        showMenu(serverListMenuTable,callingTable);
     }
 
     private Skin createBasicSkin() {

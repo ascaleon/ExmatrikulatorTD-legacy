@@ -131,7 +131,7 @@ public class MainController {
      */
     public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
-        //profileDao.create(profile);
+        profileDao.create(profile);
     }
 
     /**
@@ -261,9 +261,16 @@ public class MainController {
 
     public List<Profile> retrieveProfiles(){
         //createNewProfile("Tommy Shelby",Difficulty.EASY,"tommy.png");
-        //Profile p=profileDao.retrieve(1L);
-        //System.out.println(p.getProfileName());
-        return new LinkedList<>();
+        List<Profile> profiles=new LinkedList<>();
+        long i=0;
+        Profile p;
+        while((p=profileDao.retrieve(i))!=null){
+            profiles.add(p);
+            System.out.println(p.getProfileName());
+            i++;
+        }
+        //return new LinkedList<>();
+        return profiles;
     }
 
     public List<Highscore> retrieveHighscores(int limit) {
