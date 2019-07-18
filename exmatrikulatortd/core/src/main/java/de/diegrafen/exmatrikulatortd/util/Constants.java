@@ -23,7 +23,7 @@ public final class Constants {
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
      */
-    public static final float SEARCH_TARGET_INTERVAL = 0.75f;
+    public static final float SEARCH_TARGET_INTERVAL = 0.25f;
 
     public static final int TILE_SIZE = 64;
 
@@ -31,9 +31,9 @@ public final class Constants {
 
     public static final float DAMAGE_REDUCTION_FACTOR = 0.06f;
 
-    public static final float SPEED_INCREASE_PER_LEVEL = 1f;
+    public static final float SPEED_INCREASE_PER_LEVEL = 1.5f;
 
-    public static final float ARMOR_INCREASE_PER_LEVEL = 1f;
+    public static final float ARMOR_INCREASE_PER_LEVEL = 1.5f;
 
     /**
      * Angriffstyp "Normaler Schaden"

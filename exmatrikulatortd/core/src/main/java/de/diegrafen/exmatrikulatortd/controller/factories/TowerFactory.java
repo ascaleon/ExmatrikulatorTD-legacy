@@ -100,7 +100,7 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, 2 * TILE_SIZE, 3,
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 10, 2 * TILE_SIZE, 0.5f,
                 NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
                 "Feuerball", FIREBALL_ASSETS, 300);
     }
@@ -183,7 +183,7 @@ public final class TowerFactory {
         LinkedList<Debuff> debuffs = new LinkedList<>();
         LinkedList<Buff> buffs = new LinkedList<>();
 
-        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 1.2f, 1, false);
+        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 4f, 1, false);
         buffs.add(hasteBuff);
         Aura hasteAura = new Aura(200, debuffs, buffs);
 

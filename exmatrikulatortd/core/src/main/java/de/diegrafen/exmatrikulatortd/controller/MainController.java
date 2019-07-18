@@ -1,13 +1,11 @@
 package de.diegrafen.exmatrikulatortd.controller;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
+import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientGameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
@@ -15,6 +13,7 @@ import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,15 +59,10 @@ public class MainController {
     /**
      * Das Spiel-Objekt, das unter anderem das Rendern übernimmt
      */
-    private Game game;
+    private ExmatrikulatorTD game;
 
     /**
-     * Assetmanager zur Verwaltung von Spielressourcen
-     */
-    private AssetManager assetManager;
-
-    /**
-     * Gameserver für den Multiplayer-Modus
+     * Gameserver für den Multiplayer-ModusGame
      */
     private GameServer gameServer;
 
@@ -77,21 +71,21 @@ public class MainController {
      */
     private GameClient gameClient;
 
-    private LogicController currentLogicController;
-
     private Screen introScreen;
+
+    private boolean databaseLoaded;
 
     /**
      * Erzeugt einen neuen Maincontroller, das ein Game-Objekt verwaltet
      *
      * @param game Das mit dem Game-Controller zu assoziierende Game-Objekt
      */
-    public MainController(Game game) {
+    public MainController(ExmatrikulatorTD game) {
         this.game = game;
-        this.splashScreen = new SplashScreen(this);
-        this.menuScreen = new MenuScreen(this);
-        this.introScreen = new IntroScreen(this);
-        this.assetManager = new AssetManager();
+        System.out.println(game.getAssetManager());
+        this.splashScreen = new SplashScreen(this, game.getAssetManager());
+        this.menuScreen = new MenuScreen(this, game.getAssetManager());
+        this.introScreen = new IntroScreen(this, game.getAssetManager());
         this.profileDao = new ProfileDao();
         this.highScoreDao = new HighscoreDao();
     }
@@ -104,13 +98,7 @@ public class MainController {
     }
 
     /**
-     * Lädt Assets
-     */
-    public void loadAssets() {
-    }
-
-    /**
-     * Gibt an, ob die Assets vom Assetmanager bereits geladen sind
+     * Gibt an, ob die Assets vom game.getAssetManager() bereits geladen sind
      *
      * @return True, wenn die Assets geladen sind, ansonsten false
      */
@@ -132,7 +120,7 @@ public class MainController {
      * @param gamestate Der Spielzustand, dessen Informationen angezeigt werden sollen
      */
     public void setEndScreen(Gamestate gamestate) {
-        game.setScreen(new EndScreen(this, gamestate));
+        game.setScreen(new EndScreen(this, game.getAssetManager(), gamestate));
     }
 
     /**
@@ -141,25 +129,9 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public void createNewProfile(String profileName, String profilePicture) {
-
-    }
-
-    /**
-     * Gibt das aktuelle Profil zurücl
-     *
-     * @return Das aktuelle Profil
-     */
-    public Profile getCurrentProfile() {
-        return currentProfile;
-    }
-
-    /**
-     * Legt ein Profil als aktuelles Profil fest
-     *
-     */
-    public void setCurrentProfile(Profile currentProfile) {
-        this.currentProfile = currentProfile;
+    public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+        Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
+        //profileDao.create(profile);
     }
 
     /**
@@ -177,8 +149,6 @@ public class MainController {
         if (gameClient == null) {
             this.gameClient = new GameClient();
             this.gameClient.setMainController(this);
-        } else {
-
         }
     }
 
@@ -200,9 +170,10 @@ public class MainController {
             System.out.println(string);
         }
 
-        if (!servers.isEmpty()) {
+        //if (!servers.isEmpty()) {
             //gameClient.connect(servers.get(0).getHostName());
-        } else {
+        //} else {
+        if (servers.isEmpty()) {
             System.out.println("Keine Server gefunden!");
         }
 
@@ -234,7 +205,7 @@ public class MainController {
      * Erstellt ein neues Einzelspieler-Spiel
      */
     public void createNewSinglePlayerGame(int gamemode, String mapPath) {
-        GameView gameScreen = new GameScreen(this);
+        GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
         showScreen(gameScreen);
     }
@@ -245,7 +216,7 @@ public class MainController {
      * @param saveState Der Spielzustand, der geladen werden soll
      */
     public void loadSinglePlayerGame(SaveState saveState) {
-        GameView gameScreen = new GameScreen(this);
+        GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen);
         showScreen(gameScreen);
     }
@@ -254,7 +225,7 @@ public class MainController {
      * Erzeugt ein neues Multiplayer-Spiel als Client
      */
     public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
-        GameView gameScreen = new GameScreen(this);
+        GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
         showScreen(gameScreen);
     }
@@ -263,7 +234,7 @@ public class MainController {
      * Lädt ein Multiplayerspiel als Client
      */
     public void loadMultiPlayerClientGame(SaveState saveState, int allocatedPlayerNumber) {
-        GameView gameScreen = new GameScreen(this);
+        GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, saveState, allocatedPlayerNumber, gameScreen, gameClient);
         showScreen(gameScreen);
     }
@@ -272,7 +243,7 @@ public class MainController {
      * Erzeugt ein Multiplayer-Spiel als Server
      */
     public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
-        GameView gameScreen = new GameScreen(this);
+        GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer);
         showScreen(gameScreen);
     }
@@ -283,26 +254,27 @@ public class MainController {
      * @param saveState Der Spielzustand, der geladen werden soll
      */
     public void loadMultiPlayerServerGame(SaveState saveState) {
-        GameView gameScreen = new GameScreen(this);
+        GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen, gameServer);
         showScreen(gameScreen);
     }
 
     public List<Highscore> retrieveHighscores(int limit) {
 
-        //Profile profile = new Profile("Sherlock Holmes", Difficulty.EASY);
+/*        createNewProfile("Sherlock Holmes", Difficulty.EASY, "sherlock.png.");
 
-        //profileDao.create(profile);
+        Profile profile = profileDao.retrieve(1L);
 
-        //Highscore highscore1 = new Highscore(profile, 9000, 25, new Date());
-        //Highscore highscore2 = new Highscore(profile, 5012, 691, new Date());
-        //Highscore highscore3 = new Highscore(profile, 1337, 42, new Date());
+        Highscore highscore1 = new Highscore(profile, 9000, 25, new Date());
+        Highscore highscore2 = new Highscore(profile, 5012, 691, new Date());
+        Highscore highscore3 = new Highscore(profile, 1337, 42, new Date());
 
-        //highScoreDao.create(highscore1);
-        //highScoreDao.create(highscore2);
-        //highScoreDao.create(highscore3);
+        highScoreDao.create(highscore1);
+        highScoreDao.create(highscore2);
+        highScoreDao.create(highscore3);*/
 
-        return new LinkedList<>(); //highScoreDao.findHighestScores(limit);
+        return new LinkedList<>();
+        //return highScoreDao.findHighestScores(limit);
     }
 
     public void showScreen(Screen screen) {
@@ -311,5 +283,13 @@ public class MainController {
 
     public void showIntroScreen() {
         game.setScreen(introScreen);
+    }
+
+    public boolean isDatabaseLoaded() {
+        return databaseLoaded;
+    }
+
+    public void setDatabaseLoaded(boolean databaseLoaded) {
+        this.databaseLoaded = databaseLoaded;
     }
 }

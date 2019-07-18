@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Assets.getProjectileAssetPath;
 
 public class ProjectileObject extends BaseObject {
 
@@ -14,8 +16,8 @@ public class ProjectileObject extends BaseObject {
 
     private Animation<TextureRegion> deathAnimation;
 
-    public ProjectileObject(ObservableUnit observableUnit) {
-        super(observableUnit);
+    public ProjectileObject(ObservableUnit observableUnit, AssetManager assetManager) {
+        super(observableUnit, assetManager);
     }
 
     /**
@@ -24,8 +26,8 @@ public class ProjectileObject extends BaseObject {
     @Override
     void initializeSprite() {
         super.initializeSprite();
+        setTextureAtlas(getAssetManager().get(getProjectileAssetPath(getAssetsName()), TextureAtlas.class));
 
-        setTextureAtlas(new TextureAtlas(FIREBALL_ASSETS));
         flyingAnimation = new Animation<>(0.033f, getTextureAtlas().findRegions("fireball"), Animation.PlayMode.LOOP);
         deathAnimation = new Animation<>(0.033f, getTextureAtlas().findRegions("fireball_die"));
     }
@@ -53,7 +55,7 @@ public class ProjectileObject extends BaseObject {
         } else if (!deathAnimation.isAnimationFinished(getStateTime())) {
             currentFrame = deathAnimation.getKeyFrame(getStateTime());
         } else {
-            setRemoved(true);
+            removeObjectFromGame();
             return;
         }
 

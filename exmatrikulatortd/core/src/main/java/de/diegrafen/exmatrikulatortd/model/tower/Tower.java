@@ -513,5 +513,14 @@ public class Tower extends ObservableModel {
         return this.attacking;
     }
 
-}
+    //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
+    @Override
+    public float getCurrentMaxHitPoints() {
+        return 0;
+    }
 
+    @Override
+    public float getCurrentHitPoints() {
+        return 0;
+    }
+}

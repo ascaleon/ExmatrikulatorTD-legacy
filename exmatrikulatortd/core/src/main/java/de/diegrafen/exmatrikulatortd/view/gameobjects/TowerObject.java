@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -7,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import static de.diegrafen.exmatrikulatortd.util.Assets.TOWER_SPRITE_PATH;
+
+import static de.diegrafen.exmatrikulatortd.util.Assets.getTowerAssetPath;
 
 /**
  *
@@ -28,8 +31,10 @@ public class TowerObject extends BaseObject {
     private boolean attacking;
 
 
-    public TowerObject (ObservableUnit observableUnit) {
-        super(observableUnit);
+    private Texture currentSprite;
+
+    public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
+        super(observableUnit, assetManager);
     }
 
     /**
@@ -46,6 +51,7 @@ public class TowerObject extends BaseObject {
         idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idle"), Animation.PlayMode.LOOP);
 
         attackRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
+        currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
 
     /**
@@ -73,7 +79,7 @@ public class TowerObject extends BaseObject {
         super.draw(spriteBatch, deltaTime);
 
         if (isPlayDeathAnimation()) {
-            setRemoved(true);
+            removeObjectFromGame();
             return;
         }
 

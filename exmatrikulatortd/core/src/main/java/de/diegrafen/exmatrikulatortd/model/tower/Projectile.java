@@ -181,6 +181,16 @@ public class Projectile extends ObservableModel {
     public int getAttackType() {
         return attackType;
     }
+    //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
+    @Override
+    public float getCurrentMaxHitPoints() {
+        return 0;
+    }
+
+    @Override
+    public float getCurrentHitPoints() {
+        return 0;
+    }
 
     public boolean isAttacking(){return this.isAttacking;}
 }

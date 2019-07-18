@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapProperties;
@@ -101,13 +102,15 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private LogicController logicController;
 
+    private int numberofTowers = 0;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
      * @param mainController Der Maincontrroller.
      */
-    public GameScreen(MainController mainController) {
-        super(mainController);
+    public GameScreen(MainController mainController, AssetManager assetManager) {
+        super(mainController, assetManager);
     }
 
 
@@ -365,7 +368,6 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         }
         objectsToRemove.forEach(this::removeGameObject);
-
         getSpriteBatch().end();
     }
 
@@ -398,7 +400,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         int sizeX = 100;
         int sizeY = 100;
-
 
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
@@ -437,7 +438,6 @@ public class GameScreen extends BaseScreen implements GameView {
         // Rounds
         statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
-        System.out.println();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
@@ -582,7 +582,8 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addTower(ObservableUnit observableUnit) {
-        gameObjects.add(new TowerObject(observableUnit));
+        gameObjects.add(0, new TowerObject(observableUnit, getAssetManager()));
+        numberofTowers++;
     }
 
     /**
@@ -592,7 +593,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addEnemy(ObservableUnit observableUnit) {
-        gameObjects.add(new EnemyObject(observableUnit));
+        gameObjects.add(numberofTowers, new EnemyObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -602,7 +603,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addProjectile(ObservableUnit observableUnit) {
-        gameObjects.add(new ProjectileObject(observableUnit));
+        gameObjects.add(new ProjectileObject(observableUnit, getAssetManager()));
     }
 
     @Override
@@ -618,6 +619,9 @@ public class GameScreen extends BaseScreen implements GameView {
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
         gameObject.dispose();
+        if (gameObject instanceof TowerObject) {
+            numberofTowers--;
+        }
     }
 
     private void resetCameraToBorders() {

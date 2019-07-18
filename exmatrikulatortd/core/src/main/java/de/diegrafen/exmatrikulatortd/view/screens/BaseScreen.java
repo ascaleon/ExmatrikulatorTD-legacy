@@ -2,6 +2,7 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -41,17 +42,20 @@ public abstract class BaseScreen implements Screen {
 
     private BitmapFont bitmapFont = new BitmapFont();
 
+    private AssetManager assetManager;
+
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
      * @param mainController Der MainController für den Screen.
      */
-    BaseScreen(MainController mainController) {
+    BaseScreen(MainController mainController, AssetManager assetManager) {
+        this.mainController = mainController;
+        this.assetManager = assetManager;
         this.camera = new OrthographicCamera();
         viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera); //new ScreenViewport(camera); //ExtendViewport(800, 600, camera);
         stageViewport = new ScreenViewport(new OrthographicCamera());
 
         this.spriteBatch = new SpriteBatch();
-        this.mainController = mainController;
         ui = new Stage(stageViewport);
     }
 
@@ -176,5 +180,9 @@ public abstract class BaseScreen implements Screen {
 
     Viewport getStageViewport() {
         return stageViewport;
+    }
+
+    public AssetManager getAssetManager() {
+        return assetManager;
     }
 }
