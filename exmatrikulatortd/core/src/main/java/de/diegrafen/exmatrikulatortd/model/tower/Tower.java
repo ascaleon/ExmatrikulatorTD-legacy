@@ -505,8 +505,8 @@ public class Tower extends ObservableModel {
         this.projectileSpeed = projectileSpeed;
     }
 
-    public void setAttacking(Boolean b) {
-        this.attacking = b;
+    public void setAttacking(Boolean attacking) {
+        this.attacking = attacking;
     }
 
     public boolean isAttacking(){
