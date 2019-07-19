@@ -38,6 +38,8 @@ public class MenuScreen extends BaseScreen {
 
     private Table selectProfileMenuTable;
 
+    private Table profilesTable;
+
     private Table newProfileMenuTable;
 
     private Table highScoreMenuTable;
@@ -216,22 +218,10 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
-    private void createSelectProfileMenuTable(Stack menuStack) {
-        System.out.println("createSelectProfileMenuTable");
-        selectProfileMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+    private void refreshProfilesTable() {
         Skin basicSkin = createBasicSkin();
-
-        Table profilesTable = new Table();
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, scrollPaneStyle);
         java.util.List<Profile> profiles = getMainController().retrieveProfiles();
-
-        TextButton createNewProfile = new TextButton("Neues Profil", skin);
-        TextButton backButton = new TextButton("Zurück", skin);
-
-        profilesTable.pad(10).defaults().expandX().space(4);
-
+        profilesTable.clearChildren();
         for (Profile profile : profiles) {
             profilesTable.row();
             // @TODO Profilbild hinzufuegen
@@ -240,10 +230,28 @@ public class MenuScreen extends BaseScreen {
             rowTable.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println(profile.getProfileName()+" angeklickt");
+                    System.out.println(profile.getProfileName() + " angeklickt");
                 }
             });
         }
+    }
+
+    private void createSelectProfileMenuTable(Stack menuStack) {
+        selectProfileMenuTable = new Table();
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+
+        profilesTable = new Table();
+        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, scrollPaneStyle);
+
+        refreshProfilesTable();
+
+        TextButton createNewProfile = new TextButton("Neues Profil", skin);
+        TextButton editProfile = new TextButton("Profil bearbeiten", skin);
+        TextButton deleteProfile = new TextButton("Profil entfernen", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        profilesTable.pad(10).defaults().expandX().space(4);
 
         selectProfileMenuTable.setFillParent(true);
         selectProfileMenuTable.setVisible(false);
@@ -254,6 +262,19 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showNewProfileMenu(selectProfileMenuTable);
+            }
+        });
+
+        editProfile.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("editProfile");
+            }
+        });
+
+        deleteProfile.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
             }
         });
 
@@ -268,7 +289,11 @@ public class MenuScreen extends BaseScreen {
         selectProfileMenuTable.add(profilesTableScrollPane).fillX().uniformX();
         selectProfileMenuTable.row().pad(10, 0, 10, 0);
         selectProfileMenuTable.add(createNewProfile).fillX().uniformX();
-        selectProfileMenuTable.row();
+        selectProfileMenuTable.row().pad(10, 0, 10, 0);
+        selectProfileMenuTable.add(editProfile).fillX().uniformX();
+        selectProfileMenuTable.row().pad(10, 0, 10, 0);
+        selectProfileMenuTable.add(deleteProfile).fillX().uniformX();
+        selectProfileMenuTable.row().pad(10, 0, 10, 0);
         selectProfileMenuTable.add(backButton).fillX().uniformX();
         selectProfileMenuTable.row();
     }
@@ -508,41 +533,42 @@ public class MenuScreen extends BaseScreen {
 
     }
 
-    private void showMenu(final Table menu,final Table callingTable){
+    private void showMenu(final Table menu, final Table callingTable) {
         menu.setVisible(true);
         callingTable.setVisible(false);
     }
 
     private void showMainMenu(Table callingTable) {
-        showMenu(mainMenuTable,callingTable);
+        showMenu(mainMenuTable, callingTable);
     }
 
     private void showSetSelectGameModeMenu(Table callingTable) {
-        showMenu(selectGameModeTable,callingTable);
+        showMenu(selectGameModeTable, callingTable);
     }
 
     private void showClientOrServerMenu(Table callingTable) {
-        showMenu(clientOrServerMenuTable,callingTable);
+        showMenu(clientOrServerMenuTable, callingTable);
     }
 
     private void showSelectProfileMenu(Table callingTable) {
-        showMenu(selectProfileMenuTable,callingTable);
+        refreshProfilesTable();
+        showMenu(selectProfileMenuTable, callingTable);
     }
 
     private void showNewProfileMenu(Table callingTable) {
-        showMenu(newProfileMenuTable,callingTable);
+        showMenu(newProfileMenuTable, callingTable);
     }
 
     private void showHighScoreMenu(Table callingTable) {
-        showMenu(highScoreMenuTable,callingTable);
+        showMenu(highScoreMenuTable, callingTable);
     }
 
     private void showPreferencesMenu(Table callingTable) {
-        showMenu(preferencesMenuTable,callingTable);
+        showMenu(preferencesMenuTable, callingTable);
     }
 
     private void showServerListMenu(Table callingTable) {
-        showMenu(serverListMenuTable,callingTable);
+        showMenu(serverListMenuTable, callingTable);
     }
 
     private Skin createBasicSkin() {
