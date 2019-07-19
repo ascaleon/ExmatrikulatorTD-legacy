@@ -29,6 +29,8 @@ public class TowerObject extends BaseObject {
 
     private boolean attacking;
 
+    private float animationTime = 0;
+
 
     private Texture currentSprite;
 
@@ -88,7 +90,12 @@ public class TowerObject extends BaseObject {
         TextureRegion currentFrame;
 
         if (attacking){
+            animationTime += deltaTime;
             currentFrame = attackRightAnimation.getKeyFrame(getStateTime());
+            if(attackRightAnimation.isAnimationFinished(animationTime)){
+                attacking = false;
+                animationTime = 0;
+            }
         } else {
             currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
         }
