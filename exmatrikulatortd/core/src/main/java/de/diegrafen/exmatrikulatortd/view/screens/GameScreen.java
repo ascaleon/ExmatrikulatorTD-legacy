@@ -110,6 +110,11 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private int numberofTowers = 0;
 
+    private Table messageArea;
+
+    private Label mssg;
+    private float timer;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -305,6 +310,15 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void update(float deltaTime) {
         logicController.update(deltaTime);
+        if(mssg != null){
+            if(timer <= 0) {
+                messageArea.removeActor(mssg);
+            }
+            else{
+                timer = timer - deltaTime;
+                mssg.setColor(1,0,0,1 * timer / 3);
+            }
+        }
     }
 
     @Override
@@ -405,6 +419,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private void initializeUserInterface() {
 
+        if(logicController.isMultiplayer()){
+            int localPlayerNumber = logicController.getLocalPlayerNumber();
+            //Player enemyPlayer = gameState.getPlayers().get();
+        }
         int sizeX = 100;
         int sizeY = 100;
 
@@ -569,7 +587,7 @@ public class GameScreen extends BaseScreen implements GameView {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!logicController.isPause()) {
+                if (!logicController.isPause() & !logicController.isMultiplayer()) {
                     System.out.println("Pausiert");
                     //exitButton.setColor(255,0,0,255);
                     //exitButton.setText(">");
@@ -577,7 +595,7 @@ public class GameScreen extends BaseScreen implements GameView {
                     //Gdx.app.exit();
                     logicController.setPause(true);
                     pauseScreen();
-                } else {
+                } else if(!logicController.isMultiplayer()){
                     //exitButton.setColor(Color.valueOf("ffffffff"));
                     //exitButton.setText("| |");
                     logicController.setPause(false);
@@ -590,11 +608,13 @@ public class GameScreen extends BaseScreen implements GameView {
         //Gdx.input.setInputProcessor(stage);
         //getUi().addActor(exitButton);
 
+        messageArea = new Table();
         //Toprow table
         final Table topRow = new Table();
         //topRow.setDebug(true);
         //topRow.add(exit).left();
         //topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
+        //topRow.add(messageArea).center();
         topRow.add(exit).top().right();
         topRow.setBounds(0, 50, defaultScreen.getWidth(), defaultScreen.getHeight());
 
@@ -603,6 +623,7 @@ public class GameScreen extends BaseScreen implements GameView {
         bottomOfScreen.align(MIDDLE);
         //bottomOfScreen.setDebug(true);
 
+        defaultScreen.add(messageArea).center().top();
         defaultScreen.add(topRow).top().right().expandX();
         defaultScreen.row();
         //defaultScreen.setDebug(true);
@@ -610,14 +631,15 @@ public class GameScreen extends BaseScreen implements GameView {
 //        defaultScreen.add(towerSelect).top().center();
 //        defaultScreen.add(exit).top().right();
 //        defaultScreen.row();
+        statsTable.add(playerHealth).right();
         defaultScreen.add(statsTable).top().right().expandX().colspan(4);
         defaultScreen.row();
-        defaultScreen.add(playerHealth).right().top().row();
+        //defaultScreen.add(playerHealth).right().top().row();
 
         //defaultScreen.add(new ProgressBar(0, localPlayer.getAttackingEnemies().size(), 1, false, skin)).top().expandX();
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
-        defaultScreen.add(bottomOfScreen).bottom().center();
+        defaultScreen.add(bottomOfScreen).bottom().center().expandX();
         mainUiStack.addActor(defaultScreen);
 
         //getUi().addActor(defaultScreen);
@@ -661,6 +683,13 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void displayErrorMessage(String message) {
         System.err.println(message);
+        Label.LabelStyle mssgStyle = new Label.LabelStyle();
+        mssgStyle.font = getBitmapFont();
+        mssg = new Label(message, mssgStyle);
+        mssg.setColor(1,0,0,1);
+        messageArea.clear();
+        messageArea.add(mssg);
+        timer = 3;
     }
 
     @Override

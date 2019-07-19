@@ -1256,4 +1256,9 @@ public class GameLogicController implements LogicController {
     public void setPause(boolean pause) {
         this.pause = pause;
     }
+
+    @Override
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
 }
