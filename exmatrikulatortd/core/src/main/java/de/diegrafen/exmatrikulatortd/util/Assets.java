@@ -49,12 +49,12 @@ public class Assets {
 
         // load Textures
 
-        assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), Texture.class);
-        assetManager.load(getTowerAssetPath(UPGRADED_REGULAR_TOWER_ASSETS), Texture.class);
-        assetManager.load(getTowerAssetPath(SLOW_TOWER_ASSETS), Texture.class);
-        assetManager.load(getTowerAssetPath(CORRUPTION_TOWER_ASSETS), Texture.class);
-        assetManager.load(getTowerAssetPath(EXPLOSIVE_TOWER_ASSETS), Texture.class);
-        assetManager.load(getTowerAssetPath(AURA_TOWER_ASSETS), Texture.class);
+        assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), TextureAtlas.class);
+        assetManager.load(TOWER_SPRITE_PATH + UPGRADED_REGULAR_TOWER_ASSETS, Texture.class);
+        assetManager.load(TOWER_SPRITE_PATH +  SLOW_TOWER_ASSETS, Texture.class);
+        assetManager.load(TOWER_SPRITE_PATH + CORRUPTION_TOWER_ASSETS, Texture.class);
+        assetManager.load(TOWER_SPRITE_PATH + EXPLOSIVE_TOWER_ASSETS, Texture.class);
+        assetManager.load(TOWER_SPRITE_PATH + AURA_TOWER_ASSETS, Texture.class);
 
 
         // load atlasses
