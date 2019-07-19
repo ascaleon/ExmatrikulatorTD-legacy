@@ -284,12 +284,20 @@ public class Tower extends ObservableModel {
 
     @Override
     public float getTargetxPosition() {
-        return position.getXCoordinate() * gamestate.getTileWidth();
+        if (currentTarget != null) {
+            return currentTarget.getxPosition();
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public float getTargetyPosition() {
-        return position.getYCoordinate() * gamestate.getTileHeight();
+        if (currentTarget != null) {
+            return currentTarget.getyPosition();
+        } else {
+            return 0;
+        }
     }
 
     public int getSellPrice() {
