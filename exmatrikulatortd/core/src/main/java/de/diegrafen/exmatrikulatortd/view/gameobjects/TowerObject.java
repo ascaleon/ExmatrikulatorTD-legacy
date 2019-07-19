@@ -7,9 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
-import static de.diegrafen.exmatrikulatortd.util.Assets.TOWER_SPRITE_PATH;
 
-import static de.diegrafen.exmatrikulatortd.util.Assets.getTowerAssetPath;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
 /**
  *
@@ -45,13 +44,12 @@ public class TowerObject extends BaseObject {
         super.initializeSprite();
 
         String assetsName = getAssetsName();
-
-        setTextureAtlas(new TextureAtlas(TOWER_SPRITE_PATH + assetsName + ".atlas"));
+        setTextureAtlas(getAssetManager().get(getTowerAssetPath(assetsName),TextureAtlas.class));
 
         idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idle"), Animation.PlayMode.LOOP);
 
         attackRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
-        currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
+        //currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
 
     /**

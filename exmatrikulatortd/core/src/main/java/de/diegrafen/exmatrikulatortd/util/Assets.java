@@ -15,7 +15,7 @@ public class Assets {
 
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
-    public static final String REGULAR_TOWER_ASSETS = "WanderingEye@64x64.png";
+    public static final String REGULAR_TOWER_ASSETS = "tower_mage";
 
     public static final String UPGRADED_REGULAR_TOWER_ASSETS = "WanderingEye2@64x64.png";
 
@@ -67,7 +67,7 @@ public class Assets {
     }
 
     public static String getTowerAssetPath(String towerAsset) {
-        return TOWER_SPRITE_PATH + towerAsset;
+        return TOWER_SPRITE_PATH + towerAsset + ".atlas";
     }
 
     public static String getEnemyAssetPath(String enemyAsset) {
