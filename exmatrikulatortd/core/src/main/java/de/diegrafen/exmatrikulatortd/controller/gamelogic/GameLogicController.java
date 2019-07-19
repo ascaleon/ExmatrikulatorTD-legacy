@@ -174,6 +174,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void update(float deltaTime) {
         if (!gamestate.isGameOver() && !pause) {
+            determineGameOver();
             determineNewRound();
             if (gamestate.isRoundEnded()) {
                 determineGameOver();
@@ -757,6 +758,9 @@ public class GameLogicController implements LogicController {
         }
 
         gamestate.setGameOver(gameOver);
+        if(gamestate.isGameOver()){
+            gameScreen.endOfGameScreen();
+        }
     }
 
     private void determineLosers() {

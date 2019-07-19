@@ -494,6 +494,14 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
 
+        TextButton instaLoose = new TextButton("L", skin);
+        instaLoose.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                localPlayer.setCurrentLives(0);
+            }
+        });
+
         TooltipManager ttm = new TooltipManager();
         ttm.instant();
         //InputListener für die Buttons
@@ -549,6 +557,7 @@ public class GameScreen extends BaseScreen implements GameView {
         towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(sell).size(sizeX, sizeY);
+        towerSelect.add(instaLoose).size(sizeX, sizeY);
 //        towerSelect.add(new TextButton("Tower 1", skin)).size(50,10);
 //        towerSelect.add(new TextButton("Tower 2", skin)).size(50,10);
 
@@ -812,15 +821,18 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    @Override
     public void endOfGameScreen(){
         Group endScreenGroup = new Group();
         Player localPlayer = logicController.getLocalPlayer();
 
         Image loose = new Image(new Texture(Gdx.files.internal("loose.png")));
         Image win = new Image(new Texture(Gdx.files.internal("win.png")));
+        Image test = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
 
         loose.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
         win.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        test.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
         Table buttonTable = new Table();
 
@@ -832,6 +844,7 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
+        scoreLabel.setFontScale(5);
         buttonTable.add(scoreLabel).center().row();
         buttonTable.add(back2main).top().center().row();
         buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/2);
@@ -842,8 +855,13 @@ public class GameScreen extends BaseScreen implements GameView {
         else if(!localPlayer.isVictorious()){
             endScreenGroup.addActor(loose);
         }
+        else{
+            endScreenGroup.addActor(test);
+        }
 
         endScreenGroup.addActor(buttonTable);
+        defaultScreen.setVisible(false);
+        getUi().addActor(endScreenGroup);
     }
 
     public void popUpMessage(String message){
