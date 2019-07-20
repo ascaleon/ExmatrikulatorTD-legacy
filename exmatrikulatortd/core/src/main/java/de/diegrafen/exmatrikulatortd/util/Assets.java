@@ -11,7 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 15.06.2019 00:58
  */
-public class Assets {
+public final class Assets {
+
+    public static final String MENU_BACKGROUND_IMAGE = "196922.jpg";
 
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
