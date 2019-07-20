@@ -70,7 +70,14 @@ public class Tower extends ObservableModel {
     @Enumerated(EnumType.STRING)
     private AttackStyle attackStyle;
 
-    private float attackDelay;
+    /**
+     * Die zeit nach dem angriff, an der der schaden berechnet/das projektil losgeschickt wird
+     */
+    private float baseAttackDelay;
+
+    private float currentAttackDelay;
+
+    private float attackDelayTimer;
 
     /**
      * Der Aura-Typ des Turmes
@@ -171,6 +178,7 @@ public class Tower extends ObservableModel {
 
     private Boolean attacking = false;
 
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -198,7 +206,7 @@ public class Tower extends ObservableModel {
      * @param assetsName
      */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage,
-                 float attackRange, float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price,
+                 float attackRange, float baseAttackSpeed, int attackType, float baseAttackDelay, List<Aura> auras, float auraRange, int price,
                  int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName,
                  float splashAmount, float splashRadius, List<Debuff> attackDebuffs, int tileWidth, int tileHeight) {
         super();
@@ -229,6 +237,9 @@ public class Tower extends ObservableModel {
         this.attackDebuffs = attackDebuffs;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
+        this.baseAttackDelay = baseAttackDelay;
+        this.currentAttackDelay = baseAttackDelay;
+        this.attackDelayTimer = baseAttackDelay;
     }
 
     /**
@@ -240,6 +251,7 @@ public class Tower extends ObservableModel {
      * @param attackRange
      * @param baseAttackSpeed
      * @param attackType
+     * @param baseAttackDelay
      * @param auras
      * @param auraRange
      * @param price
@@ -258,18 +270,20 @@ public class Tower extends ObservableModel {
      * @param tileHeight
      */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange,
-                 float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price, int sellPrice,
+                 float baseAttackSpeed, int attackType, float baseAttackDelay, List <Aura> auras, float auraRange, int price, int sellPrice,
                  int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, float splashAmount,
                  float splashRadius, List<Debuff> attackDebuffs, String projectileName, String projectileAssetsName,
                  float projectileSpeed, int tileWidth, int tileHeight) {
         this(name, descriptionText, towerType, baseAttackDamage,
-                attackRange, baseAttackSpeed, attackType, auras, auraRange, price,
+                attackRange, baseAttackSpeed, attackType, baseAttackDelay, auras, auraRange, price,
                 sellPrice, upgradePrice, upgradeLevel, maxUpgradeLevel, assetsName,
                 splashAmount, splashRadius, attackDebuffs, tileWidth, tileHeight);
         this.attackStyle = AttackStyle.PROJECTILE;
         this.projectileName = projectileName;
         this.projectileAssetsName = projectileAssetsName;
         this.projectileSpeed = projectileSpeed;
+        this.currentAttackDelay = baseAttackDelay;
+        this.attackDelayTimer = baseAttackDelay;
 
     }
 
@@ -305,6 +319,9 @@ public class Tower extends ObservableModel {
         this.tileWidth = tower.getTileWidth();
         this.tileHeight = tower.getTileHeight();
         this.attacking = tower.isAttacking();
+        this.baseAttackDelay = tower.getBaseAttackDelay();
+        this.currentAttackDelay = tower.getCurrentAttackDelay();
+        this.attackDelayTimer = tower.getAttackDelayTimer();
 
         this.auras = new LinkedList<>();
         this.buffs = new LinkedList<>();
@@ -569,6 +586,26 @@ public class Tower extends ObservableModel {
     }
 
     public float getAttackSpeed() {
-        return this.currentAttackSpeed;
+        return currentAttackSpeed;
+    }
+
+    public float getBaseAttackDelay(){
+        return baseAttackDelay;
+    }
+
+    public float getCurrentAttackDelay(){
+        return currentAttackDelay;
+    }
+
+    public void setCurrentAttackDelay(float attackdelay){
+        currentAttackDelay = attackdelay;
+    }
+
+    public float getAttackDelayTimer(){
+        return attackDelayTimer;
+    }
+
+    public void setAttackDelayTimer(float attackdelay){
+        attackDelayTimer = attackdelay;
     }
 }

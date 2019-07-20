@@ -100,7 +100,7 @@ public final class TowerFactory {
 
         // Konstruktor für den AttackType-Immediate
         return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, range, 0.5f,
-                NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
+                NORMAL, 0.4f, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
                 tileWidth, tileHeight);
         //return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 300, 2 * TILE_SIZE, 2.0f,
         //        NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
@@ -125,7 +125,7 @@ public final class TowerFactory {
         attackDebuffs.add(frostDebuff);
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100,
-                2 * TILE_SIZE, 3, PIERCING, auras, 0, 300, 150, 600,
+                2 * TILE_SIZE, 3, PIERCING, 0,auras, 0, 300, 150, 600,
                 1, 3, SLOW_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
                 "Feuerball", FIREBALL_ASSETS, 300, tileWidth, tileHeight);
     }
@@ -149,7 +149,7 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, LOGIC, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, LOGIC, 0, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);
     }
 
     /**
@@ -170,7 +170,7 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, 0, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);
     }
 
     /**
@@ -191,7 +191,7 @@ public final class TowerFactory {
         auras.add(hasteAura);
 
         return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100,
-                2 * TILE_SIZE, 3, PIERCING, auras,
+                2 * TILE_SIZE, 3, PIERCING, 0, auras,
                 4 * TILE_SIZE, 300, 150, 600, 1,
                 3, AURA_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
                 tileWidth, tileHeight);

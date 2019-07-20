@@ -651,6 +651,12 @@ public class GameLogicController implements LogicController {
 
         for (Tower tower : gamestate.getTowers()) {
 
+            if (tower.getCurrentAttackSpeed() / 2 < tower.getBaseAttackDelay()) {
+                tower.setCurrentAttackDelay(tower.getCurrentAttackSpeed() / 2);
+            } else {
+                tower.setCurrentAttackDelay(tower.getBaseAttackDelay());
+            }
+
             if (!isTargetStillInTowerRange(tower)) {
                 findTargetforTower(tower, deltaTime);
             }
@@ -660,10 +666,11 @@ public class GameLogicController implements LogicController {
             } else {
 
                 if (tower.getCurrentTarget() != null) {
-                    letTowerAttack(tower);
-                }
+                    tower.setAttacking(true);
+                    tower.notifyObserver();
+                    applyAttackDelay(tower, deltaTime);
 
-                tower.setCooldown(tower.getCurrentAttackSpeed());
+                }
             }
         }
     }
@@ -689,17 +696,26 @@ public class GameLogicController implements LogicController {
     private void letTowerAttack(Tower tower) {
         Enemy enemy = tower.getCurrentTarget();
         //System.out.println(enemy.getName());
-        if (tower.getCooldown() <= 0) {
-            tower.setAttacking(true);
-            tower.notifyObserver();
-            switch (tower.getAttackStyle()) {
-                // TODO: Differenzierung nach Projektilarten einbauen
-                case PROJECTILE:
-                    addProjectile(tower);
-                    break;
-                case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
-                    calculateDamageImpact(enemy, tower);
-            }
+        switch (tower.getAttackStyle()) {
+            // TODO: Differenzierung nach Projektilarten einbauen
+            case PROJECTILE:
+                addProjectile(tower);
+                break;
+
+            case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
+                calculateDamageImpact(enemy, tower);
+        }
+
+    }
+
+    private void applyAttackDelay(Tower tower, float deltaTime) {
+        float attackdelay = tower.getAttackDelayTimer();
+        if (attackdelay <= 0) {
+            letTowerAttack(tower);
+            tower.setAttackDelayTimer(tower.getCurrentAttackDelay());
+            tower.setCooldown(tower.getCurrentAttackSpeed() - tower.getCurrentAttackDelay());
+        } else {
+            tower.setAttackDelayTimer(attackdelay - deltaTime);
         }
     }
 
