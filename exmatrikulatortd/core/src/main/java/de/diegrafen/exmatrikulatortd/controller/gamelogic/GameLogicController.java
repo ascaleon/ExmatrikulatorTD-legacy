@@ -204,27 +204,35 @@ public class GameLogicController implements LogicController {
      */
     @Override
     public void update(float deltaTime) {
-
-        float maxDeltaTime = Math.min(deltaTime, 1f / MIN_FPS);
-
-        if (!gamestate.isGameOver() && !pause) {
-            determineNewRound();
-            if (gamestate.isRoundEnded()) {
-                determineGameOver();
+        float maxDelta = 1f / MIN_NUMBER_OF_UPDATES;
+        if (deltaTime > maxDelta) {
+            float remainingDeltaTime = deltaTime;
+            while (remainingDeltaTime > maxDelta) {
+                update(maxDelta);
+                remainingDeltaTime -= maxDelta;
             }
-
-            if (!gamestate.isGameOver()) {
+            update(remainingDeltaTime);
+        } else {
+            if (!gamestate.isGameOver() && !pause) {
+                determineNewRound();
                 if (gamestate.isRoundEnded()) {
-                    gamestate.setRoundEnded(false);
-                    startNewRound();
+                    determineGameOver();
                 }
-                spawnWave(maxDeltaTime);
-                applyAuras(maxDeltaTime);
-                applyMovement(maxDeltaTime);
-                makeAttacks(maxDeltaTime);
-                moveProjectiles(maxDeltaTime);
-                applyBuffsToTowers(maxDeltaTime);
-                applyDebuffsToEnemies(maxDeltaTime);
+
+                if (!gamestate.isGameOver()) {
+                    if (gamestate.isRoundEnded()) {
+                        gamestate.setRoundEnded(false);
+                        startNewRound();
+                    }
+                    //applyPlayerDamage();
+                    spawnWave(deltaTime);
+                    applyAuras(deltaTime);
+                    applyMovement(deltaTime);
+                    makeAttacks(deltaTime);
+                    moveProjectiles(deltaTime);
+                    applyBuffsToTowers(deltaTime);
+                    applyDebuffsToEnemies(deltaTime);
+                }
             }
         }
     }

@@ -8,7 +8,7 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public final class Constants {
 
-    public static final float MIN_FPS = 30;
+    public static final int MIN_NUMBER_OF_UPDATES = 30;
 
     public static final String GAME_TITLE = "Exmatrikulator TD";
 
