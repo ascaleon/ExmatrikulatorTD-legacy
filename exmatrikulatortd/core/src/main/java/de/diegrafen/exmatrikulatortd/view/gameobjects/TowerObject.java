@@ -69,7 +69,9 @@ public class TowerObject extends BaseObject {
     @Override
     public void update() {
         super.update();
-        attacking = getObservable().isAttacking();
+        if (getObservable() != null) {
+            attacking = getObservable().isAttacking();
+        }
 
         if (getxPosition() - getxTargetPosition() > 0) {
             lookingLeft = true;
@@ -93,12 +95,16 @@ public class TowerObject extends BaseObject {
             return;
         }
 
-        setStateTime(getStateTime() + deltaTime);
+        if (isAnimated()) {
+            setStateTime(getStateTime() + deltaTime);
+        }
 
         TextureRegion currentFrame;
 
         if (attacking){
-            animationTime += deltaTime;
+            if (isAnimated()) {
+                animationTime += deltaTime;
+            }
             if (lookingLeft == true) {
                 currentFrame = attackLeftAnimation.getKeyFrame(animationTime);
             } else {
