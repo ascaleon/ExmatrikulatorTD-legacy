@@ -51,6 +51,9 @@ public final class Assets {
 
         // load Textures
 
+        assetManager.load(MENU_BACKGROUND_IMAGE, Texture.class);
+
+        // load atlasses
         assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(UPGRADED_REGULAR_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(SLOW_TOWER_ASSETS), TextureAtlas.class);
@@ -58,8 +61,6 @@ public final class Assets {
         assetManager.load(getTowerAssetPath(EXPLOSIVE_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(AURA_TOWER_ASSETS), TextureAtlas.class);
 
-
-        // load atlasses
         assetManager.load(getEnemyAssetPath(REGULAR_ENEMY_ASSETS), TextureAtlas.class);
         assetManager.load(getEnemyAssetPath(HEAVY_ENEMY_ASSETS), TextureAtlas.class);
         // TODO: In normale Spritesheets verschieben.
