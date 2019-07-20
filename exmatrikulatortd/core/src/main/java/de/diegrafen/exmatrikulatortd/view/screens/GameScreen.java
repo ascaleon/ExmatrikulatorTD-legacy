@@ -365,18 +365,16 @@ public class GameScreen extends BaseScreen implements GameView {
 
         gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
 
-        if (gameObjects != null) {
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject.isRemoved()) {
-                    objectsToRemove.add(gameObject);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject.isRemoved()) {
+                objectsToRemove.add(gameObject);
+            } else {
+                if (logicController.isPause() | gameState.isGameOver()) {
+                    gameObject.setAnimated(false);
                 } else {
-                    if (logicController.isPause() | gameState.isGameOver()) {
-                        gameObject.setAnimated(false);
-                    } else {
-                        gameObject.setAnimated(true);
-                    }
-                    gameObject.draw(getSpriteBatch(), deltaTime);
+                    gameObject.setAnimated(true);
                 }
+                gameObject.draw(getSpriteBatch(), deltaTime);
             }
         }
         objectsToRemove.forEach(this::removeGameObject);
