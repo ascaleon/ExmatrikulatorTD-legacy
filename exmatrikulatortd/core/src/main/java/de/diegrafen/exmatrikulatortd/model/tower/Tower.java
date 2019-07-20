@@ -70,6 +70,8 @@ public class Tower extends ObservableModel {
     @Enumerated(EnumType.STRING)
     private AttackStyle attackStyle;
 
+    private float attackDelay;
+
     /**
      * Der Aura-Typ des Turmes
      */

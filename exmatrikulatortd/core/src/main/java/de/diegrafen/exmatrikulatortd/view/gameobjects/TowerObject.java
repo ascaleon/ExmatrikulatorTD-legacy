@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -33,8 +32,6 @@ public class TowerObject extends BaseObject {
 
     private boolean lookingLeft = false;
 
-    private Texture currentSprite;
-
     public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
     }
@@ -54,30 +51,16 @@ public class TowerObject extends BaseObject {
 
         attackLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
         attackRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
-        //currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
-    }
-
-    /**
-     * Update-Methode. Aktualisiert den Zustand des Objektes
-     *
-     * @param deltaTime Die Zeit zwischen zwei Frames
-     */
-    public void update (float deltaTime) {
-        super.update();
     }
 
     @Override
     public void update() {
         super.update();
-        if (getObservable() != null ){
+        if (getObservable() != null) {
             attacking = getObservable().isAttacking();
         }
 
-        if (getxPosition() - getxTargetPosition() > 0) {
-            lookingLeft = true;
-        } else {
-            lookingLeft = false;
-        }
+        lookingLeft = getxPosition() - getxTargetPosition() > 0;
 
     }
 
@@ -95,13 +78,17 @@ public class TowerObject extends BaseObject {
             return;
         }
 
-        setStateTime(getStateTime() + deltaTime);
+        if (isAnimated()) {
+            setStateTime(getStateTime() + deltaTime);
+        }
 
         TextureRegion currentFrame;
 
         if (attacking){
-            animationTime += deltaTime;
-            if (lookingLeft == true) {
+            if (isAnimated()) {
+                animationTime += deltaTime;
+            }
+            if (lookingLeft) {
                 currentFrame = attackLeftAnimation.getKeyFrame(animationTime);
             } else {
                 currentFrame = attackRightAnimation.getKeyFrame(animationTime);
@@ -111,7 +98,7 @@ public class TowerObject extends BaseObject {
                 animationTime = 0;
             }
         } else {
-            if (lookingLeft == true) {
+            if (lookingLeft) {
                 currentFrame = idleLeftAnimation.getKeyFrame(getStateTime(), true);
             } else {
                 currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
@@ -119,7 +106,8 @@ public class TowerObject extends BaseObject {
         }
 
 
-        spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition() + (32 - currentFrame.getRegionHeight()/2));
+        spriteBatch.draw(currentFrame, getxPosition() + (32 - currentFrame.getRegionWidth() / 2),
+                         getyPosition() + (32 - currentFrame.getRegionHeight() / 2));
 
     }
 
