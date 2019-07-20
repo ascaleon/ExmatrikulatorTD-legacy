@@ -30,6 +30,7 @@ import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
 /**
  * Der GameScreen wird während des aktuellen Spiels angezeigt.
@@ -111,7 +112,7 @@ public class GameScreen extends BaseScreen implements GameView {
     private ImageButton tower1;
     private ImageButton tower2;
     private ImageButton tower3;
-    private TextButton tower4;
+    private ImageButton tower4;
     private TextButton upgrade;
     private TextButton sell;
 
@@ -459,12 +460,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
         //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1.png")));
-        Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1_selected.png")));
-        Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2.png")));
-        Drawable towerImage2_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2_selected.png")));
-        Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3.png")));
-        Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3_selected.png")));
+        Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT)));
+        Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT)));
+        Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal(SLOW_TOWER_PORTRAIT)));
+        Drawable towerImage2_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(SLOW_TOWER_PORTRAIT_SELECTED)));
+        Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal(CORRUPTION_TOWER_PORTRAIT)));
+        Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(CORRUPTION_TOWER_PORTRAIT_SELECTED)));
+        Drawable towerImage4 = new TextureRegionDrawable(new Texture(Gdx.files.internal(EXPLOSIVE_TOWER_PORTRAIT)));
+        Drawable towerImage4_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(EXPLOSIVE_TOWER_PORTRAIT_SELECTED)));
         //TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         //towerSelect.setDebug(true);
@@ -473,7 +476,7 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1 = new ImageButton(towerImage1, towerImage1, towerImage1_selected);
         tower2 = new ImageButton(towerImage2, towerImage2, towerImage2_selected);
         tower3 = new ImageButton(towerImage3, towerImage3, towerImage3_selected);
-        tower4 = new TextButton("T4", skin);
+        tower4 = new ImageButton(towerImage4, towerImage4, towerImage4_selected);
         upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
 
