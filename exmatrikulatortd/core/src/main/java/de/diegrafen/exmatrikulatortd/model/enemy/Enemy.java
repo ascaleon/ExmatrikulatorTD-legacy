@@ -342,4 +342,8 @@ public class Enemy extends ObservableModel {
     }
 
     public boolean isAttacking(){return this.isAttacking;}
+
+    public float getAttackSpeed() {
+        return 0;
+    }
 }

@@ -33,6 +33,8 @@ public class TowerObject extends BaseObject {
 
     private boolean lookingLeft = false;
 
+    private float attackFrameDuration;
+
     private Texture currentSprite;
 
     public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
@@ -54,6 +56,16 @@ public class TowerObject extends BaseObject {
 
         attackLeftAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
         attackRightAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
+
+        //skaliere angriffsgeschwindigkeit
+        attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
+        if (attackFrameDuration < attackLeftAnimation.getFrameDuration()){
+            attackLeftAnimation.setFrameDuration(attackFrameDuration);
+            attackRightAnimation.setFrameDuration(attackFrameDuration);
+        }
+
+
+
         //currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
 

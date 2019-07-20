@@ -567,4 +567,8 @@ public class Tower extends ObservableModel {
     public float getCurrentHitPoints() {
         return 0;
     }
+
+    public float getAttackSpeed() {
+        return this.currentAttackSpeed;
+    }
 }

@@ -21,4 +21,6 @@ public interface ObservableUnit extends Observable {
     float getCurrentHitPoints();
 
     boolean isAttacking();
+
+    float getAttackSpeed();
 }
