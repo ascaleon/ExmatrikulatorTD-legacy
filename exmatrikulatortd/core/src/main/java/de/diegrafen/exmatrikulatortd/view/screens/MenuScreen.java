@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -15,6 +16,7 @@ import de.diegrafen.exmatrikulatortd.model.Highscore;
 import java.util.LinkedList;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
 
 /**
@@ -49,6 +51,10 @@ public class MenuScreen extends BaseScreen {
 
     private java.util.List<String> serverList;
 
+    private Texture backgroundTexture;
+
+    private Sprite backgroundSprite;
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -56,6 +62,11 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void init() {
+        super.init();
+        backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
+        backgroundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        backgroundSprite = new Sprite(backgroundTexture);
+
         Gdx.input.setInputProcessor(getUi());
 
         Stack menuStack = new Stack();
@@ -400,6 +411,20 @@ public class MenuScreen extends BaseScreen {
         serverListMenuTable.row().pad(10, 0, 10, 0);
 
         //updateServerList();
+    }
+
+    /**
+     * Eigene Zeichenanweisungen.
+     *
+     * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
+     */
+    @Override
+    public void draw(float deltaTime) {
+        super.draw(deltaTime);
+
+        getSpriteBatch().begin();
+        getSpriteBatch().draw(backgroundSprite, 0, 0, getCamera().viewportWidth, getCamera().viewportHeight);
+        getSpriteBatch().end();
     }
 
     private void createSaveGameMenu() {

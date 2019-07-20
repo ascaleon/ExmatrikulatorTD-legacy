@@ -32,6 +32,8 @@ public class Projectile extends ObservableModel {
 
     private float yPosition;
 
+    private boolean isAttacking;
+
     @ManyToOne
     private Enemy target;
 
@@ -178,7 +180,6 @@ public class Projectile extends ObservableModel {
     public int getAttackType() {
         return attackType;
     }
-
     //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
     @Override
     public float getCurrentMaxHitPoints() {
@@ -197,4 +198,6 @@ public class Projectile extends ObservableModel {
     public void setTowerThatShot(Tower towerThatShot) {
         this.towerThatShot = towerThatShot;
     }
+
+    public boolean isAttacking(){return this.isAttacking;}
 }

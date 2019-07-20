@@ -19,4 +19,6 @@ public interface ObservableUnit extends Observable {
     float getCurrentMaxHitPoints();
 
     float getCurrentHitPoints();
+
+    boolean isAttacking();
 }

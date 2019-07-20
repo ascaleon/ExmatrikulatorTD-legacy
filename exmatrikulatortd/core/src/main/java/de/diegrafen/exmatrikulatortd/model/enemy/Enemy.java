@@ -67,6 +67,8 @@ public class Enemy extends ObservableModel {
 
     private boolean respawning;
 
+    private boolean isAttacking;
+
     @ManyToOne
     @JoinColumn(name = "mapcell_id")
     private Coordinates currentMapCell;
@@ -338,4 +340,6 @@ public class Enemy extends ObservableModel {
     public String getDescription() {
         return description;
     }
+
+    public boolean isAttacking(){return this.isAttacking;}
 }

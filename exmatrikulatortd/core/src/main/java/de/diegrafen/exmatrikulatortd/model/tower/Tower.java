@@ -167,6 +167,8 @@ public class Tower extends ObservableModel {
 
     private int tileHeight;
 
+    private Boolean attacking;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -175,7 +177,7 @@ public class Tower extends ObservableModel {
     }
 
     /**
-     * Konstruktor für die Erzeugung eines neuen Turms über eine TowerFactory.
+     * Konstruktor für den Attacktype IMMEDIATE
      *
      * @param name
      * @param descriptionText
@@ -227,6 +229,32 @@ public class Tower extends ObservableModel {
         this.tileHeight = tileHeight;
     }
 
+    /**
+     * Konstruktor für den Attacktype PROJECTILE
+     * @param name
+     * @param descriptionText
+     * @param towerType
+     * @param baseAttackDamage
+     * @param attackRange
+     * @param baseAttackSpeed
+     * @param attackType
+     * @param auras
+     * @param auraRange
+     * @param price
+     * @param sellPrice
+     * @param upgradePrice
+     * @param upgradeLevel
+     * @param maxUpgradeLevel
+     * @param assetsName
+     * @param splashAmount
+     * @param splashRadius
+     * @param attackDebuffs
+     * @param projectileName
+     * @param projectileAssetsName
+     * @param projectileSpeed
+     * @param tileWidth
+     * @param tileHeight
+     */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange,
                  float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price, int sellPrice,
                  int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, float splashAmount,
@@ -243,6 +271,10 @@ public class Tower extends ObservableModel {
 
     }
 
+    /**
+     * Kopier-Konstruktor
+     * @param tower
+     */
     public Tower(Tower tower) {
         this.name = tower.getName();
         this.descriptionText = tower.getDescriptionText();
@@ -333,12 +365,20 @@ public class Tower extends ObservableModel {
 
     @Override
     public float getTargetxPosition() {
-        return position.getXCoordinate() * tileWidth;
+        if (currentTarget != null) {
+            return currentTarget.getxPosition();
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public float getTargetyPosition() {
-        return position.getYCoordinate() * tileHeight;
+        if (currentTarget != null) {
+            return currentTarget.getyPosition();
+        } else {
+            return 0;
+        }
     }
 
     public int getSellPrice() {
@@ -500,6 +540,18 @@ public class Tower extends ObservableModel {
 
     public float getProjectileSpeed() {
         return projectileSpeed;
+    }
+
+    public void setProjectileSpeed(float projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
+    }
+
+    public void setAttacking(Boolean attacking) {
+        this.attacking = attacking;
+    }
+
+    public boolean isAttacking(){
+        return this.attacking;
     }
 
     //FIXME: Eigenes Interface ohne obsolete Methoden implementieren

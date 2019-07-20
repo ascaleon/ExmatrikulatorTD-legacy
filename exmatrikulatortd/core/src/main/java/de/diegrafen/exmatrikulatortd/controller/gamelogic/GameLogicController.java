@@ -684,6 +684,8 @@ public class GameLogicController implements LogicController {
         Enemy enemy = tower.getCurrentTarget();
         //System.out.println(enemy.getName());
         if (tower.getCooldown() <= 0) {
+            tower.setAttacking(true);
+            tower.notifyObserver();
             switch (tower.getAttackStyle()) {
                 // TODO: Differenzierung nach Projektilarten einbauen
                 case PROJECTILE:
