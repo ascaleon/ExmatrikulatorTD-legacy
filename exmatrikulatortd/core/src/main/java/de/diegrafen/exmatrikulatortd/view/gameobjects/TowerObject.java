@@ -25,12 +25,13 @@ public class TowerObject extends BaseObject {
 
     private Animation<TextureRegion> idleRightAnimation;
 
-    //private Animation<TextureRegion> idleLeftAnimation;
+    private Animation<TextureRegion> idleLeftAnimation;
 
     private boolean attacking;
 
     private float animationTime = 0;
 
+    private boolean lookingLeft = false;
 
     private Texture currentSprite;
 
@@ -48,8 +49,10 @@ public class TowerObject extends BaseObject {
         String assetsName = getAssetsName();
         setTextureAtlas(getAssetManager().get(getTowerAssetPath(assetsName),TextureAtlas.class));
 
-        idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idle"), Animation.PlayMode.LOOP);
+        idleLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleLeft"), Animation.PlayMode.LOOP);
+        idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleRight"), Animation.PlayMode.LOOP);
 
+        attackLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
         attackRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
         //currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
@@ -67,6 +70,13 @@ public class TowerObject extends BaseObject {
     public void update() {
         super.update();
         attacking = getObservable().isAttacking();
+
+        if (getxPosition() - getxTargetPosition() > 0) {
+            lookingLeft = true;
+        } else {
+            lookingLeft = false;
+        }
+
     }
 
     /**
@@ -83,22 +93,29 @@ public class TowerObject extends BaseObject {
             return;
         }
 
-        if (isAnimated()) {
-            setStateTime(getStateTime() + deltaTime);
-        }
+        setStateTime(getStateTime() + deltaTime);
 
         TextureRegion currentFrame;
 
         if (attacking){
             animationTime += deltaTime;
-            currentFrame = attackRightAnimation.getKeyFrame(getStateTime());
-            if(attackRightAnimation.isAnimationFinished(animationTime)){
+            if (lookingLeft == true) {
+                currentFrame = attackLeftAnimation.getKeyFrame(animationTime);
+            } else {
+                currentFrame = attackRightAnimation.getKeyFrame(animationTime);
+            }
+            if(attackRightAnimation.isAnimationFinished(animationTime) || attackLeftAnimation.isAnimationFinished(animationTime)) {
                 attacking = false;
                 animationTime = 0;
             }
         } else {
-            currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
+            if (lookingLeft == true) {
+                currentFrame = idleLeftAnimation.getKeyFrame(getStateTime(), true);
+            } else {
+                currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
+            }
         }
+
 
         spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition() + (32 - currentFrame.getRegionHeight()/2));
 

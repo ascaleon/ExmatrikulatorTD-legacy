@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
 
 /**
@@ -49,6 +51,10 @@ public class MenuScreen extends BaseScreen {
 
     private String hostAddress = "";
 
+    private Texture backgroundTexture;
+
+    private Sprite backgroundSprite;
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         stage = new Stage(new ScreenViewport());
@@ -58,14 +64,10 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void init() {
         super.init();
-        //System.out.println("Dies ist der MenuScreen!");
-        //font = new BitmapFont();
-        //gameViewport = new FitViewport(800,480, getCamera());
-        //Gdx.input.setInputProcessor(stage);
-    }
+        backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
+        backgroundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        backgroundSprite = new Sprite(backgroundTexture);
 
-    @Override
-    public void show() {
         Gdx.input.setInputProcessor(stage);
 
         Stack menuStack = new Stack();
@@ -79,6 +81,7 @@ public class MenuScreen extends BaseScreen {
         createServerListTable(menuStack);
 
         stage.addActor(menuStack);
+        //stage.addActor(new Actor(backgroundSprite));
     }
 
     private void createMainMenuTable(Stack menuStack) {
@@ -372,18 +375,27 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        // clear the screen ready for next set of images to be drawn
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(Math.min(deltaTime, 1 / 30f));
+    }
+
+    /**
+     * Eigene Zeichenanweisungen.
+     *
+     * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
+     */
+    @Override
+    public void draw(float deltaTime) {
+        super.draw(deltaTime);
+
+        getSpriteBatch().begin();
+        getSpriteBatch().draw(backgroundSprite, 0, 0, getCamera().viewportWidth, getCamera().viewportHeight);
+        getSpriteBatch().end();
 
         // tell our stage to do actions and draw itself
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-
     }
 
     private void createSaveGameMenu() {
-
     }
 
     private void createNewSinglePlayerGameMenu() {
@@ -448,6 +460,7 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void resize(int width, int height) {
+        super.resize(width, height);
         stage.getViewport().update(width, height, true);
     }
 
