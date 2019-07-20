@@ -169,33 +169,39 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * @param deltaTime2 Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
      */
     @Override
-    public void update(float deltaTime2) {
-
-        //System.out.println(deltaTime);
-        float deltaTime = Math.min(deltaTime2, 1f / MIN_FPS);
-
-        if (!gamestate.isGameOver() && !pause) {
-            determineNewRound();
-            if (gamestate.isRoundEnded()) {
-                determineGameOver();
+    public void update(float deltaTime) {
+        float maxDelta = 1f / MIN_NUMBER_OF_UPDATES;
+        if (deltaTime > maxDelta) {
+            float remainingDeltaTime = deltaTime;
+            while (remainingDeltaTime > maxDelta) {
+                update(maxDelta);
+                remainingDeltaTime -= maxDelta;
             }
-
-            if (!gamestate.isGameOver()) {
+            update(remainingDeltaTime);
+        } else {
+            if (!gamestate.isGameOver() && !pause) {
+                determineNewRound();
                 if (gamestate.isRoundEnded()) {
-                    gamestate.setRoundEnded(false);
-                    startNewRound();
+                    determineGameOver();
                 }
-                //applyPlayerDamage();
-                spawnWave(deltaTime);
-                applyAuras(deltaTime);
-                applyMovement(deltaTime);
-                makeAttacks(deltaTime);
-                moveProjectiles(deltaTime);
-                applyBuffsToTowers(deltaTime);
-                applyDebuffsToEnemies(deltaTime);
+
+                if (!gamestate.isGameOver()) {
+                    if (gamestate.isRoundEnded()) {
+                        gamestate.setRoundEnded(false);
+                        startNewRound();
+                    }
+                    //applyPlayerDamage();
+                    spawnWave(deltaTime);
+                    applyAuras(deltaTime);
+                    applyMovement(deltaTime);
+                    makeAttacks(deltaTime);
+                    moveProjectiles(deltaTime);
+                    applyBuffsToTowers(deltaTime);
+                    applyDebuffsToEnemies(deltaTime);
+                }
             }
         }
     }
