@@ -6,7 +6,7 @@ import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.GAME_TITLE;
 
-public class DesktopLauncher {
+class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = GAME_TITLE;

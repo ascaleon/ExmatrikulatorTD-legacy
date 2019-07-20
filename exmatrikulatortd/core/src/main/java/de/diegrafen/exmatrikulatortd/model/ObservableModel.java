@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import de.diegrafen.exmatrikulatortd.view.Observer;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 import javax.persistence.MappedSuperclass;
 import java.util.LinkedList;
@@ -14,11 +13,11 @@ import java.util.List;
 @MappedSuperclass
 public abstract class ObservableModel extends BaseModel implements ObservableUnit  {
 
-    private transient List<Observer> observers;
+    private final transient List<Observer> observers;
 
     private transient boolean removed;
 
-    public ObservableModel () {
+    protected ObservableModel() {
         this.observers = new LinkedList<>();
     }
 

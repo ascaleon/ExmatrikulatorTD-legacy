@@ -1,8 +1,9 @@
 package de.diegrafen.exmatrikulatortd.model.enemy;
 
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
-import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,39 +26,25 @@ public class Wave extends BaseModel {
      */
     static final long serialVersionUID = 41197591759175915L;
 
-    /**
-     * Die Nummer der Welle
-     */
-    private int waveNumber;
-
     private int enemySpawnIndex = 0;
 
     /**
      * Die Gegner, die die Welle beinhaltet
      */
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            mappedBy = "wave"
-    )
+    @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Enemy> enemies;
-
-    /**
-     * Der mit der Welle assoziierte Spieler
-     */
-    @ManyToOne
-    @JoinColumn(name="player_id")
-    private Player player;
 
     public Wave () {
         this.enemies = new ArrayList<>();
     }
 
     public Wave(Wave wave) {
+        this.enemySpawnIndex = wave.getEnemySpawnIndex();
         this.enemies = new LinkedList<>();
         for (Enemy enemy : wave.getEnemies()) {
             this.enemies.add(new Enemy(enemy));
         }
-        this.player = wave.getPlayer();
     }
 
     public List<Enemy> getEnemies() {
@@ -70,26 +57,6 @@ public class Wave extends BaseModel {
 
     public void addEnemy (Enemy enemy) {
         enemies.add(enemy);
-    }
-
-    public void removeEnemy (Enemy enemy) {
-
-    }
-
-    public int getWaveNumber() {
-        return waveNumber;
-    }
-
-    public void setWaveNumber(int waveNumber) {
-        this.waveNumber = waveNumber;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
     }
 
     public int getEnemySpawnIndex() {

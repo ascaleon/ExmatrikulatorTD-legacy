@@ -13,6 +13,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "SaveState")
+@NamedQueries({
+        @NamedQuery(name="SaveState.findAll",
+                query="SELECT s FROM SaveState s"),
+})
 public class SaveState extends BaseModel {
 
     /**

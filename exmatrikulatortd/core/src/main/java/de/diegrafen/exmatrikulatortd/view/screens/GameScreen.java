@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -20,8 +21,7 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
@@ -66,17 +66,32 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Eine Liste aller Spielobjekte
      */
-    private List<GameObject> gameObjects;
+    private final List<GameObject> gameObjects;
+
     private boolean keyDownDown = false;
+
     private boolean keyUpDown = false;
+
     private boolean keyRightDown = false;
+
     private boolean keyLeftDown = false;
+
     private Label scoreLabel;
+
     private Label resourcesLabel;
+
     private Label livesLabel;
+
     private Label roundsLabel;
-    private float touchDownX, touchDownY;
+
+    private Label timelabel;
+
+    private float touchDownX;
+
+    private float touchDownY;
+
     private InputMultiplexer multiplexer;
+
     private Group pauseGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
@@ -92,7 +107,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private boolean s = false;
 
-    private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
     private ImageButton tower1;
     private ImageButton tower2;
     private ImageButton tower3;
@@ -102,8 +117,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private LogicController logicController;
 
-    private int numberofTowers = 0;
-
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -111,20 +124,16 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     public GameScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
+        this.gameObjects = new ArrayList<>();
     }
-
 
     /**
      * Die Initialisierung erstellt den SpriteBatch und lädt Texturen.
      */
     @Override
     public void init() {
-        super.init();
-
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-
-        this.gameObjects = new LinkedList<>();
 
         getCamera().setToOrtho(false, width, height);
 
@@ -313,6 +322,7 @@ public class GameScreen extends BaseScreen implements GameView {
         } else {
             roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
         }
+        timelabel.setText((int) Math.max(0, gameState.getTimeUntilNextRound()));
     }
 
     /**
@@ -353,6 +363,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
         List<GameObject> objectsToRemove = new ArrayList<>();
 
+        gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
+
         if (gameObjects != null) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject.isRemoved()) {
@@ -377,7 +389,6 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void dispose() {
         super.dispose();
-        gameObjects.forEach(GameObject::dispose);
         tiledMap.dispose();
     }
 
@@ -421,26 +432,32 @@ public class GameScreen extends BaseScreen implements GameView {
         Player localPlayer = logicController.getLocalPlayer();
 
         // score
-        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).right().padLeft(10).expandX();
         scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
         statsTable.add(scoreLabel).left().align(RIGHT);
         statsTable.row();
         // money
-        statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Geld: ", infoLabelsStyle)).right().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         statsTable.add(resourcesLabel).left().align(RIGHT);
         statsTable.row();
         // lives
-        statsTable.add(new Label("Leben: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Leben: ", infoLabelsStyle)).right().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
         statsTable.row();
         // Rounds
-        statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Semester: ", infoLabelsStyle)).right().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
+        // Time
+        statsTable.row().pad(10, 0, 10, 0);
+        statsTable.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
+        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+        timelabel = new Label(timeLabelText, liveLabelStyle);
+        statsTable.add(timelabel).left().align(RIGHT);
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
         //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
@@ -583,7 +600,6 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void addTower(ObservableUnit observableUnit) {
         gameObjects.add(0, new TowerObject(observableUnit, getAssetManager()));
-        numberofTowers++;
     }
 
     /**
@@ -593,7 +609,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void addEnemy(ObservableUnit observableUnit) {
-        gameObjects.add(numberofTowers, new EnemyObject(observableUnit, getAssetManager()));
+        gameObjects.add(new EnemyObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -618,10 +634,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
-        gameObject.dispose();
-        if (gameObject instanceof TowerObject) {
-            numberofTowers--;
-        }
     }
 
     private void resetCameraToBorders() {
@@ -752,7 +764,7 @@ public class GameScreen extends BaseScreen implements GameView {
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(false);
+                    logicController.exitGame(true);
                     //System.out.println("Menu nicht gefunden");
                 }
             });

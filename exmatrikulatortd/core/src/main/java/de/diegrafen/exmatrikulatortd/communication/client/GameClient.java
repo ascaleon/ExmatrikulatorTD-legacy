@@ -5,7 +5,6 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import de.diegrafen.exmatrikulatortd.communication.client.requests.BuildRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
@@ -34,21 +33,23 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
  */
 public class GameClient extends Connector implements ClientInterface {
 
-    private Client client;
+    private final Client client;
 
-    private int tcpPort;
+    private final int tcpPort;
 
-    private int udpPort;
+    private final int udpPort;
 
     private boolean connected;
-
-    private ClientLogicController clientLogicController;
 
     private List<String> receivedSessionInfo;
 
     private int localPlayerNumber;
 
     private MainController mainController;
+
+    private boolean gameRunning = false;
+
+    private String mapPath;
 
     /**
      * Erzeugt einen neuen GameClient
@@ -79,6 +80,7 @@ public class GameClient extends Connector implements ClientInterface {
             }
         });
         attachGetGameInfoReponseListener();
+        attachGameReadyResponseListener();
         client.start(); // Startet den Client in einem neuen Thread
     }
 
@@ -159,6 +161,7 @@ public class GameClient extends Connector implements ClientInterface {
 
     @Override
     public void reportReadiness() {
+        System.out.println("Ich bin bereit!");
         sendRequest(new ClientReadyRequest());
     }
 
@@ -169,6 +172,7 @@ public class GameClient extends Connector implements ClientInterface {
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
     public boolean connect(final String host) {
+        connected = false;
         try {
             client.connect(5000, host, tcpPort, udpPort);
             if (client.isConnected()) {
@@ -192,6 +196,12 @@ public class GameClient extends Connector implements ClientInterface {
         connected = false;
     }
 
+    @Override
+    public void reportFinishedLoading() {
+        System.out.println("Ich habe fertig geladen!");
+        sendRequest(new FinishedLoadingRequest());
+    }
+
     /**
      * Fügt eine Reihe von Listenern zum Client hinzu, die darauf warten, dass eine Nachricht vom Server eintrifft
      * und eine entsprechende Aktion beim zugewiesenen LogicController auslösen
@@ -199,7 +209,6 @@ public class GameClient extends Connector implements ClientInterface {
      * @param logicController Der LogicController, an den empfangene Antworten weitergeleitet werden
      */
     public void attachResponseListeners(final ClientLogicController logicController) {
-        this.clientLogicController = logicController;
 
         attachBuildResponseListener(logicController);
         attachGetServerStateResponseListener(logicController);
@@ -219,6 +228,29 @@ public class GameClient extends Connector implements ClientInterface {
                     logicController.displayErrorMessage(response.getErrorMessage(), response.getPlayerNumber());
                 }
             }
+
+            @Override
+            public void disconnected(Connection connection) {
+                if (gameRunning) {
+                    // Todo: Statt exitGame() aufzurufen, das Anzeigen eines passenden Fensters triggern
+                    System.err.println("Der Server hat die Verbindung geschlossen!");
+                    Gdx.app.postRunnable(logicController::gameConnectionLost);
+                    gameRunning = false;
+                    mainController.shutdownConnections();
+                }
+            }
+        });
+    }
+
+    private void attachGameReadyResponseListener() {
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                if (object instanceof AllPlayersReadyResponse) {
+                    //mainController.showLoadScreen();
+                    Gdx.app.postRunnable(() -> mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL, mapPath));
+                }
+            }
         });
     }
 
@@ -227,7 +259,11 @@ public class GameClient extends Connector implements ClientInterface {
             @Override
             public void received(Connection connection, Object object) {
                 if (object instanceof StartGameResponse) {
-                    mainController.showScreen(logicController.getGameScreen());
+                    if (!gameRunning) {
+                        gameRunning = true;
+                        System.err.println("Spiel läuft!");
+                        Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
+                    }
                 }
             }
         });
@@ -242,7 +278,7 @@ public class GameClient extends Connector implements ClientInterface {
                 if (object instanceof BuildResponse) {
                     final BuildResponse response = (BuildResponse) object;
 
-                    Gdx.app.postRunnable(() -> logicController.addTowerByServer(response.getTowerType(),
+                    Gdx.app.postRunnable(() -> logicController.addTowerFromServer(response.getTowerType(),
                             response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
 
                     System.out.println("Response received!");
@@ -259,7 +295,7 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof SellResponse) {
                     final SellResponse response = (SellResponse) object;
-                    Gdx.app.postRunnable(() -> logicController.sellTowerByServer(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
+                    Gdx.app.postRunnable(() -> logicController.sellTowerFromServer(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
                 }
             }
         });
@@ -315,12 +351,12 @@ public class GameClient extends Connector implements ClientInterface {
             public void received(Connection connection, Object object) {
                 if (object instanceof GetGameInfoResponse) {
                     GetGameInfoResponse response = (GetGameInfoResponse) object;
-                    if (response.isUpdate()) {
+                    //if (response.isUpdate()) {
                         // Update-Code kommt hierhin
-                    } else {
+                    //} else {
+                    if (!response.isUpdate()) {
                         localPlayerNumber = response.getAllocatedPlayerNumber();
-
-                        Gdx.app.postRunnable(() -> mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL, response.getMapPath()));
+                        mapPath = response.getMapPath();
                     }
                 }
             }
@@ -328,7 +364,9 @@ public class GameClient extends Connector implements ClientInterface {
     }
 
     public List<String> getReceivedSessionInfo() {
-        return receivedSessionInfo;
+        List<String> sessionInfo = new LinkedList<>(receivedSessionInfo);
+        receivedSessionInfo = new LinkedList<>();
+        return sessionInfo;
     }
 
     public MainController getMainController() {

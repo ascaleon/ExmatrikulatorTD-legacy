@@ -52,8 +52,8 @@ public class TowerObject extends BaseObject {
         idleLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleLeft"), Animation.PlayMode.LOOP);
         idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleRight"), Animation.PlayMode.LOOP);
 
-        attackLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
-        attackRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
+        attackLeftAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
+        attackRightAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
         //currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
 

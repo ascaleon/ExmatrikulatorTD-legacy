@@ -1,6 +1,5 @@
 package de.diegrafen.exmatrikulatortd.persistence;
 
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 /**

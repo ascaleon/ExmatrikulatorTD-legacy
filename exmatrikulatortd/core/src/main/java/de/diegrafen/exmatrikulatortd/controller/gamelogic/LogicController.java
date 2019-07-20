@@ -82,4 +82,6 @@ public interface LogicController {
     boolean isPause();
 
     void setPause(boolean pause);
+
+    void gameConnectionLost();
 }

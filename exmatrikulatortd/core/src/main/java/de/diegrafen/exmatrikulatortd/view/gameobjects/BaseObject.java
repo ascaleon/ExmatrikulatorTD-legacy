@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
@@ -14,7 +13,7 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
  */
 public abstract class BaseObject implements GameObject {
 
-    private AssetManager assetManager;
+    private final AssetManager assetManager;
 
     private ObservableUnit observable;
 
@@ -124,7 +123,7 @@ public abstract class BaseObject implements GameObject {
         this.textureAtlas = textureAtlas;
     }
 
-    public float getxPosition() {
+    float getxPosition() {
         return xPosition;
     }
 
@@ -182,11 +181,11 @@ public abstract class BaseObject implements GameObject {
         this.animated = animated;
     }
 
-    public AssetManager getAssetManager() {
+    AssetManager getAssetManager() {
         return assetManager;
     }
 
-    public ObservableUnit getObservable() {
+    ObservableUnit getObservable() {
         return observable;
     }
 }

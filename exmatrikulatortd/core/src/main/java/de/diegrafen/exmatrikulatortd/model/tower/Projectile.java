@@ -3,6 +3,8 @@ package de.diegrafen.exmatrikulatortd.model.tower;
 import de.diegrafen.exmatrikulatortd.model.ObservableModel;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -32,10 +34,10 @@ public class Projectile extends ObservableModel {
 
     private boolean isAttacking;
 
-    @OneToOne
+    @ManyToOne
     private Enemy target;
 
-    @OneToOne
+    @ManyToOne
     private Tower towerThatShot;
 
     private float targetxPosition;
@@ -43,6 +45,7 @@ public class Projectile extends ObservableModel {
     private float targetyPosition;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> applyingDebuffs;
 
     public Projectile() {
@@ -70,12 +73,11 @@ public class Projectile extends ObservableModel {
         this.speed = tower.getProjectileSpeed();
         this.xPosition = tower.getxPosition();
         this.yPosition = tower.getyPosition();
-        this.target = tower.getCurrentTarget();
         this.towerThatShot = tower;
-        this.targetxPosition = tower.getCurrentTarget().getxPosition();
-        this.targetyPosition = tower.getCurrentTarget().getyPosition();
         this.applyingDebuffs = new LinkedList<>();
         tower.getAttackDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
+
+        this.target = tower.getCurrentTarget();
     }
 
     public Projectile(Projectile projectile) {
@@ -93,13 +95,10 @@ public class Projectile extends ObservableModel {
 
         this.applyingDebuffs = new LinkedList<>();
 
+        this.target = null;
+        this.towerThatShot = null;
 
         projectile.getApplyingDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
-
-
-        // target; ?
-
-        // towerThatShot; ?
     }
 
     @Override
@@ -190,6 +189,14 @@ public class Projectile extends ObservableModel {
     @Override
     public float getCurrentHitPoints() {
         return 0;
+    }
+
+    public void setTarget(Enemy target) {
+        this.target = target;
+    }
+
+    public void setTowerThatShot(Tower towerThatShot) {
+        this.towerThatShot = towerThatShot;
     }
 
     public boolean isAttacking(){return this.isAttacking;}

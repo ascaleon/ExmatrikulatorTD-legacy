@@ -1,20 +1,17 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_AND_HEAVY_WAVE;
-import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.REGULAR_WAVE;
-import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.createWave;
 import static de.diegrafen.exmatrikulatortd.model.Difficulty.*;
 
 /**
@@ -29,13 +26,13 @@ public class Player extends BaseModel implements Observable {
      * Die eindeutige Serialisierungs-ID
      */
     static final long serialVersionUID = 4918147183123L;
-
-    /**
-     * Der Zustand des laufenden Spiels
-     */
-    @ManyToOne
-    @JoinColumn(name = "gamestate_id")
-    private Gamestate gameState;
+//
+//    /**
+//     * Der Zustand des laufenden Spiels
+//     */
+//    @ManyToOne
+//    @JoinColumn(name = "gamestate_id")
+//    private Gamestate gameState;
 
     /**
      * Die Spielernummer
@@ -71,18 +68,21 @@ public class Player extends BaseModel implements Observable {
      * Die Türme des Spielers
      */
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Tower> towers;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Wave> waves;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
     @OneToMany(mappedBy = "attackedPlayer", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Enemy> attackingEnemies;
 
     /**
@@ -110,13 +110,11 @@ public class Player extends BaseModel implements Observable {
 
     private boolean lost;
 
-
-
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
     public Player() {
-
+        this.observers = new LinkedList<>();
     }
 
     public Player(int playerNumber) {
@@ -164,10 +162,12 @@ public class Player extends BaseModel implements Observable {
         player.getWaves().forEach(wave -> waves.add(new Wave(wave)));
 
         this.attackingEnemies = new LinkedList<>();
-        player.getAttackingEnemies().stream().map(Enemy::new).forEach(newEnemy -> {
+
+        for (Enemy enemy : player.getAttackingEnemies()) {
+            Enemy newEnemy = new Enemy(enemy, this);
             attackingEnemies.add(newEnemy);
             gamestate.addEnemy(newEnemy);
-        });
+        }
     }
 
     public void addEnemy(Enemy attackingEnemy) {
@@ -247,20 +247,8 @@ public class Player extends BaseModel implements Observable {
         this.timeSinceLastSpawn = timeSinceLastSpawn;
     }
 
-    public Gamestate getGameState() {
-        return gameState;
-    }
-
-    public void setGameState(Gamestate gameState) {
-        this.gameState = gameState;
-    }
-
     public String getPlayerName() {
         return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
     }
 
     public int getScore() {
@@ -291,10 +279,6 @@ public class Player extends BaseModel implements Observable {
         return attackingEnemies;
     }
 
-    public void setAttackingEnemies(List<Enemy> attackingEnemies) {
-        this.attackingEnemies = attackingEnemies;
-    }
-
     public boolean isEnemiesSpawned() {
         return enemiesSpawned;
     }
@@ -322,19 +306,15 @@ public class Player extends BaseModel implements Observable {
         return difficulty;
     }
 
-    public void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty;
-    }
-
     public void setVictorious(boolean victorious) {
         this.victorious = victorious;
     }
 
-    public boolean isVictorious() {
+    private boolean isVictorious() {
         return victorious;
     }
 
-    public void copyWaves(List<Wave> waves) {
+    void copyWaves(List<Wave> waves) {
         this.waves = new LinkedList<>();
         for (Wave wave : waves) {
             this.waves.add(new Wave(wave));
