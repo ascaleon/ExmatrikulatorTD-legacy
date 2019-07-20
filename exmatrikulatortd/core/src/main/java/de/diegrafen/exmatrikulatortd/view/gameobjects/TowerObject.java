@@ -69,7 +69,9 @@ public class TowerObject extends BaseObject {
     @Override
     public void update() {
         super.update();
-        attacking = getObservable().isAttacking();
+        if (getObservable() != null ){
+            attacking = getObservable().isAttacking();
+        }
 
         if (getxPosition() - getxTargetPosition() > 0) {
             lookingLeft = true;

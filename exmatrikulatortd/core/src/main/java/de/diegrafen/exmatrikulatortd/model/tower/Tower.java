@@ -167,7 +167,7 @@ public class Tower extends ObservableModel {
 
     private int tileHeight;
 
-    private Boolean attacking;
+    private Boolean attacking = false;
 
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
@@ -302,6 +302,7 @@ public class Tower extends ObservableModel {
         this.projectileSpeed = tower.getProjectileSpeed();
         this.tileWidth = tower.getTileWidth();
         this.tileHeight = tower.getTileHeight();
+        this.attacking = tower.isAttacking();
 
         this.auras = new LinkedList<>();
         this.buffs = new LinkedList<>();

@@ -95,8 +95,11 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
+        int averageTileSize = (tileWidth + tileHeight) / 2;
+        int range = averageTileSize * 4;
+
         // Konstruktor für den AttackType-Immediate
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 10, 2 * TILE_SIZE, 0.5f,
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 50, range, 0.5f,
                 NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
                 tileWidth, tileHeight);
         //return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 300, 2 * TILE_SIZE, 2.0f,

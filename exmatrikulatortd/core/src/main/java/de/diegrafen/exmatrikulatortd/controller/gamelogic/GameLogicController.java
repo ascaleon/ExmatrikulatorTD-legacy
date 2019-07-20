@@ -77,6 +77,8 @@ public class GameLogicController implements LogicController {
 
     private final String mapPath;
 
+    private boolean loaded = false;
+
     /**
      *
      */
@@ -147,7 +149,6 @@ public class GameLogicController implements LogicController {
         this.gameServer = gameServer;
         this.server = true;
         gameServer.attachRequestListeners(this);
-
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView) {
@@ -163,6 +164,7 @@ public class GameLogicController implements LogicController {
         this.localPlayerNumber = saveState.getLocalPlayerNumber();
         this.multiplayer = saveState.isMultiplayer();
         this.gameScreen = gameView;
+        this.loaded = true;
 
         gamestate.getPlayers().size();
 
@@ -205,6 +207,10 @@ public class GameLogicController implements LogicController {
     @Override
     public void update(float deltaTime) {
         float maxDelta = 1f / MIN_NUMBER_OF_UPDATES;
+        if (loaded) {
+            loaded = false;
+            deltaTime = maxDelta;
+        }
         if (deltaTime > maxDelta) {
             float remainingDeltaTime = deltaTime;
             while (remainingDeltaTime > maxDelta) {
