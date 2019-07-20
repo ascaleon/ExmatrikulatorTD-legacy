@@ -137,17 +137,10 @@ public final class TowerFactory {
      * @return Der erzeugte Corruption-Turm
      */
     private static Tower createCorruptionTower(final int tileWidth, final int tileHeight) {
-        LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
-        LinkedList<Debuff> debuffs = new LinkedList<>();
+        Debuff corruptionDebuff = new Debuff("Corruption-Debuff", 3, -5, 1, 0, false);
 
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
-
-        debuffs.add(slowDebuff);
-        auras.add(slowAura);
-        attackDebuffs.add(frostDebuff);
+        attackDebuffs.add(corruptionDebuff);
 
         return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, LOGIC, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);
     }
@@ -158,16 +151,8 @@ public final class TowerFactory {
      * @return Der erzeugte Explosiv-Turm
      */
     private static Tower createExplosiveTower(final int tileWidth, final int tileHeight) {
-        LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
-        LinkedList<Debuff> debuffs = new LinkedList<>();
-
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
         Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
-
-        debuffs.add(slowDebuff);
-        auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
         return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);

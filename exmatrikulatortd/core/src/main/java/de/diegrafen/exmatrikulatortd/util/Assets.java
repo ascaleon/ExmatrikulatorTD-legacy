@@ -50,7 +50,6 @@ public final class Assets {
     public static void queueAssets(AssetManager assetManager) {
 
         // load Textures
-
         assetManager.load(MENU_BACKGROUND_IMAGE, Texture.class);
 
         // load atlasses
