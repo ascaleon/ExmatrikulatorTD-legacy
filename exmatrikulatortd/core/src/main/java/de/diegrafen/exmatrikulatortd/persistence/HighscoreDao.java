@@ -6,7 +6,6 @@ import org.hibernate.Session;
 import java.util.List;
 
 /**
- *
  * DAO-Klasse für Highscore-Objekte
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -17,6 +16,7 @@ public class HighscoreDao extends BaseDao<Highscore> {
 
     /**
      * Gibt die Highscore-Klasse zurück
+     *
      * @return Der Klassen-Typ
      */
     @Override

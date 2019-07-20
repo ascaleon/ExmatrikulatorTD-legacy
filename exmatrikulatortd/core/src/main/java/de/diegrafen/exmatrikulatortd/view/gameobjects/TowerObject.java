@@ -10,7 +10,6 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
 /**
- *
  * Das Spielobjekt eines Turms
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -32,7 +31,7 @@ public class TowerObject extends BaseObject {
 
     private boolean lookingLeft = false;
 
-    public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
+    public TowerObject(ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
     }
 
@@ -44,7 +43,7 @@ public class TowerObject extends BaseObject {
         super.initializeSprite();
 
         String assetsName = getAssetsName();
-        setTextureAtlas(getAssetManager().get(getTowerAssetPath(assetsName),TextureAtlas.class));
+        setTextureAtlas(getAssetManager().get(getTowerAssetPath(assetsName), TextureAtlas.class));
 
         idleLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleLeft"), Animation.PlayMode.LOOP);
         idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleRight"), Animation.PlayMode.LOOP);
@@ -84,7 +83,7 @@ public class TowerObject extends BaseObject {
 
         TextureRegion currentFrame;
 
-        if (attacking){
+        if (attacking) {
             if (isAnimated()) {
                 animationTime += deltaTime;
             }
@@ -93,7 +92,7 @@ public class TowerObject extends BaseObject {
             } else {
                 currentFrame = attackRightAnimation.getKeyFrame(animationTime);
             }
-            if(attackRightAnimation.isAnimationFinished(animationTime) || attackLeftAnimation.isAnimationFinished(animationTime)) {
+            if (attackRightAnimation.isAnimationFinished(animationTime) || attackLeftAnimation.isAnimationFinished(animationTime)) {
                 attacking = false;
                 animationTime = 0;
             }
@@ -107,7 +106,7 @@ public class TowerObject extends BaseObject {
 
 
         spriteBatch.draw(currentFrame, getxPosition() + (32 - currentFrame.getRegionWidth() / 2),
-                         getyPosition() + (32 - currentFrame.getRegionHeight() / 2));
+                getyPosition() + (32 - currentFrame.getRegionHeight() / 2));
 
     }
 

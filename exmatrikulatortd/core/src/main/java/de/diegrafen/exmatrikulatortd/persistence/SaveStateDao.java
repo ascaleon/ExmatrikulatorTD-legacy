@@ -6,7 +6,6 @@ import org.hibernate.Session;
 import java.util.List;
 
 /**
- *
  * DAO-Klasse für SaveState-Objekte
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -16,6 +15,7 @@ public class SaveStateDao extends BaseDao<SaveState> {
 
     /**
      * Gibt die SaveState-Klasse zurück
+     *
      * @return Der Klassen-Typ
      */
     @Override
