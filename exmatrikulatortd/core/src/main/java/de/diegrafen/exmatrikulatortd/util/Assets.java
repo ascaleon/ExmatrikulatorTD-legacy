@@ -17,13 +17,13 @@ public final class Assets {
 
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
-    public static final String REGULAR_TOWER_ASSETS = "tower_mage";
+    public static final String REGULAR_TOWER_ASSETS = "tower_gun";
 
-    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "tower_mage";
+    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "tower_gun";
 
-    public static final String REGULAR_TOWER_PORTRAIT = "mage_portrait.png";
+    public static final String REGULAR_TOWER_PORTRAIT = "gunwoman_portrait.png";
 
-    public static final String REGULAR_TOWER_PORTRAIT_SELECTED = "mage_portrait.png";
+    public static final String REGULAR_TOWER_PORTRAIT_SELECTED = "gunwoman_portrait.png";
 
     public static final String SLOW_TOWER_ASSETS = "tower_mage";
 
@@ -39,9 +39,9 @@ public final class Assets {
 
     public static final String EXPLOSIVE_TOWER_ASSETS = "tower_mage";
 
-    public static final String EXPLOSIVE_TOWER_PORTRAIT = "gunwoman_portrait.png";
+    public static final String EXPLOSIVE_TOWER_PORTRAIT = "mage_portrait.png";
 
-    public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "gunwoman_portrait.png";
+    public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "mage_portrait.png";
 
     public static final String AURA_TOWER_ASSETS = "tower_mage";
 

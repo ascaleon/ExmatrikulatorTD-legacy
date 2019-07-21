@@ -100,7 +100,7 @@ public final class TowerFactory {
 
         // Konstruktor für den AttackType-Immediate
         return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 100, range, 0.5f,
-                NORMAL, 0.4f, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
+                NORMAL, 0.45f, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
                 tileWidth, tileHeight);
         //return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 300, 2 * TILE_SIZE, 2.0f,
         //        NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
