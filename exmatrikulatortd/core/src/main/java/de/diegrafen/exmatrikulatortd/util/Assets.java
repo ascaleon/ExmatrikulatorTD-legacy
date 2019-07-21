@@ -59,7 +59,7 @@ public final class Assets {
 
     public static final String DEATH_ANIMATION_ASSETS = "explosion";
 
-    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/singleplayerMap.tmx";
 
     public static final String MULTIPLAYER_MAP_PATH = "sprites/gamemap/multiplayer_map.tmx";
 

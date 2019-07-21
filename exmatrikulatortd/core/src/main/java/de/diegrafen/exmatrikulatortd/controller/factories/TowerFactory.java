@@ -100,7 +100,7 @@ public final class TowerFactory {
 
         // Konstruktor für den AttackType-Immediate
         return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 50, range, 0.5f,
-                NORMAL, 0.45f, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
+                NORMAL, 0.45f, new LinkedList<>(), 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0, 0, new LinkedList<>(),
                 tileWidth, tileHeight);
         //return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 300, 2 * TILE_SIZE, 2.0f,
         //        NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
@@ -170,9 +170,9 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 2 * TILE_SIZE, 3,
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4 * TILE_SIZE, 3,
                 EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS,
-                0.5f, 100, attackDebuffs, "fireball", FIREBALL_ASSETS, 300, tileWidth, tileHeight);
+                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, tileWidth, tileHeight);
     }
 
     /**

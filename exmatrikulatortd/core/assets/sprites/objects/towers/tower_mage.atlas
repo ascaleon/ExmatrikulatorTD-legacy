@@ -1,383 +1,383 @@
 tower_mage.png
-size: 256, 1408
+size: 960, 870
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 0
-  size: 128, 64
-  orig: 128, 64
+  xy: 769, 193
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 0
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 0
-  size: 128, 64
-  orig: 128, 64
+  xy: 193, 289
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 1
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 64
-  size: 128, 64
-  orig: 128, 64
+  xy: 577, 386
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 2
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 64
-  size: 128, 64
-  orig: 128, 64
+  xy: 769, 387
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 3
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 128
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 483
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 4
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 128
-  size: 128, 64
-  orig: 128, 64
+  xy: 193, 483
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 5
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 192
-  size: 128, 64
-  orig: 128, 64
+  xy: 385, 483
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 6
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 192
-  size: 128, 64
-  orig: 128, 64
+  xy: 577, 483
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 7
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 256
-  size: 128, 64
-  orig: 128, 64
+  xy: 769, 484
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 8
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 256
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 580
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 9
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 320
-  size: 128, 64
-  orig: 128, 64
+  xy: 385, 289
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 10
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 320
-  size: 128, 64
-  orig: 128, 64
+  xy: 577, 289
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 11
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 384
-  size: 128, 64
-  orig: 128, 64
+  xy: 769, 290
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 12
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 384
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 386
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 13
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 448
-  size: 128, 64
-  orig: 128, 64
+  xy: 193, 386
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 14
 tower_mage_attackLeft
   rotate: false
-  xy: 128, 448
-  size: 128, 64
-  orig: 128, 64
+  xy: 385, 386
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 15
 tower_mage_attackLeft
   rotate: false
-  xy: 0, 512
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 289
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 16
 tower_mage_attackRight
   rotate: false
-  xy: 128, 512
-  size: 128, 64
-  orig: 128, 64
+  xy: 193, 580
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 0
 tower_mage_attackRight
   rotate: false
-  xy: 0, 576
-  size: 128, 64
-  orig: 128, 64
+  xy: 385, 580
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 1
 tower_mage_attackRight
   rotate: false
-  xy: 128, 576
-  size: 128, 64
-  orig: 128, 64
+  xy: 193, 677
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 2
 tower_mage_attackRight
   rotate: false
-  xy: 0, 640
-  size: 128, 64
-  orig: 128, 64
+  xy: 385, 677
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 3
 tower_mage_attackRight
   rotate: false
-  xy: 128, 640
-  size: 128, 64
-  orig: 128, 64
+  xy: 577, 677
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 4
 tower_mage_attackRight
   rotate: false
-  xy: 0, 704
-  size: 128, 64
-  orig: 128, 64
+  xy: 769, 678
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 5
 tower_mage_attackRight
   rotate: false
-  xy: 128, 704
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 774
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 6
 tower_mage_attackRight
   rotate: false
-  xy: 0, 768
-  size: 128, 64
-  orig: 128, 64
+  xy: 193, 774
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 7
 tower_mage_attackRight
   rotate: false
-  xy: 128, 768
-  size: 128, 64
-  orig: 128, 64
+  xy: 385, 774
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 8
 tower_mage_attackRight
   rotate: false
-  xy: 0, 832
-  size: 128, 64
-  orig: 128, 64
+  xy: 577, 774
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 9
 tower_mage_attackRight
   rotate: false
-  xy: 128, 832
-  size: 128, 64
-  orig: 128, 64
+  xy: 577, 580
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 10
 tower_mage_attackRight
   rotate: false
-  xy: 0, 896
-  size: 128, 64
-  orig: 128, 64
+  xy: 769, 581
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 11
 tower_mage_attackRight
   rotate: false
-  xy: 128, 896
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 677
+  size: 190, 95
+  orig: 190, 95
   offset: 0, 0
   index: 12
 tower_mage_attackRight
   rotate: false
-  xy: 0, 960
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 1
+  size: 188, 94
+  orig: 188, 94
   offset: 0, 0
   index: 13
 tower_mage_attackRight
   rotate: false
-  xy: 128, 960
-  size: 128, 64
-  orig: 128, 64
+  xy: 191, 1
+  size: 188, 94
+  orig: 188, 94
   offset: 0, 0
   index: 14
 tower_mage_attackRight
   rotate: false
-  xy: 0, 1024
-  size: 128, 64
-  orig: 128, 64
+  xy: 381, 1
+  size: 188, 94
+  orig: 188, 94
   offset: 0, 0
   index: 15
 tower_mage_attackRight
   rotate: false
-  xy: 128, 1024
-  size: 128, 64
-  orig: 128, 64
+  xy: 571, 1
+  size: 188, 94
+  orig: 188, 94
   offset: 0, 0
   index: 16
 tower_mage_idleLeft
   rotate: false
-  xy: 0, 1088
-  size: 64, 64
-  orig: 64, 64
+  xy: 761, 1
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 0
 tower_mage_idleLeft
   rotate: false
-  xy: 64, 1088
-  size: 64, 64
-  orig: 64, 64
+  xy: 857, 1
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 1
 tower_mage_idleLeft
   rotate: false
-  xy: 128, 1088
-  size: 64, 64
-  orig: 64, 64
+  xy: 1, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 2
 tower_mage_idleLeft
   rotate: false
-  xy: 192, 1088
-  size: 64, 64
-  orig: 64, 64
+  xy: 97, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 3
 tower_mage_idleLeft
   rotate: false
-  xy: 0, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 193, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 4
 tower_mage_idleLeft
   rotate: false
-  xy: 64, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 289, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 5
 tower_mage_idleLeft
   rotate: false
-  xy: 128, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 385, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 6
 tower_mage_idleLeft
   rotate: false
-  xy: 192, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 481, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 7
 tower_mage_idleLeft
   rotate: false
-  xy: 0, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 577, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 8
 tower_mage_idleLeft
   rotate: false
-  xy: 64, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 673, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 9
 tower_mage_idleRight
   rotate: false
-  xy: 128, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 769, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 0
 tower_mage_idleRight
   rotate: false
-  xy: 192, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 865, 97
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 1
 tower_mage_idleRight
   rotate: false
-  xy: 0, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 1, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 2
 tower_mage_idleRight
   rotate: false
-  xy: 64, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 97, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 3
 tower_mage_idleRight
   rotate: false
-  xy: 128, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 193, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 4
 tower_mage_idleRight
   rotate: false
-  xy: 192, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 289, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 5
 tower_mage_idleRight
   rotate: false
-  xy: 0, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 385, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 6
 tower_mage_idleRight
   rotate: false
-  xy: 64, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 481, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 7
 tower_mage_idleRight
   rotate: false
-  xy: 128, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 577, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 8
 tower_mage_idleRight
   rotate: false
-  xy: 192, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 673, 193
+  size: 94, 94
+  orig: 94, 94
   offset: 0, 0
   index: 9
