@@ -346,4 +346,6 @@ public class Enemy extends ObservableModel {
     public float getAttackSpeed() {
         return 0;
     }
+
+    public int getTowerType() {return 0;}
 }

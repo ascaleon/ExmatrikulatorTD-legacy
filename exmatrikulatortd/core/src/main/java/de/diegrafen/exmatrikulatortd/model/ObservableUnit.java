@@ -23,4 +23,6 @@ public interface ObservableUnit extends Observable {
     boolean isAttacking();
 
     float getAttackSpeed();
+
+    int getTowerType();
 }

@@ -100,7 +100,8 @@ public final class TowerFactory {
 
         // Konstruktor für den AttackType-Immediate
         return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 50, range, 0.5f,
-                NORMAL, 0.45f, new LinkedList<>(), 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0, 0, new LinkedList<>(),
+                NORMAL, 0.45f, new LinkedList<>(), 0, 300, 150, 600, 1, 2,
+                REGULAR_TOWER_ASSETS, 0, 0, new LinkedList<>(),
                 tileWidth, tileHeight);
         //return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 300, 2 * TILE_SIZE, 2.0f,
         //        NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
@@ -125,9 +126,8 @@ public final class TowerFactory {
         attackDebuffs.add(frostDebuff);
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 50,
-                4 * TILE_SIZE, 2, PIERCING, 0,auras, 0, 300, 150, 600,
-                1, 3, SLOW_TOWER_ASSETS, 0.5f, 100, new LinkedList<>(),
-                "Feuerball", FIREBALL_ASSETS, 300, tileWidth, tileHeight);
+                4 * TILE_SIZE, 2, PIERCING, 0.15f,auras, 0, 300, 150, 600,
+                1, 2, SLOW_TOWER_ASSETS, 0, 0, new LinkedList<>(), tileWidth, tileHeight);
     }
 
 
@@ -149,7 +149,9 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, LOGIC, 0, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS, 0.5f, 100, attackDebuffs, tileWidth, tileHeight);
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4 * TILE_SIZE, 1,
+                LOGIC, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 2, CORRUPTION_TOWER_ASSETS,
+                0, 0, attackDebuffs, tileWidth, tileHeight);
     }
 
     /**
@@ -171,7 +173,7 @@ public final class TowerFactory {
         attackDebuffs.add(frostDebuff);
 
         return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4 * TILE_SIZE, 3,
-                EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS,
+                EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 2, EXPLOSIVE_TOWER_ASSETS,
                 0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, tileWidth, tileHeight);
     }
 

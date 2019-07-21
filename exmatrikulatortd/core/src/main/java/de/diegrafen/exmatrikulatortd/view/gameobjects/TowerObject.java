@@ -35,7 +35,7 @@ public class TowerObject extends BaseObject {
 
     private float attackFrameDuration;
 
-    private Texture currentSprite;
+    private int towerType;
 
     public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
@@ -63,10 +63,8 @@ public class TowerObject extends BaseObject {
             attackLeftAnimation.setFrameDuration(attackFrameDuration);
             attackRightAnimation.setFrameDuration(attackFrameDuration);
         }
+        towerType = getObservable().getTowerType();
 
-
-
-        //currentSprite = (getAssetManager().get(getTowerAssetPath(getAssetsName()), Texture.class));
     }
 
     /**
@@ -128,7 +126,9 @@ public class TowerObject extends BaseObject {
             if (isAnimated()) {
                 animationTime += deltaTime;
             }
-            if (lookingLeft == true) {
+
+
+            if (lookingLeft) {
                 currentFrame = attackLeftAnimation.getKeyFrame(animationTime);
             } else {
                 currentFrame = attackRightAnimation.getKeyFrame(animationTime);
@@ -138,15 +138,14 @@ public class TowerObject extends BaseObject {
                 animationTime = 0;
             }
         } else {
-            if (lookingLeft == true) {
+            if (lookingLeft) {
                 currentFrame = idleLeftAnimation.getKeyFrame(getStateTime(), true);
             } else {
                 currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
             }
         }
-
-
         spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition() + (32 - currentFrame.getRegionHeight()/2));
+
 
     }
 

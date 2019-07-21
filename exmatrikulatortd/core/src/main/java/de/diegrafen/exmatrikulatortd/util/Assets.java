@@ -31,7 +31,7 @@ public final class Assets {
 
     public static final String SLOW_TOWER_PORTRAIT_SELECTED = "skeleton_mage_portrait_clicked.png";
 
-    public static final String CORRUPTION_TOWER_ASSETS = "tower_mage";
+    public static final String CORRUPTION_TOWER_ASSETS = "tower_archer";
 
     public static final String CORRUPTION_TOWER_PORTRAIT = "skeleton_archer_portrait.png";
 
