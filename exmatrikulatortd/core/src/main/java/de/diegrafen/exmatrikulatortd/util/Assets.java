@@ -23,25 +23,25 @@ public final class Assets {
 
     public static final String REGULAR_TOWER_PORTRAIT = "gunwoman_portrait.png";
 
-    public static final String REGULAR_TOWER_PORTRAIT_SELECTED = "gunwoman_portrait.png";
+    public static final String REGULAR_TOWER_PORTRAIT_SELECTED = "gunwoman_portrait_clicked.png";
 
     public static final String SLOW_TOWER_ASSETS = "tower_mage";
 
     public static final String SLOW_TOWER_PORTRAIT = "skeleton_mage_portrait.png";
 
-    public static final String SLOW_TOWER_PORTRAIT_SELECTED = "skeleton_mage_portrait.png";
+    public static final String SLOW_TOWER_PORTRAIT_SELECTED = "skeleton_mage_portrait_clicked.png";
 
     public static final String CORRUPTION_TOWER_ASSETS = "tower_mage";
 
     public static final String CORRUPTION_TOWER_PORTRAIT = "skeleton_archer_portrait.png";
 
-    public static final String CORRUPTION_TOWER_PORTRAIT_SELECTED = "skeleton_archer_portrait.png";
+    public static final String CORRUPTION_TOWER_PORTRAIT_SELECTED = "skeleton_archer_portrait_clicked.png";
 
     public static final String EXPLOSIVE_TOWER_ASSETS = "tower_mage";
 
     public static final String EXPLOSIVE_TOWER_PORTRAIT = "mage_portrait.png";
 
-    public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "mage_portrait.png";
+    public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "mage_portrait_clicked.png";
 
     public static final String AURA_TOWER_ASSETS = "tower_mage";
 
