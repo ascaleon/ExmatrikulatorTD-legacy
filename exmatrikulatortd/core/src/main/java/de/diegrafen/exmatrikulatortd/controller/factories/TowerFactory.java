@@ -124,9 +124,9 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100,
-                2 * TILE_SIZE, 3, PIERCING, 0,auras, 0, 300, 150, 600,
-                1, 3, SLOW_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
+        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 50,
+                4 * TILE_SIZE, 2, PIERCING, 0,auras, 0, 300, 150, 600,
+                1, 3, SLOW_TOWER_ASSETS, 0.5f, 100, new LinkedList<>(),
                 "Feuerball", FIREBALL_ASSETS, 300, tileWidth, tileHeight);
     }
 

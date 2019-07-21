@@ -339,7 +339,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         if (keyLeftDown) {
             getCamera().translate(-translateValue, 0);
-            System.out.println("Keyleftdown");
         }
         if (keyRightDown) {
             getCamera().translate(translateValue, 0);
