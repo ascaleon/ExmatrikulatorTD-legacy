@@ -1,0 +1,215 @@
+tower_skeletonMage.png
+size: 196, 1470
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 1, 1
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 99, 1
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 1, 99
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 99, 99
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 1, 197
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 99, 197
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_skeletonMage_attackLeft
+  rotate: false
+  xy: 1, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 99, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 1, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 99, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 1, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 99, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 1, 589
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_skeletonMage_attackRight
+  rotate: false
+  xy: 99, 589
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 1, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 99, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 1, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 99, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 1, 883
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 99, 883
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 1, 981
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_skeletonMage_idleLeft
+  rotate: false
+  xy: 99, 981
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 1, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 99, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 1, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 99, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 1, 1275
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 99, 1275
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 1, 1373
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_skeletonMage_idleRight
+  rotate: false
+  xy: 99, 1373
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7

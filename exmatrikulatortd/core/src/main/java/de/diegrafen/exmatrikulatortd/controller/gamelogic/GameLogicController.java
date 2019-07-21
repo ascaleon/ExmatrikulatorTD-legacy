@@ -358,7 +358,19 @@ public class GameLogicController implements LogicController {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
         for (Enemy enemy : projectile.getTowerThatShot().getOwner().getAttackingEnemies()) {
-            if (isEnemeyInSplashRadius(enemy, projectile)) {
+            if (isEnemyInSplashRadius(enemy, projectile)) {
+                enemiesInRange.add(enemy);
+            }
+        }
+
+        return enemiesInRange;
+    }
+
+    private List<Enemy> getEnemiesInSplashRadius(Tower tower) {
+        List<Enemy> enemiesInRange = new LinkedList<>();
+
+        for (Enemy enemy : tower.getOwner().getAttackingEnemies()) {
+            if (isEnemyInSplashRadius(enemy, tower)) {
                 enemiesInRange.add(enemy);
             }
         }
@@ -373,9 +385,14 @@ public class GameLogicController implements LogicController {
      * @param projectile Das Projektil, von dem der Flächenschaden ausgeht.
      * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
      */
-    private boolean isEnemeyInSplashRadius(Enemy enemy, Projectile projectile) {
+    private boolean isEnemyInSplashRadius(Enemy enemy, Projectile projectile) {
         double distance = distance(projectile.getxPosition(), projectile.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
         return distance <= projectile.getSplashRadius();
+    }
+
+    private boolean isEnemyInSplashRadius(Enemy enemy, Tower tower) {
+        double distance = distance(tower.getTargetxPosition(), tower.getTargetyPosition(), enemy.getxPosition(), enemy.getyPosition());
+        return distance <= tower.getSplashRadius();
     }
 
     /**
@@ -580,8 +597,31 @@ public class GameLogicController implements LogicController {
         removeProjectile(projectile);
     }
 
+    private void applyDamageToTarget(Tower tower){
+        List<Enemy> enemiesHit = new LinkedList<>();
+        Enemy mainTarget = tower.getCurrentTarget();
+
+        mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints() - tower.getCurrentAttackDamage() * calculateDamageMultiplier(mainTarget, tower.getAttackType()));
+        enemiesHit.add(mainTarget);
+
+        if (tower.getSplashRadius() > 0) {
+            List<Enemy> enemiesInSplashRadius = getEnemiesInSplashRadius(tower);
+            for (Enemy enemyInSplashRadius : enemiesInSplashRadius) {
+                float damageMultiplier = calculateDamageMultiplier(enemyInSplashRadius, tower.getAttackType());
+                enemyInSplashRadius.setCurrentHitPoints(enemyInSplashRadius.getCurrentHitPoints() - tower.getCurrentAttackDamage() * tower.getSplashAmount() * damageMultiplier);
+                enemiesHit.add(enemyInSplashRadius);
+            }
+        }
+
+        for (Enemy enemyHit : enemiesHit) {
+            for (Debuff debuff : tower.getAttackDebuffs()) {
+                addDebuffToEnemy(enemyHit, debuff);
+            }
+            calculateDamageImpact(enemyHit, tower);
+        }
+    }
+
     private void calculateDamageImpact(Enemy enemy, Tower tower) {
-        enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
         if (enemy.getCurrentHitPoints() <= 0) {
             Player attackedPlayer = enemy.getAttackedPlayer();
             if (attackedPlayer != null) {
@@ -651,6 +691,12 @@ public class GameLogicController implements LogicController {
 
         for (Tower tower : gamestate.getTowers()) {
 
+            if (tower.getCurrentAttackSpeed() / 2 < tower.getBaseAttackDelay()) {
+                tower.setCurrentAttackDelay(tower.getCurrentAttackSpeed() / 2);
+            } else {
+                tower.setCurrentAttackDelay(tower.getBaseAttackDelay());
+            }
+
             if (!isTargetStillInTowerRange(tower)) {
                 findTargetforTower(tower, deltaTime);
             }
@@ -660,10 +706,11 @@ public class GameLogicController implements LogicController {
             } else {
 
                 if (tower.getCurrentTarget() != null) {
-                    letTowerAttack(tower);
-                }
+                    tower.setAttacking(true);
+                    tower.notifyObserver();
+                    applyAttackDelay(tower, deltaTime);
 
-                tower.setCooldown(tower.getCurrentAttackSpeed());
+                }
             }
         }
     }
@@ -687,19 +734,26 @@ public class GameLogicController implements LogicController {
     }
 
     private void letTowerAttack(Tower tower) {
-        Enemy enemy = tower.getCurrentTarget();
-        //System.out.println(enemy.getName());
-        if (tower.getCooldown() <= 0) {
-            tower.setAttacking(true);
-            tower.notifyObserver();
-            switch (tower.getAttackStyle()) {
-                // TODO: Differenzierung nach Projektilarten einbauen
-                case PROJECTILE:
-                    addProjectile(tower);
-                    break;
-                case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
-                    calculateDamageImpact(enemy, tower);
-            }
+        switch (tower.getAttackStyle()) {
+            // TODO: Differenzierung nach Projektilarten einbauen
+            case PROJECTILE:
+                addProjectile(tower);
+                break;
+
+            case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
+                applyDamageToTarget(tower);
+        }
+
+    }
+
+    private void applyAttackDelay(Tower tower, float deltaTime) {
+        float attackdelay = tower.getAttackDelayTimer();
+        if (attackdelay <= 0) {
+            letTowerAttack(tower);
+            tower.setAttackDelayTimer(tower.getCurrentAttackDelay());
+            tower.setCooldown(tower.getCurrentAttackSpeed() - tower.getCurrentAttackDelay());
+        } else {
+            tower.setAttackDelayTimer(attackdelay - deltaTime);
         }
     }
 

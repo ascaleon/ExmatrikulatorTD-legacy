@@ -17,31 +17,31 @@ public final class Assets {
 
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
-    public static final String REGULAR_TOWER_ASSETS = "tower_mage";
+    public static final String REGULAR_TOWER_ASSETS = "tower_gun";
 
-    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "tower_mage";
+    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "tower_gun";
 
-    public static final String REGULAR_TOWER_PORTRAIT = "mage_portrait.png";
+    public static final String REGULAR_TOWER_PORTRAIT = "gunwoman_portrait.png";
 
-    public static final String REGULAR_TOWER_PORTRAIT_SELECTED = "mage_portrait.png";
+    public static final String REGULAR_TOWER_PORTRAIT_SELECTED = "gunwoman_portrait_clicked.png";
 
-    public static final String SLOW_TOWER_ASSETS = "tower_mage";
+    public static final String SLOW_TOWER_ASSETS = "tower_skeletonMage";
 
     public static final String SLOW_TOWER_PORTRAIT = "skeleton_mage_portrait.png";
 
-    public static final String SLOW_TOWER_PORTRAIT_SELECTED = "skeleton_mage_portrait.png";
+    public static final String SLOW_TOWER_PORTRAIT_SELECTED = "skeleton_mage_portrait_clicked.png";
 
-    public static final String CORRUPTION_TOWER_ASSETS = "tower_mage";
+    public static final String CORRUPTION_TOWER_ASSETS = "tower_archer";
 
     public static final String CORRUPTION_TOWER_PORTRAIT = "skeleton_archer_portrait.png";
 
-    public static final String CORRUPTION_TOWER_PORTRAIT_SELECTED = "skeleton_archer_portrait.png";
+    public static final String CORRUPTION_TOWER_PORTRAIT_SELECTED = "skeleton_archer_portrait_clicked.png";
 
     public static final String EXPLOSIVE_TOWER_ASSETS = "tower_mage";
 
-    public static final String EXPLOSIVE_TOWER_PORTRAIT = "gunwoman_portrait.png";
+    public static final String EXPLOSIVE_TOWER_PORTRAIT = "mage_portrait.png";
 
-    public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "gunwoman_portrait.png";
+    public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "mage_portrait_clicked.png";
 
     public static final String AURA_TOWER_ASSETS = "tower_mage";
 
@@ -59,7 +59,7 @@ public final class Assets {
 
     public static final String DEATH_ANIMATION_ASSETS = "explosion";
 
-    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/prototypeMap.tmx";
+    public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/singleplayerMap.tmx";
 
     public static final String MULTIPLAYER_MAP_PATH = "sprites/gamemap/multiplayer_map.tmx";
 

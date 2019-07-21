@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -31,7 +32,11 @@ public class TowerObject extends BaseObject {
 
     private boolean lookingLeft = false;
 
-    public TowerObject(ObservableUnit observableUnit, AssetManager assetManager) {
+    private float attackFrameDuration;
+
+    private int towerType;
+
+    public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
     }
 
@@ -43,23 +48,56 @@ public class TowerObject extends BaseObject {
         super.initializeSprite();
 
         String assetsName = getAssetsName();
-        setTextureAtlas(getAssetManager().get(getTowerAssetPath(assetsName), TextureAtlas.class));
+        setTextureAtlas(getAssetManager().get(getTowerAssetPath(assetsName),TextureAtlas.class));
 
         idleLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleLeft"), Animation.PlayMode.LOOP);
         idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleRight"), Animation.PlayMode.LOOP);
 
-        attackLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
-        attackRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
+        attackLeftAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
+        attackRightAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
+
+        //skaliere angriffsgeschwindigkeit
+        attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
+        if (attackFrameDuration < attackLeftAnimation.getFrameDuration()){
+            attackLeftAnimation.setFrameDuration(attackFrameDuration);
+            attackRightAnimation.setFrameDuration(attackFrameDuration);
+        }
+        towerType = getObservable().getTowerType();
+
+    }
+
+    /**
+     * Update-Methode. Aktualisiert den Zustand des Objektes
+     *
+     * @param deltaTime Die Zeit zwischen zwei Frames
+     */
+    public void update (float deltaTime) {
+        super.update();
+
+        attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
+        if (attackFrameDuration < 0.05f){
+            attackLeftAnimation.setFrameDuration(attackFrameDuration);
+            attackRightAnimation.setFrameDuration(attackFrameDuration);
+        } else {
+            attackLeftAnimation.setFrameDuration(0.05f);
+            attackRightAnimation.setFrameDuration(0.05f);
+        }
     }
 
     @Override
     public void update() {
         super.update();
+        
+
         if (getObservable() != null) {
             attacking = getObservable().isAttacking();
         }
 
-        lookingLeft = getxPosition() - getxTargetPosition() > 0;
+        if (getxPosition() - getxTargetPosition() > 0) {
+            lookingLeft = true;
+        } else {
+            lookingLeft = false;
+        }
 
     }
 
@@ -83,7 +121,7 @@ public class TowerObject extends BaseObject {
 
         TextureRegion currentFrame;
 
-        if (attacking) {
+        if (attacking){
             if (isAnimated()) {
                 animationTime += deltaTime;
             }
@@ -92,7 +130,7 @@ public class TowerObject extends BaseObject {
             } else {
                 currentFrame = attackRightAnimation.getKeyFrame(animationTime);
             }
-            if (attackRightAnimation.isAnimationFinished(animationTime) || attackLeftAnimation.isAnimationFinished(animationTime)) {
+            if(attackRightAnimation.isAnimationFinished(animationTime) || attackLeftAnimation.isAnimationFinished(animationTime)) {
                 attacking = false;
                 animationTime = 0;
             }
@@ -103,10 +141,9 @@ public class TowerObject extends BaseObject {
                 currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
             }
         }
+        spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition() + (32 - currentFrame.getRegionHeight()/2));
 
 
-        spriteBatch.draw(currentFrame, getxPosition() + (32 - currentFrame.getRegionWidth() / 2),
-                getyPosition() + (32 - currentFrame.getRegionHeight() / 2));
 
     }
 

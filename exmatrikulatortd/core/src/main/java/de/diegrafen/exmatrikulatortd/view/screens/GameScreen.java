@@ -249,11 +249,11 @@ public class GameScreen extends BaseScreen implements GameView {
                         if (t1) {
                             logicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t2) {
-                            logicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                            logicController.buildTower(SLOW_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t3) {
                             logicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t4) {
-                            logicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                            logicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         }
                     } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
                         if (s) {
@@ -339,7 +339,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         if (keyLeftDown) {
             getCamera().translate(-translateValue, 0);
-            System.out.println("Keyleftdown");
         }
         if (keyRightDown) {
             getCamera().translate(translateValue, 0);
@@ -461,7 +460,7 @@ public class GameScreen extends BaseScreen implements GameView {
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
         //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT)));
-        Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT)));
+        Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT_SELECTED)));
         Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal(SLOW_TOWER_PORTRAIT)));
         Drawable towerImage2_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(SLOW_TOWER_PORTRAIT_SELECTED)));
         Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal(CORRUPTION_TOWER_PORTRAIT)));
@@ -665,7 +664,7 @@ public class GameScreen extends BaseScreen implements GameView {
         tower1.setChecked(false);
         tower2.setChecked(false);
         tower3.setChecked(false);
-        tower4.setColor(Color.valueOf("ffffffff"));
+        tower4.setChecked(false);
         upgrade.setColor(Color.valueOf("ffffffff"));
         sell.setColor(Color.valueOf("ffffffff"));
         if (a == tower1) {
@@ -706,7 +705,7 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         } else if (a == tower4) {
             if (!t4) {
-                tower4.setColor(Color.GREEN);
+                tower4.setChecked(true);
                 t1 = false;
                 t2 = false;
                 t3 = false;
