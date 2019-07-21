@@ -1,565 +1,565 @@
 tower_gun.png
-size: 256, 1856
+size: 1940, 588
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 0
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 0
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 0
-  size: 128, 64
-  orig: 128, 64
+  xy: 195, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 1
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 64
-  size: 128, 64
-  orig: 128, 64
+  xy: 389, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 2
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 64
-  size: 128, 64
-  orig: 128, 64
+  xy: 583, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 3
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 128
-  size: 128, 64
-  orig: 128, 64
+  xy: 777, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 4
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 128
-  size: 128, 64
-  orig: 128, 64
+  xy: 971, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 5
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 192
-  size: 128, 64
-  orig: 128, 64
+  xy: 1165, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 6
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 192
-  size: 128, 64
-  orig: 128, 64
+  xy: 1359, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 7
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 256
-  size: 128, 64
-  orig: 128, 64
+  xy: 1553, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 8
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 256
-  size: 128, 64
-  orig: 128, 64
+  xy: 1747, 1
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 9
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 320
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 10
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 320
-  size: 128, 64
-  orig: 128, 64
+  xy: 195, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 11
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 384
-  size: 128, 64
-  orig: 128, 64
+  xy: 389, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 12
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 384
-  size: 128, 64
-  orig: 128, 64
+  xy: 583, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 13
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 448
-  size: 128, 64
-  orig: 128, 64
+  xy: 777, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 14
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 448
-  size: 128, 64
-  orig: 128, 64
+  xy: 971, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 15
 tower_gun_attackLeft
   rotate: false
-  xy: 0, 512
-  size: 128, 64
-  orig: 128, 64
+  xy: 1165, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 16
 tower_gun_attackLeft
   rotate: false
-  xy: 128, 512
-  size: 128, 64
-  orig: 128, 64
+  xy: 1359, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 17
 tower_gun_attackRight
   rotate: false
-  xy: 0, 576
-  size: 128, 64
-  orig: 128, 64
+  xy: 1553, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 0
 tower_gun_attackRight
   rotate: false
-  xy: 128, 576
-  size: 128, 64
-  orig: 128, 64
+  xy: 1747, 99
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 1
 tower_gun_attackRight
   rotate: false
-  xy: 0, 640
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 2
 tower_gun_attackRight
   rotate: false
-  xy: 128, 640
-  size: 128, 64
-  orig: 128, 64
+  xy: 195, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 3
 tower_gun_attackRight
   rotate: false
-  xy: 0, 704
-  size: 128, 64
-  orig: 128, 64
+  xy: 389, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 4
 tower_gun_attackRight
   rotate: false
-  xy: 128, 704
-  size: 128, 64
-  orig: 128, 64
+  xy: 583, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 5
 tower_gun_attackRight
   rotate: false
-  xy: 0, 768
-  size: 128, 64
-  orig: 128, 64
+  xy: 777, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 6
 tower_gun_attackRight
   rotate: false
-  xy: 128, 768
-  size: 128, 64
-  orig: 128, 64
+  xy: 971, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 7
 tower_gun_attackRight
   rotate: false
-  xy: 0, 832
-  size: 128, 64
-  orig: 128, 64
+  xy: 1165, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 8
 tower_gun_attackRight
   rotate: false
-  xy: 128, 832
-  size: 128, 64
-  orig: 128, 64
+  xy: 1359, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 9
 tower_gun_attackRight
   rotate: false
-  xy: 0, 896
-  size: 128, 64
-  orig: 128, 64
+  xy: 1553, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 10
 tower_gun_attackRight
   rotate: false
-  xy: 128, 896
-  size: 128, 64
-  orig: 128, 64
+  xy: 1747, 197
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 11
 tower_gun_attackRight
   rotate: false
-  xy: 0, 960
-  size: 128, 64
-  orig: 128, 64
+  xy: 1, 295
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 12
 tower_gun_attackRight
   rotate: false
-  xy: 128, 960
-  size: 128, 64
-  orig: 128, 64
+  xy: 195, 295
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 13
 tower_gun_attackRight
   rotate: false
-  xy: 0, 1024
-  size: 128, 64
-  orig: 128, 64
+  xy: 389, 295
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 14
 tower_gun_attackRight
   rotate: false
-  xy: 128, 1024
-  size: 128, 64
-  orig: 128, 64
+  xy: 583, 295
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 15
 tower_gun_attackRight
   rotate: false
-  xy: 0, 1088
-  size: 128, 64
-  orig: 128, 64
+  xy: 777, 295
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 16
 tower_gun_attackRight
   rotate: false
-  xy: 128, 1088
-  size: 128, 64
-  orig: 128, 64
+  xy: 971, 295
+  size: 192, 96
+  orig: 192, 96
   offset: 0, 0
   index: 17
 tower_gun_idleLeft
   rotate: false
-  xy: 0, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 1165, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 0
 tower_gun_idleLeft
   rotate: false
-  xy: 64, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 1263, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 1
 tower_gun_idleLeft
   rotate: false
-  xy: 128, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 1361, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 2
 tower_gun_idleLeft
   rotate: false
-  xy: 192, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 1459, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 3
 tower_gun_idleLeft
   rotate: false
-  xy: 0, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 1557, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 4
 tower_gun_idleLeft
   rotate: false
-  xy: 64, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 1655, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 5
 tower_gun_idleLeft
   rotate: false
-  xy: 128, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 1753, 295
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 6
 tower_gun_idleLeft
   rotate: false
-  xy: 192, 1216
-  size: 64, 64
-  orig: 64, 64
+  xy: 1, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 7
 tower_gun_idleLeft
   rotate: false
-  xy: 0, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 99, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 8
 tower_gun_idleLeft
   rotate: false
-  xy: 64, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 197, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 9
 tower_gun_idleLeft
   rotate: false
-  xy: 128, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 295, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 10
 tower_gun_idleLeft
   rotate: false
-  xy: 192, 1280
-  size: 64, 64
-  orig: 64, 64
+  xy: 393, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 11
 tower_gun_idleLeft
   rotate: false
-  xy: 0, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 491, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 12
 tower_gun_idleLeft
   rotate: false
-  xy: 64, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 589, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 13
 tower_gun_idleLeft
   rotate: false
-  xy: 128, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 687, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 14
 tower_gun_idleLeft
   rotate: false
-  xy: 192, 1344
-  size: 64, 64
-  orig: 64, 64
+  xy: 785, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 15
 tower_gun_idleLeft
   rotate: false
-  xy: 0, 1408
-  size: 64, 64
-  orig: 64, 64
+  xy: 883, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 16
 tower_gun_idleLeft
   rotate: false
-  xy: 64, 1408
-  size: 64, 64
-  orig: 64, 64
+  xy: 981, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 17
 tower_gun_idleLeft
   rotate: false
-  xy: 128, 1408
-  size: 64, 64
-  orig: 64, 64
+  xy: 1079, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 18
 tower_gun_idleLeft
   rotate: false
-  xy: 192, 1408
-  size: 64, 64
-  orig: 64, 64
+  xy: 1177, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 19
 tower_gun_idleLeft
   rotate: false
-  xy: 0, 1472
-  size: 64, 64
-  orig: 64, 64
+  xy: 1275, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 20
 tower_gun_idleLeft
   rotate: false
-  xy: 64, 1472
-  size: 64, 64
-  orig: 64, 64
+  xy: 1373, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 21
 tower_gun_idleRight
   rotate: false
-  xy: 128, 1472
-  size: 64, 64
-  orig: 64, 64
+  xy: 1471, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 0
 tower_gun_idleRight
   rotate: false
-  xy: 192, 1472
-  size: 64, 64
-  orig: 64, 64
+  xy: 1569, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 1
 tower_gun_idleRight
   rotate: false
-  xy: 0, 1536
-  size: 64, 64
-  orig: 64, 64
+  xy: 1667, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 2
 tower_gun_idleRight
   rotate: false
-  xy: 64, 1536
-  size: 64, 64
-  orig: 64, 64
+  xy: 1765, 393
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 3
 tower_gun_idleRight
   rotate: false
-  xy: 128, 1536
-  size: 64, 64
-  orig: 64, 64
+  xy: 1, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 4
 tower_gun_idleRight
   rotate: false
-  xy: 192, 1536
-  size: 64, 64
-  orig: 64, 64
+  xy: 99, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 5
 tower_gun_idleRight
   rotate: false
-  xy: 0, 1600
-  size: 64, 64
-  orig: 64, 64
+  xy: 197, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 6
 tower_gun_idleRight
   rotate: false
-  xy: 64, 1600
-  size: 64, 64
-  orig: 64, 64
+  xy: 295, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 7
 tower_gun_idleRight
   rotate: false
-  xy: 128, 1600
-  size: 64, 64
-  orig: 64, 64
+  xy: 393, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 8
 tower_gun_idleRight
   rotate: false
-  xy: 192, 1600
-  size: 64, 64
-  orig: 64, 64
+  xy: 491, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 9
 tower_gun_idleRight
   rotate: false
-  xy: 0, 1664
-  size: 64, 64
-  orig: 64, 64
+  xy: 589, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 10
 tower_gun_idleRight
   rotate: false
-  xy: 64, 1664
-  size: 64, 64
-  orig: 64, 64
+  xy: 687, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 11
 tower_gun_idleRight
   rotate: false
-  xy: 128, 1664
-  size: 64, 64
-  orig: 64, 64
+  xy: 785, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 12
 tower_gun_idleRight
   rotate: false
-  xy: 192, 1664
-  size: 64, 64
-  orig: 64, 64
+  xy: 883, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 13
 tower_gun_idleRight
   rotate: false
-  xy: 0, 1728
-  size: 64, 64
-  orig: 64, 64
+  xy: 981, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 14
 tower_gun_idleRight
   rotate: false
-  xy: 64, 1728
-  size: 64, 64
-  orig: 64, 64
+  xy: 1079, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 15
 tower_gun_idleRight
   rotate: false
-  xy: 128, 1728
-  size: 64, 64
-  orig: 64, 64
+  xy: 1177, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 16
 tower_gun_idleRight
   rotate: false
-  xy: 192, 1728
-  size: 64, 64
-  orig: 64, 64
+  xy: 1275, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 17
 tower_gun_idleRight
   rotate: false
-  xy: 0, 1792
-  size: 64, 64
-  orig: 64, 64
+  xy: 1373, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 18
 tower_gun_idleRight
   rotate: false
-  xy: 64, 1792
-  size: 64, 64
-  orig: 64, 64
+  xy: 1471, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 19
 tower_gun_idleRight
   rotate: false
-  xy: 128, 1792
-  size: 64, 64
-  orig: 64, 64
+  xy: 1569, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 20
 tower_gun_idleRight
   rotate: false
-  xy: 192, 1792
-  size: 64, 64
-  orig: 64, 64
+  xy: 1667, 491
+  size: 96, 96
+  orig: 96, 96
   offset: 0, 0
   index: 21
