@@ -76,7 +76,7 @@ public class GameScreen extends BaseScreen implements GameView {
     private boolean keyRightDown = false;
     private boolean keyLeftDown = false;
     private Label scoreLabel;
-    private Label scoreLabelOponent;
+    private Label opponentScore;
     private Label resourcesLabel;
     private Label livesLabel;
     private Label roundsLabel;
@@ -330,6 +330,7 @@ public class GameScreen extends BaseScreen implements GameView {
         if(logicController.isMultiplayer()){
             Player opposingPlayer = logicController.getLocalPlayer();
             opponentHealth.setValue(opposingPlayer.getCurrentLives());
+            opponentScore.setText(opposingPlayer.getScore());
         }
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
@@ -464,7 +465,7 @@ public class GameScreen extends BaseScreen implements GameView {
             opponentHealth.setAnimateDuration(1);
             Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
             scoreLabelStyle.font = getBitmapFont();
-            Label opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
+            opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
             opponent.setBounds(0, 50, 100, 100);
             opponent.add(opponentScore).left().row();
             opponent.add(opponentHealth).left();
