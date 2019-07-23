@@ -126,6 +126,10 @@ public class MainController {
         game.setScreen(new EndScreen(this, game.getAssetManager(), gamestate));
     }
 
+    public void setCurrentProfile(Profile currentProfile) {
+        this.currentProfile = currentProfile;
+    }
+
     /**
      * Erzeugt ein neues Profil
      *
@@ -273,6 +277,10 @@ public class MainController {
         CriteriaQuery<Profile> criteriaQuery=criteriaBuilder.createQuery(Profile.class);
         criteriaQuery.from(Profile.class);
         return session.createQuery(criteriaQuery).getResultList();
+    }
+
+    public void deleteProfile(final Profile profile){
+        //profileDao.delete(profile);
     }
 
     public List<Highscore> retrieveHighscores(int limit) {
