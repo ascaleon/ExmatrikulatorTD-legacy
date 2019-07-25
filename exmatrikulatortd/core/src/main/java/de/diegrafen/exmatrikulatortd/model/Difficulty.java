@@ -2,5 +2,5 @@ package de.diegrafen.exmatrikulatortd.model;
 
 public enum Difficulty {
 
-    TESTMODE, EASY, MEDIUM, HARD;
+    TESTMODE, EASY, MEDIUM, HARD
 }

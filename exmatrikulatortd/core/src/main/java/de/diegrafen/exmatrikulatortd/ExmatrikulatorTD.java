@@ -1,11 +1,9 @@
 package de.diegrafen.exmatrikulatortd;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.util.Assets;
-import org.hibernate.SessionFactory;
 
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
@@ -70,7 +68,8 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
 	 */
 	private void startDatabaseInitialization() {
 		new Thread(() -> {
-			//getSessionFactory(); // Initialisiert die Datenbank
+            //noinspection ResultOfMethodCallIgnored
+            getSessionFactory(); // Initialisiert die Datenbank
 			mainController.setDatabaseLoaded(true);
 			System.out.println(mainController.isDatabaseLoaded());
 		}).start();

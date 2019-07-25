@@ -36,7 +36,7 @@ public abstract class BaseModel implements Serializable {
      * Setzt die Id des Objektes auf {@code 0}.
      */
     public void clearId() {
-        this.id = 0l;
+        this.id = 0L;
     }
 
     @Override

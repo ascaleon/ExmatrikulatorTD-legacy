@@ -14,17 +14,17 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
 /**
  * Die Abstrakte Screen Klasse, die für alle Game-Screens verwendet wird.
  */
-public abstract class BaseScreen implements Screen {
+abstract class BaseScreen implements Screen {
 
     /**
      *
      */
-    private Viewport stageViewport;
+    private final Viewport stageViewport;
 
     /**
      * Die Kamera.
      */
-    private OrthographicCamera camera;
+    private final OrthographicCamera camera;
 
     /**
      * Der MainController ist für die Verwaltung der Screens und Interaktion mit anderen Komponenten zuständig.
@@ -36,13 +36,13 @@ public abstract class BaseScreen implements Screen {
      */
     private Stage ui;
 
-    private SpriteBatch spriteBatch;
+    private final SpriteBatch spriteBatch;
 
-    private Viewport viewport;
+    private final Viewport viewport;
 
-    private BitmapFont bitmapFont = new BitmapFont();
+    private final BitmapFont bitmapFont = new BitmapFont();
 
-    private AssetManager assetManager;
+    private final AssetManager assetManager;
 
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.

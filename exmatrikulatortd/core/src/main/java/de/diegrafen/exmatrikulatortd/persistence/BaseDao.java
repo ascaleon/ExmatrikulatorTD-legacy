@@ -4,8 +4,6 @@ import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.List;
-
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**

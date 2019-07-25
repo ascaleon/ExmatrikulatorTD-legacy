@@ -1,9 +1,7 @@
 package de.diegrafen.exmatrikulatortd.view.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 
 /**
@@ -17,7 +15,7 @@ public class EndScreen extends BaseScreen {
     /**
      * Der aktuelle Zustand des Spiels.
      */
-    private Gamestate gameState;
+    private final Gamestate gameState;
 
     /**
      * Der Konstruktor legt den Maincontroller und den aktuellen gameState fest.

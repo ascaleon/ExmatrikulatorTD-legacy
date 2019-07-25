@@ -1,8 +1,8 @@
 package de.diegrafen.exmatrikulatortd.model.enemy;
 
-import com.badlogic.gdx.Gdx;
 import de.diegrafen.exmatrikulatortd.model.*;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -30,14 +30,11 @@ public class Enemy extends ObservableModel {
     private float currentMaxHitPoints;
 
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> debuffs;
 
     @ManyToOne
-    @JoinColumn(name = "gamestate_id")
-    private Gamestate gameState;
-
-    @ManyToOne
-    @JoinColumn(name = "player_id")
+    @JoinColumn(name="player_id")
     private Player attackedPlayer;
 
     private float xPosition, yPosition;
@@ -70,11 +67,7 @@ public class Enemy extends ObservableModel {
 
     private boolean respawning;
 
-
-
-    @ManyToOne
-    @JoinColumn(name = "wave_id")
-    private Wave wave;
+    private boolean isAttacking;
 
     @ManyToOne
     @JoinColumn(name = "mapcell_id")
@@ -123,6 +116,29 @@ public class Enemy extends ObservableModel {
         this.respawning = false;
     }
 
+    public Enemy(float baseSpeed, float currentSpeed, float baseMaxHitPoints, float currentHitPoints, float currentMaxHitPoints, List<Debuff> debuffs, Gamestate gameState, Player attackedPlayer, float xPosition, float yPosition, int amountOfDamageToPlayer, int bounty, int pointsGranted, int sendPrice, int wayPointIndex, float baseArmor, float currentArmor, int armorType, String assetsName, String name, String description, float targetxPosition, float targetyPosition, boolean respawning, Wave wave, Coordinates currentMapCell) {
+        this.baseSpeed = baseSpeed;
+        this.currentSpeed = currentSpeed;
+        this.baseMaxHitPoints = baseMaxHitPoints;
+        this.currentHitPoints = currentHitPoints;
+        this.currentMaxHitPoints = currentMaxHitPoints;
+        this.debuffs = debuffs;
+        this.attackedPlayer = attackedPlayer;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.amountOfDamageToPlayer = amountOfDamageToPlayer;
+        this.bounty = bounty;
+        this.pointsGranted = pointsGranted;
+        this.sendPrice = sendPrice;
+        this.wayPointIndex = wayPointIndex;
+        this.baseArmor = baseArmor;
+        this.currentArmor = currentArmor;
+        this.armorType = armorType;
+        this.assetsName = assetsName;
+        this.respawning = respawning;
+        //this.wave = wave;
+    }
+
     public Enemy(Enemy enemy) {
 
         this.debuffs = new LinkedList<>();
@@ -139,7 +155,7 @@ public class Enemy extends ObservableModel {
         this.currentSpeed = enemy.getBaseSpeed();
         this.baseMaxHitPoints = enemy.getBaseMaxHitPoints();
         this.currentMaxHitPoints = enemy.getCurrentMaxHitPoints();
-        this.currentHitPoints = enemy.getCurrentHitPoints();;
+        this.currentHitPoints = enemy.getCurrentHitPoints();
         this.amountOfDamageToPlayer = enemy.getAmountOfDamageToPlayer();
         this.bounty = enemy.getBounty();
         this.pointsGranted = enemy.getPointsGranted();
@@ -147,9 +163,20 @@ public class Enemy extends ObservableModel {
         this.assetsName = enemy.getAssetsName();
         this.xPosition = enemy.getxPosition();
         this.yPosition = enemy.getyPosition();
+        this.targetxPosition = enemy.getTargetxPosition();
+        this.targetyPosition = enemy.getTargetyPosition();
         this.wayPointIndex = enemy.getWayPointIndex();
+        this.armorType = enemy.getArmorType();
 
         this.respawning = enemy.isRespawning();
+        //this.wave = null;
+        //this.attackedPlayer = null;
+        this.currentMapCell = null;
+    }
+
+    public Enemy(Enemy enemy, Player player) {
+        this(enemy);
+        this.attackedPlayer = player;
     }
 
     public Enemy(Enemy enemy, int wayPointIndex) {
@@ -193,10 +220,6 @@ public class Enemy extends ObservableModel {
         return amountOfDamageToPlayer;
     }
 
-    public void setGameState(Gamestate gameState) {
-        this.gameState = gameState;
-    }
-
     public float getTargetxPosition() {
         return targetxPosition;
     }
@@ -238,9 +261,9 @@ public class Enemy extends ObservableModel {
         return this.name;
     }
 
-    public void setWave(Wave wave) {
-        this.wave = wave;
-    }
+    //public void setWave(Wave wave) {
+        //this.wave = wave;
+    //}
 
     public int getBounty() {
         return bounty;
@@ -310,7 +333,19 @@ public class Enemy extends ObservableModel {
         this.currentMaxHitPoints = currentMaxHitPoints;
     }
 
+    public void clearDebuffs() {
+        debuffs.clear();
+    }
+
     public String getDescription() {
         return description;
     }
+
+    public boolean isAttacking(){return this.isAttacking;}
+
+    public float getAttackSpeed() {
+        return 0;
+    }
+
+    public int getTowerType() {return 0;}
 }

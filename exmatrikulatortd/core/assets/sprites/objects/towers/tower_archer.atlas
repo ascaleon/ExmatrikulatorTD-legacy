@@ -1,0 +1,341 @@
+tower_archer.png
+size: 490, 1372
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tower_archer_attackLeft
+  rotate: false
+  xy: 1, 1
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 0
+tower_archer_attackLeft
+  rotate: false
+  xy: 147, 1
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 1
+tower_archer_attackLeft
+  rotate: false
+  xy: 293, 1
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 2
+tower_archer_attackLeft
+  rotate: false
+  xy: 1, 99
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 3
+tower_archer_attackLeft
+  rotate: false
+  xy: 147, 99
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 4
+tower_archer_attackLeft
+  rotate: false
+  xy: 293, 99
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 5
+tower_archer_attackLeft
+  rotate: false
+  xy: 1, 197
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 6
+tower_archer_attackLeft
+  rotate: false
+  xy: 147, 197
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 7
+tower_archer_attackLeft
+  rotate: false
+  xy: 293, 197
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 8
+tower_archer_attackLeft
+  rotate: false
+  xy: 1, 295
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 9
+tower_archer_attackLeft
+  rotate: false
+  xy: 147, 295
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 10
+tower_archer_attackLeft
+  rotate: false
+  xy: 293, 295
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 11
+tower_archer_attackLeft
+  rotate: false
+  xy: 1, 393
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 12
+tower_archer_attackLeft
+  rotate: false
+  xy: 147, 393
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 13
+tower_archer_attackLeft
+  rotate: false
+  xy: 293, 393
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 14
+tower_archer_attackLeft
+  rotate: false
+  xy: 1, 491
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 15
+tower_archer_attackRight
+  rotate: false
+  xy: 147, 491
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 0
+tower_archer_attackRight
+  rotate: false
+  xy: 293, 491
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 1
+tower_archer_attackRight
+  rotate: false
+  xy: 1, 589
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 2
+tower_archer_attackRight
+  rotate: false
+  xy: 147, 589
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 3
+tower_archer_attackRight
+  rotate: false
+  xy: 293, 589
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 4
+tower_archer_attackRight
+  rotate: false
+  xy: 1, 687
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 5
+tower_archer_attackRight
+  rotate: false
+  xy: 147, 687
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 6
+tower_archer_attackRight
+  rotate: false
+  xy: 293, 687
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 7
+tower_archer_attackRight
+  rotate: false
+  xy: 1, 785
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 8
+tower_archer_attackRight
+  rotate: false
+  xy: 147, 785
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 9
+tower_archer_attackRight
+  rotate: false
+  xy: 293, 785
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 10
+tower_archer_attackRight
+  rotate: false
+  xy: 1, 883
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 11
+tower_archer_attackRight
+  rotate: false
+  xy: 147, 883
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 12
+tower_archer_attackRight
+  rotate: false
+  xy: 293, 883
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 13
+tower_archer_attackRight
+  rotate: false
+  xy: 1, 981
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 14
+tower_archer_attackRight
+  rotate: false
+  xy: 147, 981
+  size: 144, 96
+  orig: 144, 96
+  offset: 0, 0
+  index: 15
+tower_archer_idleLeft
+  rotate: false
+  xy: 293, 981
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_archer_idleLeft
+  rotate: false
+  xy: 391, 981
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_archer_idleLeft
+  rotate: false
+  xy: 1, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_archer_idleLeft
+  rotate: false
+  xy: 99, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_archer_idleLeft
+  rotate: false
+  xy: 197, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_archer_idleLeft
+  rotate: false
+  xy: 295, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_archer_idleLeft
+  rotate: false
+  xy: 393, 1079
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_archer_idleLeft
+  rotate: false
+  xy: 1, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7
+tower_archer_idleRight
+  rotate: false
+  xy: 99, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_archer_idleRight
+  rotate: false
+  xy: 197, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_archer_idleRight
+  rotate: false
+  xy: 295, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_archer_idleRight
+  rotate: false
+  xy: 393, 1177
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_archer_idleRight
+  rotate: false
+  xy: 1, 1275
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_archer_idleRight
+  rotate: false
+  xy: 99, 1275
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_archer_idleRight
+  rotate: false
+  xy: 197, 1275
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_archer_idleRight
+  rotate: false
+  xy: 295, 1275
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7

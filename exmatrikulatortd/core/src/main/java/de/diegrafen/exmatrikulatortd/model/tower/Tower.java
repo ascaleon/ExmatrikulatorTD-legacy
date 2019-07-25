@@ -3,12 +3,13 @@ package de.diegrafen.exmatrikulatortd.model.tower;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
  *
@@ -70,9 +71,19 @@ public class Tower extends ObservableModel {
     private AttackStyle attackStyle;
 
     /**
+     * Die zeit nach dem angriff, an der der schaden berechnet/das projektil losgeschickt wird
+     */
+    private float baseAttackDelay;
+
+    private float currentAttackDelay;
+
+    private float attackDelayTimer;
+
+    /**
      * Der Aura-Typ des Turmes
      */
     @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Aura> auras;
 
     /**
@@ -119,22 +130,16 @@ public class Tower extends ObservableModel {
     private Player owner;
 
     /**
-     * Der zugehörige Spielzustand
-     */
-    @ManyToOne
-    @JoinColumn(name="gamestate_id")
-    private Gamestate gamestate;
-
-    /**
      * Das aktuelle Angriffsziel des Turmes
      */
-    @OneToOne
+    @ManyToOne
     private Enemy currentTarget;
 
     /**
      * Die Buffs, über die der Turm aktuell verfügt
      */
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Buff> buffs;
 
     /**
@@ -158,6 +163,7 @@ public class Tower extends ObservableModel {
     private float splashRadius;
 
     @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> attackDebuffs;
 
     private String projectileName;
@@ -165,6 +171,13 @@ public class Tower extends ObservableModel {
     private String projectileAssetsName;
 
     private float projectileSpeed;
+
+    private int tileWidth;
+
+    private int tileHeight;
+
+    private Boolean attacking = false;
+
 
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
@@ -174,7 +187,7 @@ public class Tower extends ObservableModel {
     }
 
     /**
-     * Konstruktor für die Erzeugung eines neuen Turms über eine TowerFactory.
+     * Konstruktor für den Attacktype IMMEDIATE
      *
      * @param name
      * @param descriptionText
@@ -193,9 +206,9 @@ public class Tower extends ObservableModel {
      * @param assetsName
      */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage,
-                 float attackRange, float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price,
+                 float attackRange, float baseAttackSpeed, int attackType, float baseAttackDelay, List<Aura> auras, float auraRange, int price,
                  int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName,
-                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs) {
+                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs, int tileWidth, int tileHeight) {
         super();
 
         this.name = name;
@@ -222,26 +235,114 @@ public class Tower extends ObservableModel {
         this.splashAmount = splashAmount;
         this.splashRadius = splashRadius;
         this.attackDebuffs = attackDebuffs;
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
+        this.baseAttackDelay = baseAttackDelay;
+        this.currentAttackDelay = baseAttackDelay;
+        this.attackDelayTimer = baseAttackDelay;
     }
 
+    /**
+     * Konstruktor für den Attacktype PROJECTILE
+     * @param name
+     * @param descriptionText
+     * @param towerType
+     * @param baseAttackDamage
+     * @param attackRange
+     * @param baseAttackSpeed
+     * @param attackType
+     * @param baseAttackDelay
+     * @param auras
+     * @param auraRange
+     * @param price
+     * @param sellPrice
+     * @param upgradePrice
+     * @param upgradeLevel
+     * @param maxUpgradeLevel
+     * @param assetsName
+     * @param splashAmount
+     * @param splashRadius
+     * @param attackDebuffs
+     * @param projectileName
+     * @param projectileAssetsName
+     * @param projectileSpeed
+     * @param tileWidth
+     * @param tileHeight
+     */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange,
-                 float baseAttackSpeed, int attackType, List<Aura> auras, float auraRange, int price, int sellPrice,
+                 float baseAttackSpeed, int attackType, float baseAttackDelay, List <Aura> auras, float auraRange, int price, int sellPrice,
                  int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, float splashAmount,
                  float splashRadius, List<Debuff> attackDebuffs, String projectileName, String projectileAssetsName,
-                 float projectileSpeed) {
+                 float projectileSpeed, int tileWidth, int tileHeight) {
         this(name, descriptionText, towerType, baseAttackDamage,
-                attackRange, baseAttackSpeed, attackType, auras, auraRange, price,
+                attackRange, baseAttackSpeed, attackType, baseAttackDelay, auras, auraRange, price,
                 sellPrice, upgradePrice, upgradeLevel, maxUpgradeLevel, assetsName,
-                splashAmount, splashRadius, attackDebuffs);
+                splashAmount, splashRadius, attackDebuffs, tileWidth, tileHeight);
         this.attackStyle = AttackStyle.PROJECTILE;
         this.projectileName = projectileName;
         this.projectileAssetsName = projectileAssetsName;
         this.projectileSpeed = projectileSpeed;
+        this.currentAttackDelay = baseAttackDelay;
+        this.attackDelayTimer = baseAttackDelay;
 
     }
 
+    /**
+     * Kopier-Konstruktor
+     * @param tower
+     */
     public Tower(Tower tower) {
+        this.name = tower.getName();
+        this.descriptionText = tower.getDescriptionText();
+        this.towerType = tower.getTowerType();
+        this.baseAttackDamage = tower.getBaseAttackDamage();
+        this.currentAttackDamage = tower.getCurrentAttackDamage();
+        this.attackRange = tower.getAttackRange();
+        this.baseAttackSpeed = tower.getBaseAttackSpeed();
+        this.currentAttackSpeed = tower.getCurrentAttackSpeed();
+        this.attackType = tower.getAttackType();
+        this.attackStyle = tower.getAttackStyle();
+        this.auraRange = tower.getAuraRange();
+        this.price = tower.getPrice();
+        this.sellPrice = tower.getSellPrice();
+        this.upgradePrice = tower.getUpgradePrice();
+        this.upgradeLevel = tower.getUpgradeLevel();
+        this.maxUpgradeLevel = tower.getMaxUpgradeLevel();
+        this.timeSinceLastSearch = tower.getTimeSinceLastSearch();
+        this.cooldown = tower.getCooldown();
+        this.assetsName = tower.getAssetsName();
+        this.splashAmount = tower.getSplashAmount();
+        this.splashRadius = tower.getSplashRadius();
+        this.projectileName = tower.getProjectileName();
+        this.projectileAssetsName = tower.getProjectileAssetsName();
+        this.projectileSpeed = tower.getProjectileSpeed();
+        this.tileWidth = tower.getTileWidth();
+        this.tileHeight = tower.getTileHeight();
+        this.attacking = tower.isAttacking();
+        this.baseAttackDelay = tower.getBaseAttackDelay();
+        this.currentAttackDelay = tower.getCurrentAttackDelay();
+        this.attackDelayTimer = tower.getAttackDelayTimer();
 
+        this.auras = new LinkedList<>();
+        this.buffs = new LinkedList<>();
+        this.attackDebuffs = new LinkedList<>();
+
+        tower.getAuras().forEach(aura -> auras.add(new Aura(aura)));
+        tower.getBuffs().forEach(buff -> buffs.add(new Buff(buff)));
+        tower.getAttackDebuffs().forEach(debuff -> attackDebuffs.add(new Debuff(debuff)));
+
+        this.position = null;
+        this.currentTarget = null;
+        this.owner = null;
+        //this.gamestate = null;
+    }
+
+    private int getTileWidth() {
+        return this.tileWidth;
+    }
+
+    private int getTileHeight() {
+        return this.tileHeight;
     }
 
     public Player getOwner() {
@@ -252,13 +353,13 @@ public class Tower extends ObservableModel {
         this.owner = owner;
     }
 
-    public Gamestate getGamestate() {
-        return gamestate;
-    }
+    //public Gamestate getGamestate() {
+        //return gamestate;
+    //}
 
-    public void setGamestate(Gamestate gamestate) {
-        this.gamestate = gamestate;
-    }
+    //public void setGamestate(Gamestate gamestate) {
+        //this.gamestate = gamestate;
+    //}
 
     public void setPosition(Coordinates position) {
         this.position = position;
@@ -272,22 +373,32 @@ public class Tower extends ObservableModel {
         return assetsName;
     }
 
+    @Override
     public float getxPosition() {
-        return position.getXCoordinate() * gamestate.getTileWidth();
+        return position.getXCoordinate() * tileWidth;
     }
 
+    @Override
     public float getyPosition() {
-        return position.getYCoordinate() * gamestate.getTileHeight();
+        return position.getYCoordinate() * tileHeight;
     }
 
     @Override
     public float getTargetxPosition() {
-        return position.getXCoordinate() * gamestate.getTileWidth();
+        if (currentTarget != null) {
+            return currentTarget.getxPosition();
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public float getTargetyPosition() {
-        return position.getYCoordinate() * gamestate.getTileHeight();
+        if (currentTarget != null) {
+            return currentTarget.getyPosition();
+        } else {
+            return 0;
+        }
     }
 
     public int getSellPrice() {
@@ -322,10 +433,6 @@ public class Tower extends ObservableModel {
         return attackRange;
     }
 
-    public void setAttackRange(float attackRange) {
-        this.attackRange = attackRange;
-    }
-
     public float getCooldown() {
         return cooldown;
     }
@@ -342,24 +449,8 @@ public class Tower extends ObservableModel {
         return attackType;
     }
 
-    public void setAttackType(int attackType) {
-        this.attackType = attackType;
-    }
-
     public List<Aura> getAuras() {
         return auras;
-    }
-
-    public void setAura(List<Aura> auras) {
-        this.auras = auras;
-    }
-
-    public void addAura(Aura aura) {
-        auras.add(aura);
-    }
-
-    public void removeAura(Aura aura) {
-        auras.remove(aura);
     }
 
 
@@ -367,16 +458,8 @@ public class Tower extends ObservableModel {
         return auraRange;
     }
 
-    public void setAuraRange(float auraRange) {
-        this.auraRange = auraRange;
-    }
-
     public int getPrice() {
         return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 
     public int getUpgradePrice() {
@@ -397,10 +480,6 @@ public class Tower extends ObservableModel {
 
     public List<Buff> getBuffs() {
         return buffs;
-    }
-
-    public void setBuffs(List<Buff> buffs) {
-        this.buffs = buffs;
     }
 
     public void addBuff(Buff buff) {
@@ -443,10 +522,6 @@ public class Tower extends ObservableModel {
         return baseAttackSpeed;
     }
 
-    public void setBaseAttackSpeed(float baseAttackSpeed) {
-        this.baseAttackSpeed = baseAttackSpeed;
-    }
-
     public float getCurrentAttackSpeed() {
         return currentAttackSpeed;
     }
@@ -475,10 +550,6 @@ public class Tower extends ObservableModel {
         return splashRadius;
     }
 
-    public void setSplashRadius(float splashRadius) {
-        this.splashRadius = splashRadius;
-    }
-
     public String getProjectileAssetsName() {
         return this.projectileAssetsName;
     }
@@ -487,20 +558,20 @@ public class Tower extends ObservableModel {
         return projectileName;
     }
 
-    public void setProjectileName(String projectileName) {
-        this.projectileName = projectileName;
-    }
-
-    public void setProjectileAssetsName(String projectileAssetsName) {
-        this.projectileAssetsName = projectileAssetsName;
-    }
-
     public float getProjectileSpeed() {
         return projectileSpeed;
     }
 
     public void setProjectileSpeed(float projectileSpeed) {
         this.projectileSpeed = projectileSpeed;
+    }
+
+    public void setAttacking(Boolean attacking) {
+        this.attacking = attacking;
+    }
+
+    public boolean isAttacking(){
+        return this.attacking;
     }
 
     //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
@@ -512,5 +583,29 @@ public class Tower extends ObservableModel {
     @Override
     public float getCurrentHitPoints() {
         return 0;
+    }
+
+    public float getAttackSpeed() {
+        return currentAttackSpeed;
+    }
+
+    public float getBaseAttackDelay(){
+        return baseAttackDelay;
+    }
+
+    public float getCurrentAttackDelay(){
+        return currentAttackDelay;
+    }
+
+    public void setCurrentAttackDelay(float attackdelay){
+        currentAttackDelay = attackdelay;
+    }
+
+    public float getAttackDelayTimer(){
+        return attackDelayTimer;
+    }
+
+    public void setAttackDelayTimer(float attackdelay){
+        attackDelayTimer = attackdelay;
     }
 }

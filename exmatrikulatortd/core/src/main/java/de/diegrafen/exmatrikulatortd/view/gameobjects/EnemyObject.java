@@ -61,8 +61,8 @@ public class EnemyObject extends BaseObject {
         walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
         deathAnimation = new Animation<>(0.125f, deathAnimationAtlas.findRegions("explosion"), Animation.PlayMode.LOOP);
 
-        greenHealthBar = new Texture(createProceduralPixmap(1, 1,0,1,0));
-        redHealthBar = new Texture(createProceduralPixmap(1, 1,1,0,0));
+        greenHealthBar = new Texture(createProceduralPixmap(0,1));
+        redHealthBar = new Texture(createProceduralPixmap(1,0));
     }
 
     /**
@@ -123,10 +123,10 @@ public class EnemyObject extends BaseObject {
         spriteBatch.draw(greenHealthBar,getxPosition(),getyPosition() + 64, currentHealthBarWidth, healthBarHeight);
     }
 
-    private Pixmap createProceduralPixmap (int width, int height, int r, int g, int b) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+    private Pixmap createProceduralPixmap (int r, int g) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
 
-        pixmap.setColor(r, g, b, 1);
+        pixmap.setColor(r, g, 0, 1);
         pixmap.fill();
 
         return pixmap;

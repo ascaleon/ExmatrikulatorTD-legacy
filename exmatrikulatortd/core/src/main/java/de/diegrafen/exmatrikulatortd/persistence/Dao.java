@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 14.06.2019 02:18
  */
-public interface Dao<T> extends Serializable {
+interface Dao<T> extends Serializable {
 
     /**
      * Fügt ein Objekt der Datenbank hinzu

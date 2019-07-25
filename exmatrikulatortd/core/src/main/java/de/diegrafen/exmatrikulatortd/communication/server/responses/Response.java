@@ -6,9 +6,9 @@ import java.util.Date;
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 25.06.2019 21:17
  */
-public abstract class Response {
+abstract class Response {
 
-    private java.util.Date timeSent;
+    private final java.util.Date timeSent;
 
     Response() {
         timeSent = new java.util.Date();
