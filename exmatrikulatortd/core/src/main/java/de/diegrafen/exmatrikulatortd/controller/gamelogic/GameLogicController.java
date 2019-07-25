@@ -881,6 +881,9 @@ public class GameLogicController implements LogicController {
         }
 
         gamestate.setGameOver(gameOver);
+        if(gamestate.isGameOver()){
+            gameScreen.endOfGameScreen();
+        }
     }
 
     private void determineLosers() {
@@ -1408,5 +1411,10 @@ public class GameLogicController implements LogicController {
     private boolean isActiveRound() {
         // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
         return gamestate.getTimeUntilNextRound() < 0;
+    }
+
+    @Override
+    public boolean isMultiplayer() {
+        return multiplayer;
     }
 }
