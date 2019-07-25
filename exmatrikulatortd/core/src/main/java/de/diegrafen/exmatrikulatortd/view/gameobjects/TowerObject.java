@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
@@ -38,6 +39,10 @@ public class TowerObject extends BaseObject {
 
     public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
+    }
+
+    public TowerObject(AssetManager assetManager) {
+        super(new Tower(), assetManager);
     }
 
     /**
@@ -87,7 +92,7 @@ public class TowerObject extends BaseObject {
     @Override
     public void update() {
         super.update();
-        
+
 
         if (getObservable() != null) {
             attacking = getObservable().isAttacking();

@@ -4,6 +4,9 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -19,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
 import java.util.*;
@@ -115,6 +119,8 @@ public class GameScreen extends BaseScreen implements GameView {
     private ImageButton tower4;
     private TextButton upgrade;
     private TextButton sell;
+
+    private TowerObject previewTower;
 
     private LogicController logicController;
 
@@ -284,6 +290,49 @@ public class GameScreen extends BaseScreen implements GameView {
 
             @Override
             public boolean mouseMoved(int screenX, int screenY) {
+                Vector3 movedtoCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = getCamera().unproject(movedtoCoordinates);
+                int xCoordinate = logicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = logicController.getYCoordinateByPosition(position.y);
+                int localPlayerNumber = logicController.getLocalPlayerNumber();
+
+                if(t1) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(REGULAR_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else if(t2) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(SLOW_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else if(t3) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(CORRUPTION_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                } else if(t4) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(EXPLOSIVE_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }else{previewTower = null;}
+
+
                 return false;
             }
 
@@ -378,6 +427,9 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         }
         objectsToRemove.forEach(this::removeGameObject);
+        if(previewTower != null) {
+            previewTower.draw(getSpriteBatch(), deltaTime);
+        }
         getSpriteBatch().end();
     }
 
@@ -445,7 +497,7 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(livesLabel).left().align(RIGHT);
         statsTable.row();
         // Rounds
-        statsTable.add(new Label("Semester: ", infoLabelsStyle)).right().padLeft(10).expandX();
+        statsTable.add(new Label("Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
@@ -517,6 +569,17 @@ public class GameScreen extends BaseScreen implements GameView {
                 buttonManager(sell);
             }
         });
+
+        //Tooltips für die Buttons
+        TooltipManager tooltipManager = new TooltipManager();
+        tooltipManager.instant();
+        tower1.addListener(new TextTooltip("Regular Tower", tooltipManager, skin));
+        tower2.addListener(new TextTooltip("Slow Tower", tooltipManager, skin));
+        tower3.addListener(new TextTooltip("Corruption Tower", tooltipManager, skin));
+        tower4.addListener(new TextTooltip("Explosive Tower", tooltipManager, skin));
+        upgrade.addListener(new TextTooltip("Upgrade", tooltipManager, skin));
+        sell.addListener(new TextTooltip("Sell", tooltipManager, skin));
+
         //Towerbuttons der Tabelle hinzufügen
         towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
