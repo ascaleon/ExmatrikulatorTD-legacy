@@ -1,0 +1,565 @@
+tower_gun.png
+size: 1940, 588
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tower_gun_attackLeft
+  rotate: false
+  xy: 1, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 0
+tower_gun_attackLeft
+  rotate: false
+  xy: 195, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 1
+tower_gun_attackLeft
+  rotate: false
+  xy: 389, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 2
+tower_gun_attackLeft
+  rotate: false
+  xy: 583, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 3
+tower_gun_attackLeft
+  rotate: false
+  xy: 777, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 4
+tower_gun_attackLeft
+  rotate: false
+  xy: 971, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 5
+tower_gun_attackLeft
+  rotate: false
+  xy: 1165, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 6
+tower_gun_attackLeft
+  rotate: false
+  xy: 1359, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 7
+tower_gun_attackLeft
+  rotate: false
+  xy: 1553, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 8
+tower_gun_attackLeft
+  rotate: false
+  xy: 1747, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 9
+tower_gun_attackLeft
+  rotate: false
+  xy: 1, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 10
+tower_gun_attackLeft
+  rotate: false
+  xy: 195, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 11
+tower_gun_attackLeft
+  rotate: false
+  xy: 389, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 12
+tower_gun_attackLeft
+  rotate: false
+  xy: 583, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 13
+tower_gun_attackLeft
+  rotate: false
+  xy: 777, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 14
+tower_gun_attackLeft
+  rotate: false
+  xy: 971, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 15
+tower_gun_attackLeft
+  rotate: false
+  xy: 1165, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 16
+tower_gun_attackLeft
+  rotate: false
+  xy: 1359, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 17
+tower_gun_attackRight
+  rotate: false
+  xy: 1553, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 0
+tower_gun_attackRight
+  rotate: false
+  xy: 1747, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 1
+tower_gun_attackRight
+  rotate: false
+  xy: 1, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 2
+tower_gun_attackRight
+  rotate: false
+  xy: 195, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 3
+tower_gun_attackRight
+  rotate: false
+  xy: 389, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 4
+tower_gun_attackRight
+  rotate: false
+  xy: 583, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 5
+tower_gun_attackRight
+  rotate: false
+  xy: 777, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 6
+tower_gun_attackRight
+  rotate: false
+  xy: 971, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 7
+tower_gun_attackRight
+  rotate: false
+  xy: 1165, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 8
+tower_gun_attackRight
+  rotate: false
+  xy: 1359, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 9
+tower_gun_attackRight
+  rotate: false
+  xy: 1553, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 10
+tower_gun_attackRight
+  rotate: false
+  xy: 1747, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 11
+tower_gun_attackRight
+  rotate: false
+  xy: 1, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 12
+tower_gun_attackRight
+  rotate: false
+  xy: 195, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 13
+tower_gun_attackRight
+  rotate: false
+  xy: 389, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 14
+tower_gun_attackRight
+  rotate: false
+  xy: 583, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 15
+tower_gun_attackRight
+  rotate: false
+  xy: 777, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 16
+tower_gun_attackRight
+  rotate: false
+  xy: 971, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 17
+tower_gun_idleLeft
+  rotate: false
+  xy: 1165, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_gun_idleLeft
+  rotate: false
+  xy: 1263, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_gun_idleLeft
+  rotate: false
+  xy: 1361, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_gun_idleLeft
+  rotate: false
+  xy: 1459, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_gun_idleLeft
+  rotate: false
+  xy: 1557, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_gun_idleLeft
+  rotate: false
+  xy: 1655, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_gun_idleLeft
+  rotate: false
+  xy: 1753, 295
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_gun_idleLeft
+  rotate: false
+  xy: 1, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7
+tower_gun_idleLeft
+  rotate: false
+  xy: 99, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 8
+tower_gun_idleLeft
+  rotate: false
+  xy: 197, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 9
+tower_gun_idleLeft
+  rotate: false
+  xy: 295, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 10
+tower_gun_idleLeft
+  rotate: false
+  xy: 393, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 11
+tower_gun_idleLeft
+  rotate: false
+  xy: 491, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 12
+tower_gun_idleLeft
+  rotate: false
+  xy: 589, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 13
+tower_gun_idleLeft
+  rotate: false
+  xy: 687, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 14
+tower_gun_idleLeft
+  rotate: false
+  xy: 785, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 15
+tower_gun_idleLeft
+  rotate: false
+  xy: 883, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 16
+tower_gun_idleLeft
+  rotate: false
+  xy: 981, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 17
+tower_gun_idleLeft
+  rotate: false
+  xy: 1079, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 18
+tower_gun_idleLeft
+  rotate: false
+  xy: 1177, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 19
+tower_gun_idleLeft
+  rotate: false
+  xy: 1275, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 20
+tower_gun_idleLeft
+  rotate: false
+  xy: 1373, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 21
+tower_gun_idleRight
+  rotate: false
+  xy: 1471, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_gun_idleRight
+  rotate: false
+  xy: 1569, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_gun_idleRight
+  rotate: false
+  xy: 1667, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_gun_idleRight
+  rotate: false
+  xy: 1765, 393
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_gun_idleRight
+  rotate: false
+  xy: 1, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_gun_idleRight
+  rotate: false
+  xy: 99, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_gun_idleRight
+  rotate: false
+  xy: 197, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_gun_idleRight
+  rotate: false
+  xy: 295, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7
+tower_gun_idleRight
+  rotate: false
+  xy: 393, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 8
+tower_gun_idleRight
+  rotate: false
+  xy: 491, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 9
+tower_gun_idleRight
+  rotate: false
+  xy: 589, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 10
+tower_gun_idleRight
+  rotate: false
+  xy: 687, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 11
+tower_gun_idleRight
+  rotate: false
+  xy: 785, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 12
+tower_gun_idleRight
+  rotate: false
+  xy: 883, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 13
+tower_gun_idleRight
+  rotate: false
+  xy: 981, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 14
+tower_gun_idleRight
+  rotate: false
+  xy: 1079, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 15
+tower_gun_idleRight
+  rotate: false
+  xy: 1177, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 16
+tower_gun_idleRight
+  rotate: false
+  xy: 1275, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 17
+tower_gun_idleRight
+  rotate: false
+  xy: 1373, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 18
+tower_gun_idleRight
+  rotate: false
+  xy: 1471, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 19
+tower_gun_idleRight
+  rotate: false
+  xy: 1569, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 20
+tower_gun_idleRight
+  rotate: false
+  xy: 1667, 491
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 21

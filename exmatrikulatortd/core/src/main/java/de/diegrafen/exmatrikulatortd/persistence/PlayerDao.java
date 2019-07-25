@@ -17,6 +17,6 @@ public class PlayerDao extends BaseDao<Player> {
      */
     @Override
     Class<Player> getClazz() {
-        return null;
+        return Player.class;
     }
 }

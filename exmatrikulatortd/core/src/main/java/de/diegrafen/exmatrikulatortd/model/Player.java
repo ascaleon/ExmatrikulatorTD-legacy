@@ -310,7 +310,7 @@ public class Player extends BaseModel implements Observable {
         this.victorious = victorious;
     }
 
-    private boolean isVictorious() {
+    public boolean isVictorious() {
         return victorious;
     }
 
