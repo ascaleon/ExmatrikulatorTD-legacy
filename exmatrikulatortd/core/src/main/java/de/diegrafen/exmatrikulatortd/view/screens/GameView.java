@@ -41,4 +41,6 @@ public interface GameView extends Observer, Screen {
 
     void setGameState(Gamestate gameState);
 
+    void endOfGameScreen();
+
 }
