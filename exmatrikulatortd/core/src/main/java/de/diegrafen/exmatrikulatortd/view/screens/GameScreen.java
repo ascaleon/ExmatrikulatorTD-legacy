@@ -665,7 +665,7 @@ public class GameScreen extends BaseScreen implements GameView {
         towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(sell).size(sizeX, sizeY);
-        towerSelect.add(instaLoose).size(sizeX, sizeY);
+        //towerSelect.add(instaLoose).size(sizeX, sizeY);
 
         //Exit
         final Table exit = new Table();
@@ -710,7 +710,7 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX();
         defaultScreen.row();
-        defaultScreen.setDebug(true);
+        defaultScreen.setDebug(false);
 
         statsTable.add(playerHealth).right();
         defaultScreen.add(statsTable).top().right().expandX().colspan(4);
