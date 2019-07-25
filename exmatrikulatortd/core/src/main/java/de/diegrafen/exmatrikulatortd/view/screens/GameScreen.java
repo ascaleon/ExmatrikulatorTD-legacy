@@ -537,6 +537,7 @@ public class GameScreen extends BaseScreen implements GameView {
         Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(CORRUPTION_TOWER_PORTRAIT_SELECTED)));
         Drawable towerImage4 = new TextureRegionDrawable(new Texture(Gdx.files.internal(EXPLOSIVE_TOWER_PORTRAIT)));
         Drawable towerImage4_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(EXPLOSIVE_TOWER_PORTRAIT_SELECTED)));
+        Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
         //TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
         //towerSelect.setDebug(true);
