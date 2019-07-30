@@ -1,13 +1,11 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
@@ -39,10 +37,6 @@ public class TowerObject extends BaseObject {
 
     public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
-    }
-
-    public TowerObject(AssetManager assetManager) {
-        super(new Tower(), assetManager);
     }
 
     /**
