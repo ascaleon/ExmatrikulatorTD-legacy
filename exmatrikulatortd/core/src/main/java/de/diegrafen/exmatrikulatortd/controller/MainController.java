@@ -126,6 +126,10 @@ public class MainController {
         game.setScreen(new EndScreen(this, game.getAssetManager(), gamestate));
     }
 
+    public Profile getCurrentProfile() {
+        return currentProfile;
+    }
+
     public void setCurrentProfile(Profile currentProfile) {
         this.currentProfile = currentProfile;
     }
@@ -280,7 +284,7 @@ public class MainController {
     }
 
     public void deleteProfile(final Profile profile){
-        //profileDao.delete(profile);
+        profileDao.delete(profile);
     }
 
     public List<Highscore> retrieveHighscores(int limit) {
