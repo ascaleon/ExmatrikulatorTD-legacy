@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -87,7 +86,7 @@ public class TowerObject extends BaseObject {
     @Override
     public void update() {
         super.update();
-        
+
 
         if (getObservable() != null) {
             attacking = getObservable().isAttacking();

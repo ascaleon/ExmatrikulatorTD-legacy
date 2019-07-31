@@ -19,9 +19,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 
 import java.util.*;
@@ -110,6 +110,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private boolean t4 = false;
 
+    private boolean t5 = false;
+
     private boolean u = false;
 
     private boolean s = false;
@@ -119,8 +121,11 @@ public class GameScreen extends BaseScreen implements GameView {
     private ImageButton tower2;
     private ImageButton tower3;
     private ImageButton tower4;
+    private ImageButton tower5;
     private TextButton upgrade;
     private TextButton sell;
+
+    private TowerObject previewTower;
 
     private LogicController logicController;
 
@@ -204,6 +209,9 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.R) {
                     buttonManager(tower4);
                 }
+                if (keycode == Input.Keys.T) {
+                    buttonManager(tower5);
+                }
                 if (keycode == Input.Keys.D) {
                     buttonManager(upgrade);
                 }
@@ -270,6 +278,8 @@ public class GameScreen extends BaseScreen implements GameView {
                             logicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         } else if (t4) {
                             logicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        } else if (t5) {
+                            logicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
                         }
                     } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
                         if (s) {
@@ -300,6 +310,60 @@ public class GameScreen extends BaseScreen implements GameView {
 
             @Override
             public boolean mouseMoved(int screenX, int screenY) {
+                Vector3 movedtoCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = getCamera().unproject(movedtoCoordinates);
+                int xCoordinate = logicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = logicController.getYCoordinateByPosition(position.y);
+                int localPlayerNumber = logicController.getLocalPlayerNumber();
+
+                if(t1) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(REGULAR_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else if(t2) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(SLOW_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else if(t3) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(CORRUPTION_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else if(t4) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(EXPLOSIVE_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else if(t5) {
+                    if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
+                        Tower tower = createNewTower(AURA_TOWER, 64,64);
+                        previewTower = new TowerObject(tower, getAssetManager());
+                        previewTower.setxPosition(xCoordinate * gameState.getTileWidth());
+                        previewTower.setyPosition(yCoordinate * gameState.getTileHeight());
+
+                    }else{ previewTower = null;}
+                }
+                else{previewTower = null;}
+
+
                 return false;
             }
 
@@ -410,6 +474,9 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         }
         objectsToRemove.forEach(this::removeGameObject);
+        if(previewTower != null) {
+            previewTower.draw(getSpriteBatch(), deltaTime);
+        }
         getSpriteBatch().end();
     }
 
@@ -510,7 +577,7 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.add(livesLabel).left().align(RIGHT);
         statsTable.row();
         // Rounds
-        statsTable.add(new Label("Semester: ", infoLabelsStyle)).right().padLeft(10).expandX();
+        statsTable.add(new Label("Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
@@ -536,6 +603,8 @@ public class GameScreen extends BaseScreen implements GameView {
         Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(CORRUPTION_TOWER_PORTRAIT_SELECTED)));
         Drawable towerImage4 = new TextureRegionDrawable(new Texture(Gdx.files.internal(EXPLOSIVE_TOWER_PORTRAIT)));
         Drawable towerImage4_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(EXPLOSIVE_TOWER_PORTRAIT_SELECTED)));
+        Drawable towerImage5 = new TextureRegionDrawable(new Texture(Gdx.files.internal(AURA_TOWER_PORTRAIT)));
+        Drawable towerImage5_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(AURA_TOWER_PORTRAIT_SELECTED)));
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
         //TextButtonStyle style = new TextButtonStyle();
         final Table towerSelect = new Table();
@@ -546,6 +615,7 @@ public class GameScreen extends BaseScreen implements GameView {
         tower2 = new ImageButton(towerImage2, towerImage2, towerImage2_selected);
         tower3 = new ImageButton(towerImage3, towerImage3, towerImage3_selected);
         tower4 = new ImageButton(towerImage4, towerImage4, towerImage4_selected);
+        tower5 = new ImageButton(towerImage5, towerImage5, towerImage5_selected);
         upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
 
@@ -585,6 +655,12 @@ public class GameScreen extends BaseScreen implements GameView {
                 buttonManager(tower4);
             }
         });
+        tower5.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buttonManager(tower5);
+            }
+        });
         upgrade.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -597,22 +673,27 @@ public class GameScreen extends BaseScreen implements GameView {
                 buttonManager(sell);
             }
         });
-        //Infolables der Buttons
-        tower1.addListener(new TextTooltip("Turm der ersten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
-        tower2.addListener(new TextTooltip("Turm der zweiten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
-        tower3.addListener(new TextTooltip("Turm der dritten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
-        tower4.addListener(new TextTooltip("Turm der vierten Stufe." + "\n"  +"Kosten: 300",ttm, skin));
-        upgrade.addListener(new TextTooltip("Verbessert die Stufe eines Turmes" + "\n"  +"Kosten: 300",ttm, skin));
-        sell.addListener(new TextTooltip("Entlasse einen Turm aus deinen Diensten",ttm, skin));
+
+        //Tooltips für die Buttons
+        TooltipManager tooltipManager = new TooltipManager();
+        tooltipManager.instant();
+        tower1.addListener(new TextTooltip("Standardturm", tooltipManager, skin));
+        tower2.addListener(new TextTooltip("Verlangsamt Gegner", tooltipManager, skin));
+        tower3.addListener(new TextTooltip("Verringert die Ruestung der Gegner", tooltipManager, skin));
+        tower4.addListener(new TextTooltip("Verursacht Flaechenschaden", tooltipManager, skin));
+        tower5.addListener(new TextTooltip("Aura verbessert Tuerme in der Naehe", tooltipManager, skin));
+        upgrade.addListener(new TextTooltip("Upgraden", tooltipManager, skin));
+        sell.addListener(new TextTooltip("Verkaufen", tooltipManager, skin));
 
         //Towerbuttons der Tabelle hinzufügen
         towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower3).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
+        towerSelect.add(tower5).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(sell).size(sizeX, sizeY);
-        towerSelect.add(instaLoose).size(sizeX, sizeY);
+        //towerSelect.add(instaLoose).size(sizeX, sizeY);
 
         //Exit
         final Table exit = new Table();
@@ -657,7 +738,7 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX();
         defaultScreen.row();
-        defaultScreen.setDebug(true);
+        defaultScreen.setDebug(false);
 
         statsTable.add(playerHealth).right();
         defaultScreen.add(statsTable).top().right().expandX().colspan(4);
@@ -751,6 +832,7 @@ public class GameScreen extends BaseScreen implements GameView {
         tower2.setChecked(false);
         tower3.setChecked(false);
         tower4.setChecked(false);
+        tower5.setChecked(false);
         upgrade.setColor(Color.valueOf("ffffffff"));
         sell.setColor(Color.valueOf("ffffffff"));
         if (a == tower1) {
@@ -760,6 +842,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 t2 = false;
                 t3 = false;
                 t4 = false;
+                t5 = false;
                 u = false;
                 s = false;
             } else {
@@ -772,6 +855,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 t2 = true;
                 t3 = false;
                 t4 = false;
+                t5 = false;
                 u = false;
                 s = false;
             } else {
@@ -784,6 +868,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 t2 = false;
                 t3 = true;
                 t4 = false;
+                t5 = false;
                 u = false;
                 s = false;
             } else {
@@ -796,10 +881,24 @@ public class GameScreen extends BaseScreen implements GameView {
                 t2 = false;
                 t3 = false;
                 t4 = true;
+                t5 = false;
                 u = false;
                 s = false;
             } else {
                 t4 = false;
+            }
+        } else if (a == tower5) {
+            if (!t5) {
+                tower5.setChecked(true);
+                t1 = false;
+                t2 = false;
+                t3 = false;
+                t4 = false;
+                t5 = true;
+                u = false;
+                s = false;
+            } else {
+                t5 = false;
             }
         } else if (a == upgrade) {
             if (!u) {
@@ -808,6 +907,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 t2 = false;
                 t3 = false;
                 t4 = false;
+                t5 = false;
                 u = true;
                 s = false;
             } else {
@@ -820,6 +920,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 t2 = false;
                 t3 = false;
                 t4 = false;
+                t5 = false;
                 u = false;
                 s = true;
             } else {

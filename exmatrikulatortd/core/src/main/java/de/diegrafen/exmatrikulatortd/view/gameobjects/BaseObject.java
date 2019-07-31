@@ -123,7 +123,7 @@ public abstract class BaseObject implements GameObject {
         this.textureAtlas = textureAtlas;
     }
 
-    float getxPosition() {
+    public float getxPosition() {
         return xPosition;
     }
 
@@ -131,6 +131,10 @@ public abstract class BaseObject implements GameObject {
         return yPosition;
     }
 
+    public void setxPosition(float x){this.xPosition = x;}
+
+    public void setyPosition(float y){this.yPosition = y;}
+;
     public String getName() {
         return name;
     }
