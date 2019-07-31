@@ -446,7 +446,6 @@ public class GameScreen extends BaseScreen implements GameView {
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
-//        final Table defaultScreen = new Table();
         defaultScreen.setFillParent(true);
 
         Pixmap pixRed = new Pixmap(100,20, Pixmap.Format.RGBA8888);
@@ -469,7 +468,7 @@ public class GameScreen extends BaseScreen implements GameView {
         progressBarStyle.knobBefore = greenBar;
 
         if(logicController.isMultiplayer()){
-            int localPlayerNumber = logicController.getLocalPlayerNumber();
+            //int localPlayerNumber = logicController.getLocalPlayerNumber();
             Player opposingPlayer = logicController.getLocalPlayer();
             opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, progressBarStyle);
             opponentHealth.setScale(1/2);
@@ -834,8 +833,8 @@ public class GameScreen extends BaseScreen implements GameView {
         if (logicController.isPause()) {
             pauseGroup = new Group();
             Image semiTBG = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
-            //semiTBG.setSize(500,500);
             semiTBG.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
             Table buttonTable = new Table();
             TextButton resume = new TextButton("Resume", skin);
             resume.addListener(new ChangeListener() {
@@ -846,7 +845,20 @@ public class GameScreen extends BaseScreen implements GameView {
                     defaultScreen.setVisible(true);
                 }
             });
-            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            TextButton save = new TextButton("Save", skin);
+            save.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    //TODO: Gamesave
+                }
+            });
+            TextButton load = new TextButton("Load", skin);
+            load.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    //TODO: Laden von Spielständen
+                }
+            });
             TextButton back2main = new TextButton("Menu", skin);
             back2main.addListener(new ChangeListener() {
                 @Override
@@ -855,12 +867,16 @@ public class GameScreen extends BaseScreen implements GameView {
                     //System.out.println("Menu nicht gefunden");
                 }
             });
+
+            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            buttonTable.add(save).top().center().spaceBottom(10).row();
+            buttonTable.add(load).top().center().spaceBottom(10).row();
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
             pauseGroup.addActor(semiTBG);
-            //semiTBG.setAlign(MIDDLE);
             pauseGroup.addActor(buttonTable);
-            //pauseGroup.
+
             defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
         } else {
@@ -911,8 +927,6 @@ public class GameScreen extends BaseScreen implements GameView {
         getUi().addActor(endScreenGroup);
     }
 
-    public void popUpMessage(String message){
-    }
     @Override
     public void setGameState(Gamestate gameState) {
         this.gameState = gameState;
