@@ -135,6 +135,7 @@ public class GameScreen extends BaseScreen implements GameView {
     private int numberofTowers = 0;
 
     private Table messageArea;
+    private Table upgradeSell;
 
     private Label mssg;
     private float timer;
@@ -267,7 +268,15 @@ public class GameScreen extends BaseScreen implements GameView {
                 int localPlayerNumber = logicController.getLocalPlayerNumber();
 
                 if (button == RIGHT) {
-                    returnvalue = true;
+                    if(logicController.hasCellTower(xCoordinate, yCoordinate)){
+                        //upgradeSell.moveBy(xCoordinate - upgradeSell.getX(), yCoordinate - upgradeSell.getY());
+                        upgradeSell.setPosition(getStageViewport().getScreenWidth() - xCoordinate, getStageViewport().getScreenHeight() - yCoordinate);
+                        upgradeSell.setVisible(true);
+                        returnvalue = true;
+                    }
+                    else{
+                        returnvalue = true;
+                    }
                 } else if (button == LEFT) {
                     if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
                         if (t1) {
@@ -618,6 +627,8 @@ public class GameScreen extends BaseScreen implements GameView {
         tower5 = new ImageButton(towerImage5, towerImage5, towerImage5_selected);
         upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
+        upgrade.setSize(sizeX,sizeY);
+        sell.setSize(sizeX,sizeY);
 
         TextButton instaLoose = new TextButton("L", skin);
         instaLoose.addListener(new ClickListener(){
@@ -664,13 +675,17 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonManager(upgrade);
+                //buttonManager(upgrade);
+                logicController.upgradeTower(Math.round(upgradeSell.getX()), Math.round(upgradeSell.getY()), localPlayer.getPlayerNumber());
+                upgradeSell.setVisible(false);
             }
         });
         sell.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonManager(sell);
+                //buttonManager(sell);
+                logicController.sellTower(Math.round(upgradeSell.getX()), Math.round(upgradeSell.getY()), localPlayer.getPlayerNumber());
+                upgradeSell.setVisible(false);
             }
         });
 
@@ -691,10 +706,16 @@ public class GameScreen extends BaseScreen implements GameView {
         towerSelect.add(tower3).size(sizeX, sizeY).spaceRight(5);
         towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
         towerSelect.add(tower5).size(sizeX, sizeY).spaceRight(10);
-        towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
-        towerSelect.add(sell).size(sizeX, sizeY);
+        //towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
+        //towerSelect.add(sell).size(sizeX, sizeY);
         //towerSelect.add(instaLoose).size(sizeX, sizeY);
 
+        upgradeSell = new Table();
+        upgradeSell.setBounds(0,0, 10, 20);
+        upgradeSell.add(upgrade).size(sizeX,sizeY).row();
+        upgradeSell.add(sell).size(sizeX, sizeY);
+        //upgradeSell.setLayoutEnabled(false);
+        upgradeSell.setVisible(false);
         //Exit
         final Table exit = new Table();
         ImageButton exitButton = new ImageButton(menuImage);
@@ -747,6 +768,7 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.row();
         defaultScreen.add(bottomOfScreen).bottom().center().expandX();
         mainUiStack.addActor(defaultScreen);
+        //mainUiStack.addActor(upgradeSell);
 
         getUi().addActor(mainUiStack);
         multiplexer.addProcessor(getUi());
@@ -902,7 +924,7 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         } else if (a == upgrade) {
             if (!u) {
-                upgrade.setColor(Color.YELLOW);
+                //upgrade.setColor(Color.YELLOW);
                 t1 = false;
                 t2 = false;
                 t3 = false;
@@ -915,7 +937,7 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         } else if (a == sell) {
             if (!s) {
-                sell.setColor(Color.YELLOW);
+                //sell.setColor(Color.YELLOW);
                 t1 = false;
                 t2 = false;
                 t3 = false;
