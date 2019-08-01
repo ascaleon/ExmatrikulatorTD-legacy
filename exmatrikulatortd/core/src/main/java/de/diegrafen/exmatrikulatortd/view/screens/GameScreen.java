@@ -116,7 +116,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private boolean s = false;
 
-    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
     private ImageButton tower1;
     private ImageButton tower2;
     private ImageButton tower3;
