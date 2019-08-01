@@ -244,7 +244,7 @@ public class MenuScreen extends BaseScreen {
         for (final Profile p : profiles) {
             profilesTable.row();
             TextButton profileButton = new TextButton(p.getProfileName(), basicSkin);
-            if (getMainController().getCurrentProfile() == p) profileButton.setChecked(true);
+            if (getMainController().getCurrentProfile() == p) profileButton.setColor(Color.GREEN);
             profilesTable.add(profileButton);
             profilesButtonGroup.add(profileButton);
         }
@@ -262,6 +262,8 @@ public class MenuScreen extends BaseScreen {
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
 
         profilesTable = new Table();
+
+        getMainController().setCurrentProfile(getMainController().retrieveProfiles().get(0));
 
         profilesButtonGroup = new ButtonGroup<>();
         profilesButtonGroup.setMaxCheckCount(1);
@@ -336,8 +338,8 @@ public class MenuScreen extends BaseScreen {
         buttonsTable.row().pad(10, 0, 10, 0);
         buttonsTable.add(backButton).fillX();
 
-        selectProfileMenuTable.add(profilesTableScrollPane).fill().expandY();
-        selectProfileMenuTable.add(buttonsTable).fill().expandY();
+        selectProfileMenuTable.add(profilesTableScrollPane).expand();
+        selectProfileMenuTable.add(buttonsTable).expand();
     }
 
     private void createHighscoreMenuTable(Stack menuStack) {
@@ -570,7 +572,6 @@ public class MenuScreen extends BaseScreen {
     private void showMenu(final Table menu, final Table callingTable) {
         menu.setVisible(true);
         callingTable.setVisible(false);
-        System.out.println("showMenu");
     }
 
     private void showMainMenu(Table callingTable) {
