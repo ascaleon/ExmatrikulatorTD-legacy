@@ -145,6 +145,15 @@ public class MainController {
         profileDao.create(profile);
     }
 
+    public Profile updateProfile(final Profile profile,final String newProfileName,final Difficulty newDifficulty, final String newProfilePicturePath){
+        Profile updatedProfile = profile;
+        updatedProfile.setProfileName(newProfileName);
+        updatedProfile.setPreferredDifficulty(newDifficulty);
+        updatedProfile.setProfilePicturePath(newProfilePicturePath);
+        profileDao.update(updatedProfile);
+        return updatedProfile;
+    }
+
     /**
      * Erzeugt einen neuen GameServer
      */
@@ -281,6 +290,10 @@ public class MainController {
         CriteriaQuery<Profile> criteriaQuery=criteriaBuilder.createQuery(Profile.class);
         criteriaQuery.from(Profile.class);
         return session.createQuery(criteriaQuery).getResultList();
+    }
+
+    public boolean noProfilesYet(){
+        return retrieveProfiles().isEmpty();
     }
 
     public void deleteProfile(final Profile profile){

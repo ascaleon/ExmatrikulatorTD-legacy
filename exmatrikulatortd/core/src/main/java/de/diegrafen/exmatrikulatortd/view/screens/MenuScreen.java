@@ -46,6 +46,10 @@ public class MenuScreen extends BaseScreen {
 
     private Table newProfileMenuTable;
 
+    private TextField profileNameTextField;
+
+    private SelectBox difficultySelectBox;
+
     private Table highScoreMenuTable;
 
     private Table preferencesMenuTable;
@@ -252,7 +256,10 @@ public class MenuScreen extends BaseScreen {
 
     private Profile getSelectedProfileFromButtonGroup(){
         final TextButton selectedProfileButton = profilesButtonGroup.getChecked();
-        for(Profile p : profiles) if(p.getProfileName()==selectedProfileButton.getText()) return p;
+        final String selectedProfileButtonText = selectedProfileButton.getText().toString();
+        for(Profile p : profiles){
+            if(p.getProfileName().equals(selectedProfileButtonText)) return p;
+        }
         return null;
     }
 
@@ -262,8 +269,6 @@ public class MenuScreen extends BaseScreen {
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
 
         profilesTable = new Table();
-
-        getMainController().setCurrentProfile(getMainController().retrieveProfiles().get(0));
 
         profilesButtonGroup = new ButtonGroup<>();
         profilesButtonGroup.setMaxCheckCount(1);
@@ -307,7 +312,8 @@ public class MenuScreen extends BaseScreen {
         editProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("editProfile");
+                Profile p = getSelectedProfileFromButtonGroup();
+                showNewProfileMenu(selectProfileMenuTable,p);
             }
         });
 
@@ -505,8 +511,8 @@ public class MenuScreen extends BaseScreen {
     private void createNewProfileMenuTable(Stack menuStack) {
         newProfileMenuTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        TextField profileNameTextField = new TextField("", skin);
-        SelectBox difficultySelectBox = new SelectBox(skin);
+        profileNameTextField = new TextField("", skin);
+        difficultySelectBox = new SelectBox(skin);
         TextButton createProfileButton = new TextButton("Profil erstellen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
@@ -536,6 +542,8 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectProfileMenu(newProfileMenuTable);
                 backButton.setChecked(false);
+                profileNameTextField.setText("");
+                difficultySelectBox.setSelected(Difficulty.EASY);
             }
         });
 
@@ -579,7 +587,11 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void showSetSelectGameModeMenu(Table callingTable) {
-        showMenu(selectGameModeTable, callingTable);
+        if(getMainController().noProfilesYet()){
+            showNewProfileMenu(callingTable);
+        } else{
+            showMenu(selectGameModeTable, callingTable);
+        }
     }
 
     private void showClientOrServerMenu(Table callingTable) {
@@ -593,6 +605,12 @@ public class MenuScreen extends BaseScreen {
 
     private void showNewProfileMenu(Table callingTable) {
         showMenu(newProfileMenuTable, callingTable);
+    }
+
+    private void showNewProfileMenu(Table callingTable, final Profile profile){
+        profileNameTextField.setText(profile.getProfileName());
+        difficultySelectBox.setSelected(profile.getPreferredDifficulty());
+        showNewProfileMenu(callingTable);
     }
 
     private void showHighScoreMenu(Table callingTable) {
