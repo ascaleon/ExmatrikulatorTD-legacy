@@ -136,9 +136,15 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private Table messageArea;
     private Table upgradeSell;
+    private Table countdown;
+
+    private Group popUp;
 
     private Label mssg;
     private float timer;
+    private float tableDecayTimer;
+
+    private int xCoord, yCoord;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
@@ -262,6 +268,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
+
                 int xCoordinate = logicController.getXCoordinateByPosition(position.x);
                 int yCoordinate = logicController.getYCoordinateByPosition(position.y);
 
@@ -269,9 +276,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 if (button == RIGHT) {
                     if(logicController.hasCellTower(xCoordinate, yCoordinate)){
-                        //upgradeSell.moveBy(xCoordinate - upgradeSell.getX(), yCoordinate - upgradeSell.getY());
-                        upgradeSell.setPosition(getStageViewport().getScreenWidth() - xCoordinate, getStageViewport().getScreenHeight() - yCoordinate);
-                        upgradeSell.setVisible(true);
+                        Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
+                        Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
+                        System.out.println(xCoordinate + "," + yCoordinate);
+                        System.out.println(position.x + "," + position.y);
+                        System.out.println(position2.x + "," + position2.y);
+                        xCoord = xCoordinate;
+                        yCoord = yCoordinate;
+                        popUpButtons(Math.round(position2.x), Math.round(position2.y));
                         returnvalue = true;
                     }
                     else{
@@ -398,6 +410,12 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void update(float deltaTime) {
         logicController.update(deltaTime);
+        if(tableDecayTimer <=0){
+            popUp.setVisible(false);
+        }
+        else {
+            tableDecayTimer = tableDecayTimer - deltaTime;
+        }
         if(mssg != null){
             if(timer <= 0) {
                 messageArea.removeActor(mssg);
@@ -406,6 +424,12 @@ public class GameScreen extends BaseScreen implements GameView {
                 timer = timer - deltaTime;
                 mssg.setColor(1,0,0,1 * timer / 3);
             }
+        }
+        if(gameState.getTimeUntilNextRound() <= 0) {
+            countdown.setVisible(false);
+        }
+        else{
+            countdown.setVisible(true);
         }
     }
 
@@ -593,10 +617,10 @@ public class GameScreen extends BaseScreen implements GameView {
         statsTable.row();
         // Time
         statsTable.row().pad(10, 0, 10, 0);
-        statsTable.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
-        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
-        timelabel = new Label(timeLabelText, liveLabelStyle);
-        statsTable.add(timelabel).left().align(RIGHT);
+//        statsTable.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
+//        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+//        timelabel = new Label(timeLabelText, liveLabelStyle);
+//        statsTable.add(timelabel).left().align(RIGHT);
 
         playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, progressBarStyle);
         playerHealth.setValue(localPlayer.getCurrentLives());
@@ -676,16 +700,16 @@ public class GameScreen extends BaseScreen implements GameView {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //buttonManager(upgrade);
-                logicController.upgradeTower(Math.round(upgradeSell.getX()), Math.round(upgradeSell.getY()), localPlayer.getPlayerNumber());
-                upgradeSell.setVisible(false);
+                logicController.upgradeTower(xCoord, yCoord, localPlayer.getPlayerNumber());
+                popUp.setVisible(false);
             }
         });
         sell.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //buttonManager(sell);
-                logicController.sellTower(Math.round(upgradeSell.getX()), Math.round(upgradeSell.getY()), localPlayer.getPlayerNumber());
-                upgradeSell.setVisible(false);
+                logicController.sellTower(xCoord, yCoord, localPlayer.getPlayerNumber());
+                popUp.setVisible(false);
             }
         });
 
@@ -710,12 +734,6 @@ public class GameScreen extends BaseScreen implements GameView {
         //towerSelect.add(sell).size(sizeX, sizeY);
         //towerSelect.add(instaLoose).size(sizeX, sizeY);
 
-        upgradeSell = new Table();
-        upgradeSell.setBounds(0,0, 10, 20);
-        upgradeSell.add(upgrade).size(sizeX,sizeY).row();
-        upgradeSell.add(sell).size(sizeX, sizeY);
-        //upgradeSell.setLayoutEnabled(false);
-        upgradeSell.setVisible(false);
         //Exit
         final Table exit = new Table();
         ImageButton exitButton = new ImageButton(menuImage);
@@ -734,6 +752,13 @@ public class GameScreen extends BaseScreen implements GameView {
 
             }
         });
+
+        popUp = new Group();
+        upgradeSell = new Table();
+        upgradeSell.add(upgrade).size(100,100).row();
+        upgradeSell.add(sell).size(100,100);
+        //upgradeSell.setVisible(false);
+
         exit.add(exitButton).size(sizeX, sizeY);
 
         messageArea = new Table();
@@ -754,6 +779,12 @@ public class GameScreen extends BaseScreen implements GameView {
         bottomOfScreen.align(MIDDLE);
         //bottomOfScreen.setDebug(true);
 
+        countdown = new Table();
+        countdown.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10);
+        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+        timelabel = new Label(timeLabelText, liveLabelStyle);
+        countdown.add(timelabel).top().left().align(RIGHT);
+
         topLeft.add(messageArea).center().top().padLeft(100);
         topLeft.setBounds(0, 50, 100, 100);
         defaultScreen.add(topLeft).left();
@@ -761,9 +792,10 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.row();
         defaultScreen.setDebug(false);
 
-        statsTable.add(playerHealth).right();
-        defaultScreen.add(statsTable).top().right().expandX().colspan(4);
-        defaultScreen.row();
+        statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
+        defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
+        //defaultScreen.row();
+        defaultScreen.add(countdown).top().right().padRight(-400).row();
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
         defaultScreen.add(bottomOfScreen).bottom().center().expandX();
@@ -1048,6 +1080,26 @@ public class GameScreen extends BaseScreen implements GameView {
         endScreenGroup.addActor(buttonTable);
         defaultScreen.setVisible(false);
         getUi().addActor(endScreenGroup);
+    }
+
+    public void popUpButtons(int posX, int posY){
+        int posXAllignment;
+        int offset = 75;
+        System.out.println(posX + "," + posY);
+
+        if (posX < getStageViewport().getScreenWidth()/2){
+            posXAllignment = posX + offset;
+        }
+        else{
+            posXAllignment = posX - offset;
+        }
+        popUp.addActor(upgradeSell);
+        popUp.setSize(50, 110);
+        popUp.setPosition(posXAllignment, posY);
+        popUp.setVisible(true);
+        tableDecayTimer = 2;
+        getUi().addActor(popUp);
+
     }
 
     @Override
