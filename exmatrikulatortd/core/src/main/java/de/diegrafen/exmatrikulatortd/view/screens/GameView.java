@@ -33,14 +33,35 @@ public interface GameView extends Observer, Screen {
      */
     void addProjectile(ObservableUnit observable);
 
+    /**
+     * Zeigt eine Fehlermeldung auf dem Bildschirm an
+     * @param message Die anzuzeigende Fehlermeldung
+     */
     void displayErrorMessage(String message);
 
+    /**
+     * Assoziiert die GameView mit einem LogicController
+     * @param logicController Der zu assoziierende LogicController
+     */
     void setLogicController(LogicController logicController);
 
+    /**
+     * Lädt eine Karte
+     * @param mapPath Der Dateipfad der Karte
+     */
     void loadMap(String mapPath);
 
+    /**
+     * Legt einen Spielzustand als Attribut der GameView fest
+     * @param gameState
+     */
     void setGameState(Gamestate gameState);
 
+    /**
+     * Zeigt den Spielendbildschirm an
+     */
     void endOfGameScreen();
+
+    void addTowerButton(int towerNumber, String portraitPath, String portraitSelectedPath, String description);
 
 }

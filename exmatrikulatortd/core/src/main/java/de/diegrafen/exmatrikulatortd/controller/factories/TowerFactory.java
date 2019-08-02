@@ -21,23 +21,23 @@ public final class TowerFactory {
 
     public static final int REGULAR_TOWER = 0;
 
-    public static final String REGULAR_TOWER_DESCRIPTION = "Your friendly neighbourhood Standardturm.";
+    public static final String REGULAR_TOWER_DESCRIPTION = "Standardturm";
 
     public static final int SLOW_TOWER = 1;
 
-    public static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner durch extrem lange Ladezeiten und Abstürze.";
+    public static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner";
 
     public static final int CORRUPTION_TOWER = 2;
 
-    public static final String CORRUPTION_TOWER_DESCRIPTION = "Lädt keine Vorlesungsfolien hoch und nimmt Studierenden so die Deckung.";
+    public static final String CORRUPTION_TOWER_DESCRIPTION = "Verringert die Ruestung der Gegner";
 
     public static final int EXPLOSIVE_TOWER = 3;
 
-    public static final String EXPLOSIVE_TOWER_DESCRIPTION = "Zwingt mehrere Studierende zur Gruppenarbeit.";
+    public static final String EXPLOSIVE_TOWER_DESCRIPTION = "Verursacht Flaechenschaden";
 
     public static final int AURA_TOWER = 4;
 
-    public static final String AURA_TOWER_DESCRIPTION = "Motiviert andere Lehrende in der Umgebung, mehr Stoff in der Prüfung dranzunehmen.";
+    public static final String AURA_TOWER_DESCRIPTION = "Aura verbessert Tuerme in der Naehe";
     
 
     /**

@@ -20,8 +20,9 @@ import java.util.*;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.*;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static java.awt.geom.Point2D.distance;
 
@@ -113,6 +114,7 @@ public class GameLogicController implements LogicController {
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
 
         initializeMap(mapPath);
+
         this.gameScreen.loadMap(mapPath);
     }
 
@@ -175,9 +177,19 @@ public class GameLogicController implements LogicController {
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
         gameStateDao.closeCurrentSessionwithTransaction();
         initializeMap(mapPath);
+
         this.gameScreen.loadMap(mapPath);
 
         reinitializeGame(this.gameScreen, this.gamestate);
+    }
+
+    @Override
+    public void createTowerButtons(GameView gameView) {
+        gameView.addTowerButton(REGULAR_TOWER, REGULAR_TOWER_PORTRAIT, REGULAR_TOWER_PORTRAIT_SELECTED, REGULAR_TOWER_DESCRIPTION);
+        gameView.addTowerButton(SLOW_TOWER, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, SLOW_TOWER_DESCRIPTION);
+        gameView.addTowerButton(CORRUPTION_TOWER, CORRUPTION_TOWER_PORTRAIT, CORRUPTION_TOWER_PORTRAIT_SELECTED, CORRUPTION_TOWER_DESCRIPTION);
+        gameView.addTowerButton(EXPLOSIVE_TOWER, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED, EXPLOSIVE_TOWER_DESCRIPTION);
+        gameView.addTowerButton(AURA_TOWER, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, AURA_TOWER_DESCRIPTION);
     }
 
     /**
@@ -1363,6 +1375,20 @@ public class GameLogicController implements LogicController {
         return gameScreen;
     }
 
+    @Override
+    public void saveGame(String saveGameName) {
+        System.out.println(saveGameName);
+        Gamestate newGameState = new Gamestate(gamestate);
+        gameStateDao.create(newGameState);
+        SaveState saveState = new SaveState(new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
+        saveStateDao.create(saveState);
+    }
+
+    @Override
+    public void loadGame(int id) {
+
+    }
+
     /**
      * Beendet das Spiel
      *
@@ -1371,10 +1397,7 @@ public class GameLogicController implements LogicController {
     public void exitGame(boolean saveBeforeExit) {
         gameScreen.dispose();
         if (saveBeforeExit) {
-            Gamestate newGameState = new Gamestate(gamestate);
-            gameStateDao.create(newGameState);
-            SaveState saveState = new SaveState(new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
-            saveStateDao.create(saveState);
+            saveGame("Blah!");
         }
         if (server) {
             gameServer.shutdown();
