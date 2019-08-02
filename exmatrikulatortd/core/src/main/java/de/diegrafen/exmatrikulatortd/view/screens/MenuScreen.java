@@ -86,7 +86,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createMainMenuTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         //Skin skin = createBasicSkin();
         mainMenuTable = new Table();
         TextButton newGame = new TextButton("Neues Spiel", skin);
