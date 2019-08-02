@@ -36,6 +36,8 @@ public class MenuScreen extends BaseScreen {
 
     private Table selectGameModeTable;
 
+    private Table savestatesTable;
+
     private java.util.List<Profile> profiles;
 
     private Table selectProfileMenuTable;
@@ -52,6 +54,8 @@ public class MenuScreen extends BaseScreen {
 
     private Table highScoreMenuTable;
 
+    private Table highScoreTable;
+
     private Table preferencesMenuTable;
 
     private Table clientOrServerMenuTable;
@@ -63,6 +67,10 @@ public class MenuScreen extends BaseScreen {
     private java.util.List<String> serverList;
 
     private String hostAddress = "";
+
+    final private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+
+    final private Skin basicSkin = createBasicSkin();
 
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
@@ -105,8 +113,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createMainMenuTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        //Skin skin = createBasicSkin();
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         mainMenuTable = new Table();
         TextButton newGame = new TextButton("Neues Spiel", skin);
         TextButton selectProfile = new TextButton("Profil auswählen", skin);
@@ -165,8 +172,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createSelectGameModeTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        //Skin skin = createBasicSkin();
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"))
         selectGameModeTable = new Table();
         TextButton newSinglePlayerGameButton = new TextButton("Singleplayer", skin);
         TextButton newMultiPlayerGameButton = new TextButton("Multiplayer", skin);
@@ -210,8 +216,7 @@ public class MenuScreen extends BaseScreen {
         // TODO: Einstellungsmöglichkeiten für Bildschirmgröße etc. hinzufügen
         // TODO: Auswahlmöglichkeit für Schwierigkeitsgrad hinzufügen
 
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        //Skin skin = createBasicSkin();
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         preferencesMenuTable = new Table();
         TextButton resetButton = new TextButton("Emergency", skin);
         TextButton backButton = new TextButton("Zurück", skin);
@@ -240,7 +245,6 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void refreshProfilesTable() {
-        Skin basicSkin = createBasicSkin();
         profiles = getMainController().retrieveProfiles();
         //if(!profilesButtonGroup.getButtons().isEmpty()) profilesButtonGroup.remove(profilesButtonGroup.getButtons().toArray());
         for (final TextButton button : profilesButtonGroup.getButtons()) profilesButtonGroup.remove(button);
@@ -248,7 +252,10 @@ public class MenuScreen extends BaseScreen {
         for (final Profile p : profiles) {
             profilesTable.row();
             TextButton profileButton = new TextButton(p.getProfileName(), basicSkin);
-            if (getMainController().getCurrentProfile() == p) profileButton.setColor(Color.GREEN);
+
+            final Profile currentProfile = getMainController().getCurrentProfile();
+            if(currentProfile!=null && currentProfile.getProfileName().equals(p.getProfileName())) profileButton.setColor(Color.GREEN);
+
             profilesTable.add(profileButton);
             profilesButtonGroup.add(profileButton);
         }
@@ -266,7 +273,6 @@ public class MenuScreen extends BaseScreen {
     private void createSelectProfileMenuTable(Stack menuStack) {
         // Es soll immer nur ein Profil zur Zeit bearbeit oder entfernt werden
         selectProfileMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
 
         profilesTable = new Table();
 
@@ -348,17 +354,9 @@ public class MenuScreen extends BaseScreen {
         selectProfileMenuTable.add(buttonsTable).expand();
     }
 
-    private void createHighscoreMenuTable(Stack menuStack) {
-
-        highScoreMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        Table highScoreTable = new Table();
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, scrollPaneStyle);
+    private void refreshHighscoresTable(){
         java.util.List<Highscore> zweiteHighscoreList = getMainController().retrieveHighscores(20);
-        Skin basicSkin = createBasicSkin();
-
-        highScoreTable.pad(10).defaults().expandX().space(4);
+        highScoreTable.clearChildren();
 
         for (Highscore highscore : zweiteHighscoreList) {
             // FIXME: Formatierung passt noch nicht so ganz.
@@ -374,6 +372,17 @@ public class MenuScreen extends BaseScreen {
                 }
             });
         }
+    }
+
+    private void createHighscoreMenuTable(Stack menuStack) {
+        highScoreMenuTable = new Table();
+        highScoreTable = new Table();
+        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, scrollPaneStyle);
+
+        highScoreTable.pad(10).defaults().expandX().space(4);
+
+        refreshHighscoresTable();
 
         TextButton backButton = new TextButton("Zurück", skin);
 
@@ -397,8 +406,6 @@ public class MenuScreen extends BaseScreen {
     private void createSelectClientOrServerMenu(Stack menuStack) {
 
         clientOrServerMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        //Skin skin = createBasicSkin();
         TextButton createGame = new TextButton("Spiel erstellen", skin);
         TextButton searchGame = new TextButton("Spiel suchen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
@@ -444,7 +451,6 @@ public class MenuScreen extends BaseScreen {
 
         serverListMenuTable = new Table();
         serverListTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
 
@@ -489,8 +495,6 @@ public class MenuScreen extends BaseScreen {
             serverListTable.removeActor(cell.getActor());
         }
 
-        Skin basicSkin = createBasicSkin();
-
         for (String server : serverList) {
             String[] lines = server.split("\n");
             // FIXME: Formatierung passt noch nicht so ganz.
@@ -510,7 +514,6 @@ public class MenuScreen extends BaseScreen {
 
     private void createNewProfileMenuTable(Stack menuStack) {
         newProfileMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         profileNameTextField = new TextField("", skin);
         difficultySelectBox = new SelectBox(skin);
         TextButton createProfileButton = new TextButton("Profil erstellen", skin);
@@ -614,6 +617,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void showHighScoreMenu(Table callingTable) {
+        refreshHighscoresTable();
         showMenu(highScoreMenuTable, callingTable);
     }
 

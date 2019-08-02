@@ -140,9 +140,10 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
+        return profile;
     }
 
     public Profile updateProfile(final Profile profile,final String newProfileName,final Difficulty newDifficulty, final String newProfilePicturePath){
