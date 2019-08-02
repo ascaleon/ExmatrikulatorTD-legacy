@@ -36,6 +36,8 @@ public class MenuScreen extends BaseScreen {
 
     private Table selectGameModeTable;
 
+    private Table loadOrNewGameTable;
+
     private Table savestatesTable;
 
     private java.util.List<Profile> profiles;
@@ -96,6 +98,7 @@ public class MenuScreen extends BaseScreen {
 
         createMainMenuTable(menuStack);
         createSelectGameModeTable(menuStack);
+        createLoadOrNewGameTable(menuStack);
         createSelectClientOrServerMenu(menuStack);
         createServerListTable(menuStack);
         createSelectProfileMenuTable(menuStack);
@@ -113,7 +116,6 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createMainMenuTable(Stack menuStack) {
-        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         mainMenuTable = new Table();
         TextButton newGame = new TextButton("Neues Spiel", skin);
         TextButton selectProfile = new TextButton("Profil auswählen", skin);
@@ -172,7 +174,6 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createSelectGameModeTable(Stack menuStack) {
-        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"))
         selectGameModeTable = new Table();
         TextButton newSinglePlayerGameButton = new TextButton("Singleplayer", skin);
         TextButton newMultiPlayerGameButton = new TextButton("Multiplayer", skin);
@@ -190,8 +191,7 @@ public class MenuScreen extends BaseScreen {
         newSinglePlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, SINGLEPLAYER_MAP_PATH);
-                showMainMenu(selectGameModeTable);
+                showLoadOrNewGameMenu(selectGameModeTable);
             }
         });
 
@@ -206,6 +206,42 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showMainMenu(selectGameModeTable);
+                backButton.setChecked(false);
+            }
+        });
+    }
+
+    private void refreshSavestatesTable(){
+        savestatesTable.clearChildren();
+    }
+
+    private void createLoadOrNewGameTable(Stack menuStack){
+        loadOrNewGameTable = new Table();
+
+        TextButton newSinglePlayerGameButton = new TextButton("Neues Spiel",skin);
+        TextButton loadSaveStateButton = new TextButton("Spiel laden", skin);
+        TextButton backButton = new TextButton("Zurueck", skin);
+
+        createGenericMenuTable(menuStack, loadOrNewGameTable);
+
+        loadOrNewGameTable.add(newSinglePlayerGameButton).fillX().uniformX();
+        loadOrNewGameTable.row().pad(10, 0, 10, 0);
+        loadOrNewGameTable.add(loadSaveStateButton).fillX().uniformX();
+        loadOrNewGameTable.row().pad(10, 0, 10, 0);
+        loadOrNewGameTable.add(backButton).fillX().uniformX();
+
+        newSinglePlayerGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, SINGLEPLAYER_MAP_PATH);
+                showMainMenu(selectGameModeTable);
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showSetSelectGameModeMenu(loadOrNewGameTable);
                 backButton.setChecked(false);
             }
         });
@@ -595,6 +631,10 @@ public class MenuScreen extends BaseScreen {
         } else{
             showMenu(selectGameModeTable, callingTable);
         }
+    }
+
+    private void showLoadOrNewGameMenu(Table callingTable){
+        showMenu(loadOrNewGameTable, callingTable);
     }
 
     private void showClientOrServerMenu(Table callingTable) {
