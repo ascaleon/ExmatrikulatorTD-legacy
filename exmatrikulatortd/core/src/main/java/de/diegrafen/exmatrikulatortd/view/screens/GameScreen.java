@@ -818,7 +818,7 @@ public class GameScreen extends BaseScreen implements GameView {
         timelabel = new Label(timeLabelText, liveLabelStyle);
         countdown.add(timelabel).top().left().align(RIGHT);
 
-        topLeft.add(messageArea).center().top().padLeft(20);
+        topLeft.add(messageArea).center().top().padLeft(50);
         topLeft.setBounds(0, 50, 100, 100);
         defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX();
@@ -1020,7 +1020,7 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     private void pauseScreen() {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         if (logicController.isPause()) {
             pauseGroup = new Group();
             Image semiTBG = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
