@@ -144,7 +144,7 @@ public class TowerObject extends BaseObject {
                 currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
             }
         }
-        spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition() + (32 - currentFrame.getRegionHeight()/2));
+        spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition());
 
 
     }
