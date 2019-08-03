@@ -681,13 +681,6 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade.addListener(new TextTooltip("Upgraden", tooltipManager, skin));
         sell.addListener(new TextTooltip("Verkaufen", tooltipManager, skin));
 
-        //Towerbuttons der Tabelle hinzufügen
-
-        //towerButtons.forEach(towerButton -> towerSelect.add(towerButton).size(X_SIZE, Y_SIZE).spaceRight(5));
-        //towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
-        //towerSelect.add(sell).size(sizeX, sizeY);
-        //towerSelect.add(instaLoose).size(sizeX, sizeY);
-
         //Exit
         final Table exit = new Table();
         ImageButton exitButton = new ImageButton(menuImage);

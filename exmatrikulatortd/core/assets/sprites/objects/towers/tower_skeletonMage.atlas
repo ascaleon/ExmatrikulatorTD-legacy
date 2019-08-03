@@ -1,214 +1,214 @@
 tower_skeletonMage.png
-size: 196, 1470
+size: 2016, 240
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 1, 1
-  size: 96, 96
-  orig: 96, 96
+  xy: 0, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 0
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 99, 1
-  size: 96, 96
-  orig: 96, 96
+  xy: 144, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 1
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 1, 99
-  size: 96, 96
-  orig: 96, 96
+  xy: 288, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 2
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 99, 99
-  size: 96, 96
-  orig: 96, 96
+  xy: 432, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 3
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 1, 197
-  size: 96, 96
-  orig: 96, 96
+  xy: 576, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 4
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 99, 197
-  size: 96, 96
-  orig: 96, 96
+  xy: 720, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 5
 tower_skeletonMage_attackLeft
   rotate: false
-  xy: 1, 295
-  size: 96, 96
-  orig: 96, 96
+  xy: 864, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 6
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 99, 295
-  size: 96, 96
-  orig: 96, 96
+  xy: 1008, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 0
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 1, 393
-  size: 96, 96
-  orig: 96, 96
+  xy: 1152, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 1
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 99, 393
-  size: 96, 96
-  orig: 96, 96
+  xy: 1296, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 2
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 1, 491
-  size: 96, 96
-  orig: 96, 96
+  xy: 1440, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 3
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 99, 491
-  size: 96, 96
-  orig: 96, 96
+  xy: 1584, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 4
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 1, 589
-  size: 96, 96
-  orig: 96, 96
+  xy: 1728, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 5
 tower_skeletonMage_attackRight
   rotate: false
-  xy: 99, 589
-  size: 96, 96
-  orig: 96, 96
+  xy: 1872, 0
+  size: 144, 144
+  orig: 144, 144
   offset: 0, 0
   index: 6
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 1, 687
+  xy: 0, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 0
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 99, 687
+  xy: 96, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 1
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 1, 785
+  xy: 192, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 2
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 99, 785
+  xy: 288, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 3
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 1, 883
+  xy: 384, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 4
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 99, 883
+  xy: 480, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 5
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 1, 981
+  xy: 576, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 6
 tower_skeletonMage_idleLeft
   rotate: false
-  xy: 99, 981
+  xy: 672, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 7
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 1, 1079
+  xy: 768, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 0
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 99, 1079
+  xy: 864, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 1
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 1, 1177
+  xy: 960, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 2
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 99, 1177
+  xy: 1056, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 3
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 1, 1275
+  xy: 1152, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 4
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 99, 1275
+  xy: 1248, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 5
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 1, 1373
+  xy: 1344, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: 6
 tower_skeletonMage_idleRight
   rotate: false
-  xy: 99, 1373
+  xy: 1440, 144
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
