@@ -145,7 +145,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createselectGameTypeTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         //Skin skin = createBasicSkin();
         selectGameTypeTable = new Table();
         TextButton newSinglePlayerGameButton = new TextButton("Singleplayer", skin);
@@ -154,7 +154,7 @@ public class MenuScreen extends BaseScreen {
 
         selectGameTypeTable.setFillParent(true);
         selectGameTypeTable.setVisible(false);
-        selectGameTypeTable.setDebug(true);
+        //selectGameTypeTable.setDebug(true);
         menuStack.addActor(selectGameTypeTable);
         selectGameTypeTable.add(newSinglePlayerGameButton).fillX().uniformX();
         selectGameTypeTable.row().pad(10, 0, 10, 0);
@@ -191,7 +191,7 @@ public class MenuScreen extends BaseScreen {
         // TODO: Einstellungsmöglichkeiten für Bildschirmgröße etc. hinzufügen
         // TODO: Auswahlmöglichkeit für Schwierigkeitsgrad hinzufügen
 
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         //Skin skin = createBasicSkin();
         preferencesMenuTable = new Table();
         TextButton backButton = new TextButton("Zurück", skin);
@@ -215,7 +215,7 @@ public class MenuScreen extends BaseScreen {
     private void createHighscoreMenuTable(Stack menuStack) {
 
         highScoreMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         Table highScoreTable = new Table();
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, scrollPaneStyle);
@@ -263,7 +263,7 @@ public class MenuScreen extends BaseScreen {
     private void createSelectClientOrServerMenu(Stack menuStack) {
 
         clientOrServerMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         //Skin skin = createBasicSkin();
         TextButton createGame = new TextButton("Spiel erstellen", skin);
         TextButton searchGame = new TextButton("Spiel suchen", skin);
@@ -313,7 +313,7 @@ public class MenuScreen extends BaseScreen {
 
         gameLobbyTable = new Table();
         playerTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane playersScrollPane = new ScrollPane(playerTable, scrollPaneStyle);
 
@@ -375,7 +375,7 @@ public class MenuScreen extends BaseScreen {
 
         serverListMenuTable = new Table();
         serverListTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
 

@@ -657,7 +657,7 @@ public class GameScreen extends BaseScreen implements GameView {
         playerHealth.setAnimateDuration(1);
 
         //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
-        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT)));
         Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal(REGULAR_TOWER_PORTRAIT_SELECTED)));
         Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal(SLOW_TOWER_PORTRAIT)));
@@ -1020,7 +1020,7 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     private void pauseScreen() {
-        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        //Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         if (logicController.isPause()) {
             pauseGroup = new Group();
             Image semiTBG = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
