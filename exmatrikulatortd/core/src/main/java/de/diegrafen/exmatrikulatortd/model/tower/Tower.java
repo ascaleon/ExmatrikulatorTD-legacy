@@ -375,12 +375,16 @@ public class Tower extends ObservableModel {
 
     @Override
     public float getxPosition() {
-        return position.getXCoordinate() * tileWidth;
+        if(position != null) {
+            return position.getXCoordinate() * tileWidth;
+        }else{return 0;}
     }
 
     @Override
     public float getyPosition() {
-        return position.getYCoordinate() * tileHeight;
+        if(position != null) {
+            return position.getYCoordinate() * tileHeight;
+        }else{return 0;}
     }
 
     @Override

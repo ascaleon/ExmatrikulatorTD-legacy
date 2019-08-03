@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * Profilklasse. Dient der Verwaltung von Speicherständen und Highscores und ermöglicht Spielerinnen die Personalisierung
  * der eigenen Spielerfahrung durch die Möglichkeit, einen Namen anzugeben und ein Profilbild auszuwählen
- *
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 13.06.2019 21:34
@@ -35,13 +33,13 @@ public class Profile extends BaseModel {
     /**
      * Die mit dem Profil assozierten Highscores
      */
-    @OneToMany(mappedBy="profile")
+    @OneToMany(mappedBy = "profile")
     private List<Highscore> highscores;
 
     /**
      * Die mit dem Profil assozierten Speicherstände
      */
-    @OneToMany(mappedBy="profile")
+    @OneToMany(mappedBy = "profile")
     private List<SaveState> saveStates;
 
     /**

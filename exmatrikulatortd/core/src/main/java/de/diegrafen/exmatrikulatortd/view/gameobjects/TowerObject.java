@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -11,7 +10,6 @@ import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
 /**
- *
  * Das Spielobjekt eines Turms
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -88,7 +86,7 @@ public class TowerObject extends BaseObject {
     @Override
     public void update() {
         super.update();
-        
+
 
         if (getObservable() != null) {
             attacking = getObservable().isAttacking();
@@ -126,8 +124,6 @@ public class TowerObject extends BaseObject {
             if (isAnimated()) {
                 animationTime += deltaTime;
             }
-
-
             if (lookingLeft) {
                 currentFrame = attackLeftAnimation.getKeyFrame(animationTime);
             } else {
@@ -145,6 +141,7 @@ public class TowerObject extends BaseObject {
             }
         }
         spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition());
+
 
 
     }

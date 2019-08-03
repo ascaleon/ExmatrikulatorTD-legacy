@@ -84,4 +84,6 @@ public interface LogicController {
     void setPause(boolean pause);
 
     void gameConnectionLost();
+
+    boolean isMultiplayer();
 }

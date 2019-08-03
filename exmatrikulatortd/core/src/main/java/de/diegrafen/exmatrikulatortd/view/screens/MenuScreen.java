@@ -55,6 +55,8 @@ public class MenuScreen extends BaseScreen {
 
     private Sprite backgroundSprite;
 
+    private float scaleFactor = 1;
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -84,7 +86,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createMainMenuTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         //Skin skin = createBasicSkin();
         mainMenuTable = new Table();
         TextButton newGame = new TextButton("Neues Spiel", skin);
@@ -422,8 +424,15 @@ public class MenuScreen extends BaseScreen {
     public void draw(float deltaTime) {
         super.draw(deltaTime);
 
+        // Scalefaktor für Kamerafahrt.
+        if (scaleFactor < 1.3) {
+            scaleFactor += (0.002) * deltaTime;
+        }
+
+        getSpriteBatch().setProjectionMatrix(getCamera().combined);
         getSpriteBatch().begin();
-        getSpriteBatch().draw(backgroundSprite, 0, 0, getCamera().viewportWidth, getCamera().viewportHeight);
+        // FIXME: Kamerafahrt funktioniert irgendwie noch nicht.
+        getSpriteBatch().draw(backgroundSprite, -getCamera().viewportWidth / 2, -getCamera().viewportHeight / 2, getCamera().viewportWidth * scaleFactor, getCamera().viewportHeight * scaleFactor);
         getSpriteBatch().end();
     }
 
