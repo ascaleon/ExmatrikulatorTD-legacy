@@ -43,11 +43,11 @@ public final class Assets {
 
     public static final String EXPLOSIVE_TOWER_PORTRAIT_SELECTED = "mage_portrait_clicked.png";
 
-    public static final String AURA_TOWER_ASSETS = "tower_mage";
+    public static final String AURA_TOWER_ASSETS = "tower_buff";
 
-    public static final String AURA_TOWER_PORTRAIT = "mage_portrait.png";
+    public static final String AURA_TOWER_PORTRAIT = "buff_portrait.png";
 
-    public static final String AURA_TOWER_PORTRAIT_SELECTED = "mage_portrait.png";
+    public static final String AURA_TOWER_PORTRAIT_SELECTED = "buff_portrait_clicked.png";
 
     private static final String ENEMY_SPRITE_PATH = "sprites/objects/enemies/";
 
