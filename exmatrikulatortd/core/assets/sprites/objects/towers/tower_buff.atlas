@@ -1,0 +1,383 @@
+tower_buff.png
+size: 972, 882
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tower_buff_attackLeft
+  rotate: false
+  xy: 1, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 0
+tower_buff_attackLeft
+  rotate: false
+  xy: 195, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 1
+tower_buff_attackLeft
+  rotate: false
+  xy: 389, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 2
+tower_buff_attackLeft
+  rotate: false
+  xy: 583, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 3
+tower_buff_attackLeft
+  rotate: false
+  xy: 777, 1
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 4
+tower_buff_attackLeft
+  rotate: false
+  xy: 1, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 5
+tower_buff_attackLeft
+  rotate: false
+  xy: 195, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 6
+tower_buff_attackLeft
+  rotate: false
+  xy: 389, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 7
+tower_buff_attackLeft
+  rotate: false
+  xy: 583, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 8
+tower_buff_attackLeft
+  rotate: false
+  xy: 777, 99
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 9
+tower_buff_attackLeft
+  rotate: false
+  xy: 1, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 10
+tower_buff_attackLeft
+  rotate: false
+  xy: 195, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 11
+tower_buff_attackLeft
+  rotate: false
+  xy: 389, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 12
+tower_buff_attackLeft
+  rotate: false
+  xy: 583, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 13
+tower_buff_attackLeft
+  rotate: false
+  xy: 777, 197
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 14
+tower_buff_attackLeft
+  rotate: false
+  xy: 1, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 15
+tower_buff_attackLeft
+  rotate: false
+  xy: 195, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 16
+tower_buff_attackRight
+  rotate: false
+  xy: 389, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 0
+tower_buff_attackRight
+  rotate: false
+  xy: 583, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 1
+tower_buff_attackRight
+  rotate: false
+  xy: 777, 295
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 2
+tower_buff_attackRight
+  rotate: false
+  xy: 1, 393
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 3
+tower_buff_attackRight
+  rotate: false
+  xy: 195, 393
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 4
+tower_buff_attackRight
+  rotate: false
+  xy: 389, 393
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 5
+tower_buff_attackRight
+  rotate: false
+  xy: 583, 393
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 6
+tower_buff_attackRight
+  rotate: false
+  xy: 777, 393
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 7
+tower_buff_attackRight
+  rotate: false
+  xy: 1, 491
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 8
+tower_buff_attackRight
+  rotate: false
+  xy: 195, 491
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 9
+tower_buff_attackRight
+  rotate: false
+  xy: 389, 491
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 10
+tower_buff_attackRight
+  rotate: false
+  xy: 583, 491
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 11
+tower_buff_attackRight
+  rotate: false
+  xy: 777, 491
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 12
+tower_buff_attackRight
+  rotate: false
+  xy: 1, 589
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 13
+tower_buff_attackRight
+  rotate: false
+  xy: 195, 589
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 14
+tower_buff_attackRight
+  rotate: false
+  xy: 389, 589
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 15
+tower_buff_attackRight
+  rotate: false
+  xy: 583, 589
+  size: 192, 96
+  orig: 192, 96
+  offset: 0, 0
+  index: 16
+tower_buff_idleLeft
+  rotate: false
+  xy: 777, 589
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_buff_idleLeft
+  rotate: false
+  xy: 875, 589
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_buff_idleLeft
+  rotate: false
+  xy: 1, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_buff_idleLeft
+  rotate: false
+  xy: 99, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_buff_idleLeft
+  rotate: false
+  xy: 197, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_buff_idleLeft
+  rotate: false
+  xy: 295, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_buff_idleLeft
+  rotate: false
+  xy: 393, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_buff_idleLeft
+  rotate: false
+  xy: 491, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7
+tower_buff_idleLeft
+  rotate: false
+  xy: 589, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 8
+tower_buff_idleLeft
+  rotate: false
+  xy: 687, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 9
+tower_buff_idleRight
+  rotate: false
+  xy: 785, 687
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+tower_buff_idleRight
+  rotate: false
+  xy: 1, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+tower_buff_idleRight
+  rotate: false
+  xy: 99, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 2
+tower_buff_idleRight
+  rotate: false
+  xy: 197, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 3
+tower_buff_idleRight
+  rotate: false
+  xy: 295, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 4
+tower_buff_idleRight
+  rotate: false
+  xy: 393, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 5
+tower_buff_idleRight
+  rotate: false
+  xy: 491, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 6
+tower_buff_idleRight
+  rotate: false
+  xy: 589, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 7
+tower_buff_idleRight
+  rotate: false
+  xy: 687, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 8
+tower_buff_idleRight
+  rotate: false
+  xy: 785, 785
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 9
