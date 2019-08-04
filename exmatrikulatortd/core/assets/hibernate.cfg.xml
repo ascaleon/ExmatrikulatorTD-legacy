@@ -28,7 +28,7 @@
         <!-- Echo all executed SQL to stdout -->
 <!--        <property name="show_sql">true</property>-->
 
-<!--        <property name="hbm2ddl.auto">update</property>-->
+        <property name="hbm2ddl.auto">update</property>
 
         <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
 

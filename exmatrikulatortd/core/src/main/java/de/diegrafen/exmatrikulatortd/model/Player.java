@@ -127,13 +127,6 @@ public class Player extends BaseModel implements Observable {
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
-
-        // FIXME: Bei Nutzung der NewGameFactory werden die folgenden Zeilen obsolet
-        this.currentLives = 25;
-        this.maxLives = 25;
-        this.resources = 1000;
-        this.score = 0;
-        this.difficulty = EASY;
     }
 
     /**
@@ -142,17 +135,17 @@ public class Player extends BaseModel implements Observable {
      * @param gamestate
      */
     public Player(Player player, Gamestate gamestate) {
-        this.playerNumber = player.getPlayerNumber();
-        this.playerName = player.getPlayerName();
-        this.score = player.getScore();
-        this.resources = player.getResources();
-        this.maxLives = player.getMaxLives();
-        this.currentLives = player.getCurrentLives();
-        this.timeSinceLastSpawn = player.getTimeSinceLastSpawn();
-        this.enemiesSpawned = player.isEnemiesSpawned();
-        this.difficulty = player.getDifficulty();
-        this.victorious = player.isVictorious();
-        this.lost = player.hasLost();
+        this.playerNumber = player.playerNumber;
+        this.playerName = player.playerName;
+        this.score = player.score;
+        this.resources = player.resources;
+        this.maxLives = player.maxLives;
+        this.currentLives = player.currentLives;
+        this.timeSinceLastSpawn = player.timeSinceLastSpawn;
+        this.enemiesSpawned = player.enemiesSpawned;
+        this.difficulty = player.difficulty;
+        this.victorious = player.victorious;
+        this.lost = player.lost;
         this.towers = new LinkedList<>();
 
         this.wayPoints = new LinkedList<>();
@@ -184,10 +177,6 @@ public class Player extends BaseModel implements Observable {
 
     public void setWayPoints(List<Coordinates> wayPoints) {
         this.wayPoints = wayPoints;
-    }
-
-    public Coordinates getWayPointByIndex(int index) {
-        return wayPoints.get(index);
     }
 
     public int getMaxLives() {
@@ -304,6 +293,10 @@ public class Player extends BaseModel implements Observable {
 
     public Difficulty getDifficulty() {
         return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
     }
 
     public void setVictorious(boolean victorious) {

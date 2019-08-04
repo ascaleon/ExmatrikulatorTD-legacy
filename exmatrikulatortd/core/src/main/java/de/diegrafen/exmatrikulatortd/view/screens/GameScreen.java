@@ -22,6 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
+import de.diegrafen.exmatrikulatortd.model.tower.ObservableTower;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 import de.diegrafen.exmatrikulatortd.view.screens.uielements.TowerButton;
@@ -366,6 +368,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 return true;
             }
         }
+        previewTower = null;
         return false;
     }
 
@@ -759,11 +762,11 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Generiert aus einem beobachtbarem Objekt ein neues Turm-Spielobjekt
      *
-     * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
+     * @param observableTower Das hinzuzufügende, beobachtbareObjekt
      */
     @Override
-    public void addTower(ObservableUnit observableUnit) {
-        gameObjects.add(0, new TowerObject(observableUnit, getAssetManager()));
+    public void addTower(ObservableTower observableTower) {
+        gameObjects.add(0, new TowerObject(observableTower, getAssetManager()));
     }
 
     /**
@@ -772,7 +775,7 @@ public class GameScreen extends BaseScreen implements GameView {
      * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
      */
     @Override
-    public void addEnemy(ObservableUnit observableUnit) {
+    public void addEnemy(ObservableEnemy observableUnit) {
         gameObjects.add(new EnemyObject(observableUnit, getAssetManager()));
     }
 
@@ -966,7 +969,7 @@ public class GameScreen extends BaseScreen implements GameView {
         getUi().addActor(endScreenGroup);
     }
 
-    public void popUpButtons(int posX, int posY) {
+    private void popUpButtons(int posX, int posY) {
         int posXAllignment;
         int offset = 75;
 
@@ -985,28 +988,27 @@ public class GameScreen extends BaseScreen implements GameView {
 
     /**
      * Fügt einen Button zur UI hinzu, über den Türme platziert werden können.
-     * TODO: Signatur mit ObservableUnit bzw. TowerInterface ersetzen
-     * @param towerNumber Die Nummer des Turms
-     * @param portraitPath Der Dateipfad zum Portrait des Turms
-     * @param portraitSelectedPath Der Dateipfad zum Portrait des Turms im Zustand "ausgewählt"
-     * @param description Die Beschreibung des Turms
      */
-    public void addTowerButton (int towerNumber, String portraitPath, String portraitSelectedPath, String description) {
-        TowerButton towerButton = new TowerButton(towerNumber, portraitPath, portraitSelectedPath, description);
+    @Override
+    public void addTowerButton (ObservableTower observableTower) {
+        TowerButton towerButton = new TowerButton(observableTower.getTowerType(), observableTower.getPortraitPath(),
+                observableTower.getSelectedPortraitPath(), observableTower.getDescriptionText());
         towerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 boolean isChecked = towerButton.isChecked();
                 towerButtons.forEach(button -> button.setChecked(false));
                 towerButton.setChecked(isChecked);
-                updatePreviewTower(x, y);
+                if (!isChecked) {
+                    previewTower = null;
+                }
             }
         });
         towerButton.addListener(new TextTooltip(towerButton.getToolTipText(), tooltipManager, skin));
         towerSelect.add(towerButton).size(X_SIZE, Y_SIZE).spaceRight(5);
 
         towerButtons.add(towerButton);
-        previewTowers.add(new TowerObject((createNewTower(towerNumber, mapWidth, mapHeight)), getAssetManager()));
+        previewTowers.add(new TowerObject(observableTower, getAssetManager()));
     }
 
     /**

@@ -3,7 +3,6 @@ package de.diegrafen.exmatrikulatortd.communication.client.requests;
 import org.junit.Before;
 import org.junit.Test;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.REGULAR_TOWER;
 import static org.junit.Assert.*;
 
 /**
@@ -16,26 +15,26 @@ public class BuildRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        buildRequest = new BuildRequest(REGULAR_TOWER, 0, 0, 0);
+        buildRequest = new BuildRequest(0, 0, 0, 0);
     }
 
     @Test
     public void getTowerType() {
-        assertEquals(REGULAR_TOWER, buildRequest.getTowerType());
+        assertEquals(0, buildRequest.getTowerType());
     }
 
     @Test
     public void getxCoordinate() {
-        assertEquals(REGULAR_TOWER, buildRequest.getxCoordinate());
+        assertEquals(0, buildRequest.getxCoordinate());
     }
 
     @Test
     public void getyCoordinate() {
-        assertEquals(REGULAR_TOWER, buildRequest.getyCoordinate());
+        assertEquals(0, buildRequest.getyCoordinate());
     }
 
     @Test
     public void getPlayerNumber() {
-        assertEquals(REGULAR_TOWER, buildRequest.getPlayerNumber());
+        assertEquals(0, buildRequest.getPlayerNumber());
     }
 }

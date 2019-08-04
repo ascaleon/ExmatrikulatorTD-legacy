@@ -32,8 +32,6 @@ public class Projectile extends ObservableModel {
 
     private float yPosition;
 
-    private boolean isAttacking;
-
     @ManyToOne
     private Enemy target;
 
@@ -48,19 +46,10 @@ public class Projectile extends ObservableModel {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> applyingDebuffs;
 
+    /**
+     * Standardkonstruktor. Wird für JPA benötigt.
+     */
     public Projectile() {
-    }
-
-    // TODO: Könnte tatsächlich obsolet geworden sein
-    public Projectile(String name, String assetsName, int attackType, float damage, float splashAmount, float splashRadius, float speed) {
-        this.name = name;
-        this.assetsName = assetsName;
-        this.attackType = attackType;
-        this.damage = damage;
-        this.splashAmount = splashAmount;
-        this.splashRadius = splashRadius;
-        this.speed = speed;
-        this.applyingDebuffs = new LinkedList<>();
     }
 
     public Projectile(Tower tower) {
@@ -81,17 +70,17 @@ public class Projectile extends ObservableModel {
     }
 
     public Projectile(Projectile projectile) {
-        this.name = projectile.getName();
-        this.assetsName = projectile.getAssetsName();
-        this.attackType = projectile.getAttackType();
-        this.damage = projectile.getDamage();
-        this.splashAmount = projectile.getsplashAmount();
-        this.splashRadius = projectile.getSplashRadius();
-        this.speed = projectile.getSpeed();
-        this.xPosition = projectile.getxPosition();
-        this.yPosition = projectile.getyPosition();
-        this.targetxPosition = projectile.getTargetxPosition();
-        this.targetyPosition = projectile.getTargetyPosition();
+        this.name = projectile.name;
+        this.assetsName = projectile.assetsName;
+        this.attackType = projectile.attackType;
+        this.damage = projectile.damage;
+        this.splashAmount = projectile.splashAmount;
+        this.splashRadius = projectile.splashRadius;
+        this.speed = projectile.speed;
+        this.xPosition = projectile.xPosition;
+        this.yPosition = projectile.yPosition;
+        this.targetxPosition = projectile.xPosition;
+        this.targetyPosition = projectile.yPosition;
 
         this.applyingDebuffs = new LinkedList<>();
 
@@ -180,16 +169,6 @@ public class Projectile extends ObservableModel {
     public int getAttackType() {
         return attackType;
     }
-    //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
-    @Override
-    public float getCurrentMaxHitPoints() {
-        return 0;
-    }
-
-    @Override
-    public float getCurrentHitPoints() {
-        return 0;
-    }
 
     public void setTarget(Enemy target) {
         this.target = target;
@@ -198,12 +177,4 @@ public class Projectile extends ObservableModel {
     public void setTowerThatShot(Tower towerThatShot) {
         this.towerThatShot = towerThatShot;
     }
-
-    public boolean isAttacking(){return this.isAttacking;}
-
-    public float getAttackSpeed() {
-        return 0;
-    }
-
-    public int getTowerType() {return 0;}
 }

@@ -43,7 +43,7 @@ public class MainController {
     /**
      * Das aktuelle Profil
      */
-    private final Profile currentProfile;
+    private Profile currentProfile;
 
     /**
      * Splashscreen
@@ -87,7 +87,7 @@ public class MainController {
         this.highScoreDao = new HighscoreDao();
         this.saveStateDao = new SaveStateDao();
 
-        this.currentProfile = createNewProfile("Sherlock Holmes", Difficulty.EASY, "Sherlock.png");
+        //
     }
 
     /**
@@ -121,7 +121,7 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    private Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
         return profile;
@@ -207,6 +207,7 @@ public class MainController {
      */
     public void createNewSinglePlayerGame(int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
+        this.currentProfile = createNewProfile("Sherlock Holmes", Difficulty.EASY, "Sherlock.png");
         new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
         showScreen(gameScreen);
     }

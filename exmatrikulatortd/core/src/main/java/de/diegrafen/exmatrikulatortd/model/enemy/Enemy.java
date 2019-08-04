@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Enemies")
-public class Enemy extends ObservableModel {
+public class Enemy extends ObservableModel implements ObservableEnemy {
 
     static final long serialVersionUID = 21268121294890L;
 

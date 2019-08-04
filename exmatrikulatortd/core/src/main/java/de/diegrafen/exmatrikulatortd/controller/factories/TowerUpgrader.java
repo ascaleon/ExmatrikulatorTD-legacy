@@ -4,6 +4,7 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Assets.UPGRADED_REGULAR_TOWER_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
  * Stellt statische Methoden für das Aufrüsten von Türmen zur Verfügung

@@ -16,13 +16,5 @@ public interface ObservableUnit extends Observable {
 
     boolean isRemoved();
 
-    float getCurrentMaxHitPoints();
 
-    float getCurrentHitPoints();
-
-    boolean isAttacking();
-
-    float getAttackSpeed();
-
-    int getTowerType();
 }
