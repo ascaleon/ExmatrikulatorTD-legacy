@@ -19,6 +19,10 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Towers")
+@NamedQueries({
+        @NamedQuery(name="Tower.findTemplateTowers",
+                query="SELECT t FROM Tower t WHERE t.template = TRUE"),
+})
 public class Tower extends ObservableModel implements ObservableTower {
 
     /**
@@ -171,16 +175,13 @@ public class Tower extends ObservableModel implements ObservableTower {
 
     private float projectileSpeed;
 
-    private int tileWidth;
-
-    private int tileHeight;
-
     private Boolean attacking = false;
 
     private String selectedPortraitPath;
 
     private String portraitPath;
 
+    private boolean template;
 
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
@@ -211,7 +212,7 @@ public class Tower extends ObservableModel implements ObservableTower {
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage,
                  float attackRange, float baseAttackSpeed, int attackType, float baseAttackDelay, List<Aura> auras, float auraRange, int price,
                  int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, String portraitPath, String selectedPortraitPath,
-                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs, int tileWidth, int tileHeight) {
+                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs, boolean template) {
         super();
 
         this.name = name;
@@ -240,8 +241,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.splashAmount = splashAmount;
         this.splashRadius = splashRadius;
         this.attackDebuffs = attackDebuffs;
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
+        this.template = template;
         this.baseAttackDelay = baseAttackDelay;
         this.currentAttackDelay = baseAttackDelay;
         this.attackDelayTimer = baseAttackDelay;
@@ -272,18 +272,16 @@ public class Tower extends ObservableModel implements ObservableTower {
      * @param projectileName
      * @param projectileAssetsName
      * @param projectileSpeed
-     * @param tileWidth
-     * @param tileHeight
      */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage, float attackRange,
                  float baseAttackSpeed, int attackType, float baseAttackDelay, List<Aura> auras, float auraRange, int price, int sellPrice,
                  int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, String portraitPath, String selectedPortraitPath, float splashAmount,
                  float splashRadius, List<Debuff> attackDebuffs, String projectileName, String projectileAssetsName,
-                 float projectileSpeed, int tileWidth, int tileHeight) {
+                 float projectileSpeed, boolean template) {
         this(name, descriptionText, towerType, baseAttackDamage,
                 attackRange, baseAttackSpeed, attackType, baseAttackDelay, auras, auraRange, price,
                 sellPrice, upgradePrice, upgradeLevel, maxUpgradeLevel, assetsName, portraitPath, selectedPortraitPath,
-                splashAmount, splashRadius, attackDebuffs, tileWidth, tileHeight);
+                splashAmount, splashRadius, attackDebuffs, template);
         this.attackStyle = AttackStyle.PROJECTILE;
         this.projectileName = projectileName;
         this.projectileAssetsName = projectileAssetsName;
@@ -325,8 +323,6 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.projectileName = tower.projectileName;
         this.projectileAssetsName = tower.projectileAssetsName;
         this.projectileSpeed = tower.projectileSpeed;
-        this.tileWidth = tower.tileWidth;
-        this.tileHeight = tower.tileHeight;
         this.attacking = tower.attacking;
         this.baseAttackDelay = tower.baseAttackDelay;
         this.currentAttackDelay = tower.currentAttackDelay;
@@ -340,6 +336,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         tower.getBuffs().forEach(buff -> buffs.add(new Buff(buff)));
         tower.getAttackDebuffs().forEach(debuff -> attackDebuffs.add(new Debuff(debuff)));
 
+        this.template = false;
         this.position = null;
         this.currentTarget = null;
         this.owner = null;
@@ -369,7 +366,7 @@ public class Tower extends ObservableModel implements ObservableTower {
     @Override
     public float getxPosition() {
         if (position != null) {
-            return position.getXCoordinate() * tileWidth;
+            return position.getXCoordinate() * position.getWidth();
         } else {
             return 0;
         }
@@ -378,7 +375,7 @@ public class Tower extends ObservableModel implements ObservableTower {
     @Override
     public float getyPosition() {
         if (position != null) {
-            return position.getYCoordinate() * tileHeight;
+            return position.getYCoordinate() * position.getHeight();
         } else {
             return 0;
         }

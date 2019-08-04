@@ -1,6 +1,5 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
-import com.badlogic.gdx.Game;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
@@ -14,12 +13,10 @@ import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
-import static de.diegrafen.exmatrikulatortd.util.Constants.SPEED_INCREASE_PER_LEVEL;
 import static java.awt.geom.Point2D.distance;
 
 /**
@@ -30,9 +27,9 @@ class GameLogicUnit {
 
     private float auraRefreshTimer = 0;
 
-    private LogicController logicController;
+    private final LogicController logicController;
 
-    private Gamestate gamestate;
+    private final Gamestate gamestate;
 
     GameLogicUnit(LogicController logicController) {
         this.logicController = logicController;

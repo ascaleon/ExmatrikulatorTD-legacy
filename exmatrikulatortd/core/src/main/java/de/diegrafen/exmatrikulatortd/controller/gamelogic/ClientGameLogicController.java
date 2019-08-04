@@ -132,7 +132,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      */
     @Override
     public void addTowerFromServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
-        Tower tower = createNewTower(towerType, getGamestate().getTileWidth(), getGamestate().getTileHeight());
+        Tower tower = createNewTower(towerType);
         int towerPrice = tower.getPrice();
         Player player = getGamestate().getPlayerByNumber(playerNumber);
         int playerResources = player.getResources();

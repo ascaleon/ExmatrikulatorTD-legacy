@@ -4,6 +4,7 @@ import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,6 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
 import static de.diegrafen.exmatrikulatortd.model.Difficulty.EASY;
 import static de.diegrafen.exmatrikulatortd.util.Constants.NUMBER_OF_TOWERS;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 public final class NewGameFactory {
 
@@ -70,8 +70,8 @@ public final class NewGameFactory {
     private static Gamestate createStandardSinglePlayerGame() {
         List<Player> players = createPlayers(1);
         List<Wave> waves = createWaves();
-        List<Tower> buildableTowers = createBuildableTowers();
-        return new Gamestate(players, waves, buildableTowers);
+        //List<Tower> buildableTowers = createBuildableTowers();
+        return new Gamestate(players, waves);
     }
 
     private static Gamestate createEndlessSinglePlayerGame() {
@@ -90,8 +90,8 @@ public final class NewGameFactory {
     private static Gamestate createMultiStandardGame(int numberOfPlayers) {
         List<Player> players = createPlayers(numberOfPlayers);
         List<Wave> waves = createWaves();
-        List<Tower> buildableTowers = createBuildableTowers();
-        return new Gamestate(players, waves, buildableTowers);
+        //List<Tower> buildableTowers = createBuildableTowers();
+        return new Gamestate(players, waves);
     }
 
     private static Gamestate createMultiEndlessGame(int numberOfPlayers) {
@@ -125,13 +125,5 @@ public final class NewGameFactory {
             players.add(player);
         }
         return players;
-    }
-
-    private static List<Tower> createBuildableTowers() {
-        List<Tower> buildableTowers = new LinkedList<>();
-        for (int i = 0; i < NUMBER_OF_TOWERS; i++) {
-            buildableTowers.add(createNewTower(i, TILE_SIZE, TILE_SIZE));
-        }
-        return buildableTowers;
     }
 }

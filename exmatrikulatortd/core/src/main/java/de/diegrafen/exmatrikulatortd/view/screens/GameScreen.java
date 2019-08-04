@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -24,7 +22,6 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
 import de.diegrafen.exmatrikulatortd.model.tower.ObservableTower;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
 import de.diegrafen.exmatrikulatortd.view.screens.uielements.TowerButton;
 
@@ -37,8 +34,6 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
-import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
 /**
  * Der GameScreen wird während des aktuellen Spiels angezeigt.

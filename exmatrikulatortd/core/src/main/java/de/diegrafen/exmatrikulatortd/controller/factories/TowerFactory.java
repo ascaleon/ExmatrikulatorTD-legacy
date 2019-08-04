@@ -41,27 +41,30 @@ public final class TowerFactory {
      * @param towerType Der Typ des Turms
      * @return Der erzeugte Turm
      */
-    public static Tower createNewTower(final int towerType, final int tileWidth, final int tileHeight) {
+    public static Tower createNewTower(final int towerType) {
 
-        Tower tower = null;
+        Tower tower;
 
         switch (towerType) {
             case REGULAR_TOWER:
-                tower = createRegularTower(tileWidth, tileHeight);
+                tower = createRegularTower();
                 break;
             case SLOW_TOWER:
-                tower = createSlowTower(tileWidth, tileHeight);
+                tower = createSlowTower();
                 break;
             case AURA_TOWER:
-                tower = createAuraTower(tileWidth, tileHeight);
+                tower = createAuraTower();
                 break;
             case EXPLOSIVE_TOWER:
-                tower = createExplosiveTower(tileWidth, tileHeight);
+                tower = createExplosiveTower();
                 break;
             case CORRUPTION_TOWER:
-                tower = createCorruptionTower(tileWidth, tileHeight);
+                tower = createCorruptionTower();
                 break;
+            default:
+                tower = createRegularTower();
         }
+
         return tower;
     }
 
@@ -70,7 +73,7 @@ public final class TowerFactory {
      *
      * @return Der erzeugte normalen Turm
      */
-    private static Tower createRegularTower(int tileWidth, int tileHeight) {
+    private static Tower createRegularTower() {
         LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
@@ -83,16 +86,10 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        int averageTileSize = (tileWidth + tileHeight) / 2;
-        int range = averageTileSize * 4;
-
-        // Konstruktor für den AttackType-Immediate
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 50, range, 0.5f,
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 50, 250, 0.5f,
                 NORMAL, 0.45f, new LinkedList<>(), 0, 300, 150, 600, 1, 2,
                 REGULAR_TOWER_ASSETS, REGULAR_TOWER_PORTRAIT, REGULAR_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(),
-                tileWidth, tileHeight);
-        //return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 300, 2 * TILE_SIZE, 2.0f,
-        //        NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
+                true);
     }
 
     /**
@@ -100,7 +97,7 @@ public final class TowerFactory {
      *
      * @return Der erzeugte Verlangsamungsturm
      */
-    private static Tower createSlowTower(final int tileWidth, final int tileHeight) {
+    private static Tower createSlowTower() {
         LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
@@ -115,7 +112,7 @@ public final class TowerFactory {
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 50,
                 4 * TILE_SIZE, 2, PIERCING, 0.15f,auras, 0, 300, 150, 600,
-                1, 2, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(), tileWidth, tileHeight);
+                1, 2, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(), true);
     }
 
 
@@ -124,7 +121,7 @@ public final class TowerFactory {
      *
      * @return Der erzeugte Corruption-Turm
      */
-    private static Tower createCorruptionTower(final int tileWidth, final int tileHeight) {
+    private static Tower createCorruptionTower() {
         LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
@@ -140,7 +137,7 @@ public final class TowerFactory {
         return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4 * TILE_SIZE, 1,
                 LOGIC, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 2,
                 CORRUPTION_TOWER_ASSETS, CORRUPTION_TOWER_PORTRAIT, CORRUPTION_TOWER_PORTRAIT_SELECTED,
-                0, 0, attackDebuffs, tileWidth, tileHeight);
+                0, 0, attackDebuffs, true);
     }
 
     /**
@@ -148,7 +145,7 @@ public final class TowerFactory {
      *
      * @return Der erzeugte Explosiv-Turm
      */
-    private static Tower createExplosiveTower(final int tileWidth, final int tileHeight) {
+    private static Tower createExplosiveTower() {
         LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
@@ -163,7 +160,7 @@ public final class TowerFactory {
 
         return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4 * TILE_SIZE, 3,
                 EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 2, EXPLOSIVE_TOWER_ASSETS, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED,
-                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, tileWidth, tileHeight);
+                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true);
     }
 
     /**
@@ -171,7 +168,7 @@ public final class TowerFactory {
      *
      * @return Der erzeugte Aura-Turm
      */
-    private static Tower createAuraTower(final int tileWidth, final int tileHeight) {
+    private static Tower createAuraTower() {
         LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
@@ -186,7 +183,6 @@ public final class TowerFactory {
         return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100,
                 2 * TILE_SIZE, 3, PIERCING, 0, auras,
                 4 * TILE_SIZE, 300, 150, 600, 1,
-                3, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0.5f, 100, attackDebuffs,
-                tileWidth, tileHeight);
+                3, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0.5f, 100, attackDebuffs, true);
     }
 }

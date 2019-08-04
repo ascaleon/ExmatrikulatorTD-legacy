@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;

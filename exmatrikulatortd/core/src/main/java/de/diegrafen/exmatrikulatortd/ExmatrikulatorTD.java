@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.util.Assets;
 
+import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.createTemplateTowers;
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 
@@ -40,7 +41,7 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
         assetManager = new AssetManager();
         mainController = new MainController(this);
         Assets.queueAssets(assetManager);
-        startDatabaseInitialization();
+        initalizeDatabase();
         mainController.showSplashScreen();
     }
 
@@ -62,14 +63,13 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
     }
 
     /**
-     * Initialisiert die Datenbank, indem auf die Session-Factory zugegriffen wird. Läuft parallel zum Render-Thread
+     * Initialisiert die Datenbank. Läuft parallel zum Render-Thread
      * und setzt nach der Initialisierung das {@code databaseLoaded}-Attribut des {@link MainController}
      * auf {@code true}
      */
-    private void startDatabaseInitialization() {
+    private void initalizeDatabase() {
         new Thread(() -> {
-            //noinspection ResultOfMethodCallIgnored
-            getSessionFactory(); // Initialisiert die Datenbank
+            createTemplateTowers();
             mainController.setDatabaseLoaded(true);
         }).start();
     }

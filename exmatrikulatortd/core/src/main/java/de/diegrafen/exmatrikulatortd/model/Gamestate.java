@@ -65,10 +65,6 @@ public class Gamestate extends BaseModel implements Observable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private final List<Tower> towers;
 
-    @OneToMany(cascade=CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Tower> buildableTowers;
-
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private final List<Projectile> projectiles;
@@ -106,13 +102,12 @@ public class Gamestate extends BaseModel implements Observable {
     /**
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
-    public Gamestate (List<Player> players, List<Wave> waves, List<Tower> buildableTowers) {
+    public Gamestate (List<Player> players, List<Wave> waves) {
         this();
 
         this.players = new LinkedList<>(players);
         this.players.forEach(player -> player.copyWaves(waves));
         this.numberOfRounds = waves.size();
-        this.buildableTowers = buildableTowers;
     }
 
     /**
@@ -122,7 +117,6 @@ public class Gamestate extends BaseModel implements Observable {
         players = new ArrayList<>();
         enemies = new LinkedList<>();
         towers = new LinkedList<>();
-        buildableTowers = new ArrayList<>();
         projectiles = new LinkedList<>();
         collisionMatrix = new LinkedList<>();
         this.observers = new LinkedList<>();
@@ -131,7 +125,6 @@ public class Gamestate extends BaseModel implements Observable {
         this.roundNumber = 0;
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.roundEnded = true;
-        //this.numberOfRounds = 5;
         this.gameOver = false;
     }
 
@@ -154,23 +147,18 @@ public class Gamestate extends BaseModel implements Observable {
         this.roundEnded = gamestate.roundEnded;
         this.endlessGame = gamestate.endlessGame;
         this.gameMode = gamestate.gameMode;
-        this.observers = new ArrayList<>();
 
+        this.observers = new ArrayList<>();
         this.players = new ArrayList<>();
         this.enemies = new LinkedList<>();
         this.towers = new LinkedList<>();
-        this.buildableTowers = new LinkedList<>();
         this.projectiles = new LinkedList<>();
         this.collisionMatrix = new LinkedList<>();
 
-        // TODO: Kopierkonstruktor vereinfachen, wenn möglich.
-
         gamestate.players.forEach(player -> players.add(new Player(player, this)));
-
         gamestate.projectiles.forEach(projectile -> projectiles.add(new Projectile(projectile)));
 
-        gamestate.buildableTowers.forEach(buildableTower -> buildableTowers.add(new Tower(buildableTower)));
-
+        // Copy collision matrix and towers
         for (Coordinates mapCell : gamestate.collisionMatrix) {
             Coordinates coordinates = new Coordinates(mapCell);
             this.collisionMatrix.add(coordinates);
@@ -184,6 +172,7 @@ public class Gamestate extends BaseModel implements Observable {
             }
         }
 
+        // Reassign projectiles to their respective owners and targets
         for (int i = 0; i < gamestate.projectiles.size(); i++) {
             Projectile projectile = gamestate.projectiles.get(i);
             int enemyIndex = gamestate.enemies.indexOf(projectile.getTarget());
@@ -278,9 +267,9 @@ public class Gamestate extends BaseModel implements Observable {
         return towers;
     }
 
-    public List<Tower> getBuildableTowers() {
-        return buildableTowers;
-    }
+    //public List<Tower> getBuildableTowers() {
+        //return buildableTowers;
+    //}
 
     public boolean isNewRound() {
         return newRound;

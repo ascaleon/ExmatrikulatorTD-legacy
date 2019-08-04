@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.model.Difficulty.*;
-
 /**
  * Die Spielerklasse. Verwaltet die Informationen über den Spieler wie Name, Anzahl der Leben und die erzielten Punkte
  * sowie über die Wellen von Angreifern, die dem Spieler angreifen werden.

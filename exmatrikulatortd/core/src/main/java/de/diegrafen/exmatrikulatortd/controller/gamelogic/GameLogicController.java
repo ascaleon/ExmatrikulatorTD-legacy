@@ -57,6 +57,10 @@ public class GameLogicController implements LogicController {
      */
     private final SaveStateDao saveStateDao;
 
+    private final TowerDao towerDao;
+
+    private List<Tower> buildableTowers;
+
     private int localPlayerNumber;
 
     private final boolean multiplayer;
@@ -71,7 +75,7 @@ public class GameLogicController implements LogicController {
 
     private boolean loaded = false;
 
-    private GameLogicUnit gameLogicUnit;
+    private final GameLogicUnit gameLogicUnit;
 
     /**
      *
@@ -95,6 +99,7 @@ public class GameLogicController implements LogicController {
         this.mapPath = mapPath;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
+        this.towerDao = new TowerDao();
         this.localPlayerNumber = localPlayerNumber;
         this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
         this.gameScreen = gameScreen;
@@ -126,6 +131,7 @@ public class GameLogicController implements LogicController {
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView) {
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
+        this.towerDao = new TowerDao();
         this.mainController = mainController;
         if (saveState.getGamestate() == null) {
             System.out.println("Kein Gamestate vorhanden?");
@@ -156,7 +162,8 @@ public class GameLogicController implements LogicController {
 
     @Override
     public void createTowerButtons(GameView gameView) {
-        gamestate.getBuildableTowers().forEach(gameView::addTowerButton);
+        buildableTowers = towerDao.retrieveTemplateTowers();
+        buildableTowers.forEach(gameView::addTowerButton);
     }
 
     /**
@@ -343,21 +350,23 @@ public class GameLogicController implements LogicController {
 
         int numberOfColumns = (int) tiledMap.getProperties().get("width");
         int numberOfRows = (int) tiledMap.getProperties().get("height");
+        int tileWidth = (int) tiledMap.getProperties().get("tilewidth");
+        int tileHeight = (int) tiledMap.getProperties().get("tileheight");
 
-        gamestate.setTileWidth((int) tiledMap.getProperties().get("tilewidth"));
-        gamestate.setTileHeight((int) tiledMap.getProperties().get("tileheight"));
+        gamestate.setTileWidth(tileWidth);
+        gamestate.setTileHeight(tileHeight);
         gamestate.setNumberOfColumns(numberOfColumns);
         gamestate.setNumberOfRows(numberOfRows);
 
-        for (int i = 0; i < gamestate.getPlayers().size(); i++) {
-            Player player = gamestate.getPlayerByNumber(i);
-            TiledMapTileLayer waypointLayer = (TiledMapTileLayer) tiledMap.getLayers().get("WaypointsPlayer" + i);
+        for (int playerNumber = 0; playerNumber < gamestate.getPlayers().size(); playerNumber++) {
+            Player player = gamestate.getPlayerByNumber(playerNumber);
+            TiledMapTileLayer waypointLayer = (TiledMapTileLayer) tiledMap.getLayers().get("WaypointsPlayer" + playerNumber);
             List<Coordinates> wayPoints = new LinkedList<>();
-            for (int j = 0; j < numberOfRows; j++) {
-                for (int k = 0; k < numberOfColumns; k++) {
-                    if (waypointLayer.getCell(k, j) != null) {
-                        int waypointIndex = (int) waypointLayer.getCell(k, j).getTile().getProperties().get("waypointNumber");
-                        wayPoints.add(new Coordinates(k, j, i, waypointIndex));
+            for (int rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+                for (int columnNumber = 0; columnNumber < numberOfColumns; columnNumber++) {
+                    if (waypointLayer.getCell(columnNumber, rowNumber) != null) {
+                        int waypointIndex = (int) waypointLayer.getCell(columnNumber, rowNumber).getTile().getProperties().get("waypointNumber");
+                        wayPoints.add(new Coordinates(columnNumber, rowNumber, playerNumber, waypointIndex, tileWidth, tileHeight));
                     }
                 }
             }
@@ -370,30 +379,30 @@ public class GameLogicController implements LogicController {
         for (int i = 0; i < numberOfRows; i++) {
             for (int j = 0; j < numberOfColumns; j++) {
                 int buildableByPlayer = (int) buildPermissionLayer.getCell(j, i).getTile().getProperties().get("buildableByPlayer");
-                addGameMapTile(j, i, buildableByPlayer);
+                addGameMapTile(j, i, buildableByPlayer, tileWidth, tileHeight);
             }
         }
 
-        // TODO: Eventuell obsolet, es sei denn, wir wollen Graph-Algorithmen auf der Map einsetzen.
-        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
-
-            int mapCellXCoordinate = mapCell.getxCoordinate();
-            int mapCellYCoordinate = mapCell.getyCoordinate();
-            int numberOfCols = gamestate.getNumberOfColumns();
-
-            if (mapCellXCoordinate > 0) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
-            }
-            if (mapCellXCoordinate < numberOfColumns - 1) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
-            }
-            if (mapCellYCoordinate > 0) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
-            }
-            if (mapCellYCoordinate < numberOfRows - 1) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
-            }
-        }
+//        // TODO: Eventuell obsolet, es sei denn, wir wollen Graph-Algorithmen auf der Map einsetzen.
+//        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
+//
+//            int mapCellXCoordinate = mapCell.getxCoordinate();
+//            int mapCellYCoordinate = mapCell.getyCoordinate();
+//            int numberOfCols = gamestate.getNumberOfColumns();
+//
+//            if (mapCellXCoordinate > 0) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
+//            }
+//            if (mapCellXCoordinate < numberOfColumns - 1) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
+//            }
+//            if (mapCellYCoordinate > 0) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
+//            }
+//            if (mapCellYCoordinate < numberOfRows - 1) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
+//            }
+//        }
     }
 
     /**
@@ -403,8 +412,8 @@ public class GameLogicController implements LogicController {
      * @param yCoordinate       Die y-Koordinate des Feldes auf der Karte
      * @param buildableByPlayer Die Nummer der Spielerin, die auf dem Feld bauen darf. -1, wenn das Feld nicht bebaubar ist
      */
-    private void addGameMapTile(int xCoordinate, int yCoordinate, int buildableByPlayer) {
-        Coordinates coordinates = new Coordinates(xCoordinate, yCoordinate, buildableByPlayer);
+    private void addGameMapTile(int xCoordinate, int yCoordinate, int buildableByPlayer, int tileWidth, int tileHeight) {
+        Coordinates coordinates = new Coordinates(xCoordinate, yCoordinate, buildableByPlayer, tileWidth, tileHeight);
         gamestate.addCoordinatesToCollisionMatrix(coordinates);
     }
 
@@ -469,7 +478,7 @@ public class GameLogicController implements LogicController {
         }
 
         if (checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, playerNumber)) {
-            Tower tower = new Tower(gamestate.getBuildableTowers().get(towerType));
+            Tower tower = new Tower(buildableTowers.get(towerType));
             int towerPrice = tower.getPrice();
             Player player = gamestate.getPlayerByNumber(playerNumber);
             int playerResources = player.getResources();
