@@ -82,7 +82,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile 'com.github.crykn:kryonet:2.22.3'
         compile "org.hibernate:hibernate-core:$hibernateVersion"
-        compile group: 'org.hibernate', name: 'hibernate-c3p0', version: $hibernateVersion
+        compile group: 'org.hibernate', name: 'hibernate-c3p0', version: "$hibernateVersion"
         compile group: 'org.apache.derby', name: 'derby', version: '10.14.1.0'
         
     }
