@@ -3,11 +3,16 @@ package de.diegrafen.exmatrikulatortd.controller.factories;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
+import static de.diegrafen.exmatrikulatortd.model.Difficulty.EASY;
+import static de.diegrafen.exmatrikulatortd.util.Constants.NUMBER_OF_TOWERS;
 
 public final class NewGameFactory {
 
@@ -55,83 +60,70 @@ public final class NewGameFactory {
             }
         }
 
+        if (gamestate != null) {
+            gamestate.setGameMode(gameMode);
+        }
+
         return gamestate;
     }
 
     private static Gamestate createStandardSinglePlayerGame() {
-        Player player = new Player(0);
-        List<Wave> waves = new LinkedList<>();
-
-        Gamestate gamestate = new Gamestate();
-
-        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-        waves.add(createWave(REGULAR_WAVE));
-        waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-        waves.add(createWave(BOSS_WAVE));
-
-        player.setWaves(waves);
-        player.setCurrentLives(25);
-        player.setMaxLives(25);
-        player.setResources(1000);
-        player.setScore(0);
-
-        gamestate.addPlayer(player);
-
-        return gamestate;
+        List<Player> players = createPlayers(1);
+        List<Wave> waves = createWaves();
+        //List<Tower> buildableTowers = createBuildableTowers();
+        return new Gamestate(players, waves);
     }
 
     private static Gamestate createEndlessSinglePlayerGame() {
-        return null;
+        Gamestate gamestate = createStandardSinglePlayerGame();
+        gamestate.setEndlessGame(true);
+        return gamestate;
     }
 
     private static Gamestate createMultiPlayerDuell(int numberOfPlayers) {
-        List<Player> players = new LinkedList<>();
-        Gamestate gamestate = new Gamestate();
-
-        for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = new Player(i);
-
-            player.setCurrentLives(25);
-            player.setMaxLives(25);
-            player.setResources(1000);
-            player.setScore(0);
-
-            players.add(player);
-        }
-
-        gamestate.setPlayers(players);
+        Gamestate gamestate = createMultiStandardGame(numberOfPlayers);
+        //gamestate.setDuel();
 
         return gamestate;
     }
 
     private static Gamestate createMultiStandardGame(int numberOfPlayers) {
-        List<Player> players = new LinkedList<>();
-        Gamestate gamestate = new Gamestate();
+        List<Player> players = createPlayers(numberOfPlayers);
+        List<Wave> waves = createWaves();
+        //List<Tower> buildableTowers = createBuildableTowers();
+        return new Gamestate(players, waves);
+    }
 
+    private static Gamestate createMultiEndlessGame(int numberOfPlayers) {
+        Gamestate gamestate = createMultiStandardGame(numberOfPlayers);
+        gamestate.setEndlessGame(true);
+        return gamestate;
+    }
+
+    private static List<Wave> createWaves() {
+        List<Wave> waves = new LinkedList<>();
+        int i = 0;
+        while (i < 4) {
+            waves.add(createWave(REGULAR_WAVE));
+            waves.add(createWave(HEAVY_WAVE));
+            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
+            //waves.add(createWave(BOSS_WAVE));
+            i++;
+        }
+        return waves;
+    }
+
+    private static List<Player> createPlayers(int numberOfPlayers) {
+        List<Player> players = new LinkedList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = new Player(i);
-            List<Wave> waves = new LinkedList<>();
-
-            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-            waves.add(createWave(REGULAR_WAVE));
-            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-            waves.add(createWave(BOSS_WAVE));
-
-            player.setWaves(waves);
             player.setCurrentLives(25);
             player.setMaxLives(25);
             player.setResources(1000);
             player.setScore(0);
-
+            player.setDifficulty(EASY);
             players.add(player);
         }
-
-        gamestate.setPlayers(players);
-
-        return gamestate;
-    }
-
-    private static Gamestate createMultiEndlessGame(int numberOfPlayers) {
-        return null;
+        return players;
     }
 }

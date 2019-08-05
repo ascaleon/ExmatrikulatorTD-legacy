@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Enemies")
-public class Enemy extends ObservableModel {
+public class Enemy extends ObservableModel implements ObservableEnemy {
 
     static final long serialVersionUID = 21268121294890L;
 
@@ -69,10 +69,9 @@ public class Enemy extends ObservableModel {
 
     private boolean isAttacking;
 
-    @ManyToOne
-    @JoinColumn(name = "mapcell_id")
-    private Coordinates currentMapCell;
-
+    /**
+     * Standardkonstruktor für JPA
+     */
     public Enemy() {
 
     }
@@ -136,7 +135,6 @@ public class Enemy extends ObservableModel {
         this.armorType = armorType;
         this.assetsName = assetsName;
         this.respawning = respawning;
-        //this.wave = wave;
     }
 
     public Enemy(Enemy enemy) {
@@ -147,31 +145,30 @@ public class Enemy extends ObservableModel {
             this.debuffs.add(new Debuff(debuff));
         }
 
-        this.baseArmor = enemy.getBaseArmor();
-        this.currentArmor = enemy.getBaseArmor();
-        this.name = enemy.getName();
-        this.description = enemy.getDescription();
-        this.baseSpeed = enemy.getBaseSpeed();
-        this.currentSpeed = enemy.getBaseSpeed();
-        this.baseMaxHitPoints = enemy.getBaseMaxHitPoints();
-        this.currentMaxHitPoints = enemy.getCurrentMaxHitPoints();
-        this.currentHitPoints = enemy.getCurrentHitPoints();
-        this.amountOfDamageToPlayer = enemy.getAmountOfDamageToPlayer();
-        this.bounty = enemy.getBounty();
-        this.pointsGranted = enemy.getPointsGranted();
-        this.sendPrice = enemy.getSendPrice();
-        this.assetsName = enemy.getAssetsName();
-        this.xPosition = enemy.getxPosition();
-        this.yPosition = enemy.getyPosition();
-        this.targetxPosition = enemy.getTargetxPosition();
-        this.targetyPosition = enemy.getTargetyPosition();
-        this.wayPointIndex = enemy.getWayPointIndex();
-        this.armorType = enemy.getArmorType();
+        this.baseArmor = enemy.baseArmor;
+        this.currentArmor = enemy.currentArmor;
+        this.name = enemy.name;
+        this.description = enemy.description;
+        this.baseSpeed = enemy.baseSpeed;
+        this.currentSpeed = enemy.currentSpeed;
+        this.baseMaxHitPoints = enemy.baseMaxHitPoints;
+        this.currentMaxHitPoints = enemy.currentMaxHitPoints;
+        this.currentHitPoints = enemy.currentHitPoints;
+        this.amountOfDamageToPlayer = enemy.amountOfDamageToPlayer;
+        this.bounty = enemy.bounty;
+        this.pointsGranted = enemy.pointsGranted;
+        this.sendPrice = enemy.sendPrice;
+        this.assetsName = enemy.assetsName;
+        this.xPosition = enemy.xPosition;
+        this.yPosition = enemy.yPosition;
+        this.targetxPosition = enemy.targetxPosition;
+        this.targetyPosition = enemy.targetyPosition;
+        this.wayPointIndex = enemy.wayPointIndex;
+        this.armorType = enemy.armorType;
+        this.isAttacking = enemy.isAttacking;
 
         this.respawning = enemy.isRespawning();
-        //this.wave = null;
-        //this.attackedPlayer = null;
-        this.currentMapCell = null;
+        this.attackedPlayer = null;
     }
 
     public Enemy(Enemy enemy, Player player) {
@@ -261,10 +258,6 @@ public class Enemy extends ObservableModel {
         return this.name;
     }
 
-    //public void setWave(Wave wave) {
-        //this.wave = wave;
-    //}
-
     public int getBounty() {
         return bounty;
     }
@@ -342,10 +335,4 @@ public class Enemy extends ObservableModel {
     }
 
     public boolean isAttacking(){return this.isAttacking;}
-
-    public float getAttackSpeed() {
-        return 0;
-    }
-
-    public int getTowerType() {return 0;}
 }

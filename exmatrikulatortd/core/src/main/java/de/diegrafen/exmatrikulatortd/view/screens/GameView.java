@@ -4,6 +4,8 @@ import com.badlogic.gdx.Screen;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
+import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
+import de.diegrafen.exmatrikulatortd.model.tower.ObservableTower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
 
 /**
@@ -17,14 +19,14 @@ public interface GameView extends Observer, Screen {
      *
      * @param observable Das hinzuzufügende, beobachtbareObjekt
      */
-    void addTower(ObservableUnit observable);
+    void addTower(ObservableTower observable);
 
     /**
      * Generiert aus einem beobachtbarem Objekt ein neues Gegner-Spielobjekt
      *
      * @param observable Das hinzuzufügende, beobachtbareObjekt
      */
-    void addEnemy(ObservableUnit observable);
+    void addEnemy(ObservableEnemy observable);
 
     /**
      * Generiert aus einem beobachtbarem Objekt ein neues Projektil-Spielobjekt
@@ -33,14 +35,35 @@ public interface GameView extends Observer, Screen {
      */
     void addProjectile(ObservableUnit observable);
 
+    /**
+     * Zeigt eine Fehlermeldung auf dem Bildschirm an
+     * @param message Die anzuzeigende Fehlermeldung
+     */
     void displayErrorMessage(String message);
 
+    /**
+     * Assoziiert die GameView mit einem LogicController
+     * @param logicController Der zu assoziierende LogicController
+     */
     void setLogicController(LogicController logicController);
 
+    /**
+     * Lädt eine Karte
+     * @param mapPath Der Dateipfad der Karte
+     */
     void loadMap(String mapPath);
 
+    /**
+     * Legt einen Spielzustand als Attribut der GameView fest
+     * @param gameState
+     */
     void setGameState(Gamestate gameState);
 
+    /**
+     * Zeigt den Spielendbildschirm an
+     */
     void endOfGameScreen();
+
+    void addTowerButton(ObservableTower observableTower);
 
 }
