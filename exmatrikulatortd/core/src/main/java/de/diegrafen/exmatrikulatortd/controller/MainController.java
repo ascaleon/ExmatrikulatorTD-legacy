@@ -315,4 +315,12 @@ public class MainController {
             gameClient.reportReadiness();
         }
     }
+
+    public HighscoreDao getHighScoreDao() {
+        return highScoreDao;
+    }
+
+    public ProfileDao getProfileDao() {
+        return profileDao;
+    }
 }

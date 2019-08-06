@@ -929,17 +929,20 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     @Override
-    public void endOfGameScreen() {
+    public void endOfGameScreen(boolean victorious, int score, int highscore) {
         Group endScreenGroup = new Group();
-        Player localPlayer = logicController.getLocalPlayer();
 
-        Image loose = new Image(new Texture(Gdx.files.internal("loose.png")));
-        Image win = new Image(new Texture(Gdx.files.internal("win.png")));
-        Image test = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+        Label resultLabel;
+        if (victorious) {
+            resultLabel =  new Label("Gewonnen!", skin);
+        } else {
+            resultLabel =  new Label("Verloren!", skin);
+        }
 
-        loose.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
-        win.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
-        test.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
+        Label highscoreLabel = new Label("Highscore: " + highscore, skin);
+        // TODO: Zum Assetmanager hinzufügen
+        Image background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
 
         Table buttonTable = new Table();
 
@@ -951,19 +954,13 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        scoreLabel.setFontScale(5);
-        buttonTable.add(scoreLabel).center().row();
+        buttonTable.add(resultLabel).center().row();
+        buttonTable.add(currentScoreLabel).center().row();
+        buttonTable.add(highscoreLabel).center().row();
         buttonTable.add(back2main).top().center().row();
         buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / 2);
 
-        if (localPlayer.isVictorious()) {
-            endScreenGroup.addActor(win);
-        } else if (!localPlayer.isVictorious()) {
-            endScreenGroup.addActor(loose);
-        } else {
-            endScreenGroup.addActor(test);
-        }
-
+        endScreenGroup.addActor(background);
         endScreenGroup.addActor(buttonTable);
         defaultScreen.setVisible(false);
         getUi().addActor(endScreenGroup);

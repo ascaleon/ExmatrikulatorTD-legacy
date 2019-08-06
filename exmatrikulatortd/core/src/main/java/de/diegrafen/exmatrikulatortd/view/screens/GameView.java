@@ -62,7 +62,7 @@ public interface GameView extends Observer, Screen {
     /**
      * Zeigt den Spielendbildschirm an
      */
-    void endOfGameScreen();
+    void endOfGameScreen(boolean victorious, int score, int highscore);
 
     void addTowerButton(ObservableTower observableTower);
 

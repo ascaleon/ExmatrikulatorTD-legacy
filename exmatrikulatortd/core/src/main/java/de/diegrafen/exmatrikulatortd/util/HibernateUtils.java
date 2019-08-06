@@ -1,10 +1,16 @@
 package de.diegrafen.exmatrikulatortd.util;
 
+import de.diegrafen.exmatrikulatortd.model.Difficulty;
+import de.diegrafen.exmatrikulatortd.model.Highscore;
+import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
+import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.util.Date;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
@@ -67,6 +73,5 @@ public class HibernateUtils {
         }
         List<Tower> buildableTowers = towerDao.retrieveTemplateTowers();
         buildableTowers.forEach(tower -> System.out.println(tower.getName()));
-
     }
 }

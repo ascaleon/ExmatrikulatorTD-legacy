@@ -270,7 +270,21 @@ public class GameLogicController implements LogicController {
 
         gamestate.setGameOver(gameOver);
         if(gamestate.isGameOver()){
-            gameScreen.endOfGameScreen();
+            Player localPlayer = getLocalPlayer();
+            HighscoreDao highscoreDao = mainController.getHighScoreDao();
+            try {
+                highscoreDao.create(new Highscore(profile, localPlayer.getScore(), gamestate.getRoundNumber(), new Date()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Highscore highscore = highscoreDao.findHighestScoreForProfile(profile);
+            int highscoreValue;
+            if (highscore != null) {
+                highscoreValue = highscore.getScore();
+            } else {
+                highscoreValue = 0;
+            }
+            gameScreen.endOfGameScreen(localPlayer.isVictorious(), localPlayer.getScore(), highscoreValue);
         }
     }
 
@@ -472,7 +486,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde darf nicht gebaut werden!", playerNumber);
             return;
         }
@@ -553,7 +567,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde darf nicht verkauft werden!", playerNumber);
             return;
         }
@@ -601,7 +615,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde darf nicht aufgerüstet werden!", playerNumber);
             return;
         }
@@ -635,7 +649,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde dürfen keine Gegner geschickt werden!", sendingPlayerNumber);
             return;
         }
@@ -751,6 +765,10 @@ public class GameLogicController implements LogicController {
     public boolean isActiveRound() {
         // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
         return gamestate.getTimeUntilNextRound() < 0;
+    }
+
+    private boolean isActiveMultiplayerRound() {
+        return multiplayer & isActiveRound();
     }
 
     @Override

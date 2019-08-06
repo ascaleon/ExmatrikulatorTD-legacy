@@ -13,6 +13,10 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Profiles")
+@NamedQueries(
+        @NamedQuery(name="Profile.findAll",
+                query="SELECT t FROM Profile t")
+)
 public class Profile extends BaseModel {
 
     /**
