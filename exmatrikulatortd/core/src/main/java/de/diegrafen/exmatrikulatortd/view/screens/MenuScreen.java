@@ -53,6 +53,10 @@ public class MenuScreen extends BaseScreen {
 
     private float scaleFactor = 1;
 
+    private final Skin basicSkin=createBasicSkin();
+
+    private final Skin skin=new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -82,8 +86,6 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createMainMenuTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
-        //Skin skin = createBasicSkin();
         mainMenuTable = new Table();
         TextButton newGame = new TextButton("Neues Spiel", skin);
         TextButton selectProfile = new TextButton("Profil auswählen", skin);
@@ -92,7 +94,6 @@ public class MenuScreen extends BaseScreen {
         TextButton exit = new TextButton("Spiel verlassen", skin);
 
         mainMenuTable.setFillParent(true);
-        //table.setDebug(true);
         menuStack.addActor(mainMenuTable);
         mainMenuTable.add(newGame).fillX().uniformX();
         mainMenuTable.row().pad(10, 0, 10, 0);
@@ -141,8 +142,6 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void createselectGameTypeTable(Stack menuStack) {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
-        //Skin skin = createBasicSkin();
         selectGameTypeTable = new Table();
         TextButton newSinglePlayerGameButton = new TextButton("Singleplayer", skin);
         TextButton newMultiPlayerGameButton = new TextButton("Multiplayer", skin);
@@ -187,8 +186,6 @@ public class MenuScreen extends BaseScreen {
         // TODO: Einstellungsmöglichkeiten für Bildschirmgröße etc. hinzufügen
         // TODO: Auswahlmöglichkeit für Schwierigkeitsgrad hinzufügen
 
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
-        //Skin skin = createBasicSkin();
         preferencesMenuTable = new Table();
         TextButton backButton = new TextButton("Zurück", skin);
 
@@ -211,7 +208,6 @@ public class MenuScreen extends BaseScreen {
     private void createHighscoreMenuTable(Stack menuStack) {
 
         highScoreMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         Table highScoreTable = new Table();
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, scrollPaneStyle);
@@ -259,8 +255,6 @@ public class MenuScreen extends BaseScreen {
     private void createSelectClientOrServerMenu(Stack menuStack) {
 
         clientOrServerMenuTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
-        //Skin skin = createBasicSkin();
         TextButton createGame = new TextButton("Spiel erstellen", skin);
         TextButton searchGame = new TextButton("Spiel suchen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
@@ -309,7 +303,6 @@ public class MenuScreen extends BaseScreen {
 
         gameLobbyTable = new Table();
         Table playerTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane playersScrollPane = new ScrollPane(playerTable, scrollPaneStyle);
 
@@ -317,7 +310,6 @@ public class MenuScreen extends BaseScreen {
 
         gameLobbyTable.setFillParent(true);
         gameLobbyTable.setVisible(false);
-        //table.setDebug(true);
         menuStack.addActor(gameLobbyTable);
         gameLobbyTable.add(playersScrollPane).fillX().uniformX();
         gameLobbyTable.row().pad(10, 0, 10, 0);
@@ -371,7 +363,6 @@ public class MenuScreen extends BaseScreen {
 
         serverListMenuTable = new Table();
         serverListTable = new Table();
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
 
@@ -380,7 +371,6 @@ public class MenuScreen extends BaseScreen {
 
         serverListMenuTable.setFillParent(true);
         serverListMenuTable.setVisible(false);
-        //table.setDebug(true);
         menuStack.addActor(serverListMenuTable);
         serverListMenuTable.add(upgradesScrollPane).fillX().uniformX();
         serverListMenuTable.row().pad(10, 0, 10, 0);
