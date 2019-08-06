@@ -614,7 +614,7 @@ public class GameLogicController implements LogicController {
             displayErrorMessage("Du darfst nur eigene Türme aufrüsten!", playerNumber);
         } else if (owningPlayer.getResources() < tower.getUpgradePrice()) {
             displayErrorMessage("Du hast nicht genug Geld, um diesen Turm aufzurüsten!", playerNumber);
-        } else {
+        } else if (tower.getUpgradeLevel() < tower.getMaxUpgradeLevel()){
             owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
             TowerUpgrader.upgradeTower(tower);
             owningPlayer.notifyObserver();
@@ -622,6 +622,10 @@ public class GameLogicController implements LogicController {
             if (server) {
                 gameServer.upgradeTower(xCoordinate, yCoordinate, playerNumber);
             }
+
+        }
+        else {
+            displayErrorMessage("Das maximale Upgradelevel wurde erreicht", playerNumber);
         }
     }
 
