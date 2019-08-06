@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
 
-import static de.diegrafen.exmatrikulatortd.util.Assets.FIREBALL_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Assets.getProjectileAssetPath;
 
 public class ProjectileObject extends BaseObject {
@@ -62,6 +61,6 @@ public class ProjectileObject extends BaseObject {
         spriteBatch.draw(currentFrame, getxPosition(), getyPosition(),
                 currentFrame.getRegionWidth() / 2.0f,
                 currentFrame.getRegionHeight() / 2.0f, currentFrame.getRegionWidth(),
-                currentFrame.getRegionHeight(), 1f, 1f, (float) angle, false);
+                currentFrame.getRegionHeight(), 0.8f, 0.8f, (float) angle, false);
     }
 }

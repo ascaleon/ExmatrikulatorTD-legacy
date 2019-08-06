@@ -1,14 +1,12 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-
-import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 
 /**
  *
@@ -21,14 +19,6 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TILE_SIZE;
 @Entity
 @Table(name = "waypoints")
 @SecondaryTable(name = "collision_matrix")
-@NamedQueries({
-        @NamedQuery(name="Coordinates.findAll",
-                query="SELECT c FROM Coordinates c"),
-        @NamedQuery(name="Coordinates.findByXandY",
-                query="SELECT c FROM Coordinates c WHERE c.xCoordinate = :xCoordinate AND c.yCoordinate = :yCoordinate"),
-        @NamedQuery(name="Coordinates.findBuildableFields",
-                query="SELECT c FROM Coordinates c WHERE c.xCoordinate = :xCoordinate AND c.yCoordinate = :yCoordinate")
-})
 public class Coordinates extends BaseModel {
 
     /**
@@ -41,24 +31,14 @@ public class Coordinates extends BaseModel {
      */
     private int xCoordinate;
 
+    private int width;
+
     /**
      * Die y-Position der Koordinate
      */
     private int yCoordinate;
 
-    /**
-     * Der assoziierte Spielzustand
-     * @deprecated
-     */
-    @ManyToOne
-    private Gamestate gameState;
-
-    /**
-     * Gibt an, ob das Spielfeld an der angegebenen Stelle bebaubar ist.
-     * @deprecated
-     */
-    @Column(table = "collision_matrix")
-    private boolean isBuildable;
+    private int height;
 
     @Column(table = "waypoints")
     private int waypointIndex;
@@ -73,13 +53,8 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
-    /**
-     * @deprecated
-     */
-    @OneToMany(mappedBy="currentMapCell")
-    private List<Enemy> enemiesInMapCell;
-
     @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Coordinates> neighbours;
 
 
@@ -100,31 +75,39 @@ public class Coordinates extends BaseModel {
      * @param xCoordinate
      * @param yCoordinate
      */
-    public Coordinates(int xCoordinate, int yCoordinate) {
+    private Coordinates(int xCoordinate, int yCoordinate, int width, int height) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
+        this.width = width;
+        this.height = height;
     }
 
-    public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
-        this(xCoordinate, yCoordinate);
+    public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer, int width, int height) {
+        this(xCoordinate, yCoordinate, width, height);
         this.buildableByPlayer = buildableByPlayer;
-        this.enemiesInMapCell = new ArrayList<>();
         this.neighbours = new ArrayList<>();
     }
 
-    public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex) {
-        this(xCoordinate, yCoordinate);
+    public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex, int width, int height) {
+        this(xCoordinate, yCoordinate, width, height);
         this.playerNumber = playerNumber;
         this.waypointIndex = waypointIndex;
     }
 
-    public Coordinates(Coordinates coordinates) {
-        this.xCoordinate = coordinates.getXCoordinate();
-        this.yCoordinate = coordinates.getYCoordinate();
-        this.playerNumber = coordinates.getPlayerNumber();
-        this.buildableByPlayer = coordinates.getBuildableByPlayer();
-        this.waypointIndex = coordinates.getWaypointIndex();
-        this.tower = new Tower(tower);
+
+
+    Coordinates(Coordinates coordinates) {
+        this.xCoordinate = coordinates.xCoordinate;
+        this.yCoordinate = coordinates.yCoordinate;
+        this.playerNumber = coordinates.playerNumber;
+        this.buildableByPlayer = coordinates.buildableByPlayer;
+        this.waypointIndex = coordinates.waypointIndex;
+        this.width = coordinates.width;
+        this.height = coordinates.height;
+        if (coordinates.getTower() != null) {
+            this.tower = new Tower(coordinates.tower);
+        }
+        this.neighbours = null;
     }
 
     public int getXCoordinate() {
@@ -163,10 +146,6 @@ public class Coordinates extends BaseModel {
         return buildableByPlayer;
     }
 
-    public List<Coordinates> getNeighbours() {
-        return neighbours;
-    }
-
     public void addNeighbour (Coordinates neighbour) {
         this.neighbours.add(neighbour);
     }
@@ -180,15 +159,19 @@ public class Coordinates extends BaseModel {
         return waypointIndex;
     }
 
-    public void setWaypointIndex(int waypointIndex) {
-        this.waypointIndex = waypointIndex;
-    }
-
-    public int getPlayerNumber() {
+    private int getPlayerNumber() {
         return playerNumber;
     }
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

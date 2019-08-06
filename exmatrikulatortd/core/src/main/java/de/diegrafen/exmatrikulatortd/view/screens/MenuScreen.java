@@ -3,16 +3,13 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
@@ -22,15 +19,16 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
+import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
- * @version 14.06.2019 04:34
+ * @version 17.07.2019 19:26
  */
 public class MenuScreen extends BaseScreen {
 
-    private Stage stage;
+    //private Stage stage;
 
     private Table mainMenuTable;
 
@@ -65,10 +63,18 @@ public class MenuScreen extends BaseScreen {
     private Table serverListMenuTable;
 
     private Table serverListTable;
+    
+    private Table singlePlayerGameModeTable;
+
+    private Table multiPlayerGameModeTable;
+
+    private Table gameLobbyTable;
 
     private java.util.List<String> serverList;
 
-    private String hostAddress = "";
+    private Sprite backgroundSprite;
+
+    private float scaleFactor = 1;
 
     final private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
 
@@ -76,22 +82,17 @@ public class MenuScreen extends BaseScreen {
 
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
-        stage = new Stage(new ScreenViewport());
         this.serverList = new LinkedList<>();
     }
 
     @Override
     public void init() {
         super.init();
-        //System.out.println("Dies ist der MenuScreen!");
-        //font = new BitmapFont();
-        //gameViewport = new FitViewport(800,480, getCamera());
-        //Gdx.input.setInputProcessor(stage);
-    }
+        Texture backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
+        backgroundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        backgroundSprite = new Sprite(backgroundTexture);
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(getUi());
 
         Stack menuStack = new Stack();
         menuStack.setFillParent(true);
@@ -106,7 +107,7 @@ public class MenuScreen extends BaseScreen {
         createHighscoreMenuTable(menuStack);
         createPreferenceMenuTable(menuStack);
 
-        stage.addActor(menuStack);
+        getUi().addActor(menuStack);
     }
 
     private void createGenericMenuTable(Stack menuStack, Table menuTable) {
@@ -139,7 +140,14 @@ public class MenuScreen extends BaseScreen {
         newGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showSetSelectGameModeMenu(mainMenuTable);
+                showTable(mainMenuTable, selectGameTypeTable);
+            }
+        });
+
+        selectProfile.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().loadSinglePlayerGame();
             }
         });
 
@@ -153,15 +161,14 @@ public class MenuScreen extends BaseScreen {
         preferences.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // FIXME: Irgendwie bleibt der Button aktiv, nachdem man draufgeklickt hat
-                showPreferencesMenu(mainMenuTable);
+                showTable(mainMenuTable, preferencesMenuTable);
             }
         });
 
         highScores.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showHighScoreMenu(mainMenuTable);
+                showTable(mainMenuTable, highScoreMenuTable);
             }
         });
 
@@ -198,14 +205,14 @@ public class MenuScreen extends BaseScreen {
         newMultiPlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showClientOrServerMenu(selectGameModeTable);
+                showTable(selectGameTypeTable, clientOrServerMenuTable);
             }
         });
 
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu(selectGameModeTable);
+                showTable(selectGameTypeTable, mainMenuTable);
                 backButton.setChecked(false);
             }
         });
@@ -274,7 +281,7 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu(preferencesMenuTable);
+                showTable(preferencesMenuTable, mainMenuTable);
                 backButton.setChecked(false);
             }
         });
@@ -430,7 +437,7 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu(highScoreMenuTable);
+                showTable(highScoreMenuTable, mainMenuTable);
                 backButton.setChecked(false);
             }
         });
@@ -461,6 +468,7 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().createServer();
                 getMainController().startServer();
+                showTable(clientOrServerMenuTable, gameLobbyTable);
             }
         });
 
@@ -470,27 +478,26 @@ public class MenuScreen extends BaseScreen {
                 getMainController().createClient();
                 serverList = getMainController().getLocalGameServers();
                 updateServerList();
-                showServerListMenu(clientOrServerMenuTable);
+                showTable(clientOrServerMenuTable, serverListMenuTable);
             }
         });
 
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu(clientOrServerMenuTable);
+                showTable(clientOrServerMenuTable, mainMenuTable);
                 backButton.setChecked(false);
             }
         });
     }
 
-    private void createServerListTable(Stack menuStack) {
+    private void createGameLobbyTable(Stack menuStack) {
 
         serverListMenuTable = new Table();
         serverListTable = new Table();
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
+        final ScrollPane playersScrollPane = new ScrollPane(playerTable, scrollPaneStyle);
 
-        TextButton connectButton = new TextButton("Verbinden", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         createGenericMenuTable(menuStack, serverListMenuTable);
@@ -498,54 +505,47 @@ public class MenuScreen extends BaseScreen {
         serverListMenuTable.add(upgradesScrollPane).fillX().uniformX();
         serverListMenuTable.row().pad(10, 0, 10, 0);
 
-        connectButton.addListener(new ChangeListener() {
+        TextButton setReadyButton = new TextButton("Bereit!", skin);
+
+        setReadyButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().connectToServer(hostAddress);
+                getMainController().toggleReady();
             }
         });
+
+        gameLobbyTable.add(setReadyButton).fillX().uniformX();
+        gameLobbyTable.row();
 
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().shutdownClient();
-                showMainMenu(serverListMenuTable);
+                getMainController().shutdownConnections();
+                showTable(gameLobbyTable, mainMenuTable);
                 backButton.setChecked(false);
             }
         });
-
-        serverListMenuTable.add(connectButton).fillX().uniformX();
-        serverListMenuTable.row();
-        serverListMenuTable.add(backButton).fillX().uniformX();
-        serverListMenuTable.row().pad(10, 0, 10, 0);
-
-        updateServerList();
+        gameLobbyTable.add(backButton).fillX().uniformX();
+        gameLobbyTable.row().pad(10, 0, 10, 0);
     }
 
     private void updateServerList() {
 
-        // FIXME: Die alten Zeilen werden bei einem Update irgendwie noch nicht ersetzt
-        Array<Cell> cells = serverListTable.getCells();
-
-        for (Cell cell : cells) {
-            serverListTable.removeActor(cell.getActor());
-        }
+        serverListTable.clearChildren();
 
         for (String server : serverList) {
             String[] lines = server.split("\n");
             // FIXME: Formatierung passt noch nicht so ganz.
             serverListTable.row();
-            Table rowTable = new TextButton("Map-Name: " + lines[1] + "\nAnzahl Spieler: " + lines[2], basicSkin);
+            Table rowTable = new TextButton("Map: " + lines[1] + "\nAnzahl Spieler: " + lines[2], basicSkin);
             serverListTable.add(rowTable);
             rowTable.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    hostAddress = lines[0];
-                    System.out.println(Arrays.toString(lines));
+                    getMainController().setHostAdress(lines[0]);
                 }
             });
         }
-        hostAddress = "blah";
     }
 
     private void createNewProfileMenuTable(Stack menuStack) {
@@ -602,19 +602,44 @@ public class MenuScreen extends BaseScreen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // tell our stage to do actions and draw itself
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
+        serverListMenuTable = new Table();
+        serverListTable = new Table();
+        Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
+        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
 
-    }
+        TextButton connectButton = new TextButton("Verbinden", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
 
-    private void createSaveGameMenu() {
+        serverListMenuTable.setFillParent(true);
+        serverListMenuTable.setVisible(false);
+        //table.setDebug(true);
+        menuStack.addActor(serverListMenuTable);
+        serverListMenuTable.add(upgradesScrollPane).fillX().uniformX();
+        serverListMenuTable.row().pad(10, 0, 10, 0);
 
-    }
+        connectButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (getMainController().connectToServer(getMainController().getHostAdress())) {
+                    showTable(serverListMenuTable, gameLobbyTable);
+                }
+            }
+        });
 
-    private void createNewSinglePlayerGameMenu() {
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().shutdownConnections();
+                showTable(serverListMenuTable, mainMenuTable);
+                backButton.setChecked(false);
+            }
+        });
 
-    }
+        serverListMenuTable.add(connectButton).fillX().uniformX();
+        serverListMenuTable.row();
+        serverListMenuTable.add(backButton).fillX().uniformX();
+        serverListMenuTable.row().pad(10, 0, 10, 0);
 
     private void showMenu(final Table menu, final Table callingTable) {
         menu.setVisible(true);

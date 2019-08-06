@@ -3,6 +3,8 @@ package de.diegrafen.exmatrikulatortd.model.tower;
 import de.diegrafen.exmatrikulatortd.model.ObservableModel;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -30,10 +32,10 @@ public class Projectile extends ObservableModel {
 
     private float yPosition;
 
-    @OneToOne
+    @ManyToOne
     private Enemy target;
 
-    @OneToOne
+    @ManyToOne
     private Tower towerThatShot;
 
     private float targetxPosition;
@@ -41,21 +43,13 @@ public class Projectile extends ObservableModel {
     private float targetyPosition;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> applyingDebuffs;
 
+    /**
+     * Standardkonstruktor. Wird für JPA benötigt.
+     */
     public Projectile() {
-    }
-
-    // TODO: Könnte tatsächlich obsolet geworden sein
-    public Projectile(String name, String assetsName, int attackType, float damage, float splashAmount, float splashRadius, float speed) {
-        this.name = name;
-        this.assetsName = assetsName;
-        this.attackType = attackType;
-        this.damage = damage;
-        this.splashAmount = splashAmount;
-        this.splashRadius = splashRadius;
-        this.speed = speed;
-        this.applyingDebuffs = new LinkedList<>();
     }
 
     public Projectile(Tower tower) {
@@ -68,36 +62,32 @@ public class Projectile extends ObservableModel {
         this.speed = tower.getProjectileSpeed();
         this.xPosition = tower.getxPosition();
         this.yPosition = tower.getyPosition();
-        this.target = tower.getCurrentTarget();
         this.towerThatShot = tower;
-        this.targetxPosition = tower.getCurrentTarget().getxPosition();
-        this.targetyPosition = tower.getCurrentTarget().getyPosition();
         this.applyingDebuffs = new LinkedList<>();
         tower.getAttackDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
+
+        this.target = tower.getCurrentTarget();
     }
 
     public Projectile(Projectile projectile) {
-        this.name = projectile.getName();
-        this.assetsName = projectile.getAssetsName();
-        this.attackType = projectile.getAttackType();
-        this.damage = projectile.getDamage();
-        this.splashAmount = projectile.getsplashAmount();
-        this.splashRadius = projectile.getSplashRadius();
-        this.speed = projectile.getSpeed();
-        this.xPosition = projectile.getxPosition();
-        this.yPosition = projectile.getyPosition();
-        this.targetxPosition = projectile.getTargetxPosition();
-        this.targetyPosition = projectile.getTargetyPosition();
+        this.name = projectile.name;
+        this.assetsName = projectile.assetsName;
+        this.attackType = projectile.attackType;
+        this.damage = projectile.damage;
+        this.splashAmount = projectile.splashAmount;
+        this.splashRadius = projectile.splashRadius;
+        this.speed = projectile.speed;
+        this.xPosition = projectile.xPosition;
+        this.yPosition = projectile.yPosition;
+        this.targetxPosition = projectile.xPosition;
+        this.targetyPosition = projectile.yPosition;
 
         this.applyingDebuffs = new LinkedList<>();
 
+        this.target = null;
+        this.towerThatShot = null;
 
         projectile.getApplyingDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
-
-
-        // target; ?
-
-        // towerThatShot; ?
     }
 
     @Override
@@ -180,14 +170,11 @@ public class Projectile extends ObservableModel {
         return attackType;
     }
 
-    //FIXME: Eigenes Interface ohne obsolete Methoden implementieren
-    @Override
-    public float getCurrentMaxHitPoints() {
-        return 0;
+    public void setTarget(Enemy target) {
+        this.target = target;
     }
 
-    @Override
-    public float getCurrentHitPoints() {
-        return 0;
+    public void setTowerThatShot(Tower towerThatShot) {
+        this.towerThatShot = towerThatShot;
     }
 }

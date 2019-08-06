@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import de.diegrafen.exmatrikulatortd.view.Observer;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>

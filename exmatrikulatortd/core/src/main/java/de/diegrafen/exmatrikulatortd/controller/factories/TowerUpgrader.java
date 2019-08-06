@@ -2,8 +2,9 @@ package de.diegrafen.exmatrikulatortd.controller.factories;
 
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
+import static de.diegrafen.exmatrikulatortd.util.Assets.EXPLOSIVE_TOWER_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Assets.UPGRADED_REGULAR_TOWER_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
  * Stellt statische Methoden für das Aufrüsten von Türmen zur Verfügung
@@ -20,7 +21,7 @@ public final class TowerUpgrader {
 
     }
 
-    public static boolean upgradeTower(Tower tower) {
+    public static void upgradeTower(Tower tower) {
 
         int towerType = tower.getTowerType();
 
@@ -48,8 +49,9 @@ public final class TowerUpgrader {
             tower.notifyObserver();
         }
 
-        return successful;
     }
+
+    //TODO: Upgrade-System muss unbedingt verbessert werden.
 
     private static boolean upgradeRegularTower(Tower tower) {
 
@@ -80,7 +82,6 @@ public final class TowerUpgrader {
             tower.setBaseAttackDamage(tower.getBaseAttackDamage()* 2);
             tower.setUpgradePrice(tower.getUpgradePrice() * 2);
             tower.setSellPrice(tower.getSellPrice() * 2);
-            tower.setAssetsName(UPGRADED_REGULAR_TOWER_ASSETS);
             tower.notifyObserver();
             System.out.println("Upgraded!");
         }
@@ -98,7 +99,6 @@ public final class TowerUpgrader {
             tower.setBaseAttackDamage(tower.getBaseAttackDamage()* 2);
             tower.setUpgradePrice(tower.getUpgradePrice() * 2);
             tower.setSellPrice(tower.getSellPrice() * 2);
-            tower.setAssetsName(UPGRADED_REGULAR_TOWER_ASSETS);
             tower.notifyObserver();
             System.out.println("Upgraded!");
         }
@@ -116,7 +116,6 @@ public final class TowerUpgrader {
             tower.setBaseAttackDamage(tower.getBaseAttackDamage()* 2);
             tower.setUpgradePrice(tower.getUpgradePrice() * 2);
             tower.setSellPrice(tower.getSellPrice() * 2);
-            tower.setAssetsName(UPGRADED_REGULAR_TOWER_ASSETS);
             tower.notifyObserver();
             System.out.println("Upgraded!");
         }
@@ -134,7 +133,6 @@ public final class TowerUpgrader {
             tower.setBaseAttackDamage(tower.getBaseAttackDamage()* 2);
             tower.setUpgradePrice(tower.getUpgradePrice() * 2);
             tower.setSellPrice(tower.getSellPrice() * 2);
-            tower.setAssetsName(UPGRADED_REGULAR_TOWER_ASSETS);
             tower.notifyObserver();
             System.out.println("Upgraded!");
         }

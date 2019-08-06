@@ -9,7 +9,7 @@ import java.util.Date;
 public abstract class Request {
 
 
-    private java.util.Date timeSent;
+    private final java.util.Date timeSent;
 
     Request () {
         this.timeSent = new Date();

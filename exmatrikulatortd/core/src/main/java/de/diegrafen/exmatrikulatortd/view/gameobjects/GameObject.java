@@ -1,8 +1,6 @@
 package de.diegrafen.exmatrikulatortd.view.gameobjects;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import de.diegrafen.exmatrikulatortd.model.Observable;
 import de.diegrafen.exmatrikulatortd.view.Observer;
 
 /**
@@ -29,4 +27,6 @@ public interface GameObject extends Observer {
      * Entfernt das Spielobjekt
      */
     void dispose();
+
+    float getyPosition();
 }

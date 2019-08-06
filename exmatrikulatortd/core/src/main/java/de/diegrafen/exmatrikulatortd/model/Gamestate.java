@@ -1,20 +1,18 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
-import de.diegrafen.exmatrikulatortd.view.gameobjects.GameObject;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
 
 /**
@@ -25,7 +23,6 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.TIME_BETWEEN_ROUNDS;
  * @version 13.06.2019 21:36
  */
 @Entity
-@Table(name = "Gamestates")
 public class Gamestate extends BaseModel implements Observable {
 
     /**
@@ -49,29 +46,28 @@ public class Gamestate extends BaseModel implements Observable {
     /**
      * Die Spielerinnen. Umfasst im Singleplayer-Modus ein Element und im Multiplayer-Modus zwei Elemente.
      */
-    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade=CascadeType.ALL)
     private List<Player> players;
 
     /**
      * Die Kollisionsmatrix, mit der bestimmt wird, ob ein Turm an einer bestimmten Stelle auf dem Spielfeld gebaut werden kann
      */
-    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
-    private List<Coordinates> collisionMatrix;
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Coordinates> collisionMatrix;
 
-    @OneToMany(mappedBy="gameState", cascade=CascadeType.ALL)
-    private List<Enemy> enemies;
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Enemy> enemies;
 
-    @OneToMany(mappedBy="gamestate", cascade=CascadeType.ALL)
-    private List<Tower> towers;
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Tower> towers;
 
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
-    private List<Projectile> projectiles;
-
-    /**
-     * Der Schwierigkeitsgrad des Spieles
-     */
-    @Enumerated(EnumType.ORDINAL)
-    private Difficulty difficulty;
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Projectile> projectiles;
 
     /**
      * Die aktuelle Rundennummer
@@ -85,6 +81,7 @@ public class Gamestate extends BaseModel implements Observable {
 
     /**
      * Gibt an, ob das Spiel gerade aktiv ist
+     * TODO: Könnte obsolet sein.
      */
     private boolean active;
 
@@ -98,7 +95,7 @@ public class Gamestate extends BaseModel implements Observable {
 
     private boolean endlessGame = false;
 
-    private transient List<Observer> observers;
+    private final transient List<Observer> observers;
 
     private int gameMode;
 
@@ -106,17 +103,11 @@ public class Gamestate extends BaseModel implements Observable {
      * Konstruktor, der den Spielzustand mit Spielern und einem Schwierigkeitsgrad initialisiert
      */
     public Gamestate (List<Player> players, List<Wave> waves) {
-        this.enemies = new ArrayList<>();
-        this.towers = new ArrayList<>();
-        this.projectiles = new ArrayList<>();
-        this.collisionMatrix = new ArrayList<>();
-        this.observers = new LinkedList<>();
+        this();
 
         this.players = new LinkedList<>(players);
         this.players.forEach(player -> player.copyWaves(waves));
         this.numberOfRounds = waves.size();
-        this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
-        this.newRound = true;
     }
 
     /**
@@ -134,46 +125,74 @@ public class Gamestate extends BaseModel implements Observable {
         this.roundNumber = 0;
         this.timeUntilNextRound = TIME_BETWEEN_ROUNDS;
         this.roundEnded = true;
-        this.numberOfRounds = 5;
         this.gameOver = false;
     }
 
+    /**
+     * Kopier-Konstruktor. Kopiert bis auf die ID alle Attribute
+     * @param gamestate Der Spielzustand, der kopiert werden soll.
+     */
     public Gamestate(Gamestate gamestate) {
-        this.tileWidth = gamestate.getTileWidth();
-        this.tileHeight = gamestate.getTileHeight();
-        this.numberOfColumns = gamestate.getNumberOfColumns();
-        this.numberOfRows = gamestate.getNumberOfRows();
-        this.roundNumber = gamestate.getRoundNumber();
-        this.numberOfRounds = gamestate.getNumberOfRounds();
-        this.gameOver = gamestate.isGameOver();
-        this.timeUntilNextRound = gamestate.getTimeUntilNextRound();
-        this.roundEnded = gamestate.isRoundEnded();
-        this.endlessGame = gamestate.isEndlessGame();
-        this.gameMode = gamestate.getGameMode();
-        this.observers = new ArrayList<>();
+        this.tileWidth = gamestate.tileWidth;
+        this.tileHeight = gamestate.tileHeight;
+        this.mapName = gamestate.mapName;
+        this.numberOfColumns = gamestate.numberOfColumns;
+        this.numberOfRows = gamestate.numberOfRows;
+        this.roundNumber = gamestate.roundNumber;
+        this.numberOfRounds = gamestate.numberOfRounds;
+        this.active = gamestate.active;
+        this.gameOver = gamestate.gameOver;
+        this.newRound = gamestate.newRound;
+        this.timeUntilNextRound = gamestate.timeUntilNextRound;
+        this.roundEnded = gamestate.roundEnded;
+        this.endlessGame = gamestate.endlessGame;
+        this.gameMode = gamestate.gameMode;
 
+        this.observers = new ArrayList<>();
         this.players = new ArrayList<>();
         this.enemies = new LinkedList<>();
         this.towers = new LinkedList<>();
         this.projectiles = new LinkedList<>();
         this.collisionMatrix = new LinkedList<>();
 
-        gamestate.getPlayers().forEach(player -> players.add(new Player(player, this)));
+        gamestate.players.forEach(player -> players.add(new Player(player, this)));
+        gamestate.projectiles.forEach(projectile -> projectiles.add(new Projectile(projectile)));
 
-        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
+        // Copy collision matrix and towers
+        for (Coordinates mapCell : gamestate.collisionMatrix) {
             Coordinates coordinates = new Coordinates(mapCell);
             this.collisionMatrix.add(coordinates);
             Tower tower = coordinates.getTower();
             if (tower != null) {
-                this.towers.add(tower);
+                tower.setPosition(coordinates);
                 Player owner = players.get(coordinates.getBuildableByPlayer());
                 owner.addTower(tower);
                 tower.setOwner(owner);
-                towers.add(tower);
+                this.towers.add(tower);
+            }
+        }
+
+        // Reassign projectiles to their respective owners and targets
+        for (int i = 0; i < gamestate.projectiles.size(); i++) {
+            Projectile projectile = gamestate.projectiles.get(i);
+            int enemyIndex = gamestate.enemies.indexOf(projectile.getTarget());
+            int towerIndex = gamestate.towers.indexOf(projectile.getTowerThatShot());
+
+            Enemy enemy = null;
+
+            if (enemyIndex >= 0) {
+                enemy = enemies.get(enemyIndex);
+                this.projectiles.get(i).setTarget(enemy);
             }
 
+            if (towerIndex >= 0) {
+                Tower tower = towers.get(towerIndex);
+                this.projectiles.get(i).setTowerThatShot(tower);
+                if (enemy != null) {
+                    tower.setCurrentTarget(enemy);
+                }
+            }
         }
-        gamestate.getProjectiles().forEach(projectile -> projectiles.add(new Projectile(projectile)));
     }
 
     public void addEnemy (Enemy enemy) {
@@ -196,10 +215,6 @@ public class Gamestate extends BaseModel implements Observable {
         enemies.remove(enemy);
     }
 
-    public void addPlayer (Player player) {
-        players.add(player);
-    }
-
     public Player getPlayerByNumber (int playerNumber) {
         return players.get(playerNumber);
     }
@@ -220,10 +235,6 @@ public class Gamestate extends BaseModel implements Observable {
         this.numberOfRows = numberOfRows;
     }
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
     public List<Coordinates> getCollisionMatrix() {
         return collisionMatrix;
     }
@@ -238,14 +249,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     public int getNumberOfRounds() {
         return numberOfRounds;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public void addCoordinatesToCollisionMatrix (Coordinates coordinates) {
@@ -263,6 +266,10 @@ public class Gamestate extends BaseModel implements Observable {
     public List<Tower> getTowers() {
         return towers;
     }
+
+    //public List<Tower> getBuildableTowers() {
+        //return buildableTowers;
+    //}
 
     public boolean isNewRound() {
         return newRound;
@@ -331,10 +338,6 @@ public class Gamestate extends BaseModel implements Observable {
         this.endlessGame = endlessGame;
     }
 
-    public int getGameMode() {
-        return gameMode;
-    }
-
     public void setGameMode(int gameMode) {
         this.gameMode = gameMode;
     }
@@ -353,5 +356,9 @@ public class Gamestate extends BaseModel implements Observable {
 
     public void setTileHeight(int tileHeight) {
         this.tileHeight = tileHeight;
+    }
+
+    public String getMapName() {
+        return mapName;
     }
 }

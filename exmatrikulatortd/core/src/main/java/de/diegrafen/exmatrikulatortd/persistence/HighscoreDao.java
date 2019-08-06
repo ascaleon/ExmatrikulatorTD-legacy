@@ -3,11 +3,9 @@ package de.diegrafen.exmatrikulatortd.persistence;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
 import org.hibernate.Session;
 
-import javax.persistence.NamedQuery;
 import java.util.List;
 
 /**
- *
  * DAO-Klasse für Highscore-Objekte
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -18,6 +16,7 @@ public class HighscoreDao extends BaseDao<Highscore> {
 
     /**
      * Gibt die Highscore-Klasse zurück
+     *
      * @return Der Klassen-Typ
      */
     @Override

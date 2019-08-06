@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
+import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
@@ -39,7 +39,7 @@ public class EnemyObject extends BaseObject {
         
     private Texture redHealthBar;
 
-    public EnemyObject(ObservableUnit observableUnit, AssetManager assetManager) {
+    public EnemyObject(ObservableEnemy observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
     }
 
@@ -61,8 +61,8 @@ public class EnemyObject extends BaseObject {
         walkDownAnimation = new Animation<>(0.25f, getTextureAtlas().findRegions(assetsName + "_moveDown"), Animation.PlayMode.LOOP_PINGPONG);
         deathAnimation = new Animation<>(0.125f, deathAnimationAtlas.findRegions("explosion"), Animation.PlayMode.LOOP);
 
-        greenHealthBar = new Texture(createProceduralPixmap(1, 1,0,1,0));
-        redHealthBar = new Texture(createProceduralPixmap(1, 1,1,0,0));
+        greenHealthBar = new Texture(createProceduralPixmap(0,1));
+        redHealthBar = new Texture(createProceduralPixmap(1,0));
     }
 
     /**
@@ -123,12 +123,17 @@ public class EnemyObject extends BaseObject {
         spriteBatch.draw(greenHealthBar,getxPosition(),getyPosition() + 64, currentHealthBarWidth, healthBarHeight);
     }
 
-    private Pixmap createProceduralPixmap (int width, int height, int r, int g, int b) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+    private Pixmap createProceduralPixmap (int r, int g) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
 
-        pixmap.setColor(r, g, b, 1);
+        pixmap.setColor(r, g, 0, 1);
         pixmap.fill();
 
         return pixmap;
+    }
+
+    @Override
+    ObservableEnemy getObservable() {
+        return (ObservableEnemy) super.getObservable();
     }
 }

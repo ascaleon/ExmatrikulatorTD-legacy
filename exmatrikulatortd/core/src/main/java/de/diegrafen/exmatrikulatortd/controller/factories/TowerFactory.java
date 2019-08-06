@@ -1,9 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.factories;
 
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
-import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Aura;
 import de.diegrafen.exmatrikulatortd.model.tower.Buff;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
@@ -11,8 +8,6 @@ import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.model.tower.AttackStyle.IMMEDIATE;
-import static de.diegrafen.exmatrikulatortd.model.tower.AttackStyle.PROJECTILE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
@@ -24,26 +19,15 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.*;
  */
 public final class TowerFactory {
 
-    public static final int REGULAR_TOWER = 0;
+    private static final String REGULAR_TOWER_DESCRIPTION = "Standardturm";
 
-    public static final String REGULAR_TOWER_DESCRIPTION = "Your friendly neighbourhood Standardturm.";
+    private static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner";
 
-    public static final int SLOW_TOWER = 1;
+    private static final String CORRUPTION_TOWER_DESCRIPTION = "Verringert die Ruestung der Gegner";
 
-    public static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner durch extrem lange Ladezeiten und Abstürze.";
+    private static final String EXPLOSIVE_TOWER_DESCRIPTION = "Verursacht Flaechenschaden";
 
-    public static final int CORRUPTION_TOWER = 2;
-
-    public static final String CORRUPTION_TOWER_DESCRIPTION = "Lädt keine Vorlesungsfolien hoch und nimmt Studierenden so die Deckung.";
-
-    public static final int EXPLOSIVE_TOWER = 3;
-
-    public static final String EXPLOSIVE_TOWER_DESCRIPTION = "Zwingt mehrere Studierende zur Gruppenarbeit.";
-
-    public static final int AURA_TOWER = 4;
-
-    public static final String AURA_TOWER_DESCRIPTION = "Motiviert andere Lehrende in der Umgebung, mehr Stoff in der Prüfung dranzunehmen.";
-    
+    private static final String AURA_TOWER_DESCRIPTION = "Aura verbessert Tuerme in der Naehe";
 
     /**
      * Versteckter Konstruktor
@@ -57,9 +41,9 @@ public final class TowerFactory {
      * @param towerType Der Typ des Turms
      * @return Der erzeugte Turm
      */
-    public static Tower createNewTower(int towerType) {
+    public static Tower createNewTower(final int towerType) {
 
-        Tower tower = null;
+        Tower tower;
 
         switch (towerType) {
             case REGULAR_TOWER:
@@ -77,6 +61,8 @@ public final class TowerFactory {
             case CORRUPTION_TOWER:
                 tower = createCorruptionTower();
                 break;
+            default:
+                tower = createRegularTower();
         }
 
         return tower;
@@ -100,9 +86,10 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 10, 2 * TILE_SIZE, 0.5f,
-                NORMAL, auras, 0, 300, 150, 600, 1, 10, REGULAR_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
-                "Feuerball", FIREBALL_ASSETS, 300);
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 50, 250, 0.5f,
+                NORMAL, 0.45f, new LinkedList<>(), 0, 300, 150, 600, 1, 2,
+                REGULAR_TOWER_ASSETS, REGULAR_TOWER_PORTRAIT, REGULAR_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(),
+                true);
     }
 
     /**
@@ -123,10 +110,9 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 100,
-                2 * TILE_SIZE, 3, PIERCING, auras, 0, 300, 150, 600,
-                1, 3, SLOW_TOWER_ASSETS, 0.5f, 100, attackDebuffs,
-                "Feuerball", FIREBALL_ASSETS, 300);
+        return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 50,
+                4 * TILE_SIZE, 2, PIERCING, 0.15f,auras, 0, 300, 150, 600,
+                1, 2, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(), true);
     }
 
 
@@ -148,7 +134,10 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 2 * TILE_SIZE, 3, LOGIC, new LinkedList<>(), 0, 300, 150, 600, 1, 5, CORRUPTION_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4 * TILE_SIZE, 1,
+                LOGIC, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 2,
+                CORRUPTION_TOWER_ASSETS, CORRUPTION_TOWER_PORTRAIT, CORRUPTION_TOWER_PORTRAIT_SELECTED,
+                0, 0, attackDebuffs, true);
     }
 
     /**
@@ -169,7 +158,9 @@ public final class TowerFactory {
         auras.add(slowAura);
         attackDebuffs.add(frostDebuff);
 
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 100, 2 * TILE_SIZE, 3, EXPLOSIVE, new LinkedList<>(), 0, 300, 150, 600, 1, 5, EXPLOSIVE_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4 * TILE_SIZE, 3,
+                EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 300, 150, 600, 1, 2, EXPLOSIVE_TOWER_ASSETS, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED,
+                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true);
     }
 
     /**
@@ -190,8 +181,8 @@ public final class TowerFactory {
         auras.add(hasteAura);
 
         return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 100,
-                2 * TILE_SIZE, 3, PIERCING, auras,
+                2 * TILE_SIZE, 3, PIERCING, 0, auras,
                 4 * TILE_SIZE, 300, 150, 600, 1,
-                3, AURA_TOWER_ASSETS, 0.5f, 100, attackDebuffs);
+                3, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0.5f, 100, attackDebuffs, true);
     }
 }

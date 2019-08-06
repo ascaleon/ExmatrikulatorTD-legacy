@@ -14,17 +14,17 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
 /**
  * Die Abstrakte Screen Klasse, die für alle Game-Screens verwendet wird.
  */
-public abstract class BaseScreen implements Screen {
+abstract class BaseScreen implements Screen {
 
     /**
      *
      */
-    private Viewport stageViewport;
+    private final Viewport stageViewport;
 
     /**
      * Die Kamera.
      */
-    private OrthographicCamera camera;
+    private final OrthographicCamera camera;
 
     /**
      * Der MainController ist für die Verwaltung der Screens und Interaktion mit anderen Komponenten zuständig.
@@ -36,13 +36,13 @@ public abstract class BaseScreen implements Screen {
      */
     private Stage ui;
 
-    private SpriteBatch spriteBatch;
+    private final SpriteBatch spriteBatch;
 
-    private Viewport viewport;
+    private final Viewport viewport;
 
-    private BitmapFont bitmapFont = new BitmapFont();
+    private final BitmapFont bitmapFont = new BitmapFont();
 
-    private AssetManager assetManager;
+    private final AssetManager assetManager;
 
     /**
      * Der Konstruktor legt den Maincontroller, das Spielobject sowie die Stage fest.
@@ -71,7 +71,7 @@ public abstract class BaseScreen implements Screen {
     /**
      * Der Screen wird initialisiert.
      */
-    public void init() {
+    void init() {
 
     }
 
@@ -99,7 +99,7 @@ public abstract class BaseScreen implements Screen {
      * Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
      * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
-    public void update(float deltaTime) {
+    void update(float deltaTime) {
 
     }
 
@@ -107,7 +107,7 @@ public abstract class BaseScreen implements Screen {
      * Eigene Zeichenanweisungen.
      * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
-    public void draw(float deltaTime) {}
+    void draw(float deltaTime) {}
 
     /**
      * Falls das Fenster mit dem Spiel in der Größe angepasst wird, so muss auch der Viewport angepasst werden.
@@ -154,7 +154,7 @@ public abstract class BaseScreen implements Screen {
         ui = null;
     }
 
-    public MainController getMainController() {
+    MainController getMainController() {
         return mainController;
     }
 
@@ -182,7 +182,7 @@ public abstract class BaseScreen implements Screen {
         return stageViewport;
     }
 
-    public AssetManager getAssetManager() {
+    AssetManager getAssetManager() {
         return assetManager;
     }
 }

@@ -1,7 +1,5 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import com.badlogic.gdx.utils.compression.lzma.Base;
-
 import javax.persistence.*;
 import java.util.Date;
 

@@ -2,8 +2,11 @@ package de.diegrafen.exmatrikulatortd.model.tower;
 
 import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,9 +25,11 @@ public class Aura extends BaseModel {
     private float range;
 
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> debuffs;
 
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Buff> buffs;
 
     public Aura() {
@@ -36,28 +41,42 @@ public class Aura extends BaseModel {
         this.buffs = buffs;
     }
 
-    public float getRange() {
-        return range;
+    /**
+     *
+     * @param tower
+     */
+    public Aura(Tower tower) {
+        this.range = tower.getAuraRange();
+        this.debuffs = new LinkedList<>();
+        this.buffs = new LinkedList<>();
+
+        //tower.getAuraDebuffs().forEach(debuff -> debuffs.add(new Debuff(debuff)));
+        //tower.getAuraBuffs().forEach(buff -> buffs.add(new Buff(buff)));
     }
 
-    public void setRange(float range) {
-        this.range = range;
+    /**
+     * Kopier-Konstruktor
+     * @param aura Die Aura, die kopiert werden soll
+     */
+    Aura(Aura aura) {
+        this.range = aura.getRange();
+        this.debuffs = new LinkedList<>();
+        this.buffs = new LinkedList<>();
+
+        aura.getBuffs().forEach(buff -> buffs.add(new Buff(buff)));
+        aura.getDebuffs().forEach(debuff -> debuffs.add(new Debuff(debuff)));
+    }
+
+    public float getRange() {
+        return range;
     }
 
     public List<Debuff> getDebuffs() {
         return debuffs;
     }
 
-    public void setDebuffs(List<Debuff> debuffs) {
-        this.debuffs = debuffs;
-    }
-
     public List<Buff> getBuffs() {
         return buffs;
-    }
-
-    public void setBuffs(List<Buff> buffs) {
-        this.buffs = buffs;
     }
 }
 

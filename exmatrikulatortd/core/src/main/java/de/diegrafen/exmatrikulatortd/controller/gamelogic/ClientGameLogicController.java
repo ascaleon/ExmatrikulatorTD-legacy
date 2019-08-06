@@ -22,7 +22,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
      */
-    private GameClient gameClient;
+    private final GameClient gameClient;
 
     /**
      * Konstruktor für den Spiellogik-Controller
@@ -36,6 +36,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
+        gameClient.reportFinishedLoading();
     }
 
     public ClientGameLogicController(MainController mainController, SaveState saveState, int allocatedPlayerNumber, GameView gameView, GameClient gameClient) {
@@ -58,6 +59,14 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         gameClient.upgradeTower(xCoordinate, yCoordinate, playerNumber);
     }
 
+    /**
+     * Rüstet einen Turm auf. Da angenommen wird, dass die Prüfung des
+     * Spielzuges bereits durch den Server erfolgt ist, wird nicht überprüft, ob der Spielzug legal ist.
+     *
+     * @param xCoordinate  Die x-Koordinate, an der sich der aufzurüstende Turm befindet
+     * @param yCoordinate  Die y-Koordinate, an der sich der aufzurüstende Turm befindet
+     * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
+     */
     @Override
     public void upgradeTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber) {
         Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
@@ -79,6 +88,15 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         gameClient.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
     }
 
+
+    /**
+     * Sendet einen Gegner von einer Spielerin an eine andere Spielerin. Da angenommen wird, dass die Prüfung des
+     * Spielzuges bereits durch den Server erfolgt ist, wird nicht überprüft, ob der Spielzug legal ist.
+     *
+     * @param enemyType            Die Nummer des Gegnertyps
+     * @param playerToSendToNumber Die Nummer der Spielerin, an die der Gegner geschickt wird
+     * @param sendingPlayerNumber  Die Nummer der Spielerin, die den Turm geschickt hat
+     */
     @Override
     public void sendEnemyFromServer(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
         Enemy enemy = createNewEnemy(enemyType);
@@ -103,8 +121,17 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         gameClient.buildTower(towerType, xCoordinate, yCoordinate, playerNumber);
     }
 
+    /**
+     * Fügt dem Spiel einen Turm hinzu. Da angenommen wird, dass die Prüfung des Spielzuges bereits durch den Server
+     * erfolgt ist, wird nicht überprüft, ob der Spielzug legal ist.
+     *
+     * @param towerType    Die Nummer des Turmtyps
+     * @param xCoordinate  Die x-Koordinate, an der der Turm gebaut werden soll
+     * @param yCoordinate  Die y-Koordinate, an der der Turm gebaut werden soll
+     * @param playerNumber Die Nummer der Spielerin, die den Turm baut
+     */
     @Override
-    public void addTowerByServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
+    public void addTowerFromServer(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
         Tower tower = createNewTower(towerType);
         int towerPrice = tower.getPrice();
         Player player = getGamestate().getPlayerByNumber(playerNumber);
@@ -126,8 +153,16 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         gameClient.sellTower(xCoordinate, yCoordinate, playerNumber);
     }
 
+    /**
+     * Verkauft einen Turm. Da angenommen wird, dass die Prüfung des Spielzuges bereits durch den Server
+     * erfolgt ist, wird nicht überprüft, ob der Spielzug legal ist.
+     *
+     * @param xCoordinate  Die x-Koordinate, an der sich der zu verkaufende Turm befindet
+     * @param yCoordinate  Die y-Koordinate, an der sich der zu verkaufende Turm befindet
+     * @param playerNumber Die Spielernummer der Turm-Eigentümerin
+     */
     @Override
-    public void sellTowerByServer(int xCoordinate, int yCoordinate, int playerNumber) {
+    public void sellTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber) {
         Tower tower = getMapCellByXandYCoordinates(xCoordinate, yCoordinate).getTower();
         tower.getOwner().addToResources(tower.getSellPrice());
         tower.getOwner().notifyObserver();
@@ -141,12 +176,12 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     }
 
-
     /**
      * Beendet das Spiel
      */
-    public void exitGame() {
-        gameClient.shutdown();
+    @Override
+    public void exitGame(boolean saveBeforeExit) {
         super.exitGame(false);
+        gameClient.shutdown();
     }
 }

@@ -8,6 +8,20 @@ package de.diegrafen.exmatrikulatortd.util;
  */
 public final class Constants {
 
+    public static final int MIN_NUMBER_OF_UPDATES = 30;
+
+    public static final int NUMBER_OF_TOWERS = 5;
+
+    public static final int REGULAR_TOWER = 0;
+
+    public static final int SLOW_TOWER = 1;
+
+    public static final int CORRUPTION_TOWER = 2;
+
+    public static final int EXPLOSIVE_TOWER = 3;
+
+    public static final int AURA_TOWER = 4;
+
     public static final String GAME_TITLE = "Exmatrikulator TD";
 
     public static final int UDP_PORT = 9001;
@@ -16,7 +30,7 @@ public final class Constants {
 
     public static final float TIME_BETWEEN_SPAWNS = 1;
 
-    public static final float TIME_BETWEEN_ROUNDS = 5f;
+    public static final float TIME_BETWEEN_ROUNDS = 15f;
 
     public static final float DISTANCE_TOLERANCE = 3f;
 

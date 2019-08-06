@@ -3,7 +3,9 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -18,7 +20,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.model.*;
+import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
+import de.diegrafen.exmatrikulatortd.model.tower.ObservableTower;
 import de.diegrafen.exmatrikulatortd.view.gameobjects.*;
+import de.diegrafen.exmatrikulatortd.view.screens.uielements.TowerButton;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -29,7 +34,6 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.*;
 
 /**
  * Der GameScreen wird während des aktuellen Spiels angezeigt.
@@ -48,6 +52,11 @@ public class GameScreen extends BaseScreen implements GameView {
      * Die Karte, auf der die Türme plaziert werden, und sich die Gegner bewegen
      */
     private TiledMap tiledMap;
+
+    private int[] backgroundLayers;
+
+    private int[] foregroundLayers;
+
     /**
      * Rendert die tiledMap
      */
@@ -66,43 +75,76 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Eine Liste aller Spielobjekte
      */
-    private List<GameObject> gameObjects;
+    private final List<GameObject> gameObjects;
+
     private boolean keyDownDown = false;
+
     private boolean keyUpDown = false;
+
     private boolean keyRightDown = false;
+
     private boolean keyLeftDown = false;
+
     private Label scoreLabel;
+    private Label opponentScore;
     private Label resourcesLabel;
+
     private Label livesLabel;
+
     private Label roundsLabel;
-    private float touchDownX, touchDownY;
+
+    private Label timelabel;
+
+    private float touchDownX;
+
+    private float touchDownY;
+
     private InputMultiplexer multiplexer;
+
     private Group pauseGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
-    private boolean t1 = false;
+    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
 
-    private boolean t2 = false;
+    private List<TowerButton> towerButtons;
 
-    private boolean t3 = false;
+    private List<TowerObject> previewTowers;
 
-    private boolean t4 = false;
-
-    private boolean u = false;
-
-    private boolean s = false;
-
-    private Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-    private ImageButton tower1;
-    private ImageButton tower2;
-    private ImageButton tower3;
-    private TextButton tower4;
-    private TextButton upgrade;
+    private ImageButton upgrade;
     private TextButton sell;
+
+    private TowerObject previewTower;
 
     private LogicController logicController;
 
-    private int numberofTowers = 0;
+    private ProgressBar playerHealth;
+    private ProgressBar opponentHealth;
+
+    private Table messageArea;
+    private Table upgradeSell;
+    private Table countdown;
+
+    private Group popUp;
+
+    private Label messageLabel;
+    private float timer;
+    private float tableDecayTimer;
+
+    private int xCoord, yCoord;
+
+    private static final int X_SIZE = 100;
+
+    private static final int Y_SIZE = 100;
+
+    private static final int NUM_KEY_OFFSET = 8;
+
+    private TooltipManager tooltipManager;
+
+    private Table towerSelect;
+
+    private float mouseXPosition;
+
+    private float mouseYPosition;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
@@ -111,24 +153,27 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     public GameScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
+        this.gameObjects = new ArrayList<>();
     }
-
 
     /**
      * Die Initialisierung erstellt den SpriteBatch und lädt Texturen.
      */
     @Override
     public void init() {
-        super.init();
-
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-
-        this.gameObjects = new LinkedList<>();
 
         getCamera().setToOrtho(false, width, height);
 
         multiplexer = new InputMultiplexer();
+
+        towerButtons = new LinkedList<>();
+
+        previewTowers = new LinkedList<>();
+
+        tooltipManager = new TooltipManager();
+        tooltipManager.instant();
 
         //Gdx.input.setInputProcessor(new InputMultiplexer());
 
@@ -166,23 +211,25 @@ public class GameScreen extends BaseScreen implements GameView {
                         logicController.sendEnemy(HEAVY_ENEMY, localPlayerNumber, localPlayerNumber);
                     }
                 }
-                if (keycode == Input.Keys.Q) {
-                    buttonManager(tower1);
+
+                if (keycode >= Input.Keys.NUM_0 & keycode <= Input.Keys.NUM_9) {
+                    int buttonNumber;
+                    if (keycode == Input.Keys.NUM_0) {
+                        buttonNumber = 9;
+                    } else {
+                        buttonNumber = keycode - NUM_KEY_OFFSET;
+                    }
+                    System.out.println(buttonNumber);
+                    if (towerButtons.size() > buttonNumber) {
+                        toggleButton(buttonNumber);
+                    }
                 }
-                if (keycode == Input.Keys.W) {
-                    buttonManager(tower2);
-                }
-                if (keycode == Input.Keys.E) {
-                    buttonManager(tower3);
-                }
-                if (keycode == Input.Keys.R) {
-                    buttonManager(tower4);
-                }
+
                 if (keycode == Input.Keys.D) {
-                    buttonManager(upgrade);
+                    upgrade.setChecked(!upgrade.isChecked());
                 }
                 if (keycode == Input.Keys.S) {
-                    buttonManager(sell);
+                    sell.setChecked(!sell.isChecked());
                 }
 
                 return false;
@@ -222,8 +269,6 @@ public class GameScreen extends BaseScreen implements GameView {
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
-                boolean returnvalue = false;
-
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
@@ -233,29 +278,33 @@ public class GameScreen extends BaseScreen implements GameView {
                 int localPlayerNumber = logicController.getLocalPlayerNumber();
 
                 if (button == RIGHT) {
-                    returnvalue = true;
+                    if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
+                        Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
+                        Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
+                        xCoord = xCoordinate;
+                        yCoord = yCoordinate;
+                        popUpButtons(Math.round(position2.x), Math.round(position2.y));
+                        return true;
+                    }
                 } else if (button == LEFT) {
                     if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
-                        if (t1) {
-                            logicController.buildTower(REGULAR_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
-                        } else if (t2) {
-                            logicController.buildTower(EXPLOSIVE_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
-                        } else if (t3) {
-                            logicController.buildTower(CORRUPTION_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
-                        } else if (t4) {
-                            logicController.buildTower(AURA_TOWER, xCoordinate, yCoordinate, localPlayerNumber);
+                        for (TowerButton towerButton : towerButtons) {
+                            if (towerButton.isChecked()) {
+                                logicController.buildTower(towerButton.getTowerNumber(), xCoordinate, yCoordinate, localPlayerNumber);
+                                return true;
+                            }
                         }
                     } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        if (s) {
+                        if (sell.isChecked()) {
                             logicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
-                        } else if (u) {
+                            return true;
+                        } else if (upgrade.isChecked()) {
                             logicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
+                            return true;
                         }
                     }
-                    returnvalue = true;
                 }
-
-                return returnvalue;
+                return false;
             }
 
             @Override
@@ -265,16 +314,25 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
                 getCamera().position.x += touchDownX - position.x;// (position.x - touchDownX, position.y - touchDownY);
-                getCamera().position.y += touchDownY - position.y;//
+                getCamera().position.y += touchDownY - position.y;
 
                 resetCameraToBorders();
+
+                if(popUp.isVisible()){
+                    popUp.setVisible(false);
+                    tableDecayTimer = 0;
+                }
 
                 return false;
             }
 
             @Override
             public boolean mouseMoved(int screenX, int screenY) {
-                return false;
+                Vector3 movedtoCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = getCamera().unproject(movedtoCoordinates);
+                mouseXPosition = position.x;
+                mouseYPosition = position.y;
+                return updatePreviewTower(position.x, position.y);
             }
 
             @Override
@@ -291,6 +349,29 @@ public class GameScreen extends BaseScreen implements GameView {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    private boolean updatePreviewTower(float xPosition, float yPosition) {
+        int xCoordinate = logicController.getXCoordinateByPosition(xPosition);
+        int yCoordinate = logicController.getYCoordinateByPosition(yPosition);
+        for (int i = 0; i < towerButtons.size(); i++) {
+            TowerButton towerButton = towerButtons.get(i);
+            if (towerButton.isChecked()) {
+                if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, logicController.getLocalPlayerNumber())) {
+                    if (previewTower == null) {
+                        previewTower = previewTowers.get(i);
+                    }
+                    MapProperties properties = tiledMap.getProperties();
+                    previewTower.setxPosition(xCoordinate * properties.get("tilewidth", Integer.class));
+                    previewTower.setyPosition(yCoordinate * properties.get("tileheight", Integer.class));
+                } else {
+                    previewTower = null;
+                }
+                return true;
+            }
+        }
+        previewTower = null;
+        return false;
+    }
+
     /**
      * Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
      *
@@ -299,20 +380,46 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void update(float deltaTime) {
         logicController.update(deltaTime);
+        if (tableDecayTimer <= 0) {
+            popUp.setVisible(false);
+        } else {
+            tableDecayTimer = tableDecayTimer - deltaTime;
+        }
+        if (messageLabel != null) {
+            if (timer <= 0) {
+                messageArea.removeActor(messageLabel);
+            } else {
+                timer = timer - deltaTime;
+                messageLabel.setColor(1, 0, 0, 1 * timer / 3);
+            }
+        }
+        if (gameState.getTimeUntilNextRound() <= 0) {
+            countdown.setVisible(false);
+        } else {
+            countdown.setVisible(true);
+        }
     }
 
     @Override
     public void update() {
         Player localPlayer = logicController.getLocalPlayer();
 
+        if (logicController.isMultiplayer()) {
+            Player opposingPlayer = logicController.getLocalPlayer();
+            opponentHealth.setValue(opposingPlayer.getCurrentLives());
+            opponentScore.setText(opposingPlayer.getScore());
+        }
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
+        playerHealth.setValue(localPlayer.getCurrentLives());
+
         resourcesLabel.setText(localPlayer.getResources());
         if (gameState.isEndlessGame()) {
             roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
         } else {
             roundsLabel.setText((gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds());
         }
+        timelabel.setText((int) Math.max(0, gameState.getTimeUntilNextRound()));
     }
 
     /**
@@ -328,7 +435,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         if (keyLeftDown) {
             getCamera().translate(-translateValue, 0);
-            System.out.println("Keyleftdown");
         }
         if (keyRightDown) {
             getCamera().translate(translateValue, 0);
@@ -345,7 +451,7 @@ public class GameScreen extends BaseScreen implements GameView {
         getCamera().update();
         if (orthogonalTiledMapRenderer != null) {
             orthogonalTiledMapRenderer.setView(getCamera());
-            orthogonalTiledMapRenderer.render();
+            orthogonalTiledMapRenderer.render(backgroundLayers);
         }
 
         getSpriteBatch().setProjectionMatrix(getCamera().combined);
@@ -353,22 +459,29 @@ public class GameScreen extends BaseScreen implements GameView {
 
         List<GameObject> objectsToRemove = new ArrayList<>();
 
-        if (gameObjects != null) {
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject.isRemoved()) {
-                    objectsToRemove.add(gameObject);
+        gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
+
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject.isRemoved()) {
+                objectsToRemove.add(gameObject);
+            } else {
+                if (logicController.isPause() | gameState.isGameOver()) {
+                    gameObject.setAnimated(false);
                 } else {
-                    if (logicController.isPause() | gameState.isGameOver()) {
-                        gameObject.setAnimated(false);
-                    } else {
-                        gameObject.setAnimated(true);
-                    }
-                    gameObject.draw(getSpriteBatch(), deltaTime);
+                    gameObject.setAnimated(true);
                 }
+                gameObject.draw(getSpriteBatch(), deltaTime);
             }
         }
         objectsToRemove.forEach(this::removeGameObject);
+        if (previewTower != null) {
+            previewTower.draw(getSpriteBatch(), deltaTime);
+        }
         getSpriteBatch().end();
+
+        if (orthogonalTiledMapRenderer != null) {
+            orthogonalTiledMapRenderer.render(foregroundLayers);
+        }
     }
 
     /**
@@ -377,7 +490,6 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void dispose() {
         super.dispose();
-        gameObjects.forEach(GameObject::dispose);
         tiledMap.dispose();
     }
 
@@ -392,20 +504,97 @@ public class GameScreen extends BaseScreen implements GameView {
         mapWidth = mapProperties.get("width", Integer.class) * mapProperties.get("tilewidth", Integer.class);
         mapHeight = mapProperties.get("height", Integer.class) * mapProperties.get("tileheight", Integer.class);
         orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        List<Integer> background = new LinkedList<>();
+        List<Integer> foreground = new LinkedList<>();
+        for (int i = 0; i < tiledMap.getLayers().size(); i++) {
+            if ((int) tiledMap.getLayers().get(i).getProperties().get("zIndex") < 1) {
+                background.add(i);
+            } else {
+                foreground.add(i);
+            }
+        }
+        backgroundLayers = background.stream().mapToInt(i->i).toArray();
+        foregroundLayers = foreground.stream().mapToInt(i->i).toArray();
         getCamera().update();
         orthogonalTiledMapRenderer.setView(getCamera());
     }
 
     private void initializeUserInterface() {
 
-        int sizeX = 100;
-        int sizeY = 100;
+        Table opponent = new Table();
+        Table sendEnemy = new Table();
 
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
-//        final Table defaultScreen = new Table();
+        Player localPlayer = logicController.getLocalPlayer();
+
         defaultScreen.setFillParent(true);
+
+        TooltipManager ttm = new TooltipManager();
+        ttm.instant();
+
+        Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixRed.setColor(Color.RED);
+        pixRed.fill();
+        TextureRegionDrawable redBG = new TextureRegionDrawable(new TextureRegion(new Texture(pixRed)));
+        pixRed.dispose();
+        Pixmap pixHidden = new Pixmap(0, 20, Pixmap.Format.RGBA8888);
+        pixHidden.setColor(Color.GREEN);
+        pixHidden.fill();
+        TextureRegionDrawable hiddenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixHidden)));
+        pixHidden.dispose();
+        Pixmap pixGreen = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixGreen.setColor(Color.GREEN);
+        pixGreen.fill();
+        TextureRegionDrawable greenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixGreen)));
+        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
+        progressBarStyle.background = redBG;
+        progressBarStyle.knob = hiddenBar;
+        progressBarStyle.knobBefore = greenBar;
+
+        if (logicController.isMultiplayer()) {
+            //int localPlayerNumber = logicController.getLocalPlayerNumber();
+            int numberOfPlayers = gameState.getPlayers().size();
+            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
+            opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, progressBarStyle);
+            opponentHealth.setScale(1 / 2);
+            opponentHealth.setValue(opposingPlayer.getCurrentLives());
+            opponentHealth.setAnimateDuration(1);
+            Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
+            scoreLabelStyle.font = getBitmapFont();
+            opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
+            opponent.setBounds(0, 50, 100, 100);
+            opponent.add(opponentScore).left().row();
+            opponent.add(opponentHealth).left();
+
+            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
+            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
+
+            //ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
+            //ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
+
+            TextButton sendRegEnemy = new TextButton("sre", skin);
+            TextButton sendHvyEnemy = new TextButton("she", skin);
+            //sendRegEnemy.scaleBy(5);
+            //sendHvyEnemy.setScale(5);
+            sendRegEnemy.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+                }
+            });
+            sendHvyEnemy.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+                }
+            });
+            sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", ttm, skin));
+            sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", ttm, skin));
+            sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
+            sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
+        }
 
         final Table statsTable = new Table();
         //statsTable.setBackground(background);
@@ -418,132 +607,121 @@ public class GameScreen extends BaseScreen implements GameView {
         Label.LabelStyle roundLabelStyle = new Label.LabelStyle();
         roundLabelStyle.font = getBitmapFont();
 
-        Player localPlayer = logicController.getLocalPlayer();
 
         // score
-        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Punkte: ", infoLabelsStyle)).right().padLeft(10).expandX();
         scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
         statsTable.add(scoreLabel).left().align(RIGHT);
         statsTable.row();
         // money
-        statsTable.add(new Label("Geld: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Geld: ", infoLabelsStyle)).right().padLeft(10).expandX();
         resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
         statsTable.add(resourcesLabel).left().align(RIGHT);
         statsTable.row();
         // lives
-        statsTable.add(new Label("Leben: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Leben: ", infoLabelsStyle)).right().padLeft(10).expandX();
         livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
         statsTable.row();
         // Rounds
-        statsTable.add(new Label("Semester: ", infoLabelsStyle)).left().padLeft(10).expandX();
+        statsTable.add(new Label("Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
         roundsLabel = new Label(roundsLabelText, liveLabelStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
+        // Time
+        statsTable.row().pad(10, 0, 10, 0);
+//        statsTable.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
+//        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+//        timelabel = new Label(timeLabelText, liveLabelStyle);
+//        statsTable.add(timelabel).left().align(RIGHT);
 
-        //Tower selection es können ganz einfach mehr Buttons mit copy paste erstellt werden.
-        //Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
-        Drawable towerImage1 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1.png")));
-        Drawable towerImage1_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye1_selected.png")));
-        Drawable towerImage2 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2.png")));
-        Drawable towerImage2_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye2_selected.png")));
-        Drawable towerImage3 = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3.png")));
-        Drawable towerImage3_selected = new TextureRegionDrawable(new Texture(Gdx.files.internal("sprites/objects/towers/WanderingEye3_selected.png")));
+        playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, progressBarStyle);
+        playerHealth.setValue(localPlayer.getCurrentLives());
+        playerHealth.setAnimateDuration(1);
+
+        Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
+        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
+        //Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
         //TextButtonStyle style = new TextButtonStyle();
-        final Table towerSelect = new Table();
+        towerSelect = new Table();
         //towerSelect.setDebug(true);
 
         //Die einzelnen Towerbuttons
-        tower1 = new ImageButton(towerImage1, towerImage1, towerImage1_selected);
-        tower2 = new ImageButton(towerImage2, towerImage2, towerImage2_selected);
-        tower3 = new ImageButton(towerImage3, towerImage3, towerImage3_selected);
-        tower4 = new TextButton("T4", skin);
-        upgrade = new TextButton("^", skin);
-        sell = new TextButton("$$$", skin);
+        logicController.createTowerButtons(this);
 
-        //InputListener für die Buttons
-        // TODO: Code-Redundanz durch Refactoring entfernen
-        tower1.addListener(new ClickListener() {
+        upgrade = new ImageButton(upgradeIcon);
+        //sell = new ImageButton(sellIcon);
+        //upgrade = new TextButton("^", skin);
+        sell = new TextButton("$$$", skin);
+        //upgrade.setSize(X_SIZE, Y_SIZE);
+        upgrade.setScale(3/4);
+        sell.setSize(X_SIZE, Y_SIZE);
+
+        TextButton instaLoose = new TextButton("L", skin);
+        instaLoose.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonManager(tower1);
+                localPlayer.setCurrentLives(0);
             }
         });
-        tower2.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buttonManager(tower2);
-            }
-        });
-        tower3.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buttonManager(tower3);
-            }
-        });
-        tower4.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buttonManager(tower4);
-            }
-        });
+
         upgrade.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonManager(upgrade);
+                logicController.upgradeTower(xCoord, yCoord, localPlayer.getPlayerNumber());
+                popUp.setVisible(false);
             }
         });
         sell.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonManager(sell);
+                logicController.sellTower(xCoord, yCoord, localPlayer.getPlayerNumber());
+                popUp.setVisible(false);
             }
         });
-        //Towerbuttons der Tabelle hinzufügen
-        towerSelect.add(tower1).size(sizeX, sizeY).spaceRight(5);
-        towerSelect.add(tower2).size(sizeX, sizeY).spaceRight(5);
-        towerSelect.add(tower3).size(sizeX, sizeY).spaceRight(5);
-        towerSelect.add(tower4).size(sizeX, sizeY).spaceRight(10);
-        towerSelect.add(upgrade).size(sizeX, sizeY).spaceRight(10);
-        towerSelect.add(sell).size(sizeX, sizeY);
-//        towerSelect.add(new TextButton("Tower 1", skin)).size(50,10);
-//        towerSelect.add(new TextButton("Tower 2", skin)).size(50,10);
+
+
+        upgrade.addListener(new TextTooltip("Upgraden", tooltipManager, skin));
+        sell.addListener(new TextTooltip("Verkaufen", tooltipManager, skin));
 
         //Exit
         final Table exit = new Table();
-        TextButton exitButton = new TextButton("| |", skin);
+        ImageButton exitButton = new ImageButton(menuImage);
         exitButton.setSize(10, 10);
-        exitButton.getLabel().setFontScale(1, 1);
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!logicController.isPause()) {
+                if (!logicController.isPause() & !logicController.isMultiplayer()) {
                     System.out.println("Pausiert");
-                    //exitButton.setColor(255,0,0,255);
-                    //exitButton.setText(">");
-                    //Gdx.files.internal("ui-skin/glassy-ui.png");
-                    //Gdx.app.exit();
                     logicController.setPause(true);
                     pauseScreen();
-                } else {
-                    //exitButton.setColor(Color.valueOf("ffffffff"));
-                    //exitButton.setText("| |");
+                } else if (!logicController.isMultiplayer()) {
                     logicController.setPause(false);
                     pauseScreen();
                 }
 
             }
         });
-        exit.add(exitButton).size(sizeX, sizeY);
-        //Gdx.input.setInputProcessor(stage);
-        //getUi().addActor(exitButton);
+
+        popUp = new Group();
+        upgradeSell = new Table();
+        upgradeSell.add(upgrade).size(X_SIZE, Y_SIZE).row();
+        upgradeSell.add(sell).size(X_SIZE, Y_SIZE);
+        //upgradeSell.setVisible(false);
+
+        exit.add(exitButton).size(X_SIZE, Y_SIZE);
+
+        messageArea = new Table();
 
         //Toprow table
         final Table topRow = new Table();
+        final Table topLeft = new Table();
         //topRow.setDebug(true);
-        //topRow.add(exit).left();
-        //topRow.add(towerSelect).center().align(MIDDLE).spaceLeft(10).spaceRight(10).expandX();
+        if (logicController.isMultiplayer()) {
+            //opponent.setBounds(0, 0, 50, 100);
+            topLeft.add(opponent).left().padRight(10).padLeft(10);
+        }
         topRow.add(exit).top().right();
         topRow.setBounds(0, 50, defaultScreen.getWidth(), defaultScreen.getHeight());
 
@@ -552,38 +730,44 @@ public class GameScreen extends BaseScreen implements GameView {
         bottomOfScreen.align(MIDDLE);
         //bottomOfScreen.setDebug(true);
 
+        countdown = new Table();
+        countdown.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10);
+        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+        timelabel = new Label(timeLabelText, liveLabelStyle);
+        countdown.add(timelabel).top().left().align(RIGHT);
+
+        topLeft.add(messageArea).center().top().padLeft(50);
+        topLeft.setBounds(0, 50, 100, 100);
+        defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX();
         defaultScreen.row();
         //defaultScreen.setDebug(true);
 
-//        defaultScreen.add(towerSelect).top().center();
-//        defaultScreen.add(exit).top().right();
-//        defaultScreen.row();
-        defaultScreen.add(statsTable).top().right().expandX().colspan(4);
-        defaultScreen.row();
-
-        //defaultScreen.add(new ProgressBar(0, localPlayer.getAttackingEnemies().size(), 1, false, skin)).top().expandX();
+        statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
+        defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
+        //defaultScreen.row();
+        defaultScreen.add(countdown).top().right().colspan(4).padRight(20).row();
+        if (logicController.isMultiplayer()) {
+            defaultScreen.add(sendEnemy).top().right().colspan(4).padRight(20).row();
+        }
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
-        defaultScreen.add(bottomOfScreen).bottom().center();
+        defaultScreen.add(bottomOfScreen).bottom().center().colspan(2).expandX();
         mainUiStack.addActor(defaultScreen);
+        //mainUiStack.addActor(upgradeSell);
 
-        //getUi().addActor(defaultScreen);
         getUi().addActor(mainUiStack);
         multiplexer.addProcessor(getUi());
-        //InputProcessor inputProcessorButton;
-        //Gdx.input.setInputProcessor(getUi());
     }
 
     /**
      * Generiert aus einem beobachtbarem Objekt ein neues Turm-Spielobjekt
      *
-     * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
+     * @param observableTower Das hinzuzufügende, beobachtbareObjekt
      */
     @Override
-    public void addTower(ObservableUnit observableUnit) {
-        gameObjects.add(0, new TowerObject(observableUnit, getAssetManager()));
-        numberofTowers++;
+    public void addTower(ObservableTower observableTower) {
+        gameObjects.add(0, new TowerObject(observableTower, getAssetManager()));
     }
 
     /**
@@ -592,8 +776,8 @@ public class GameScreen extends BaseScreen implements GameView {
      * @param observableUnit Das hinzuzufügende, beobachtbareObjekt
      */
     @Override
-    public void addEnemy(ObservableUnit observableUnit) {
-        gameObjects.add(numberofTowers, new EnemyObject(observableUnit, getAssetManager()));
+    public void addEnemy(ObservableEnemy observableUnit) {
+        gameObjects.add(new EnemyObject(observableUnit, getAssetManager()));
     }
 
     /**
@@ -606,24 +790,44 @@ public class GameScreen extends BaseScreen implements GameView {
         gameObjects.add(new ProjectileObject(observableUnit, getAssetManager()));
     }
 
+    /**
+     * Zeigt eine Fehlermeldung auf dem Bildschirm an
+     *
+     * @param message Die anzuzeigende Fehlermeldung
+     */
     @Override
     public void displayErrorMessage(String message) {
-        System.err.println(message);
+        Label.LabelStyle messageStyle = new Label.LabelStyle();
+        messageStyle.font = getBitmapFont();
+        messageLabel = new Label(message, messageStyle);
+        messageLabel.setColor(Color.RED);
+        messageArea.clear();
+        messageArea.add(messageLabel);
+        timer = 3;
     }
 
+    /**
+     * Assoziiert die GameView mit einem LogicController
+     *
+     * @param logicController Der zu assoziierende LogicController
+     */
     @Override
     public void setLogicController(LogicController logicController) {
         this.logicController = logicController;
     }
 
+    /**
+     * Entfernt ein Spielobjekt aus dem Spiel
+     * @param gameObject Das Spielobjekt, das entfernt werden soll
+     */
     private void removeGameObject(GameObject gameObject) {
         gameObjects.remove(gameObject);
-        gameObject.dispose();
-        if (gameObject instanceof TowerObject) {
-            numberofTowers--;
-        }
     }
 
+    /**
+     * Verhindert, dass die Kamera über die Grenzen der Karte hinaus bewegt werden kann, indem sie in diesem
+     * Fall an den Rand der Map zurückgesetzt wird.
+     */
     private void resetCameraToBorders() {
         float cameraHalfWidth = getCamera().viewportWidth * .5f;
         float cameraHalfHeight = getCamera().viewportHeight * .5f;
@@ -632,7 +836,6 @@ public class GameScreen extends BaseScreen implements GameView {
         float cameraRight = getCamera().position.x + cameraHalfWidth;
         float cameraUp = getCamera().position.y + cameraHalfHeight;
         float cameraDown = getCamera().position.y - cameraHalfHeight;
-
 
         if (cameraLeft < 0) {
             getCamera().position.x = cameraHalfWidth;
@@ -648,95 +851,34 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
-    private void buttonManager(Actor a) {
-        tower1.setChecked(false);
-        tower2.setChecked(false);
-        tower3.setChecked(false);
-        tower4.setColor(Color.valueOf("ffffffff"));
-        upgrade.setColor(Color.valueOf("ffffffff"));
-        sell.setColor(Color.valueOf("ffffffff"));
-        if (a == tower1) {
-            if (!t1) {
-                tower1.setChecked(true);
-                t1 = true;
-                t2 = false;
-                t3 = false;
-                t4 = false;
-                u = false;
-                s = false;
-            } else {
-                t1 = false;
-            }
-        } else if (a == tower2) {
-            if (!t2) {
-                tower2.setChecked(true);
-                t1 = false;
-                t2 = true;
-                t3 = false;
-                t4 = false;
-                u = false;
-                s = false;
-            } else {
-                t2 = false;
-            }
-        } else if (a == tower3) {
-            if (!t3) {
-                tower3.setChecked(true);
-                t1 = false;
-                t2 = false;
-                t3 = true;
-                t4 = false;
-                u = false;
-                s = false;
-            } else {
-                t3 = false;
-            }
-        } else if (a == tower4) {
-            if (!t4) {
-                tower4.setColor(Color.GREEN);
-                t1 = false;
-                t2 = false;
-                t3 = false;
-                t4 = true;
-                u = false;
-                s = false;
-            } else {
-                t4 = false;
-            }
-        } else if (a == upgrade) {
-            if (!u) {
-                upgrade.setColor(Color.YELLOW);
-                t1 = false;
-                t2 = false;
-                t3 = false;
-                t4 = false;
-                u = true;
-                s = false;
-            } else {
-                u = false;
-            }
-        } else if (a == sell) {
-            if (!s) {
-                sell.setColor(Color.YELLOW);
-                t1 = false;
-                t2 = false;
-                t3 = false;
-                t4 = false;
-                u = false;
-                s = true;
-            } else {
-                s = false;
-            }
+    /**
+     * Setzt den Zustand aller Buttons auf "unchecked".
+     */
+    private void uncheckAllButtons() {
+        towerButtons.forEach(towerButton -> towerButton.setChecked(false));
+    }
+
+    /**
+     * Kehrt den "checked"-Zustand eines Buttons um
+     * @param buttonNumber Die Nummer des Buttons
+     */
+    private void toggleButton(int buttonNumber) {
+        TowerButton towerButton = towerButtons.get(buttonNumber);
+        if (towerButton != null) {
+            previewTower = null;
+            boolean isChecked = towerButton.isChecked();
+            uncheckAllButtons();
+            towerButton.setChecked(!isChecked);
+            updatePreviewTower(mouseXPosition, mouseYPosition);
         }
     }
 
     private void pauseScreen() {
-        Skin skin = new Skin(Gdx.files.internal("ui-skin/glassy-ui.json"));
         if (logicController.isPause()) {
             pauseGroup = new Group();
             Image semiTBG = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
-            //semiTBG.setSize(500,500);
             semiTBG.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
             Table buttonTable = new Table();
             TextButton resume = new TextButton("Resume", skin);
             resume.addListener(new ChangeListener() {
@@ -747,21 +889,39 @@ public class GameScreen extends BaseScreen implements GameView {
                     defaultScreen.setVisible(true);
                 }
             });
-            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            TextButton save = new TextButton("Save", skin);
+            save.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
+                    logicController.saveGame("Blah.");
+                }
+            });
+            TextButton load = new TextButton("Load", skin);
+            load.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    //TODO: Dropdown-Menü zur Auswahl von Spielständen ergänzen
+                    getMainController().loadSinglePlayerGame();
+                }
+            });
             TextButton back2main = new TextButton("Menu", skin);
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(false);
-                    //System.out.println("Menu nicht gefunden");
+                    logicController.exitGame(true);
                 }
             });
+
+            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            buttonTable.add(save).top().center().spaceBottom(10).row();
+            buttonTable.add(load).top().center().spaceBottom(10).row();
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
             pauseGroup.addActor(semiTBG);
-            //semiTBG.setAlign(MIDDLE);
             pauseGroup.addActor(buttonTable);
-            //pauseGroup.
+
             defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
         } else {
@@ -769,6 +929,94 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    @Override
+    public void endOfGameScreen() {
+        Group endScreenGroup = new Group();
+        Player localPlayer = logicController.getLocalPlayer();
+
+        Image loose = new Image(new Texture(Gdx.files.internal("loose.png")));
+        Image win = new Image(new Texture(Gdx.files.internal("win.png")));
+        Image test = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+
+        loose.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        win.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        test.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
+        Table buttonTable = new Table();
+
+        TextButton back2main = new TextButton("Menu", skin);
+        back2main.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                logicController.exitGame(false);
+            }
+        });
+
+        scoreLabel.setFontScale(5);
+        buttonTable.add(scoreLabel).center().row();
+        buttonTable.add(back2main).top().center().row();
+        buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / 2);
+
+        if (localPlayer.isVictorious()) {
+            endScreenGroup.addActor(win);
+        } else if (!localPlayer.isVictorious()) {
+            endScreenGroup.addActor(loose);
+        } else {
+            endScreenGroup.addActor(test);
+        }
+
+        endScreenGroup.addActor(buttonTable);
+        defaultScreen.setVisible(false);
+        getUi().addActor(endScreenGroup);
+    }
+
+    private void popUpButtons(int posX, int posY) {
+        int posXAllignment;
+        int offset = 75;
+
+        if (posX < getStageViewport().getScreenWidth() / 2) {
+            posXAllignment = posX + offset;
+        } else {
+            posXAllignment = posX - offset;
+        }
+        popUp.addActor(upgradeSell);
+        popUp.setSize(50, 110);
+        popUp.setPosition(posXAllignment, posY);
+        popUp.setVisible(true);
+        tableDecayTimer = 2;
+        getUi().addActor(popUp);
+    }
+
+    /**
+     * Fügt einen Button zur UI hinzu, über den Türme platziert werden können.
+     */
+    @Override
+    public void addTowerButton (ObservableTower observableTower) {
+        TowerButton towerButton = new TowerButton(observableTower.getTowerType(), observableTower.getPortraitPath(),
+                observableTower.getSelectedPortraitPath(), observableTower.getDescriptionText());
+        towerButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                boolean isChecked = towerButton.isChecked();
+                towerButtons.forEach(button -> button.setChecked(false));
+                towerButton.setChecked(isChecked);
+                if (!isChecked) {
+                    previewTower = null;
+                }
+            }
+        });
+        towerButton.addListener(new TextTooltip(towerButton.getToolTipText(), tooltipManager, skin));
+        towerSelect.add(towerButton).size(X_SIZE, Y_SIZE).spaceRight(5);
+
+        towerButtons.add(towerButton);
+        previewTowers.add(new TowerObject(observableTower, getAssetManager()));
+    }
+
+    /**
+     * Legt einen Spielzustand als Attribut der GameView fest
+     *
+     * @param gameState
+     */
     @Override
     public void setGameState(Gamestate gameState) {
         this.gameState = gameState;

@@ -16,8 +16,6 @@ import org.hibernate.Session;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,17 +30,17 @@ public class MainController {
     /**
      * DAO-Objekt für CRUD-Operationen mit Highscore-Objekten
      */
-    private HighscoreDao highScoreDao;
+    private final HighscoreDao highScoreDao;
 
     /**
      * DAO-Objekt für CRUD-Operationen mit Profil-Objekte
      */
-    private ProfileDao profileDao;
+    private final ProfileDao profileDao;
 
     /**
      * DAO-Objekt für CRUD-Operationen mit Savestate-Objekten
      */
-    private SaveStateDao saveStateDao;
+    private final SaveStateDao saveStateDao;
 
     /**
      * Das aktuelle Profil
@@ -50,19 +48,14 @@ public class MainController {
     private Profile currentProfile;
 
     /**
-     * Menü-Bildschirm
-     */
-    private final MenuScreen menuScreen;
-
-    /**
      * Splashscreen
      */
-    private SplashScreen splashScreen;
+    private final SplashScreen splashScreen;
 
     /**
      * Das Spiel-Objekt, das unter anderem das Rendern übernimmt
      */
-    private ExmatrikulatorTD game;
+    private final ExmatrikulatorTD game;
 
     /**
      * Gameserver für den Multiplayer-ModusGame
@@ -74,9 +67,13 @@ public class MainController {
      */
     private GameClient gameClient;
 
-    private Screen introScreen;
+    private final Screen introScreen;
 
     private boolean databaseLoaded;
+
+    private String hostAdress = "";
+
+    private boolean host;
 
     /**
      * Erzeugt einen neuen Maincontroller, das ein Game-Objekt verwaltet
@@ -87,10 +84,12 @@ public class MainController {
         this.game = game;
         System.out.println(game.getAssetManager());
         this.splashScreen = new SplashScreen(this, game.getAssetManager());
-        this.menuScreen = new MenuScreen(this, game.getAssetManager());
         this.introScreen = new IntroScreen(this, game.getAssetManager());
         this.profileDao = new ProfileDao();
         this.highScoreDao = new HighscoreDao();
+        this.saveStateDao = new SaveStateDao();
+
+        //
     }
 
     /**
@@ -101,19 +100,10 @@ public class MainController {
     }
 
     /**
-     * Gibt an, ob die Assets vom game.getAssetManager() bereits geladen sind
-     *
-     * @return True, wenn die Assets geladen sind, ansonsten false
-     */
-    public boolean areAssetsLoaded() {
-        return true;
-    }
-
-    /**
      * Zeigt das Hauptmenü an
      */
     public void showMenuScreen() {
-        game.setScreen(menuScreen);
+        game.setScreen(new MenuScreen(this, game.getAssetManager()));
     }
 
 
@@ -123,7 +113,8 @@ public class MainController {
      * @param gamestate Der Spielzustand, dessen Informationen angezeigt werden sollen
      */
     public void setEndScreen(Gamestate gamestate) {
-        game.setScreen(new EndScreen(this, game.getAssetManager(), gamestate));
+        //game.setScreen(new EndScreen(this, game.getAssetManager(), gamestate));
+        showMenuScreen();
     }
 
     public Profile getCurrentProfile() {
@@ -140,19 +131,10 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    private Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
         return profile;
-    }
-
-    public Profile updateProfile(final Profile profile,final String newProfileName,final Difficulty newDifficulty, final String newProfilePicturePath){
-        Profile updatedProfile = profile;
-        updatedProfile.setProfileName(newProfileName);
-        updatedProfile.setPreferredDifficulty(newDifficulty);
-        updatedProfile.setProfilePicturePath(newProfilePicturePath);
-        profileDao.update(updatedProfile);
-        return updatedProfile;
     }
 
     /**
@@ -161,6 +143,7 @@ public class MainController {
     public void createServer() {
         this.gameServer = new GameServer();
         this.gameServer.setMainController(this);
+        this.host = true;
     }
 
     /**
@@ -201,9 +184,16 @@ public class MainController {
         return serverList;
     }
 
-    public void shutdownClient() {
-        this.gameClient.shutdown();
-        //this.gameClient = null;
+    public void shutdownConnections() {
+        if (gameClient != null) {
+            gameClient.shutdown();
+            gameClient = null;
+        }
+        if (gameServer != null) {
+            gameServer.shutdown();
+            gameServer = null;
+        }
+
     }
 
     /**
@@ -218,8 +208,8 @@ public class MainController {
      *
      * @param host Die IP-Adresse des Servers
      */
-    public void connectToServer(String host) {
-        gameClient.connect(host);
+    public boolean connectToServer(String host) {
+        return gameClient.connect(host);
     }
 
     /**
@@ -227,6 +217,7 @@ public class MainController {
      */
     public void createNewSinglePlayerGame(int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
+        this.currentProfile = createNewProfile("Sherlock Holmes", Difficulty.EASY, "Sherlock.png");
         new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
         showScreen(gameScreen);
     }
@@ -236,9 +227,15 @@ public class MainController {
      *
      * @param saveState Der Spielzustand, der geladen werden soll
      */
-    public void loadSinglePlayerGame(SaveState saveState) {
+    //public void loadSinglePlayerGame(SaveState saveState) {
+    public void loadSinglePlayerGame() {
+        List<SaveState> saveStates = saveStateDao.findAllSaveStates();
+        SaveState saveState = saveStates.get(saveStates.size() - 1);
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen);
+        for (SaveState saveState1 : saveStateDao.findAllSaveStates()) {
+            System.out.println(saveState1.getGamestate().getMapName());
+        }
         showScreen(gameScreen);
     }
 
@@ -248,7 +245,7 @@ public class MainController {
     public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
-        showScreen(gameScreen);
+        //showScreen(gameScreen);
     }
 
     /**
@@ -266,7 +263,7 @@ public class MainController {
     public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer);
-        showScreen(gameScreen);
+        //showScreen(gameScreen);
     }
 
     /**
@@ -315,8 +312,8 @@ public class MainController {
         highScoreDao.create(highscore2);
         highScoreDao.create(highscore3);*/
 
-        return new LinkedList<>();
-        //return highScoreDao.findHighestScores(limit);
+        //return new LinkedList<>();
+        return highScoreDao.findHighestScores(limit);
     }
 
     public void showScreen(Screen screen) {
@@ -333,5 +330,21 @@ public class MainController {
 
     public void setDatabaseLoaded(boolean databaseLoaded) {
         this.databaseLoaded = databaseLoaded;
+    }
+
+    public String getHostAdress() {
+        return hostAdress;
+    }
+
+    public void setHostAdress(String hostAdress) {
+        this.hostAdress = hostAdress;
+    }
+
+    public void toggleReady() {
+        if (host) {
+            gameServer.setServerReady();
+        } else {
+            gameClient.reportReadiness();
+        }
     }
 }

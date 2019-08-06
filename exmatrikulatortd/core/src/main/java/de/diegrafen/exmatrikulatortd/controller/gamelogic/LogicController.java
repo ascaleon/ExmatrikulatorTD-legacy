@@ -12,6 +12,8 @@ import de.diegrafen.exmatrikulatortd.view.screens.GameView;
  */
 public interface LogicController {
 
+    void createTowerButtons(GameView gameView);
+
     /**
      * Update-Methode, die eine Aktualisierung des Spielzustandes auslöst
      *
@@ -82,4 +84,14 @@ public interface LogicController {
     boolean isPause();
 
     void setPause(boolean pause);
+
+    void gameConnectionLost();
+
+    boolean isMultiplayer();
+
+    void saveGame(String saveGameName);
+
+    void loadGame(int id);
+
+    boolean isActiveRound();
 }

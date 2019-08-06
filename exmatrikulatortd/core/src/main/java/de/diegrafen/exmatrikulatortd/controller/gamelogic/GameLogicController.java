@@ -7,12 +7,9 @@ import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
 import de.diegrafen.exmatrikulatortd.model.*;
-import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
-import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
 import de.diegrafen.exmatrikulatortd.model.tower.*;
 import de.diegrafen.exmatrikulatortd.persistence.*;
-import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
 import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
 import java.util.*;
@@ -20,11 +17,7 @@ import java.util.*;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.*;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
-import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
-import static de.diegrafen.exmatrikulatortd.util.Constants.DISTANCE_TOLERANCE;
-import static java.awt.geom.Point2D.distance;
 
 /**
  * Der Standard-Spiellogik-Controller.
@@ -37,7 +30,7 @@ public class GameLogicController implements LogicController {
     /**
      * Der Hauptcontroller
      */
-    private MainController mainController;
+    private final MainController mainController;
 
     /**
      * Der Spielzustand
@@ -47,28 +40,30 @@ public class GameLogicController implements LogicController {
     /**
      * Der Spielbildschirm
      */
-    private GameView gameScreen;
+    private final GameView gameScreen;
 
     /**
      * Das lokale Spieler-Profil
      */
-    private Profile profile;
+    private final Profile profile;
 
     /**
      * DAO für CRUD-Operationen mit Spielzustand-Objekten
      */
-    private GameStateDao gameStateDao;
+    private final GameStateDao gameStateDao;
 
     /**
      * DAO für CRUD-Operationen mit Spielstand-Objekten
      */
-    private SaveStateDao saveStateDao;
+    private final SaveStateDao saveStateDao;
 
-    private float auraRefreshTimer = 0;
+    private final TowerDao towerDao;
+
+    private List<Tower> buildableTowers;
 
     private int localPlayerNumber;
 
-    private boolean multiplayer;
+    private final boolean multiplayer;
 
     private GameServer gameServer;
 
@@ -76,7 +71,11 @@ public class GameLogicController implements LogicController {
 
     private boolean pause;
 
-    private String mapPath;
+    private final String mapPath;
+
+    private boolean loaded = false;
+
+    private final GameLogicUnit gameLogicUnit;
 
     /**
      *
@@ -87,6 +86,7 @@ public class GameLogicController implements LogicController {
         this.gameServer = gameServer;
         this.server = true;
         gameServer.attachRequestListeners(this);
+        gameServer.serverFinishedLoading();
     }
 
     /**
@@ -94,53 +94,31 @@ public class GameLogicController implements LogicController {
      */
     public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
                                int gamemode, GameView gameScreen, String mapPath) {
-
         this.mainController = mainController;
         this.profile = profile;
         this.mapPath = mapPath;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
+        this.towerDao = new TowerDao();
         this.localPlayerNumber = localPlayerNumber;
         this.multiplayer = gamemode >= MULTIPLAYER_DUEL;
-        System.out.println("Multiplayer? " + multiplayer);
         this.gameScreen = gameScreen;
         this.gameScreen.setLogicController(this);
 
-
         this.gamestate = createGameState(gamemode, numberOfPlayers);
+        this.gameLogicUnit = new GameLogicUnit(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+
         initializeMap(mapPath);
+
         this.gameScreen.loadMap(mapPath);
     }
 
     private Gamestate createGameState(int gamemode, int numberOfPlayers) {
-
-        List<Player> players = new LinkedList<>();
-
         // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
-        for (int i = 0; i < numberOfPlayers; i++) {
-            players.add(new Player(i));
-        }
-
-        List<Wave> waves = new LinkedList<>();
-        waves.add(createWave(HEAVY_WAVE));
-        int i = 0;
-        while (i < 12) {
-            waves.add(createWave(REGULAR_WAVE));
-            waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-            i++;
-        }
-
-        Gamestate gamestate = new Gamestate(players, waves);
-
-        gamestate.setGameMode(gamemode);
-        if (gamemode == ENDLESS_SINGLE_PLAYER_GAME | gamemode == MULTIPLAYER_ENDLESS_GAME) {
-            gamestate.setEndlessGame(true);
-        }
-
-        return gamestate;
+        return createNewGame(gamemode, numberOfPlayers);
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
@@ -148,24 +126,65 @@ public class GameLogicController implements LogicController {
         this.gameServer = gameServer;
         this.server = true;
         gameServer.attachRequestListeners(this);
-
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView) {
+        this.gameStateDao = new GameStateDao();
+        this.saveStateDao = new SaveStateDao();
+        this.towerDao = new TowerDao();
         this.mainController = mainController;
-        this.gamestate = new Gamestate(saveState.getGamestate());
+        if (saveState.getGamestate() == null) {
+            System.out.println("Kein Gamestate vorhanden?");
+        }
+        this.gamestate = gameStateDao.retrieve(saveState.getGamestate().getId());
+        this.gameLogicUnit = new GameLogicUnit(this);
         this.profile = saveState.getProfile();
         this.mapPath = saveState.getMapPath();
         this.localPlayerNumber = saveState.getLocalPlayerNumber();
         this.multiplayer = saveState.isMultiplayer();
         this.gameScreen = gameView;
+        this.loaded = true;
+
+        gamestate.getPlayers().size();
 
         this.gameScreen.setLogicController(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
+        gameStateDao.openCurrentSessionwithTransaction();
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        gameStateDao.closeCurrentSessionwithTransaction();
         initializeMap(mapPath);
+
         this.gameScreen.loadMap(mapPath);
+
+        reinitializeGame(this.gameScreen, this.gamestate);
+    }
+
+    @Override
+    public void createTowerButtons(GameView gameView) {
+        buildableTowers = towerDao.retrieveTemplateTowers();
+        buildableTowers.forEach(gameView::addTowerButton);
+    }
+
+    /**
+     * Reinitialisiert den Spielbildschirm nach dem Laden
+     *
+     * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
+     * @param gamestate  Der Spielzustand für die Reinitialisierung
+     */
+    private void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+        gamestate.getProjectiles().forEach(projectile -> {
+            gameScreen.addProjectile(projectile);
+            projectile.notifyObserver();
+        });
+        gamestate.getTowers().forEach(tower -> {
+            gameScreen.addTower(tower);
+            tower.notifyObserver();
+        });
+        gamestate.getEnemies().forEach(enemy -> {
+            gameScreen.addEnemy(enemy);
+            enemy.notifyObserver();
+        });
     }
 
     /**
@@ -173,540 +192,40 @@ public class GameLogicController implements LogicController {
      */
     @Override
     public void update(float deltaTime) {
-        if (!gamestate.isGameOver() && !pause) {
-            determineNewRound();
-            if (gamestate.isRoundEnded()) {
-                determineGameOver();
-            }
-
-            if (!gamestate.isGameOver()) {
-                if (gamestate.isRoundEnded()) {
-                    gamestate.setRoundEnded(false);
-                    startNewRound();
-                }
-                //applyPlayerDamage();
-                spawnWave(deltaTime);
-                applyAuras(deltaTime);
-                applyMovement(deltaTime);
-                makeAttacks(deltaTime);
-                moveProjectiles(deltaTime);
-                applyBuffsToTowers(deltaTime);
-                applyDebuffsToEnemies(deltaTime);
-            }
+        float maxDelta = 1f / MIN_NUMBER_OF_UPDATES;
+        if (loaded) {
+            loaded = false;
+            deltaTime = maxDelta;
         }
-    }
-
-    /**
-     * Wendet Auras auf die Objekte des Spiels an
-     *
-     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
-     */
-    private void applyAuras(float deltaTime) {
-
-        if (auraRefreshTimer > 0) {
-            auraRefreshTimer -= deltaTime;
-            return;
+        if (deltaTime > maxDelta) {
+            float remainingDeltaTime = deltaTime;
+            while (remainingDeltaTime > maxDelta) {
+                update(maxDelta);
+                remainingDeltaTime -= maxDelta;
+            }
+            update(remainingDeltaTime);
         } else {
-            auraRefreshTimer = AURA_REFRESH_RATE;
-            auraRefreshTimer -= deltaTime;
-        }
+            if (!gamestate.isGameOver() && !pause) {
+                determineNewRound();
+                if (gamestate.isRoundEnded()) {
+                    determineGameOver();
+                }
 
-        for (Tower tower : gamestate.getTowers()) {
-            List<Aura> auras = tower.getAuras();
-            for (Aura aura : auras) {
-                List<Debuff> debuffs = aura.getDebuffs();
-                List<Buff> buffs = aura.getBuffs();
-
-                for (Debuff debuff : debuffs) {
-                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, aura.getRange());
-                    for (Enemy enemyInRange : enemiesInRange) {
-                        addDebuffToEnemy(enemyInRange, debuff);
+                if (!gamestate.isGameOver()) {
+                    if (gamestate.isRoundEnded()) {
+                        gamestate.setRoundEnded(false);
+                        startNewRound();
                     }
-                }
-
-                for (Buff buff : buffs) {
-                    List<Tower> towersInRange = getTowersInRange(tower.getxPosition(), tower.getyPosition(), aura.getRange());
-                    for (Tower towerInRange : towersInRange) {
-                        addBuffToTower(towerInRange, buff);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     *
-     */
-    private void addDebuffToEnemy(Enemy enemy, Debuff debuff) {
-        for (Debuff debuffToCheck : enemy.getDebuffs()) {
-            if (debuff.getName().equals(debuffToCheck.getName())) {
-                return;
-            }
-        }
-
-        enemy.addDebuff(new Debuff(debuff));
-    }
-
-    /**
-     *
-     */
-    private void addBuffToTower(Tower tower, Buff buff) {
-        for (Buff buffToCheck : tower.getBuffs()) {
-            if (buff.getName().equals(buffToCheck.getName())) {
-                return;
-            }
-        }
-
-        tower.addBuff(new Buff(buff));
-    }
-
-    /**
-     *
-     * Ermittelt eine Liste von Türmen in einem Umkreis um einen Punkt.
-     *
-     * @param xPosition Die x-Position des Umkreises, in dem gesucht wird
-     * @param yPosition Die y-Position des Umkreises, in dem gesucht wird
-     * @param range Der Radius, in dem gesucht werden soll
-     * @return Die Liste der gefundenen Türme
-     */
-    private List<Tower> getTowersInRange(float xPosition, float yPosition, float range) {
-        List<Tower> towersInRange = new LinkedList<>();
-
-        for (Tower tower : gamestate.getTowers()) {
-
-            double distance = distance(xPosition, yPosition, tower.getxPosition(), tower.getyPosition());
-
-            if (distance <= range) {
-                towersInRange.add(tower);
-            }
-        }
-
-        return towersInRange;
-    }
-
-    /**
-     * Gibt alle Gegner zurück, die sich in einem angegebenen Umkreis eines Turms befinden.
-     *
-     * @param tower Der Turm, der als Referenzpunkt genutzt wird
-     * @param range Der Radius um den Turm, in dem gesucht wird
-     * @return Die Liste der gefundenen Gegner
-     */
-    private List<Enemy> getEnemiesInTowerRange(Tower tower, float range) {
-        List<Enemy> enemiesInRange = new LinkedList<>();
-
-        for (Enemy enemy : tower.getOwner().getAttackingEnemies()) {
-            if (isEnemyInRangeOfTower(enemy, tower, range)) {
-                enemiesInRange.add(enemy);
-            }
-        }
-
-        return enemiesInRange;
-    }
-
-    /**
-     * Gibt alle Gegner zurück, die sich Flächenschaden-Radius eines Projektils befinden
-     *
-     * @param projectile Das Projektil, das den Flächenschaden verursacht
-     * @return Die Liste der ermittelten Gegner
-     */
-    private List<Enemy> getEnemiesInSplashRadius(Projectile projectile) {
-        List<Enemy> enemiesInRange = new LinkedList<>();
-
-        for (Enemy enemy : projectile.getTowerThatShot().getOwner().getAttackingEnemies()) {
-            if (isEnemeyInSplashRadius(enemy, projectile)) {
-                enemiesInRange.add(enemy);
-            }
-        }
-
-        return enemiesInRange;
-    }
-
-    /**
-     * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Projektils befindet.
-     *
-     * @param enemy Der Gegner, der geprüft werden soll.
-     * @param projectile Das Projektil, von dem der Flächenschaden ausgeht.
-     * @return @code{true}, wenn sich der Gegner im Radius befindet. Ansonsten @code{false}
-     */
-    private boolean isEnemeyInSplashRadius(Enemy enemy, Projectile projectile) {
-        double distance = distance(projectile.getxPosition(), projectile.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
-        return distance <= projectile.getSplashRadius();
-    }
-
-    /**
-     * Überprüft, ob sich ein Gegner in Reichweite eines Turmes befindet.
-     *
-     * @param enemy Der Gegner, der geprüft werden soll.
-     * @param tower Der Turm, dessen Reichweite geprüft werden soll
-     * @param range Die Reichweite des Turms
-     * @return @code{true}, wenn sich der Gegner im Radius befindet. Ansonsten @code{false}
-     */
-    private boolean isEnemyInRangeOfTower(Enemy enemy, Tower tower, float range) {
-        double distance = distance(tower.getxPosition(), tower.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
-        return distance <= range;
-    }
-
-    /**
-     *
-     * Wendet die Buffs aller Türme auf diese an.
-     *
-     * @param deltaTime Die Zeit, die seit dem letzten Rendern vergangen ist
-     */
-    private void applyBuffsToTowers(float deltaTime) {
-        for (Tower tower : gamestate.getTowers()) {
-
-            List<Buff> buffsToRemove = new LinkedList<>();
-
-            tower.setCurrentAttackDamage(tower.getBaseAttackDamage());
-            tower.setCurrentAttackSpeed(tower.getBaseAttackSpeed());
-
-            for (Buff buff : tower.getBuffs()) {
-                tower.setCurrentAttackSpeed(tower.getCurrentAttackSpeed() * (1 / buff.getAttackSpeedMultiplier()));
-                tower.setCurrentAttackDamage(tower.getCurrentAttackDamage() * buff.getAttackDamageMultiplier());
-                buff.setDuration(buff.getDuration() - deltaTime);
-                if (buff.getDuration() < 0) {
-                    buffsToRemove.add(buff);
-                }
-            }
-
-            buffsToRemove.forEach(tower::removeBuff);
-        }
-    }
-
-    /**
-     *
-     * Wendet die Buffs aller Gegner auf diese an.
-     *
-     * @param deltaTime Die Zeit, die seit dem letzten Rendern vergangen ist
-     */
-    private void applyDebuffsToEnemies(float deltaTime) {
-        for (Enemy enemy : gamestate.getEnemies()) {
-
-            List<Debuff> debuffsToRemove = new LinkedList<>();
-
-            float oldMaxHitPoints = enemy.getCurrentMaxHitPoints();
-
-            enemy.setCurrentSpeed(enemy.getBaseSpeed());
-            enemy.setCurrentArmor(enemy.getBaseArmor());
-            enemy.setCurrentMaxHitPoints(enemy.getBaseMaxHitPoints());
-            // TODO: Damage over Time Debuffs ergänzen.
-
-            for (Debuff debuff : enemy.getDebuffs()) {
-                enemy.setCurrentSpeed(enemy.getCurrentSpeed() * debuff.getSpeedMultiplier());
-                enemy.setCurrentArmor(enemy.getCurrentArmor() + debuff.getArmorBonus());
-                enemy.setCurrentMaxHitPoints(enemy.getCurrentMaxHitPoints() + debuff.getHealthBonus());
-
-                if (enemy.getCurrentMaxHitPoints() < 0) {
-                    enemy.setCurrentMaxHitPoints(1);
-                }
-
-                if (!debuff.isPermanent()) {
-                    debuff.setDuration(debuff.getDuration() - deltaTime);
-                }
-
-                if (debuff.getDuration() < 0) {
-                    debuffsToRemove.add(debuff);
-                }
-            }
-
-            enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() * enemy.getCurrentMaxHitPoints() / oldMaxHitPoints);
-
-            for (Debuff debuff : debuffsToRemove) {
-                enemy.removeDebuff(debuff);
-            }
-        }
-    }
-
-    /**
-     * Bewegt die Einheiten
-     *
-     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
-     */
-    private void applyMovement(float deltaTime) {
-        for (Enemy enemy : gamestate.getEnemies()) {
-            if (Math.floor(getDistanceToNextPoint(enemy)) <= DISTANCE_TOLERANCE) {
-                enemy.incrementWayPointIndex();
-            }
-            if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
-                applyDamageToPlayer(enemy);
-                if (enemy.isRespawning()) {
-                    addEnemy(new Enemy(enemy), enemy.getAttackedPlayer().getPlayerNumber());
-                }
-                break;
-            }
-
-            moveInTargetDirection(enemy, deltaTime);
-            enemy.notifyObserver();
-        }
-    }
-
-
-    /**
-     * Bewegt die Geschosse. Trifft ein Geschoss sein Ziel, wird diesem Schaden zugefügt.
-     *
-     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
-     */
-    private void moveProjectiles(float deltaTime) {
-        List<Projectile> projectilesThatHit = new ArrayList<>();
-
-        for (Projectile projectile : gamestate.getProjectiles()) {
-
-            if (Math.floor(getDistanceToTarget(projectile)) <= DISTANCE_TOLERANCE) {
-                projectilesThatHit.add(projectile);
-                continue;
-            }
-            moveInTargetDirection(projectile, deltaTime);
-        }
-
-        for (Projectile projectile : projectilesThatHit) {
-            applyDamageToTarget(projectile);
-        }
-    }
-
-
-    private void moveInTargetDirection(Enemy enemy, float deltaTime) {
-        // FIXME: Bei Verschieben des Fensters wird die "Kollision" mit Wegpunkten nicht korrekt berechnet
-        // Hierfür könnte eine Aktualisierung des Spielzustandes, unabhängig von der der View, tatsächlich Sinn ergeben...
-        Coordinates nextWayPoint = enemy.getAttackedPlayer().getWayPoints().get(enemy.getWayPointIndex());
-
-        float xPosition = enemy.getxPosition();
-        float yPosition = enemy.getyPosition();
-        float targetxPosition = nextWayPoint.getXCoordinate() * gamestate.getTileWidth();
-        float targetyPosition = nextWayPoint.getYCoordinate() * gamestate.getTileHeight();
-        float currentSpeed = enemy.getCurrentSpeed();
-
-        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
-
-        enemy.setTargetxPosition(targetxPosition);// + tileSize / 2;
-        enemy.setTargetyPosition(targetyPosition);// + tileSize / 2;
-        enemy.setxPosition(xPosition + (float) Math.cos(angle) * currentSpeed * deltaTime);
-        enemy.setyPosition(yPosition + (float) Math.sin(angle) * currentSpeed * deltaTime);
-    }
-
-    private void moveInTargetDirection(Projectile projectile, float deltaTime) {
-
-        float xPosition = projectile.getxPosition();
-        float yPosition = projectile.getyPosition();
-        float targetxPosition = projectile.getTarget().getxPosition();
-        float targetyPosition = projectile.getTarget().getyPosition();
-
-        float speed = projectile.getSpeed();
-
-        float angle = (float) Math.atan2(targetyPosition - yPosition, targetxPosition - xPosition);
-        projectile.setxPosition(xPosition + (float) Math.cos(angle) * speed * deltaTime);
-        projectile.setyPosition(yPosition + (float) Math.sin(angle) * speed * deltaTime);
-        projectile.setTargetxPosition(targetxPosition);
-        projectile.setTargetyPosition(targetyPosition);
-        projectile.notifyObserver();
-    }
-
-    private void applyDamageToTarget(Projectile projectile) {
-        List<Enemy> enemiesHit = new LinkedList<>();
-        Enemy mainTarget = projectile.getTarget();
-        mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints() - projectile.getDamage() * calculateDamageMultiplier(mainTarget, projectile.getAttackType()));
-        enemiesHit.add(mainTarget);
-
-        if (projectile.getSplashRadius() > 0) {
-            List<Enemy> enemiesInSplashRadius = getEnemiesInSplashRadius(projectile);
-            for (Enemy enemyInSplashRadius : enemiesInSplashRadius) {
-                float damageMultiplier = calculateDamageMultiplier(enemyInSplashRadius, projectile.getAttackType());
-                enemyInSplashRadius.setCurrentHitPoints(enemyInSplashRadius.getCurrentHitPoints() - projectile.getDamage() * projectile.getsplashAmount() * damageMultiplier);
-                enemiesHit.add(enemyInSplashRadius);
-            }
-        }
-
-        for (Enemy enemyHit : enemiesHit) {
-            for (Debuff debuff : projectile.getApplyingDebuffs()) {
-                addDebuffToEnemy(enemyHit, debuff);
-            }
-            calculateDamageImpact(enemyHit, projectile.getTowerThatShot());
-        }
-        removeProjectile(projectile);
-    }
-
-    private void calculateDamageImpact(Enemy enemy, Tower tower) {
-        if (enemy.getCurrentHitPoints() <= 0) {
-            Player attackedPlayer = enemy.getAttackedPlayer();
-            if (attackedPlayer != null) {
-                attackedPlayer.addToResources(enemy.getBounty());
-                attackedPlayer.addToScore(enemy.getPointsGranted());
-                attackedPlayer.notifyObserver();
-                removeEnemy(enemy);
-            }
-            tower.setCurrentTarget(null);
-        }
-
-    }
-
-    private void removeProjectile(Projectile projectileToRemove) {
-        projectileToRemove.setRemoved(true);
-        projectileToRemove.notifyObserver();
-        gamestate.removeProjectile(projectileToRemove);
-    }
-
-    private float calculateDamageMultiplier(Enemy enemy, int attackType) {
-        float armor = enemy.getCurrentArmor();
-        float damageModifier = 1;
-
-        // TODO: Eindeutigeren Namen hinzufügen
-        float armorEffect = ATTACK_DEFENSE_MATRIX[attackType][enemy.getArmorType()];
-
-        if (armor > 0) {
-            damageModifier = 1 - (armor * DAMAGE_REDUCTION_FACTOR) / (1 + DAMAGE_REDUCTION_FACTOR * armor);
-        } else if (armor < 0) {
-            damageModifier = 2 - (float) Math.pow(0.94, -armor);
-        }
-
-        return armorEffect * damageModifier;
-    }
-
-    /**
-     * Berechnet die Distanz eines Geschosses zu seinem Ziel
-     *
-     * @param projectile Das Geschoss, für das die Distanz zum Zielobjekt berechnet werden soll
-     * @return Die Distanz zum Zielobjekt des Projektils
-     */
-    private float getDistanceToTarget(Projectile projectile) {
-        float x1 = projectile.getxPosition();
-        float x2 = projectile.getTarget().getxPosition();
-        float y1 = projectile.getyPosition();
-        float y2 = projectile.getTarget().getyPosition();
-        return (float) distance(x1, y1, x2, y2);
-    }
-
-    /**
-     * Lässt die Türme angreifen
-     *
-     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
-     */
-    private void makeAttacks(float deltaTime) {
-
-        for (Tower tower : gamestate.getTowers()) {
-
-            if (tower.getCooldown() > 0) {
-                tower.setCooldown(tower.getCooldown() - deltaTime);
-            }
-
-            Enemy newTarget = null;
-
-            if (!isTargetStillInTowerRange(tower)) {
-                tower.setCurrentTarget(null);
-                float timeSinceLastSearch = tower.getTimeSinceLastSearch();
-                if (timeSinceLastSearch >= SEARCH_TARGET_INTERVAL) {
-                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, tower.getAttackRange());
-                    enemiesInRange.sort(new DistanceComparator(tower.getxPosition(), tower.getyPosition()));
-                    if (!enemiesInRange.isEmpty()) {
-                        newTarget = enemiesInRange.get(0);
-                    }
-                    tower.setCurrentTarget(newTarget);
-                    tower.setTimeSinceLastSearch(0);
-                } else {
-                    tower.setTimeSinceLastSearch(timeSinceLastSearch + deltaTime);
-                }
-            }
-
-            if (tower.getCurrentTarget() != null) {
-                letTowerAttack(tower);
-            }
-        }
-    }
-
-    private void letTowerAttack(Tower tower) {
-        Enemy enemy = tower.getCurrentTarget();
-        if (tower.getCooldown() <= 0) {
-            switch (tower.getAttackStyle()) {
-                // TODO: Differenzierung nach Projektilarten einbauen
-                case PROJECTILE:
-                    addProjectile(tower);
-                    break;
-                case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
-                    enemy.setCurrentHitPoints(enemy.getCurrentHitPoints() - tower.getCurrentAttackDamage());
-                    calculateDamageImpact(enemy, tower);
-            }
-
-            tower.setCooldown(tower.getCurrentAttackSpeed());
-        }
-    }
-
-    private void applyDamageToPlayer(Enemy enemy) {
-        Player attackedPlayer = enemy.getAttackedPlayer();
-        attackedPlayer.setCurrentLives(attackedPlayer.getCurrentLives() - enemy.getAmountOfDamageToPlayer());
-        removeEnemy(enemy);
-    }
-
-    private void removeEnemy(Enemy enemy) {
-        enemy.getAttackedPlayer().removeEnemy(enemy);
-        enemy.setAttackedPlayer(null);
-        enemy.setDebuffs(new LinkedList<>());
-        gamestate.removeEnemy(enemy);
-        enemy.setGameState(null);
-        enemy.setRemoved(true);
-        enemy.notifyObserver();
-    }
-
-    private float getDistanceToNextPoint(Enemy enemy) {
-        float x1 = enemy.getxPosition();
-        float x2 = enemy.getTargetxPosition();
-        float y1 = enemy.getyPosition();
-        float y2 = enemy.getTargetyPosition();
-        return (float) distance(x1, y1, x2, y2);
-    }
-
-    /**
-     * Ermittelt, ob das Ziel eines Turms immer noch in Reichweite ist
-     *
-     * @param tower Der Turm, für den die Ermittlung durchgeführt werden soll.
-     * @return true, wenn das Ziel immer noch in Reichweite ist, ansonsten false
-     */
-    private boolean isTargetStillInTowerRange(Tower tower) {
-
-        Enemy target = tower.getCurrentTarget();
-
-        return target != null && !target.isRemoved() & isEnemyInRangeOfTower(target, tower, tower.getAttackRange());
-    }
-
-    /**
-     * Spawnt die nächste Angriffswelle
-     *
-     * @param deltaTime Die Zeit seit dem letzten Rendern.
-     */
-    private void spawnWave(float deltaTime) {
-        float timeUntilNextRound = gamestate.getTimeUntilNextRound();
-        if (timeUntilNextRound <= 0) {
-
-            int roundNumber = gamestate.getRoundNumber();
-
-            for (Player player : gamestate.getPlayers()) {
-
-                List<Wave> waves = player.getWaves();
-                Wave currentWave = waves.get(roundNumber);
-
-                if (currentWave.getEnemySpawnIndex() == 0) {
-                    Collections.shuffle(currentWave.getEnemies());
-                }
-
-                if (currentWave.getEnemies().size() <= currentWave.getEnemySpawnIndex()) {
-                    currentWave.setEnemySpawnIndex(0);
-                    player.setEnemiesSpawned(true);
-                    gamestate.setNewRound(false);
-                    if (gamestate.isEndlessGame()) {
-                        waves.add(new Wave(waves.get(roundNumber)));
-                    }
-                    break;
-                }
-
-                if (!player.isEnemiesSpawned() && player.getTimeSinceLastSpawn() > TIME_BETWEEN_SPAWNS) {
-                    Enemy enemy = currentWave.getEnemies().get(currentWave.getEnemySpawnIndex());
-                    currentWave.setEnemySpawnIndex(currentWave.getEnemySpawnIndex() + 1);
-                    addEnemy(enemy, player.getPlayerNumber());
-                    player.setTimeSinceLastSpawn(0);
-                } else {
-                    player.setTimeSinceLastSpawn(player.getTimeSinceLastSpawn() + deltaTime);
+                    gameLogicUnit.spawnWave(deltaTime);  //spawnWave(deltaTime);
+                    gameLogicUnit.applyAuras(deltaTime, gamestate); //applyAuras(deltaTime);
+                    gameLogicUnit.applyMovement(deltaTime, gamestate); //applyMovement(deltaTime);
+                    gameLogicUnit.makeAttacks(deltaTime);
+                    gameLogicUnit.moveProjectiles(deltaTime);
+                    gameLogicUnit.applyBuffsToTowers(deltaTime);
+                    gameLogicUnit.applyDebuffsToEnemies(deltaTime);
                 }
             }
         }
-
-        gamestate.setTimeUntilNextRound(timeUntilNextRound - deltaTime);
     }
 
     /**
@@ -719,14 +238,7 @@ public class GameLogicController implements LogicController {
                 gamestate.setRoundNumber(gamestate.getRoundNumber() + 1);
             }
 
-//            List<Projectile> remainingProjectiles = new LinkedList<>(gamestate.getProjectiles());
-//            for (Projectile remainingProjectile : remainingProjectiles) {
-//                removeProjectile(remainingProjectile);
-//                remainingProjectile.notifyObserver();
-//            }
-
             gamestate.notifyObserver();
-            //gameStateDao.update(gamestate);
             System.out.println("Runde zuende!");
         }
     }
@@ -757,6 +269,9 @@ public class GameLogicController implements LogicController {
         }
 
         gamestate.setGameOver(gameOver);
+        if(gamestate.isGameOver()){
+            gameScreen.endOfGameScreen();
+        }
     }
 
     private void determineLosers() {
@@ -835,21 +350,23 @@ public class GameLogicController implements LogicController {
 
         int numberOfColumns = (int) tiledMap.getProperties().get("width");
         int numberOfRows = (int) tiledMap.getProperties().get("height");
+        int tileWidth = (int) tiledMap.getProperties().get("tilewidth");
+        int tileHeight = (int) tiledMap.getProperties().get("tileheight");
 
-        gamestate.setTileWidth((int) tiledMap.getProperties().get("tilewidth"));
-        gamestate.setTileHeight((int) tiledMap.getProperties().get("tileheight"));
+        gamestate.setTileWidth(tileWidth);
+        gamestate.setTileHeight(tileHeight);
         gamestate.setNumberOfColumns(numberOfColumns);
         gamestate.setNumberOfRows(numberOfRows);
 
-        for (int i = 0; i < gamestate.getPlayers().size(); i++) {
-            Player player = gamestate.getPlayerByNumber(i);
-            TiledMapTileLayer waypointLayer = (TiledMapTileLayer) tiledMap.getLayers().get("WaypointsPlayer" + i);
+        for (int playerNumber = 0; playerNumber < gamestate.getPlayers().size(); playerNumber++) {
+            Player player = gamestate.getPlayerByNumber(playerNumber);
+            TiledMapTileLayer waypointLayer = (TiledMapTileLayer) tiledMap.getLayers().get("WaypointsPlayer" + playerNumber);
             List<Coordinates> wayPoints = new LinkedList<>();
-            for (int j = 0; j < numberOfRows; j++) {
-                for (int k = 0; k < numberOfColumns; k++) {
-                    if (waypointLayer.getCell(k, j) != null) {
-                        int waypointIndex = (int) waypointLayer.getCell(k, j).getTile().getProperties().get("waypointNumber");
-                        wayPoints.add(new Coordinates(k, j, i, waypointIndex));
+            for (int rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+                for (int columnNumber = 0; columnNumber < numberOfColumns; columnNumber++) {
+                    if (waypointLayer.getCell(columnNumber, rowNumber) != null) {
+                        int waypointIndex = (int) waypointLayer.getCell(columnNumber, rowNumber).getTile().getProperties().get("waypointNumber");
+                        wayPoints.add(new Coordinates(columnNumber, rowNumber, playerNumber, waypointIndex, tileWidth, tileHeight));
                     }
                 }
             }
@@ -862,30 +379,30 @@ public class GameLogicController implements LogicController {
         for (int i = 0; i < numberOfRows; i++) {
             for (int j = 0; j < numberOfColumns; j++) {
                 int buildableByPlayer = (int) buildPermissionLayer.getCell(j, i).getTile().getProperties().get("buildableByPlayer");
-                addGameMapTile(j, i, buildableByPlayer);
+                addGameMapTile(j, i, buildableByPlayer, tileWidth, tileHeight);
             }
         }
 
-        // TODO: Eventuell obsolet, es sei denn, wir wollen Graph-Algorithmen auf der Map einsetzen.
-        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
-
-            int mapCellXCoordinate = mapCell.getxCoordinate();
-            int mapCellYCoordinate = mapCell.getyCoordinate();
-            int numberOfCols = gamestate.getNumberOfColumns();
-
-            if (mapCellXCoordinate > 0) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
-            }
-            if (mapCellXCoordinate < numberOfColumns - 1) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
-            }
-            if (mapCellYCoordinate > 0) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
-            }
-            if (mapCellYCoordinate < numberOfRows - 1) {
-                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
-            }
-        }
+//        // TODO: Eventuell obsolet, es sei denn, wir wollen Graph-Algorithmen auf der Map einsetzen.
+//        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
+//
+//            int mapCellXCoordinate = mapCell.getxCoordinate();
+//            int mapCellYCoordinate = mapCell.getyCoordinate();
+//            int numberOfCols = gamestate.getNumberOfColumns();
+//
+//            if (mapCellXCoordinate > 0) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
+//            }
+//            if (mapCellXCoordinate < numberOfColumns - 1) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
+//            }
+//            if (mapCellYCoordinate > 0) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
+//            }
+//            if (mapCellYCoordinate < numberOfRows - 1) {
+//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
+//            }
+//        }
     }
 
     /**
@@ -895,8 +412,8 @@ public class GameLogicController implements LogicController {
      * @param yCoordinate       Die y-Koordinate des Feldes auf der Karte
      * @param buildableByPlayer Die Nummer der Spielerin, die auf dem Feld bauen darf. -1, wenn das Feld nicht bebaubar ist
      */
-    private void addGameMapTile(int xCoordinate, int yCoordinate, int buildableByPlayer) {
-        Coordinates coordinates = new Coordinates(xCoordinate, yCoordinate, buildableByPlayer);
+    private void addGameMapTile(int xCoordinate, int yCoordinate, int buildableByPlayer, int tileWidth, int tileHeight) {
+        Coordinates coordinates = new Coordinates(xCoordinate, yCoordinate, buildableByPlayer, tileWidth, tileHeight);
         gamestate.addCoordinatesToCollisionMatrix(coordinates);
     }
 
@@ -927,64 +444,7 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xCoordinate + yCoordinate);
     }
 
-    private void addEnemy(Enemy enemy, int playerNumber) {
-        Player attackedPlayer = gamestate.getPlayerByNumber(playerNumber);
-        attackedPlayer.addEnemy(enemy);
-        enemy.setAttackedPlayer(attackedPlayer);
-        gamestate.addEnemy(enemy);
-        enemy.setGameState(gamestate);
-        enemy.addDebuff(generateDifficultyDebuff(enemy.getAttackedPlayer().getDifficulty()));
-        enemy.addDebuff(generateRoundNumberDebuff());
-        setEnemyToStartPosition(enemy);
-        gameScreen.addEnemy(enemy);
-        enemy.notifyObserver();
-    }
 
-    private Debuff generateDifficultyDebuff(Difficulty difficulty) {
-
-        Debuff difficultyDebuff = new Debuff();
-
-        difficultyDebuff.setPermanent(true);
-
-        switch (difficulty) {
-            case TESTMODE:
-                difficultyDebuff.setArmorBonus(-100);
-                difficultyDebuff.setHealthBonus(-1000);
-                difficultyDebuff.setSpeedMultiplier(0.5f);
-                break;
-            case EASY:
-                difficultyDebuff.setArmorBonus(-6);
-                difficultyDebuff.setSpeedMultiplier(0.7f);
-                break;
-            case HARD:
-                difficultyDebuff.setArmorBonus(6);
-                difficultyDebuff.setSpeedMultiplier(1.3f);
-                break;
-        }
-
-        return difficultyDebuff;
-    }
-
-    private Debuff generateRoundNumberDebuff() {
-
-        Debuff roundNumberDebuff = new Debuff();
-
-        roundNumberDebuff.setArmorBonus(gamestate.getRoundNumber() * ARMOR_INCREASE_PER_LEVEL);
-        roundNumberDebuff.setSpeedMultiplier(1 + ((float) gamestate.getRoundNumber()) / 100 * SPEED_INCREASE_PER_LEVEL);
-
-        return roundNumberDebuff;
-    }
-
-    /**
-     * Setzt einen Gegner an seine Startposition (zurück)
-     *
-     * @param enemy Der Gegner, der an die Startposition (zurück)gesetzt werden soll
-     */
-    private void setEnemyToStartPosition(Enemy enemy) {
-        Coordinates startCoordinates = enemy.getAttackedPlayer().getWayPoints().get(0);
-        enemy.setxPosition(startCoordinates.getXCoordinate() * gamestate.getTileWidth());// + tileSize / 2;
-        enemy.setyPosition(startCoordinates.getYCoordinate() * gamestate.getTileHeight());// + tileSize / 2;
-    }
 
     void addTower(Tower tower, int xPosition, int yPosition, int playerNumber) {
         Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
@@ -995,17 +455,11 @@ public class GameLogicController implements LogicController {
         tower.setPosition(coordinates);
         coordinates.setTower(tower);
 
-        tower.setGamestate(gamestate);
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
     }
 
-    private void addProjectile(Tower tower) {
-        Projectile projectile = new Projectile(tower);
 
-        gamestate.addProjectile(projectile);
-        gameScreen.addProjectile(projectile);
-    }
 
     /**
      * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
@@ -1018,8 +472,13 @@ public class GameLogicController implements LogicController {
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
 
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde darf nicht gebaut werden!", playerNumber);
+            return;
+        }
+
         if (checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, playerNumber)) {
-            Tower tower = createNewTower(towerType);
+            Tower tower = new Tower(buildableTowers.get(towerType));
             int towerPrice = tower.getPrice();
             Player player = gamestate.getPlayerByNumber(playerNumber);
             int playerResources = player.getResources();
@@ -1094,6 +553,11 @@ public class GameLogicController implements LogicController {
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde darf nicht verkauft werden!", playerNumber);
+            return;
+        }
+
         Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
 
         Tower tower = mapCell.getTower();
@@ -1137,6 +601,11 @@ public class GameLogicController implements LogicController {
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde darf nicht aufgerüstet werden!", playerNumber);
+            return;
+        }
+
         Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
         Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
         Tower tower = mapCell.getTower();
@@ -1165,6 +634,11 @@ public class GameLogicController implements LogicController {
      */
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
+
+        if (isActiveRound()) {
+            displayErrorMessage("Während der Runde dürfen keine Gegner geschickt werden!", sendingPlayerNumber);
+            return;
+        }
 
         Enemy enemy = createNewEnemy(enemyType);
         Player sendingPlayer = gamestate.getPlayerByNumber(sendingPlayerNumber);
@@ -1217,6 +691,20 @@ public class GameLogicController implements LogicController {
         return gameScreen;
     }
 
+    @Override
+    public void saveGame(String saveGameName) {
+        System.out.println(saveGameName);
+        Gamestate newGameState = new Gamestate(gamestate);
+        gameStateDao.create(newGameState);
+        SaveState saveState = new SaveState(new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
+        saveStateDao.create(saveState);
+    }
+
+    @Override
+    public void loadGame(int id) {
+
+    }
+
     /**
      * Beendet das Spiel
      *
@@ -1225,11 +713,12 @@ public class GameLogicController implements LogicController {
     public void exitGame(boolean saveBeforeExit) {
         gameScreen.dispose();
         if (saveBeforeExit) {
-            SaveState saveState = new SaveState(new Date(), multiplayer, profile, gamestate, localPlayerNumber, mapPath);
-            //saveStateDao.create(saveState);
+            saveGame("Blah!");
         }
-        //mainController.setEndScreen(gamestate);
-        mainController.showMenuScreen();
+        if (server) {
+            gameServer.shutdown();
+        }
+        mainController.setEndScreen(gamestate);
     }
 
     @Override
@@ -1251,5 +740,21 @@ public class GameLogicController implements LogicController {
 
     public void setPause(boolean pause) {
         this.pause = pause;
+    }
+
+    @Override
+    public void gameConnectionLost() {
+        exitGame(false);
+    }
+
+    @Override
+    public boolean isActiveRound() {
+        // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
+        return gamestate.getTimeUntilNextRound() < 0;
+    }
+
+    @Override
+    public boolean isMultiplayer() {
+        return multiplayer;
     }
 }
