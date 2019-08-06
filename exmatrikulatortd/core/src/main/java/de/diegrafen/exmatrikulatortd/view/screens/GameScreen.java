@@ -111,7 +111,7 @@ public class GameScreen extends BaseScreen implements GameView {
     private List<TowerObject> previewTowers;
 
     private ImageButton upgrade;
-    private TextButton sell;
+    private ImageButton sell;
 
     private TowerObject previewTower;
 
@@ -642,7 +642,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
         Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
-        //Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
+        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
         //TextButtonStyle style = new TextButtonStyle();
         towerSelect = new Table();
         //towerSelect.setDebug(true);
@@ -653,9 +653,8 @@ public class GameScreen extends BaseScreen implements GameView {
         upgrade = new ImageButton(upgradeIcon);
         //sell = new ImageButton(sellIcon);
         //upgrade = new TextButton("^", skin);
-        sell = new TextButton("$$$", skin);
+        sell = new ImageButton(sellIcon);
         //upgrade.setSize(X_SIZE, Y_SIZE);
-        upgrade.setScale(3/4);
         sell.setSize(X_SIZE, Y_SIZE);
 
         TextButton instaLoose = new TextButton("L", skin);
