@@ -519,6 +519,9 @@ public class GameScreen extends BaseScreen implements GameView {
         orthogonalTiledMapRenderer.setView(getCamera());
     }
 
+    /**
+     * Erstellt das Userinterface mit Scene2d Tabellen
+     */
     private void initializeUserInterface() {
 
         Table opponent = new Table();
@@ -872,6 +875,9 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    /**
+     * Erstellt/Zeigt den Pausenbildschirm an. Das Spiel UI wird ausgeblendet wärend das Spiel pausiert ist.
+     */
     private void pauseScreen() {
         if (logicController.isPause()) {
             pauseGroup = new Group();
@@ -928,6 +934,10 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    /**
+     * Der Bildschirm der am Ende vom Spiel dargestellt wird.
+     * Gewonnen/Verloren + Punkte + Highscore des Users
+     */
     @Override
     public void endOfGameScreen() {
         Group endScreenGroup = new Group();
@@ -969,6 +979,11 @@ public class GameScreen extends BaseScreen implements GameView {
         getUi().addActor(endScreenGroup);
     }
 
+    /**
+     * Erstellt das PopUp Menu an der gegebenen Position im Viewport.
+     * @param posX Die X-Koordinate wo das Menu erstellt wird
+     * @param posY Die Y-Koordinate wo das Menu erstellt wird
+     */
     private void popUpButtons(int posX, int posY) {
         int posXAllignment;
         int offset = 75;
