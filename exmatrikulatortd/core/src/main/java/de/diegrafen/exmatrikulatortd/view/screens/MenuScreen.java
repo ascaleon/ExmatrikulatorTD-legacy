@@ -14,6 +14,7 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
 import de.diegrafen.exmatrikulatortd.model.Profile;
+import de.diegrafen.exmatrikulatortd.model.SaveState;
 
 import java.util.LinkedList;
 
@@ -100,6 +101,7 @@ public class MenuScreen extends BaseScreen {
 
         createPreferenceMenuTable(menuStack);
         createSelectGameTypeTable(menuStack);
+        createLoadOrNewGameTable(menuStack);
         createSelectProfileMenuTable(menuStack);
         createNewProfileMenuTable(menuStack);
         createHighscoreMenuTable(menuStack);
@@ -191,7 +193,7 @@ public class MenuScreen extends BaseScreen {
         newSinglePlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, SINGLEPLAYER_MAP_PATH);
+                showLoadOrNewGameMenu(selectGameTypeTable);
             }
         });
 
@@ -213,10 +215,18 @@ public class MenuScreen extends BaseScreen {
 
     private void refreshSavestatesTable(){
         savestatesTable.clearChildren();
+        java.util.List<SaveState> savestates=getMainController().getAllSavestates();
+
+        for(SaveState saveState : savestates){
+            savestatesTable.row();
+            TextButton savestateButton = new TextButton(saveState.toString(), basicSkin);
+            savestatesTable.add(savestateButton);
+        }
     }
 
     private void createLoadOrNewGameTable(Stack menuStack){
         loadOrNewGameTable = new Table();
+        savestatesTable = new Table();
 
         TextButton newSinglePlayerGameButton = new TextButton("Neues Spiel",skin);
         TextButton loadSaveStateButton = new TextButton("Spiel laden", skin);
@@ -224,6 +234,14 @@ public class MenuScreen extends BaseScreen {
 
         createGenericMenuTable(menuStack, loadOrNewGameTable);
 
+        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        final ScrollPane savestatesTableScrollPane = new ScrollPane(savestatesTable, scrollPaneStyle);
+        savestatesTable.pad(10).defaults().expandX().space(4);
+
+        refreshSavestatesTable();
+
+        loadOrNewGameTable.add(savestatesTableScrollPane).fillX().uniformX();
+        loadOrNewGameTable.row().pad(10, 0, 10, 0);
         loadOrNewGameTable.add(newSinglePlayerGameButton).fillX().uniformX();
         loadOrNewGameTable.row().pad(10, 0, 10, 0);
         loadOrNewGameTable.add(loadSaveStateButton).fillX().uniformX();
@@ -235,6 +253,13 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, SINGLEPLAYER_MAP_PATH);
                 showMainMenu(selectGameTypeTable);
+            }
+        });
+
+        loadSaveStateButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("loadSaveStateButton");
             }
         });
 
@@ -666,11 +691,11 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void showLoadOrNewGameMenu(Table callingTable){
-        showTable(loadOrNewGameTable, callingTable);
+        showTable(callingTable,loadOrNewGameTable);
     }
 
     private void showClientOrServerMenu(Table callingTable) {
-        showTable(clientOrServerMenuTable, callingTable);
+        showTable(callingTable,clientOrServerMenuTable);
     }
 
     private void showSelectProfileMenu(Table callingTable) {

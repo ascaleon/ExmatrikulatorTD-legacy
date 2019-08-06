@@ -225,6 +225,10 @@ public class MainController {
         return gameClient.connect(host);
     }
 
+    public List<SaveState> getAllSavestates(){
+        return saveStateDao.findAllSaveStates();
+    }
+
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
@@ -242,7 +246,7 @@ public class MainController {
      */
     //public void loadSinglePlayerGame(SaveState saveState) {
     public void loadSinglePlayerGame() {
-        List<SaveState> saveStates = saveStateDao.findAllSaveStates();
+        List<SaveState> saveStates = getAllSavestates();
         SaveState saveState = saveStates.get(saveStates.size() - 1);
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen);
