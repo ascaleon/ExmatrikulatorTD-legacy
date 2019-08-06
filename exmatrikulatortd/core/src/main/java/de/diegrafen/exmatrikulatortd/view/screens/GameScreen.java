@@ -110,7 +110,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private List<TowerObject> previewTowers;
 
-    private TextButton upgrade;
+    private ImageButton upgrade;
     private TextButton sell;
 
     private TowerObject previewTower;
@@ -317,6 +317,11 @@ public class GameScreen extends BaseScreen implements GameView {
                 getCamera().position.y += touchDownY - position.y;
 
                 resetCameraToBorders();
+
+                if(popUp.isVisible()){
+                    popUp.setVisible(false);
+                    tableDecayTimer = 0;
+                }
 
                 return false;
             }
@@ -636,7 +641,7 @@ public class GameScreen extends BaseScreen implements GameView {
         playerHealth.setAnimateDuration(1);
 
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
-        //Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
+        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
         //Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
         //TextButtonStyle style = new TextButtonStyle();
         towerSelect = new Table();
@@ -645,11 +650,12 @@ public class GameScreen extends BaseScreen implements GameView {
         //Die einzelnen Towerbuttons
         logicController.createTowerButtons(this);
 
-        //upgrade = new ImageButton(upgradeIcon);
+        upgrade = new ImageButton(upgradeIcon);
         //sell = new ImageButton(sellIcon);
-        upgrade = new TextButton("^", skin);
+        //upgrade = new TextButton("^", skin);
         sell = new TextButton("$$$", skin);
-        upgrade.setSize(X_SIZE, Y_SIZE);
+        //upgrade.setSize(X_SIZE, Y_SIZE);
+        upgrade.setScale(3/4);
         sell.setSize(X_SIZE, Y_SIZE);
 
         TextButton instaLoose = new TextButton("L", skin);
