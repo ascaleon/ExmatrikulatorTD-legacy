@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
+import de.diegrafen.exmatrikulatortd.model.tower.ObservableTower;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
@@ -33,9 +33,7 @@ public class TowerObject extends BaseObject {
 
     private float attackFrameDuration;
 
-    private int towerType;
-
-    public TowerObject (ObservableUnit observableUnit, AssetManager assetManager) {
+    public TowerObject (ObservableTower observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
     }
 
@@ -61,8 +59,6 @@ public class TowerObject extends BaseObject {
             attackLeftAnimation.setFrameDuration(attackFrameDuration);
             attackRightAnimation.setFrameDuration(attackFrameDuration);
         }
-        towerType = getObservable().getTowerType();
-
     }
 
     /**
@@ -87,17 +83,11 @@ public class TowerObject extends BaseObject {
     public void update() {
         super.update();
 
-
         if (getObservable() != null) {
             attacking = getObservable().isAttacking();
         }
 
-        if (getxPosition() - getxTargetPosition() > 0) {
-            lookingLeft = true;
-        } else {
-            lookingLeft = false;
-        }
-
+        lookingLeft = getxPosition() - getxTargetPosition() > 0;
     }
 
     /**
@@ -140,19 +130,11 @@ public class TowerObject extends BaseObject {
                 currentFrame = idleRightAnimation.getKeyFrame(getStateTime(), true);
             }
         }
-        spriteBatch.draw(currentFrame, getxPosition() + (32 -currentFrame.getRegionWidth()/2), getyPosition());
-
-
-
+        spriteBatch.draw(currentFrame, getxPosition() + (32 - currentFrame.getRegionWidth() / 2), getyPosition());
     }
 
-    /**
-     * Entfernt das Spielobjekt
-     */
     @Override
-    public void dispose() {
-        super.dispose();
+    public ObservableTower getObservable() {
+        return (ObservableTower) super.getObservable();
     }
-
-
 }

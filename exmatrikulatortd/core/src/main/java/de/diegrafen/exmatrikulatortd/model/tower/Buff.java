@@ -66,11 +66,11 @@ public class Buff extends BaseModel {
      * @param buff Der Buff, der kopiert werden soll
      */
     public Buff(Buff buff) {
-        this.name = buff.getName();
-        this.duration = buff.getDuration();
-        this.attackSpeedMultiplier = buff.getAttackSpeedMultiplier();
-        this.attackDamageMultiplier = buff.getAttackDamageMultiplier();
-        this.permanent = buff.isPermanent();
+        this.name = buff.name;
+        this.duration = buff.duration;
+        this.attackSpeedMultiplier = buff.attackSpeedMultiplier;
+        this.attackDamageMultiplier = buff.attackDamageMultiplier;
+        this.permanent = buff.permanent;
     }
 
     public String getName() {

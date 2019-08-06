@@ -47,11 +47,7 @@ public class MenuScreen extends BaseScreen {
 
     private Table gameLobbyTable;
 
-    private Table playerTable;
-
     private java.util.List<String> serverList;
-
-    private Texture backgroundTexture;
 
     private Sprite backgroundSprite;
 
@@ -65,7 +61,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void init() {
         super.init();
-        backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
+        Texture backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
         backgroundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         backgroundSprite = new Sprite(backgroundTexture);
 
@@ -312,7 +308,7 @@ public class MenuScreen extends BaseScreen {
     private void createGameLobbyTable(Stack menuStack) {
 
         gameLobbyTable = new Table();
-        playerTable = new Table();
+        Table playerTable = new Table();
         Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
         final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         final ScrollPane playersScrollPane = new ScrollPane(playerTable, scrollPaneStyle);

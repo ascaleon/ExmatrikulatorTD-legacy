@@ -41,6 +41,10 @@ public class Aura extends BaseModel {
         this.buffs = buffs;
     }
 
+    /**
+     *
+     * @param tower
+     */
     public Aura(Tower tower) {
         this.range = tower.getAuraRange();
         this.debuffs = new LinkedList<>();

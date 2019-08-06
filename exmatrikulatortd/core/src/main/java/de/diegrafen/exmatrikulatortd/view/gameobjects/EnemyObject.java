@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import de.diegrafen.exmatrikulatortd.model.ObservableUnit;
+import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 
@@ -39,7 +39,7 @@ public class EnemyObject extends BaseObject {
         
     private Texture redHealthBar;
 
-    public EnemyObject(ObservableUnit observableUnit, AssetManager assetManager) {
+    public EnemyObject(ObservableEnemy observableUnit, AssetManager assetManager) {
         super(observableUnit, assetManager);
     }
 
@@ -130,5 +130,10 @@ public class EnemyObject extends BaseObject {
         pixmap.fill();
 
         return pixmap;
+    }
+
+    @Override
+    ObservableEnemy getObservable() {
+        return (ObservableEnemy) super.getObservable();
     }
 }

@@ -19,14 +19,6 @@ import java.util.List;
 @Entity
 @Table(name = "waypoints")
 @SecondaryTable(name = "collision_matrix")
-@NamedQueries({
-        @NamedQuery(name="Coordinates.findAll",
-                query="SELECT c FROM Coordinates c"),
-        @NamedQuery(name="Coordinates.findByXandY",
-                query="SELECT c FROM Coordinates c WHERE c.xCoordinate = :xCoordinate AND c.yCoordinate = :yCoordinate"),
-        @NamedQuery(name="Coordinates.findBuildableFields",
-                query="SELECT c FROM Coordinates c WHERE c.xCoordinate = :xCoordinate AND c.yCoordinate = :yCoordinate")
-})
 public class Coordinates extends BaseModel {
 
     /**
@@ -39,10 +31,14 @@ public class Coordinates extends BaseModel {
      */
     private int xCoordinate;
 
+    private int width;
+
     /**
      * Die y-Position der Koordinate
      */
     private int yCoordinate;
+
+    private int height;
 
     @Column(table = "waypoints")
     private int waypointIndex;
@@ -79,33 +75,37 @@ public class Coordinates extends BaseModel {
      * @param xCoordinate
      * @param yCoordinate
      */
-    private Coordinates(int xCoordinate, int yCoordinate) {
+    private Coordinates(int xCoordinate, int yCoordinate, int width, int height) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
+        this.width = width;
+        this.height = height;
     }
 
-    public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer) {
-        this(xCoordinate, yCoordinate);
+    public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer, int width, int height) {
+        this(xCoordinate, yCoordinate, width, height);
         this.buildableByPlayer = buildableByPlayer;
         this.neighbours = new ArrayList<>();
     }
 
-    public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex) {
-        this(xCoordinate, yCoordinate);
+    public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex, int width, int height) {
+        this(xCoordinate, yCoordinate, width, height);
         this.playerNumber = playerNumber;
         this.waypointIndex = waypointIndex;
     }
 
 
 
-    public Coordinates(Coordinates coordinates) {
-        this.xCoordinate = coordinates.getXCoordinate();
-        this.yCoordinate = coordinates.getYCoordinate();
-        this.playerNumber = coordinates.getPlayerNumber();
-        this.buildableByPlayer = coordinates.getBuildableByPlayer();
-        this.waypointIndex = coordinates.getWaypointIndex();
+    Coordinates(Coordinates coordinates) {
+        this.xCoordinate = coordinates.xCoordinate;
+        this.yCoordinate = coordinates.yCoordinate;
+        this.playerNumber = coordinates.playerNumber;
+        this.buildableByPlayer = coordinates.buildableByPlayer;
+        this.waypointIndex = coordinates.waypointIndex;
+        this.width = coordinates.width;
+        this.height = coordinates.height;
         if (coordinates.getTower() != null) {
-            this.tower = new Tower(coordinates.getTower());
+            this.tower = new Tower(coordinates.tower);
         }
         this.neighbours = null;
     }
@@ -165,5 +165,13 @@ public class Coordinates extends BaseModel {
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

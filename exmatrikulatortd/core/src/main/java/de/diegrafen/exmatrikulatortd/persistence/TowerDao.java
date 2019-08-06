@@ -1,6 +1,9 @@
 package de.diegrafen.exmatrikulatortd.persistence;
 
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+import org.hibernate.Session;
+
+import java.util.List;
 
 /**
  *
@@ -19,4 +22,19 @@ public class TowerDao extends BaseDao<Tower> {
     Class<Tower> getClazz() {
         return Tower.class;
     }
+
+    public boolean hasTableTemplateTowers() {
+        Session session = openCurrentSessionwithTransaction();
+        final List<Tower> towers = session.createNamedQuery("Tower.findTemplateTowers", getClazz()).getResultList();
+        closeCurrentSessionwithTransaction();
+        return !towers.isEmpty();
+    }
+
+    public List<Tower> retrieveTemplateTowers() {
+        Session session = openCurrentSessionwithTransaction();
+        final List<Tower> towers = session.createNamedQuery("Tower.findTemplateTowers", getClazz()).getResultList();
+        closeCurrentSessionwithTransaction();
+        return towers;
+    }
+
 }

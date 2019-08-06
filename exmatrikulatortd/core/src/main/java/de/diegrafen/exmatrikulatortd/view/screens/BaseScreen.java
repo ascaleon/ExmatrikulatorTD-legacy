@@ -71,7 +71,7 @@ abstract class BaseScreen implements Screen {
     /**
      * Der Screen wird initialisiert.
      */
-    public void init() {
+    void init() {
 
     }
 
@@ -99,7 +99,7 @@ abstract class BaseScreen implements Screen {
      * Wird immer nach einem Bestimmten Zeitabstand aufgerufen und die Logik des Spiels berechnet, damit danach in render() neu gezeichnet werden kann.
      * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
-    public void update(float deltaTime) {
+    void update(float deltaTime) {
 
     }
 
@@ -107,7 +107,7 @@ abstract class BaseScreen implements Screen {
      * Eigene Zeichenanweisungen.
      * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
-    public void draw(float deltaTime) {}
+    void draw(float deltaTime) {}
 
     /**
      * Falls das Fenster mit dem Spiel in der Größe angepasst wird, so muss auch der Viewport angepasst werden.
@@ -154,7 +154,7 @@ abstract class BaseScreen implements Screen {
         ui = null;
     }
 
-    public MainController getMainController() {
+    MainController getMainController() {
         return mainController;
     }
 
@@ -182,7 +182,7 @@ abstract class BaseScreen implements Screen {
         return stageViewport;
     }
 
-    public AssetManager getAssetManager() {
+    AssetManager getAssetManager() {
         return assetManager;
     }
 }
