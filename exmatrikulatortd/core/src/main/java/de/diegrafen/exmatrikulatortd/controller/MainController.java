@@ -11,10 +11,7 @@ import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
-import org.hibernate.Session;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -115,14 +112,6 @@ public class MainController {
     public void setEndScreen(Gamestate gamestate) {
         //game.setScreen(new EndScreen(this, game.getAssetManager(), gamestate));
         showMenuScreen();
-    }
-
-    public Profile getCurrentProfile() {
-        return currentProfile;
-    }
-
-    public void setCurrentProfile(Profile currentProfile) {
-        this.currentProfile = currentProfile;
     }
 
     /**
@@ -275,27 +264,6 @@ public class MainController {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen, gameServer);
         showScreen(gameScreen);
-    }
-
-    public List<Profile> retrieveProfiles(){
-        /*try{
-            return profileDao.openCurrentSession().createQuery("from Profiles").list();
-        } catch (final Exception e){
-            return new LinkedList<>();
-        }*/
-        final Session session=profileDao.openCurrentSession();
-        CriteriaBuilder criteriaBuilder=session.getCriteriaBuilder();
-        CriteriaQuery<Profile> criteriaQuery=criteriaBuilder.createQuery(Profile.class);
-        criteriaQuery.from(Profile.class);
-        return session.createQuery(criteriaQuery).getResultList();
-    }
-
-    public boolean noProfilesYet(){
-        return retrieveProfiles().isEmpty();
-    }
-
-    public void deleteProfile(final Profile profile){
-        profileDao.delete(profile);
     }
 
     public List<Highscore> retrieveHighscores(int limit) {
