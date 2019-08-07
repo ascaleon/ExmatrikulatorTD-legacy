@@ -217,7 +217,7 @@ public class MenuScreen extends BaseScreen {
 
     private void refreshSavestatesTable() {
         savestatesTable.clearChildren();
-        java.util.List<SaveState> savestates = getMainController().getAllSavestates();
+        java.util.List<SaveState> savestates = getMainController().getSaveStatesForCurrentProfile();
 
         for (SaveState saveState : savestates) {
             savestatesTable.row();
@@ -344,8 +344,10 @@ public class MenuScreen extends BaseScreen {
         switchProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile p = getSelectedProfileFromButtonGroup();
-                if (p != null) getMainController().setCurrentProfile(p);
+                Profile profile = getSelectedProfileFromButtonGroup();
+                if (profile != null) {
+                    getMainController().setCurrentProfile(profile);
+                }
             }
         });
 

@@ -16,6 +16,8 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name="SaveState.findAll",
                 query="SELECT s FROM SaveState s"),
+        @NamedQuery(name="SaveState.findSaveStatesForProfile",
+                query="SELECT s FROM SaveState s WHERE s.profile = :profile"),
 })
 public class SaveState extends BaseModel {
 

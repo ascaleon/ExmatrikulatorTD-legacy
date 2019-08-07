@@ -229,6 +229,10 @@ public class MainController {
         return saveStateDao.findAllSaveStates();
     }
 
+    public List<SaveState> getSaveStatesForCurrentProfile() {
+        return saveStateDao.findSaveStatesForProfile(currentProfile);
+    }
+
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
