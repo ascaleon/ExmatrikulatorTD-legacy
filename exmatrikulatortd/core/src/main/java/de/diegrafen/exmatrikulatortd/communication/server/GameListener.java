@@ -21,7 +21,7 @@ public class GameListener implements Listener {
 
     private LogicController logicController;
 
-    public GameListener(GameServer gameServer, LogicController logicController) {
+    GameListener(GameServer gameServer, LogicController logicController) {
         this.gameServer = gameServer;
         this.logicController = logicController;
     }
@@ -54,14 +54,11 @@ public class GameListener implements Listener {
 
     private void handleFinishedLoadingRequest(final Connection connection) {
         System.out.println("FinishedLoadingRequest erhalten!");
-        gameServer.getPlayersfinishedLoading()[gameServer.getConnectionAndPlayerNumbers().get(connection.getID())] = true;
-        //playersfinishedLoading[connectionAndPlayerNumbers.get(connection.getID())] = true;
+        gameServer.registerClientAsFinishedLoading(connection.getID());
         System.err.println(connection.getID() + " ist bereit!");
-        if (gameServer.haveAllPlayersFinishedLoading()) {
+        if (!gameServer.isGameRunning() & gameServer.haveAllPlayersFinishedLoading()) {
             gameServer.setGameRunning(true);
-
             gameServer.getServer().sendToAllTCP(new StartGameResponse());
-            //gameRunning = true;
             Gdx.app.postRunnable(() -> gameServer.getMainController().showScreen(logicController.getGameScreen()));
         }
     }

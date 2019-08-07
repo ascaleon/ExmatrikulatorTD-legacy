@@ -71,7 +71,7 @@ public class GameListener implements Listener {
     }
 
     private void handleStartGameReponse() {
-        if (gameClient.isGameRunning()) {
+        if (!gameClient.isGameRunning()) {
             gameClient.setGameRunning(true);
             System.err.println("Spiel läuft!");
             Gdx.app.postRunnable(() -> gameClient.getMainController().showScreen(clientLogicController.getGameScreen()));

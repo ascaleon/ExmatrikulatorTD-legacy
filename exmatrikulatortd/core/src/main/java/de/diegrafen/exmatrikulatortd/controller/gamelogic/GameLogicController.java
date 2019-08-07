@@ -87,6 +87,7 @@ public class GameLogicController implements LogicController {
         this.server = true;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
+        System.out.println("Blah.");
     }
 
     /**

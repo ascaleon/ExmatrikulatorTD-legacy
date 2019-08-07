@@ -46,9 +46,7 @@ public class ConnectionListener implements Listener {
     @Override
     public void disconnected(Connection connection) {
         if (!gameServer.isGameRunning()) {
-            gameServer.getSlotsFilled()[gameServer.getConnectionAndPlayerNumbers().get(connection.getID())] = false;
-            gameServer.getConnectionAndPlayerNumbers().remove(connection.getID());
-            gameServer.setLookingForPlayers(true);
+            gameServer.emptySlot(connection.getID());
         }
     }
 
@@ -66,13 +64,13 @@ public class ConnectionListener implements Listener {
     }
 
     private void handleClientReadyRequest(Connection connection) {
-            gameServer.getPlayersReady()[gameServer.getConnectionAndPlayerNumbers().get(connection.getID())] = true;
+        gameServer.setPlayerReady(connection.getID());
 
-            System.out.println("ClientReadyRequest erhalten!");
-            if (gameServer.areAllPlayersReady()) {
-                gameServer.getServer().sendToAllTCP(new AllPlayersReadyResponse());
-                //mainController.showLoadScreen();
-                Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath()));
-            }
+        System.out.println("ClientReadyRequest erhalten!");
+        if (gameServer.areAllPlayersReady()) {
+            gameServer.getServer().sendToAllTCP(new AllPlayersReadyResponse());
+            //mainController.showLoadScreen();
+            Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath()));
         }
+    }
 }

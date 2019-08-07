@@ -155,7 +155,7 @@ public class GameServer extends Connector implements ServerInterface {
      */
     public void attachRequestListeners(final LogicController logicController) {
         this.logicController = logicController;
-
+        server.addListener(new GameListener(this, logicController));
     }
 
     boolean haveAllPlayersFinishedLoading() {
@@ -276,6 +276,7 @@ public class GameServer extends Connector implements ServerInterface {
     public void serverFinishedLoading() {
         playersfinishedLoading[0] = true;
         if (haveAllPlayersFinishedLoading()) {
+            System.out.println("Start Game!");
             gameRunning = true;
             server.sendToAllTCP(new StartGameResponse());
             Gdx.app.postRunnable(() -> {
@@ -338,5 +339,19 @@ public class GameServer extends Connector implements ServerInterface {
 
     void setLookingForPlayers(boolean lookingForPlayers) {
         this.lookingForPlayers = lookingForPlayers;
+    }
+
+    void emptySlot(int connectionID) {
+        getSlotsFilled()[connectionAndPlayerNumbers.get(connectionID)] = false;
+        connectionAndPlayerNumbers.remove(connectionID);
+        lookingForPlayers = true;
+    }
+
+    void setPlayerReady(int connectionID) {
+        playersReady[connectionAndPlayerNumbers.get(connectionID)] = true;
+    }
+
+    void registerClientAsFinishedLoading(int connectionID) {
+        playersfinishedLoading[connectionAndPlayerNumbers.get(connectionID)] = true;
     }
 }
