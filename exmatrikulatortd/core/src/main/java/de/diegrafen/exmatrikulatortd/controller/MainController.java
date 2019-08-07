@@ -230,7 +230,6 @@ public class MainController {
      */
     public void createNewSinglePlayerGame(int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        this.currentProfile = createNewProfile("Sherlock Holmes", Difficulty.EASY, "Sherlock.png");
         new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
         showScreen(gameScreen);
     }
@@ -246,9 +245,6 @@ public class MainController {
         SaveState saveState = saveStates.get(saveStates.size() - 1);
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen);
-        for (SaveState saveState1 : saveStateDao.findAllSaveStates()) {
-            System.out.println(saveState1.getGamestate().getMapName());
-        }
         showScreen(gameScreen);
     }
 

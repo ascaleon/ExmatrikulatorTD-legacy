@@ -12,6 +12,8 @@ public final class Constants {
 
     public static final int NUMBER_OF_TOWERS = 5;
 
+    public static final float CAMERA_TRANSLATE_VALUE = 5;
+
     public static final int REGULAR_TOWER = 0;
 
     public static final int SLOW_TOWER = 1;

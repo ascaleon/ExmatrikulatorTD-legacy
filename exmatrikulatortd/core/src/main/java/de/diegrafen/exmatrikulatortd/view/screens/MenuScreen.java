@@ -238,6 +238,13 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
+        loadSaveStateButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().loadSinglePlayerGame();
+            }
+        });
+
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -433,7 +440,8 @@ public class MenuScreen extends BaseScreen {
         for (Highscore highscore : zweiteHighscoreList) {
             // FIXME: Formatierung passt noch nicht so ganz.
             highScoreTable.row();
-            Table rowTable = new TextButton(highscore.getProfile().getProfileName() +
+            Profile profile = highscore.getProfile();
+            Table rowTable = new TextButton(profile.getProfileName() +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
                     "\nDate played: " + highscore.getDatePlayed(), basicSkin);
             highScoreTable.add(rowTable);

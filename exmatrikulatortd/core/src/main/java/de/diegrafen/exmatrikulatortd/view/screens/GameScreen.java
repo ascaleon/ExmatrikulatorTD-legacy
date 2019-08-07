@@ -34,6 +34,7 @@ import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
+import static de.diegrafen.exmatrikulatortd.util.Constants.CAMERA_TRANSLATE_VALUE;
 
 /**
  * Der GameScreen wird während des aktuellen Spiels angezeigt.
@@ -431,22 +432,28 @@ public class GameScreen extends BaseScreen implements GameView {
     public void draw(float deltaTime) {
         super.draw(deltaTime);
 
-        float translateValue = 5;
+        float oldCameraXValue = getCamera().position.x;
+        float oldCameraYValue = getCamera().position.y;
 
         if (keyLeftDown) {
-            getCamera().translate(-translateValue, 0);
+            getCamera().translate(-CAMERA_TRANSLATE_VALUE, 0);
         }
         if (keyRightDown) {
-            getCamera().translate(translateValue, 0);
+            getCamera().translate(CAMERA_TRANSLATE_VALUE, 0);
         }
         if (keyUpDown) {
-            getCamera().translate(0, translateValue);
+            getCamera().translate(0, CAMERA_TRANSLATE_VALUE);
         }
         if (keyDownDown) {
-            getCamera().translate(0, -translateValue);
+            getCamera().translate(0, -CAMERA_TRANSLATE_VALUE);
         }
 
         resetCameraToBorders();
+
+        float cameraDeltaX = oldCameraXValue - getCamera().position.x;
+        float cameraDeltaY = oldCameraYValue - getCamera().position.y;
+
+        popUp.setPosition(popUp.getX() + cameraDeltaX, popUp.getY() + cameraDeltaY);
 
         getCamera().update();
         if (orthogonalTiledMapRenderer != null) {
@@ -556,7 +563,7 @@ public class GameScreen extends BaseScreen implements GameView {
         progressBarStyle.knob = hiddenBar;
         progressBarStyle.knobBefore = greenBar;
 
-        if (logicController.isMultiplayer()) {
+        if (!logicController.isMultiplayer()) {
             //int localPlayerNumber = logicController.getLocalPlayerNumber();
             int numberOfPlayers = gameState.getPlayers().size();
             Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
@@ -571,14 +578,17 @@ public class GameScreen extends BaseScreen implements GameView {
             opponent.add(opponentScore).left().row();
             opponent.add(opponentHealth).left();
 
-            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
-            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
+//            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
+//            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
 
-            //ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
-            //ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
+            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
+            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
 
-            TextButton sendRegEnemy = new TextButton("sre", skin);
-            TextButton sendHvyEnemy = new TextButton("she", skin);
+            ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
+            ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
+
+            //TextButton sendRegEnemy = new TextButton("sre", skin);
+            //TextButton sendHvyEnemy = new TextButton("she", skin);
             //sendRegEnemy.scaleBy(5);
             //sendHvyEnemy.setScale(5);
             sendRegEnemy.addListener(new ClickListener() {
@@ -597,6 +607,7 @@ public class GameScreen extends BaseScreen implements GameView {
             sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", ttm, skin));
             sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
             sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
+
         }
 
         final Table statsTable = new Table();
@@ -729,6 +740,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         final Table bottomOfScreen = new Table();
         bottomOfScreen.add(towerSelect).expandX();
+        bottomOfScreen.add(sendEnemy).expandX();
         bottomOfScreen.align(MIDDLE);
         //bottomOfScreen.setDebug(true);
 
