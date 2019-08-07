@@ -245,9 +245,8 @@ public class MainController {
      * @param saveState Der Spielzustand, der geladen werden soll
      */
     //public void loadSinglePlayerGame(SaveState saveState) {
-    public void loadSinglePlayerGame() {
-        List<SaveState> saveStates = getAllSavestates();
-        SaveState saveState = saveStates.get(saveStates.size() - 1);
+    public void loadSinglePlayerGame(Long idToLoad) {
+        SaveState saveState = saveStateDao.retrieve(idToLoad);
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen);
         for (SaveState saveState1 : saveStateDao.findAllSaveStates()) {

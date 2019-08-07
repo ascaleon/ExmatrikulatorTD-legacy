@@ -906,8 +906,12 @@ public class GameScreen extends BaseScreen implements GameView {
             load.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    //TODO: Dropdown-Menü zur Auswahl von Spielständen ergänzen
-                    getMainController().loadSinglePlayerGame();
+                    List<SaveState> saveStates = getMainController().getAllSavestates();
+                    if (!saveStates.isEmpty()) {
+                        SaveState saveState = saveStates.get(saveStates.size() - 1);
+                        //TODO: Dropdown-Menü zur Auswahl von Spielständen ergänzen
+                        getMainController().loadSinglePlayerGame(saveState.getId());
+                    }
                 }
             });
             TextButton back2main = new TextButton("Menu", skin);

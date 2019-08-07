@@ -80,6 +80,8 @@ public class MenuScreen extends BaseScreen {
 
     private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
 
+    private Long idToLoad = -1L;
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -220,6 +222,12 @@ public class MenuScreen extends BaseScreen {
         for (SaveState saveState : savestates) {
             savestatesTable.row();
             TextButton savestateButton = new TextButton(saveState.toString(), basicSkin);
+            savestateButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    idToLoad = saveState.getId();
+                }
+            });
             savestatesTable.add(savestateButton);
         }
     }
@@ -259,6 +267,9 @@ public class MenuScreen extends BaseScreen {
         loadSaveStateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (idToLoad != -1L) {
+                    getMainController().loadSinglePlayerGame(idToLoad);
+                }
                 System.out.println("loadSaveStateButton");
             }
         });
