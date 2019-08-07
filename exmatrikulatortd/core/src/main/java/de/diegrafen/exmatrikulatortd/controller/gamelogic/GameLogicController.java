@@ -659,12 +659,16 @@ public class GameLogicController implements LogicController {
             return;
         }
 
+        if (!multiplayer) {
+            return;
+        }
+
         Enemy enemy = createNewEnemy(enemyType);
         Player sendingPlayer = gamestate.getPlayerByNumber(sendingPlayerNumber);
         if (sendingPlayer.getResources() >= enemy.getSendPrice()) {
             Player playerToSendTo = gamestate.getPlayerByNumber(playerToSendToNumber);
-            if (playerToSendTo.getWaves().size() > gamestate.getRoundNumber() + 1) {
-                playerToSendTo.getWaves().get(gamestate.getRoundNumber() + 1).addEnemy(enemy);
+            if (playerToSendTo.getWaves().size() > gamestate.getRoundNumber()) {
+                playerToSendTo.getWaves().get(gamestate.getRoundNumber()).addEnemy(enemy);
                 sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
                 sendingPlayer.notifyObserver();
                 System.out.println("Enemy added!");

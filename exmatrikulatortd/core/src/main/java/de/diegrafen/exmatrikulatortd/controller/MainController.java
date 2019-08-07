@@ -252,9 +252,8 @@ public class MainController {
     /**
      * Lädt ein Einzelspieler-Spiel
      *
-     * @param saveState Der Spielzustand, der geladen werden soll
+     * @param idToLoad Die Datenbank-ID des Spielzustandes, der geladen werden soll
      */
-    //public void loadSinglePlayerGame(SaveState saveState) {
     public void loadSinglePlayerGame(Long idToLoad) {
         SaveState saveState = saveStateDao.retrieve(idToLoad);
         GameView gameScreen = new GameScreen(this, game.getAssetManager());

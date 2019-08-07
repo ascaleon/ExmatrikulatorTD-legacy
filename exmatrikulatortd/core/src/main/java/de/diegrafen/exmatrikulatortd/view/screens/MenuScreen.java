@@ -481,7 +481,15 @@ public class MenuScreen extends BaseScreen {
 
         for (Highscore highscore : highscoreList) {
             highScoreTable.row();
-            TextButton rowTable = new TextButton( "Player: " + highscore.getProfile().getProfileName() +
+
+            String playerName;
+            if (highscore.getProfile() == null) {
+                playerName = "???";
+            } else {
+                playerName = highscore.getProfile().getProfileName();
+            }
+
+            TextButton rowTable = new TextButton( "Player: " + playerName +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
                     "\nDate played: " + DATE_FORMAT.format(highscore.getDatePlayed()), basicSkin);
             rowTable.setDisabled(true);
