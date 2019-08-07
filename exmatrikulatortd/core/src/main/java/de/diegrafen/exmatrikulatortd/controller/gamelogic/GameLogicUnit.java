@@ -190,13 +190,12 @@ class GameLogicUnit {
             tower.setCurrentAttackSpeed(tower.getBaseAttackSpeed());
 
             for (Buff buff : tower.getBuffs()) {
+                tower.setCurrentAttackSpeed(tower.getCurrentAttackSpeed() * (1 / buff.getAttackSpeedMultiplier()));
+                tower.setCurrentAttackDamage(tower.getCurrentAttackDamage() * buff.getAttackDamageMultiplier());
                 buff.setDuration(buff.getDuration() - deltaTime);
                 if (buff.getDuration() < 0) {
                     buffsToRemove.add(buff);
                 }
-                tower.setCurrentAttackSpeed(tower.getCurrentAttackSpeed() * (1 / buff.getAttackSpeedMultiplier()));
-                tower.setCurrentAttackDamage(tower.getCurrentAttackDamage() * buff.getAttackDamageMultiplier());
-
             }
 
             buffsToRemove.forEach(tower::removeBuff);
@@ -262,6 +261,7 @@ class GameLogicUnit {
             case PROJECTILE:
                 addProjectile(tower);
                 break;
+
             case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
                 applyDamageToTarget(tower);
         }
@@ -277,8 +277,6 @@ class GameLogicUnit {
             tower.setAttackDelayTimer(attackdelay - deltaTime);
         }
     }
-
-
 
     private void moveInTargetDirection(Enemy enemy, float deltaTime) {
         float xPosition = enemy.getxPosition();
