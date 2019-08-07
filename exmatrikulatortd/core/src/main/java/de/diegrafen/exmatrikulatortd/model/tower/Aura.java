@@ -42,19 +42,6 @@ public class Aura extends BaseModel {
     }
 
     /**
-     *
-     * @param tower
-     */
-    public Aura(Tower tower) {
-        this.range = tower.getAuraRange();
-        this.debuffs = new LinkedList<>();
-        this.buffs = new LinkedList<>();
-
-        //tower.getAuraDebuffs().forEach(debuff -> debuffs.add(new Debuff(debuff)));
-        //tower.getAuraBuffs().forEach(buff -> buffs.add(new Buff(buff)));
-    }
-
-    /**
      * Kopier-Konstruktor
      * @param aura Die Aura, die kopiert werden soll
      */
