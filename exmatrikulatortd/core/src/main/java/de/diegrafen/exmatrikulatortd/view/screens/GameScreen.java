@@ -1010,11 +1010,15 @@ public class GameScreen extends BaseScreen implements GameView {
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
         Group endScreenGroup = new Group();
 
-        Label resultLabel;
+        //Label resultLabel;
+        Image resultImage;
         if (victorious) {
-            resultLabel =  new Label("Gewonnen!", skin);
+            //resultLabel =  new Label("Gewonnen!", skin);
+            resultImage = new Image(new Texture(Gdx.files.internal("win.png")));
         } else {
-            resultLabel =  new Label("Verloren!", skin);
+            //resultLabel =  new Label("Verloren!", skin);
+            resultImage = new Image(new Texture(Gdx.files.internal("loose.png")));
+            //resultLabel.setFontScale(3);
         }
 
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
@@ -1032,13 +1036,14 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        buttonTable.add(resultLabel).center().row();
+        //buttonTable.add(resultLabel).center().row();
         buttonTable.add(currentScoreLabel).center().row();
         buttonTable.add(highscoreLabel).center().row();
         buttonTable.add(back2main).top().center().row();
         buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / 2);
 
         endScreenGroup.addActor(background);
+        endScreenGroup.addActor(resultImage);
         endScreenGroup.addActor(buttonTable);
         defaultScreen.setVisible(false);
         getUi().addActor(endScreenGroup);
