@@ -144,15 +144,11 @@ public class GameLogicController implements LogicController {
         this.multiplayer = saveState.isMultiplayer();
         this.gameScreen = gameView;
         this.loaded = true;
-
-        gamestate.getPlayers().size();
-
+        //gamestate.getPlayers().size();
         this.gameScreen.setLogicController(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
-        gameStateDao.openCurrentSessionwithTransaction();
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
-        gameStateDao.closeCurrentSessionwithTransaction();
         initializeMap(mapPath);
 
         this.gameScreen.loadMap(mapPath);
@@ -198,12 +194,7 @@ public class GameLogicController implements LogicController {
             deltaTime = maxDelta;
         }
         if (deltaTime > maxDelta) {
-            float remainingDeltaTime = deltaTime;
-            while (remainingDeltaTime > maxDelta) {
-                update(maxDelta);
-                remainingDeltaTime -= maxDelta;
-            }
-            update(remainingDeltaTime);
+            skipFrames(deltaTime, maxDelta);
         } else {
             if (!gamestate.isGameOver() && !pause) {
                 determineNewRound();
@@ -216,9 +207,9 @@ public class GameLogicController implements LogicController {
                         gamestate.setRoundEnded(false);
                         startNewRound();
                     }
-                    gameLogicUnit.spawnWave(deltaTime);  //spawnWave(deltaTime);
-                    gameLogicUnit.applyAuras(deltaTime, gamestate); //applyAuras(deltaTime);
-                    gameLogicUnit.applyMovement(deltaTime, gamestate); //applyMovement(deltaTime);
+                    gameLogicUnit.spawnWave(deltaTime);
+                    gameLogicUnit.applyAuras(deltaTime, gamestate);
+                    gameLogicUnit.applyMovement(deltaTime, gamestate);
                     gameLogicUnit.makeAttacks(deltaTime);
                     gameLogicUnit.moveProjectiles(deltaTime);
                     gameLogicUnit.applyBuffsToTowers(deltaTime);
@@ -226,6 +217,15 @@ public class GameLogicController implements LogicController {
                 }
             }
         }
+    }
+
+    private void skipFrames(float deltaTime, float maxDeltaTime){
+        float remainingDeltaTime = deltaTime;
+        while (remainingDeltaTime > maxDeltaTime) {
+            update(maxDeltaTime);
+            remainingDeltaTime -= maxDeltaTime;
+        }
+        update(remainingDeltaTime);
     }
 
     /**

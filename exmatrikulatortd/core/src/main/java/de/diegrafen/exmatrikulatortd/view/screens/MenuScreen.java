@@ -221,7 +221,7 @@ public class MenuScreen extends BaseScreen {
 
         for (SaveState saveState : savestates) {
             savestatesTable.row();
-            String buttonText = saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toLocaleString();
+            String buttonText = saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString();
             TextButton savestateButton = new TextButton(buttonText, basicSkin);
             savestateButton.addListener(new ChangeListener() {
                 @Override
@@ -271,7 +271,6 @@ public class MenuScreen extends BaseScreen {
                 if (idToLoad != -1L) {
                     getMainController().loadSinglePlayerGame(idToLoad);
                 }
-                System.out.println("loadSaveStateButton");
             }
         });
 
@@ -287,14 +286,16 @@ public class MenuScreen extends BaseScreen {
     private void refreshProfilesTable() {
         profiles = getMainController().retrieveProfiles();
         //if(!profilesButtonGroup.getButtons().isEmpty()) profilesButtonGroup.remove(profilesButtonGroup.getButtons().toArray());
-        for (final TextButton button : profilesButtonGroup.getButtons()) profilesButtonGroup.remove(button);
+        for (final TextButton button : profilesButtonGroup.getButtons()) {
+            profilesButtonGroup.remove(button);
+        }
         profilesTable.clearChildren();
-        for (final Profile p : profiles) {
+        for (final Profile profile : profiles) {
             profilesTable.row();
-            TextButton profileButton = new TextButton(p.getProfileName(), basicSkin);
+            TextButton profileButton = new TextButton(profile.getProfileName(), basicSkin);
 
             final Profile currentProfile = getMainController().getCurrentProfile();
-            if (currentProfile != null && currentProfile.getProfileName().equals(p.getProfileName()))
+            if (currentProfile != null && currentProfile.getProfileName().equals(profile.getProfileName()))
                 profileButton.setColor(Color.GREEN);
 
             profilesTable.add(profileButton);
@@ -305,8 +306,10 @@ public class MenuScreen extends BaseScreen {
     private Profile getSelectedProfileFromButtonGroup() {
         final TextButton selectedProfileButton = profilesButtonGroup.getChecked();
         final String selectedProfileButtonText = selectedProfileButton.getText().toString();
-        for (Profile p : profiles) {
-            if (p.getProfileName().equals(selectedProfileButtonText)) return p;
+        for (Profile profile : profiles) {
+            if (profile.getProfileName().equals(selectedProfileButtonText)) {
+                return profile;
+            }
         }
         return null;
     }
@@ -361,16 +364,20 @@ public class MenuScreen extends BaseScreen {
         editProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile p = getSelectedProfileFromButtonGroup();
-                showNewProfileMenu(selectProfileMenuTable, p);
+                Profile profile = getSelectedProfileFromButtonGroup();
+                if (profile != null) {
+                    showNewProfileMenu(selectProfileMenuTable, profile);
+                }
             }
         });
 
         deleteProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile p = getSelectedProfileFromButtonGroup();
-                if (p != null) getMainController().deleteProfile(p);
+                Profile profile = getSelectedProfileFromButtonGroup();
+                if (profile != null) {
+                    getMainController().deleteProfile(profile);
+                }
                 refreshProfilesTable();
             }
         });
@@ -473,7 +480,8 @@ public class MenuScreen extends BaseScreen {
         for (Highscore highscore : zweiteHighscoreList) {
             // FIXME: Formatierung passt noch nicht so ganz.
             highScoreTable.row();
-            Table rowTable = new TextButton(highscore.getProfile().getProfileName() +
+            Profile profile = highscore.getProfile();
+            Table rowTable = new TextButton(profile.getProfileName() +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
                     "\nDate played: " + highscore.getDatePlayed(), basicSkin);
             highScoreTable.add(rowTable);
