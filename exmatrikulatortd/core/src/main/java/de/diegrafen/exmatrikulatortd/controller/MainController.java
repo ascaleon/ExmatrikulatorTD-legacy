@@ -89,6 +89,13 @@ public class MainController {
         this.highScoreDao = new HighscoreDao();
         this.saveStateDao = new SaveStateDao();
 
+        long profileID = game.getPreferences().getLong("profileID", -1L);
+        if (profileID != -1L) {
+            currentProfile = profileDao.retrieve(profileID);
+        }
+        if (currentProfile == null) {
+            game.getPreferences().putLong("profileID", -1L);
+        }
         //
     }
 
@@ -122,6 +129,8 @@ public class MainController {
     }
 
     public void setCurrentProfile(Profile currentProfile) {
+        game.getPreferences().putLong("profileID", currentProfile.getId());
+        game.getPreferences().flush();
         this.currentProfile = currentProfile;
     }
 
@@ -131,19 +140,17 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
-        return profile;
     }
 
     public Profile updateProfile(final Profile profile,final String newProfileName,final Difficulty newDifficulty, final String newProfilePicturePath){
-        Profile updatedProfile = profile;
-        updatedProfile.setProfileName(newProfileName);
-        updatedProfile.setPreferredDifficulty(newDifficulty);
-        updatedProfile.setProfilePicturePath(newProfilePicturePath);
-        profileDao.update(updatedProfile);
-        return updatedProfile;
+        profile.setProfileName(newProfileName);
+        profile.setPreferredDifficulty(newDifficulty);
+        profile.setProfilePicturePath(newProfilePicturePath);
+        profileDao.update(profile);
+        return profile;
     }
 
     public void deleteProfile(final Profile profile){

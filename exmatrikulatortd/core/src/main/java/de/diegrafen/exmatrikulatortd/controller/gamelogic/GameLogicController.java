@@ -119,7 +119,7 @@ public class GameLogicController implements LogicController {
 
     private Gamestate createGameState(int gamemode, int numberOfPlayers) {
         // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
-        return createNewGame(gamemode, numberOfPlayers);
+        return createNewGame(gamemode, numberOfPlayers, profile.getPreferredDifficulty());
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
