@@ -4,12 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.AllPlayersReadyResponse;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.StartGameResponse;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.GameLogicController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
-
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 
 /**
  * @author janro
