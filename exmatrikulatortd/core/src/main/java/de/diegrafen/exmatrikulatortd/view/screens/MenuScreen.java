@@ -286,14 +286,16 @@ public class MenuScreen extends BaseScreen {
     private void refreshProfilesTable() {
         profiles = getMainController().retrieveProfiles();
         //if(!profilesButtonGroup.getButtons().isEmpty()) profilesButtonGroup.remove(profilesButtonGroup.getButtons().toArray());
-        for (final TextButton button : profilesButtonGroup.getButtons()) profilesButtonGroup.remove(button);
+        for (final TextButton button : profilesButtonGroup.getButtons()) {
+            profilesButtonGroup.remove(button);
+        }
         profilesTable.clearChildren();
-        for (final Profile p : profiles) {
+        for (final Profile profile : profiles) {
             profilesTable.row();
-            TextButton profileButton = new TextButton(p.getProfileName(), basicSkin);
+            TextButton profileButton = new TextButton(profile.getProfileName(), basicSkin);
 
             final Profile currentProfile = getMainController().getCurrentProfile();
-            if (currentProfile != null && currentProfile.getProfileName().equals(p.getProfileName()))
+            if (currentProfile != null && currentProfile.getProfileName().equals(profile.getProfileName()))
                 profileButton.setColor(Color.GREEN);
 
             profilesTable.add(profileButton);
@@ -372,8 +374,10 @@ public class MenuScreen extends BaseScreen {
         deleteProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile p = getSelectedProfileFromButtonGroup();
-                if (p != null) getMainController().deleteProfile(p);
+                Profile profile = getSelectedProfileFromButtonGroup();
+                if (profile != null) {
+                    getMainController().deleteProfile(profile);
+                }
                 refreshProfilesTable();
             }
         });
