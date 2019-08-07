@@ -279,9 +279,7 @@ public class GameServer extends Connector implements ServerInterface {
             System.out.println("Start Game!");
             gameRunning = true;
             server.sendToAllTCP(new StartGameResponse());
-            Gdx.app.postRunnable(() -> {
-                mainController.showScreen(logicController.getGameScreen());
-            });
+            Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
         }
     }
 
@@ -301,18 +299,6 @@ public class GameServer extends Connector implements ServerInterface {
         return numberOfPlayers;
     }
 
-    boolean[] getSlotsFilled() {
-        return slotsFilled;
-    }
-
-    boolean[] getPlayersfinishedLoading() {
-        return playersfinishedLoading;
-    }
-
-    boolean[] getPlayersReady() {
-        return playersReady;
-    }
-
     String[] getPlayerNames() {
         return playerNames;
     }
@@ -329,10 +315,6 @@ public class GameServer extends Connector implements ServerInterface {
         return mapPath;
     }
 
-    public String getMapName() {
-        return mapName;
-    }
-
     public Server getServer() {
         return server;
     }
@@ -342,7 +324,7 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     void emptySlot(int connectionID) {
-        getSlotsFilled()[connectionAndPlayerNumbers.get(connectionID)] = false;
+        slotsFilled[connectionAndPlayerNumbers.get(connectionID)] = false;
         connectionAndPlayerNumbers.remove(connectionID);
         lookingForPlayers = true;
     }
