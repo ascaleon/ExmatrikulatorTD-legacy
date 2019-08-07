@@ -711,10 +711,9 @@ public class GameLogicController implements LogicController {
 
     @Override
     public void saveGame(String saveGameName) {
-        System.out.println(saveGameName);
         Gamestate newGameState = new Gamestate(gamestate);
         gameStateDao.create(newGameState);
-        SaveState saveState = new SaveState(new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
+        SaveState saveState = new SaveState(saveGameName, new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
         saveStateDao.create(saveState);
     }
 
