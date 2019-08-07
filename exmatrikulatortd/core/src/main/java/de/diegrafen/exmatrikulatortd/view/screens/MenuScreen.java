@@ -221,7 +221,8 @@ public class MenuScreen extends BaseScreen {
 
         for (SaveState saveState : savestates) {
             savestatesTable.row();
-            TextButton savestateButton = new TextButton(saveState.toString(), basicSkin);
+            String buttonText = saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toLocaleString();
+            TextButton savestateButton = new TextButton(buttonText, basicSkin);
             savestateButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {

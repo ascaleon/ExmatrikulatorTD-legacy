@@ -24,6 +24,8 @@ public class SaveState extends BaseModel {
      */
     static final long serialVersionUID = 4918147183123L;
 
+    private String saveStateName;
+
     /**
      * Das Datum des Spielstandes
      */
@@ -54,7 +56,8 @@ public class SaveState extends BaseModel {
     public SaveState() {
     }
 
-    public SaveState(Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber, String mapPath) {
+    public SaveState(String saveStateName, Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber, String mapPath) {
+        this.saveStateName = saveStateName;
         this.saveDate = saveDate;
         this.multiplayer = multiplayer;
         this.profile = profile;
@@ -105,5 +108,9 @@ public class SaveState extends BaseModel {
 
     public String getMapPath() {
         return mapPath;
+    }
+
+    public String getSaveStateName() {
+        return saveStateName;
     }
 }
