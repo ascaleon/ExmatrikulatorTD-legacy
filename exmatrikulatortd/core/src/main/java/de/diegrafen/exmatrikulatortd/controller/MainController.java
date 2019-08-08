@@ -88,14 +88,6 @@ public class MainController {
         this.profileDao = new ProfileDao();
         this.highScoreDao = new HighscoreDao();
         this.saveStateDao = new SaveStateDao();
-
-        long profileID = game.getPreferences().getLong("profileID", -1L);
-        if (profileID != -1L) {
-            currentProfile = profileDao.retrieve(profileID);
-        }
-        if (currentProfile == null) {
-            game.getPreferences().putLong("profileID", -1L);
-        }
         //
     }
 
@@ -110,6 +102,14 @@ public class MainController {
      * Zeigt das Hauptmenü an
      */
     public void showMenuScreen() {
+        long profileID = game.getPreferences().getLong("profileID", -1L);
+        if (profileID != -1L) {
+            currentProfile = profileDao.retrieve(profileID);
+        }
+        if (currentProfile == null) {
+            game.getPreferences().putLong("profileID", -1L);
+            game.getPreferences().flush();
+        }
         game.setScreen(new MenuScreen(this, game.getAssetManager()));
     }
 

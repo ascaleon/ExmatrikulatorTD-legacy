@@ -3,7 +3,16 @@ package de.diegrafen.exmatrikulatortd.communication;
 import com.esotericsoftware.kryo.Kryo;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
+import de.diegrafen.exmatrikulatortd.model.Coordinates;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Aura;
+import de.diegrafen.exmatrikulatortd.model.tower.Buff;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -39,6 +48,16 @@ public abstract class Connector implements ConnectorInterface {
         kryo.register(FinishedLoadingRequest.class);
 
         kryo.register(Gamestate.class);
+        kryo.register(Coordinates.class);
+        kryo.register(ArrayList.class);
+        kryo.register(Player.class);
+        kryo.register(Tower.class);
+        kryo.register(Aura.class);
+        kryo.register(Enemy.class);
+        kryo.register(Buff.class);
+        kryo.register(Debuff.class);
+
+
         kryo.register(java.util.LinkedList.class);
         kryo.register(java.util.Date.class);
         kryo.register(String[].class);
