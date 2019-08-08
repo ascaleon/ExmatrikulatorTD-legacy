@@ -1053,7 +1053,7 @@ public class GameScreen extends BaseScreen implements GameView {
         firstColum.add(new Label("Score", skin)).row();
         secondColum.add(new Label(Integer.toString(local.getScore()), skin)).row();
         firstColum.add(new Label("Besiegte Gegner", skin)).row();
-        secondColum.add(new Label(Integer.toString(logicController.getGamestate().getEnemies().size()), skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getKillTracker()), skin)).row();
         firstColum.add(new Label("Abgeschlossene Wellen", skin)).row();
         secondColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
         firstColum.add(new Label("", skin)).row();
@@ -1065,8 +1065,6 @@ public class GameScreen extends BaseScreen implements GameView {
         statTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
         statScreen.addActor(background);
         statScreen.addActor(statTable);
-        //statScreen.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
-        //statScreen.setOrigin(getStageViewport().getScreenX(), getStageViewport().getScreenY());
 
         getUi().addActor(statScreen);
     }

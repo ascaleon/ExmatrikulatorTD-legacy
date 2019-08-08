@@ -108,6 +108,8 @@ public class Player extends BaseModel implements Observable {
 
     private boolean lost;
 
+    private int killTracker;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -320,4 +322,11 @@ public class Player extends BaseModel implements Observable {
         this.lost = lost;
     }
 
+    public void incrementBodyTracker() {
+        killTracker++;
+    }
+
+    public int getKillTracker(){
+        return killTracker;
+    }
 }
