@@ -17,10 +17,12 @@ import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.SaveState;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
+import static de.diegrafen.exmatrikulatortd.util.Constants.DATE_FORMAT;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -40,7 +42,7 @@ public class MenuScreen extends BaseScreen {
 
     private Table savestatesTable;
 
-    private java.util.List<Profile> profiles;
+    private List<Profile> profiles;
 
     private Table selectProfileMenuTable;
 
@@ -70,7 +72,7 @@ public class MenuScreen extends BaseScreen {
 
     private Table gameLobbyTable;
 
-    private java.util.List<String> serverList;
+    private List<String> serverList;
 
     private Sprite backgroundSprite;
 
@@ -217,7 +219,7 @@ public class MenuScreen extends BaseScreen {
 
     private void refreshSavestatesTable() {
         savestatesTable.clearChildren();
-        java.util.List<SaveState> savestates = getMainController().getSaveStatesForCurrentProfile();
+        List<SaveState> savestates = getMainController().getSaveStatesForCurrentProfile();
 
         for (SaveState saveState : savestates) {
             savestatesTable.row();
@@ -271,7 +273,6 @@ public class MenuScreen extends BaseScreen {
                 if (idToLoad != -1L) {
                     getMainController().loadSinglePlayerGame(idToLoad);
                 }
-                System.out.println("loadSaveStateButton");
             }
         });
 
@@ -287,14 +288,16 @@ public class MenuScreen extends BaseScreen {
     private void refreshProfilesTable() {
         profiles = getMainController().retrieveProfiles();
         //if(!profilesButtonGroup.getButtons().isEmpty()) profilesButtonGroup.remove(profilesButtonGroup.getButtons().toArray());
-        for (final TextButton button : profilesButtonGroup.getButtons()) profilesButtonGroup.remove(button);
+        for (final TextButton button : profilesButtonGroup.getButtons()) {
+            profilesButtonGroup.remove(button);
+        }
         profilesTable.clearChildren();
-        for (final Profile p : profiles) {
+        for (final Profile profile : profiles) {
             profilesTable.row();
-            TextButton profileButton = new TextButton(p.getProfileName(), basicSkin);
+            TextButton profileButton = new TextButton(profile.getProfileName(), basicSkin);
 
             final Profile currentProfile = getMainController().getCurrentProfile();
-            if (currentProfile != null && currentProfile.getProfileName().equals(p.getProfileName()))
+            if (currentProfile != null && currentProfile.getProfileName().equals(profile.getProfileName()))
                 profileButton.setColor(Color.GREEN);
 
             profilesTable.add(profileButton);
@@ -305,8 +308,10 @@ public class MenuScreen extends BaseScreen {
     private Profile getSelectedProfileFromButtonGroup() {
         final TextButton selectedProfileButton = profilesButtonGroup.getChecked();
         final String selectedProfileButtonText = selectedProfileButton.getText().toString();
-        for (Profile p : profiles) {
-            if (p.getProfileName().equals(selectedProfileButtonText)) return p;
+        for (Profile profile : profiles) {
+            if (profile.getProfileName().equals(selectedProfileButtonText)) {
+                return profile;
+            }
         }
         return null;
     }
@@ -361,16 +366,20 @@ public class MenuScreen extends BaseScreen {
         editProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile p = getSelectedProfileFromButtonGroup();
-                showNewProfileMenu(selectProfileMenuTable, p);
+                Profile profile = getSelectedProfileFromButtonGroup();
+                if (profile != null) {
+                    showNewProfileMenu(selectProfileMenuTable, profile);
+                }
             }
         });
 
         deleteProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile p = getSelectedProfileFromButtonGroup();
-                if (p != null) getMainController().deleteProfile(p);
+                Profile profile = getSelectedProfileFromButtonGroup();
+                if (profile != null) {
+                    getMainController().deleteProfile(profile);
+                }
                 refreshProfilesTable();
             }
         });
@@ -415,7 +424,8 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 final String profileName = profileNameTextField.getText();
                 if (!profileName.isEmpty()) {
-                    getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    Profile p = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(p);
                     profileNameTextField.setColor(Color.WHITE);
                     profileNameTextField.setText("");
                     showSelectProfileMenu(newProfileMenuTable);
@@ -467,22 +477,24 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void refreshHighscoresTable() {
-        java.util.List<Highscore> zweiteHighscoreList = getMainController().retrieveHighscores(20);
+        List<Highscore> highscoreList = getMainController().retrieveHighscores(20);
         highScoreTable.clearChildren();
 
-        for (Highscore highscore : zweiteHighscoreList) {
-            // FIXME: Formatierung passt noch nicht so ganz.
+        for (Highscore highscore : highscoreList) {
             highScoreTable.row();
-            Table rowTable = new TextButton(highscore.getProfile().getProfileName() +
+
+            String playerName;
+            if (highscore.getProfile() == null) {
+                playerName = "???";
+            } else {
+                playerName = highscore.getProfile().getProfileName();
+            }
+
+            TextButton rowTable = new TextButton("Player: " + playerName +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
-                    "\nDate played: " + highscore.getDatePlayed(), basicSkin);
+                    "\nDate played: " + DATE_FORMAT.format(highscore.getDatePlayed()), basicSkin);
+            rowTable.setDisabled(true);
             highScoreTable.add(rowTable);
-            rowTable.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println("Der Score von " + highscore.getProfile().getProfileName() + " beträgt: " + highscore.getScore());
-                }
-            });
         }
     }
 

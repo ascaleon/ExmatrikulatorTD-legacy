@@ -39,5 +39,6 @@ public abstract class Connector implements ConnectorInterface {
 
         kryo.register(java.util.LinkedList.class);
         kryo.register(java.util.Date.class);
+        kryo.register(String[].class);
     }
 }

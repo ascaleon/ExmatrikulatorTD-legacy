@@ -51,10 +51,6 @@ class GameLogicUnit {
                 List<Wave> waves = player.getWaves();
                 Wave currentWave = waves.get(roundNumber);
 
-                if (currentWave.getEnemySpawnIndex() == 0) {
-                    //Collections.shuffle(currentWave.getEnemies());
-                }
-
                 if (currentWave.getEnemies().size() <= currentWave.getEnemySpawnIndex()) {
                     currentWave.setEnemySpawnIndex(0);
                     player.setEnemiesSpawned(true);
@@ -152,11 +148,7 @@ class GameLogicUnit {
 
         for (Tower tower : gamestate.getTowers()) {
 
-            if (tower.getCurrentAttackSpeed() / 2 < tower.getBaseAttackDelay()) {
-                tower.setCurrentAttackDelay(tower.getCurrentAttackSpeed() / 2);
-            } else {
-                tower.setCurrentAttackDelay(tower.getBaseAttackDelay());
-            }
+            tower.setCurrentAttackDelay(Math.min(tower.getCurrentAttackSpeed() / 2, tower.getBaseAttackDelay()));
 
             if (!isTargetStillInTowerRange(tower)) {
                 findTargetforTower(tower, deltaTime);
@@ -254,19 +246,16 @@ class GameLogicUnit {
 
     /**
      * Lässt einen Turm angreifen
-     * @param tower
+     * @param tower Der angreifende Turm
      */
     private void letTowerAttack(Tower tower) {
         switch (tower.getAttackStyle()) {
-            // TODO: Differenzierung nach Projektilarten einbauen
             case PROJECTILE:
                 addProjectile(tower);
                 break;
-
             case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
                 applyDamageToTarget(tower);
         }
-
     }
 
     private void applyAttackDelay(Tower tower, float deltaTime) {
@@ -475,7 +464,6 @@ class GameLogicUnit {
                 attackedPlayer.notifyObserver();
             }
             if (!enemy.isRemoved()) {
-                attackedPlayer.incrementKillCounter();
                 removeEnemy(enemy);
             }
             // TODO: In eigene Methode verschieben

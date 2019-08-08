@@ -1,6 +1,8 @@
 package de.diegrafen.exmatrikulatortd;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.util.Assets;
@@ -25,6 +27,8 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
      */
     private MainController mainController;
 
+    private Preferences preferences;
+
     /**
      * Konstruktor für ein neues Spiel-Objekt
      */
@@ -39,6 +43,7 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
     @Override
     public void create () {
         assetManager = new AssetManager();
+        preferences = Gdx.app.getPreferences("exmatrikulator-td-preferences");
         mainController = new MainController(this);
         Assets.queueAssets(assetManager);
         initalizeDatabase();
@@ -51,6 +56,10 @@ public class ExmatrikulatorTD extends Game implements GameInterface {
      */
     public AssetManager getAssetManager() {
         return assetManager;
+    }
+
+    public Preferences getPreferences() {
+        return preferences;
     }
 
     /**

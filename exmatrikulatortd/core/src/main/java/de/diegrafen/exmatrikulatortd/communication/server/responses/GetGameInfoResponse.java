@@ -8,9 +8,9 @@ public class GetGameInfoResponse extends Response {
 
     private int allocatedPlayerNumber;
 
-    private List<String> playerNames;
+    private String[] playerNames;
 
-    private List<String> playerProfilePicturePaths;
+    private String[] playerProfilePicturePaths;
 
     private String mapPath;
 
@@ -18,7 +18,7 @@ public class GetGameInfoResponse extends Response {
         super();
     }
 
-    public GetGameInfoResponse(boolean update, int allocatedPlayerNumber, List<String> playerNames, List<String> playerProfilePicturePaths, String mapPath) {
+    public GetGameInfoResponse(boolean update, int allocatedPlayerNumber, String[] playerNames, String[] playerProfilePicturePaths, String mapPath) {
         this.update = update;
         this.allocatedPlayerNumber = allocatedPlayerNumber;
         this.playerNames = playerNames;
@@ -38,11 +38,11 @@ public class GetGameInfoResponse extends Response {
         return allocatedPlayerNumber;
     }
 
-    public List<String> getPlayerNames() {
+    public String[] getPlayerNames() {
         return playerNames;
     }
 
-    public List<String> getPlayerProfilePicturePaths() {
+    public String[] getPlayerProfilePicturePaths() {
         return playerProfilePicturePaths;
     }
 
