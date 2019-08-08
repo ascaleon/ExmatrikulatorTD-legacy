@@ -8,6 +8,8 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
+import java.util.List;
+
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 
@@ -164,8 +166,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     @Override
     public void sellTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber) {
         Tower tower = getMapCellByXandYCoordinates(xCoordinate, yCoordinate).getTower();
-        tower.getOwner().addToResources(tower.getSellPrice());
-        tower.getOwner().notifyObserver();
+        Player player = getGamestate().getPlayers().get(playerNumber);
+        player.addToResources(tower.getSellPrice());
+        player.notifyObserver();
         removeTower(tower);
     }
 
@@ -186,7 +189,31 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     @Override
-    public void setGamestateFromServer(Gamestate gamestate) {
-        super.reinitializeGame(getGameScreen(), gamestate);
+    public void setGamestateFromServer(List<Tower> towers) {
+        reinitializeGame(getGameScreen(), towers);
+    }
+
+    /**
+     * Reinitialisiert den Spielbildschirm nach dem Laden
+     *
+     * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
+     * @param gamestate  Der Spielzustand für die Reinitialisierung
+     */
+    private void reinitializeGame(GameView gameScreen, List<Tower> towers) {
+        gameScreen.clearGameObjects();
+//        gamestate.getProjectiles().forEach(projectile -> {
+//            gameScreen.addProjectile(projectile);
+//            projectile.notifyObserver();
+//        });
+        towers.forEach(tower -> {
+            int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
+            int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
+            addTower(tower, xCoordinate, yCoordinate, tower.getPlayerNumber());
+            tower.notifyObserver();
+        });
+//        gamestate.getEnemies().forEach(enemy -> {
+//            gameScreen.addEnemy(enemy);
+//            enemy.notifyObserver();
+//        });
     }
 }

@@ -125,12 +125,14 @@ public class Tower extends ObservableModel implements ObservableTower {
     @OneToOne(mappedBy = "tower")
     private Coordinates position;
 
-    /**
-     * Der Spieler, dem der Turm gehört
-     */
-    @ManyToOne
-    @JoinColumn(name = "player_id")
-    private Player owner;
+//    /**
+//     * Der Spieler, dem der Turm gehört
+//     */
+//    @ManyToOne
+//    @JoinColumn(name = "player_id")
+//    private Player owner;
+
+    private int playerNumber;
 
     /**
      * Das aktuelle Angriffsziel des Turmes
@@ -245,6 +247,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.baseAttackDelay = baseAttackDelay;
         this.currentAttackDelay = baseAttackDelay;
         this.attackDelayTimer = baseAttackDelay;
+        this.playerNumber = -1;
     }
 
     /**
@@ -327,6 +330,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.baseAttackDelay = tower.baseAttackDelay;
         this.currentAttackDelay = tower.currentAttackDelay;
         this.attackDelayTimer = tower.attackDelayTimer;
+        this.playerNumber = tower.playerNumber;
 
         this.auras = new LinkedList<>();
         this.buffs = new LinkedList<>();
@@ -339,16 +343,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.template = false;
         this.position = null;
         this.currentTarget = null;
-        this.owner = null;
         //this.gamestate = null;
-    }
-
-    public Player getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Player owner) {
-        this.owner = owner;
     }
 
     public void setPosition(Coordinates position) {
@@ -589,6 +584,14 @@ public class Tower extends ObservableModel implements ObservableTower {
 
     public void setAttackDelayTimer(float attackdelay) {
         attackDelayTimer = attackdelay;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
     }
 
     @Override

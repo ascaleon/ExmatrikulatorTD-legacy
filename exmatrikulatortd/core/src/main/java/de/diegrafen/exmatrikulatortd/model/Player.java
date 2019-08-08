@@ -62,12 +62,12 @@ public class Player extends BaseModel implements Observable {
      */
     private int currentLives;
 
-    /**
-     * Die Türme des Spielers
-     */
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Tower> towers;
+//    /**
+//     * Die Türme des Spielers
+//     */
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+//    @LazyCollection(LazyCollectionOption.FALSE)
+//    private List<Tower> towers;
 
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
@@ -76,12 +76,12 @@ public class Player extends BaseModel implements Observable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Wave> waves;
 
-    /**
-     * Die Angriffswellen, die mit dem Spieler assoziiert sind
-     */
-    @OneToMany(mappedBy = "attackedPlayer", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Enemy> attackingEnemies;
+//    /**
+//     * Die Angriffswellen, die mit dem Spieler assoziiert sind
+//     */
+//    @OneToMany(mappedBy = "attackedPlayer", cascade = CascadeType.ALL)
+//    @LazyCollection(LazyCollectionOption.FALSE)
+//    private List<Enemy> attackingEnemies;
 
     /**
      * Die Wegpunkte, die Gegner auf der Karte auf dem Weg zum Endpunkt zurücklegen
@@ -116,8 +116,8 @@ public class Player extends BaseModel implements Observable {
     }
 
     public Player(int playerNumber) {
-        this.attackingEnemies = new ArrayList<>();
-        this.towers = new ArrayList<>();
+        //this.attackingEnemies = new ArrayList<>();
+//        this.towers = new ArrayList<>();
         this.wayPoints = new ArrayList<>();
         this.waves = new ArrayList<>();
         this.observers = new ArrayList<>();
@@ -130,9 +130,8 @@ public class Player extends BaseModel implements Observable {
     /**
      * Copy-Konstruktor für den Ladevorgang
      * @param player
-     * @param gamestate
      */
-    public Player(Player player, Gamestate gamestate) {
+    public Player(Player player) {
         this.playerNumber = player.playerNumber;
         this.playerName = player.playerName;
         this.score = player.score;
@@ -144,7 +143,7 @@ public class Player extends BaseModel implements Observable {
         this.difficulty = player.difficulty;
         this.victorious = player.victorious;
         this.lost = player.lost;
-        this.towers = new LinkedList<>();
+//        this.towers = new LinkedList<>();
 
         this.wayPoints = new LinkedList<>();
         player.getWayPoints().forEach(waypoint -> wayPoints.add(new Coordinates(waypoint)));
@@ -152,22 +151,22 @@ public class Player extends BaseModel implements Observable {
         this.waves = new LinkedList<>();
         player.getWaves().forEach(wave -> waves.add(new Wave(wave)));
 
-        this.attackingEnemies = new LinkedList<>();
-
-        for (Enemy enemy : player.getAttackingEnemies()) {
-            Enemy newEnemy = new Enemy(enemy, this);
-            attackingEnemies.add(newEnemy);
-            gamestate.addEnemy(newEnemy);
-        }
+//        //this.attackingEnemies = new LinkedList<>();
+//
+//        for (Enemy enemy : player.getAttackingEnemies()) {
+//            Enemy newEnemy = new Enemy(enemy);
+//            //attackingEnemies.add(newEnemy);
+//            gamestate.addEnemy(newEnemy);
+//        }
     }
 
-    public void addEnemy(Enemy attackingEnemy) {
-        this.attackingEnemies.add(attackingEnemy);
-    }
+//    public void addEnemy(Enemy attackingEnemy) {
+//        this.attackingEnemies.add(attackingEnemy);
+//    }
 
-    public void addTower(Tower tower) {
-        towers.add(tower);
-    }
+//    public void addTower(Tower tower) {
+//        towers.add(tower);
+//    }
 
     public List<Coordinates> getWayPoints() {
         return wayPoints;
@@ -194,9 +193,9 @@ public class Player extends BaseModel implements Observable {
         notifyObserver();
     }
 
-    public void removeEnemy(Enemy enemy) {
-        attackingEnemies.remove(enemy);
-    }
+//    public void removeEnemy(Enemy enemy) {
+//        attackingEnemies.remove(enemy);
+//    }
 
     public int getPlayerNumber() {
         return playerNumber;
@@ -222,9 +221,9 @@ public class Player extends BaseModel implements Observable {
         this.score += score;
     }
 
-    public void removeTower(Tower tower) {
-        towers.remove(tower);
-    }
+//    public void removeTower(Tower tower) {
+//        towers.remove(tower);
+//    }
 
     public float getTimeSinceLastSpawn() {
         return timeSinceLastSpawn;
@@ -246,13 +245,13 @@ public class Player extends BaseModel implements Observable {
         this.score = score;
     }
 
-    public List<Tower> getTowers() {
-        return towers;
-    }
-
-    public void setTowers(List<Tower> towers) {
-        this.towers = towers;
-    }
+//    public List<Tower> getTowers() {
+//        return towers;
+//    }
+//
+//    public void setTowers(List<Tower> towers) {
+//        this.towers = towers;
+//    }
 
     public List<Wave> getWaves() {
         return waves;
@@ -262,9 +261,9 @@ public class Player extends BaseModel implements Observable {
         this.waves = waves;
     }
 
-    public List<Enemy> getAttackingEnemies() {
-        return attackingEnemies;
-    }
+//    public List<Enemy> getAttackingEnemies() {
+//        return attackingEnemies;
+//    }
 
     public boolean isEnemiesSpawned() {
         return enemiesSpawned;

@@ -1108,6 +1108,13 @@ public class GameScreen extends BaseScreen implements GameView {
 
     @Override
     public void clearGameObjects() {
-        gameObjects.clear();
+        List<GameObject> objectsToRemove = new LinkedList<>();
+        gameObjects.forEach(gameObject -> {
+            if (gameObject instanceof TowerObject) {
+                objectsToRemove.add(gameObject);
+            }
+        });
+        objectsToRemove.forEach(gameObjects::remove);
+        //gameObjects.clear();
     }
 }

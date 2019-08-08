@@ -155,8 +155,9 @@ public class Gamestate extends BaseModel implements Observable {
         this.projectiles = new LinkedList<>();
         this.collisionMatrix = new LinkedList<>();
 
-        gamestate.players.forEach(player -> players.add(new Player(player, this)));
+        gamestate.players.forEach(player -> players.add(new Player(player)));
         gamestate.projectiles.forEach(projectile -> projectiles.add(new Projectile(projectile)));
+        gamestate.enemies.forEach(enemy -> enemies.add(new Enemy(enemy)));
 
         // Copy collision matrix and towers
         for (Coordinates mapCell : gamestate.collisionMatrix) {
@@ -165,9 +166,9 @@ public class Gamestate extends BaseModel implements Observable {
             Tower tower = coordinates.getTower();
             if (tower != null) {
                 tower.setPosition(coordinates);
-                Player owner = players.get(coordinates.getBuildableByPlayer());
-                owner.addTower(tower);
-                tower.setOwner(owner);
+//                Player owner = players.get(coordinates.getBuildableByPlayer());
+//                owner.addTower(tower);
+//                tower.setOwner(owner);
                 this.towers.add(tower);
             }
         }
@@ -176,23 +177,32 @@ public class Gamestate extends BaseModel implements Observable {
         for (int i = 0; i < gamestate.projectiles.size(); i++) {
             Projectile projectile = gamestate.projectiles.get(i);
             int enemyIndex = gamestate.enemies.indexOf(projectile.getTarget());
-            int towerIndex = gamestate.towers.indexOf(projectile.getTowerThatShot());
-
-            Enemy enemy = null;
 
             if (enemyIndex >= 0) {
-                enemy = enemies.get(enemyIndex);
+                Enemy enemy = enemies.get(enemyIndex);
                 this.projectiles.get(i).setTarget(enemy);
             }
 
-            if (towerIndex >= 0) {
-                Tower tower = towers.get(towerIndex);
-                this.projectiles.get(i).setTowerThatShot(tower);
-                if (enemy != null) {
-                    tower.setCurrentTarget(enemy);
-                }
-            }
+//            if (towerIndex >= 0) {
+//                Tower tower = towers.get(towerIndex);
+//                this.projectiles.get(i).setTowerThatShot(tower);
+//                if (enemy != null) {
+//                    tower.setCurrentTarget(enemy);
+//                }
+//            }
         }
+
+        for (int i = 0; i < gamestate.towers.size(); i++) {
+            Tower tower = gamestate.towers.get(i);
+            int enemyIndex = gamestate.enemies.indexOf(tower.getCurrentTarget());
+
+            if (enemyIndex >= 0) {
+                Enemy enemy = enemies.get(enemyIndex);
+                this.towers.get(i).setCurrentTarget(enemy);
+            }
+
+        }
+
     }
 
     public void addEnemy (Enemy enemy) {

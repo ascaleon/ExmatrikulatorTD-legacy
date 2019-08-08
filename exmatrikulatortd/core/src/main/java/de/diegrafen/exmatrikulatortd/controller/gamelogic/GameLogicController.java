@@ -204,7 +204,7 @@ public class GameLogicController implements LogicController {
 
             if (server & deltaTime != maxDelta) {
                 if (sendGameStateTimer < 0) {
-                    gameServer.sendServerGameState(gamestate);
+                    gameServer.sendServerGameState(gamestate.getTowers());
                     sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
                 } else {
                     sendGameStateTimer -= deltaTime;
@@ -477,9 +477,10 @@ public class GameLogicController implements LogicController {
 
 
     void addTower(Tower tower, int xPosition, int yPosition, int playerNumber) {
-        Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
-        tower.setOwner(owningPlayer);
-        owningPlayer.addTower(tower);
+        //Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
+        //tower.setOwner(owningPlayer);
+        tower.setPlayerNumber(playerNumber);
+        //owningPlayer.addTower(tower);
 
         Coordinates coordinates = getMapCellByXandYCoordinates(xPosition, yPosition);
         tower.setPosition(coordinates);
@@ -594,11 +595,12 @@ public class GameLogicController implements LogicController {
 
         if (tower == null) {
             displayErrorMessage("Hier gibt es keinen Turm zum Verkaufen!", playerNumber);
-        } else if (tower.getOwner().getPlayerNumber() != playerNumber) {
+        } else if (tower.getPlayerNumber() != playerNumber) {
             displayErrorMessage("Du darfst diesen Turm nicht verkaufen!", playerNumber);
         } else {
-            tower.getOwner().addToResources(tower.getSellPrice());
-            tower.getOwner().notifyObserver();
+            Player player = gamestate.getPlayers().get(playerNumber);
+            player.addToResources(tower.getSellPrice());
+            player.notifyObserver();
             removeTower(tower);
             if (server) {
                 gameServer.sellTower(xCoordinate, yCoordinate, playerNumber);
@@ -613,7 +615,7 @@ public class GameLogicController implements LogicController {
      */
     void removeTower(Tower tower) {
         tower.setRemoved(true);
-        tower.getOwner().removeTower(tower);
+        //tower.getOwner().removeTower(tower);
         tower.getPosition().setTower(null);
         gamestate.removeTower(tower);
         tower.setRemoved(true);
@@ -640,7 +642,7 @@ public class GameLogicController implements LogicController {
         Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
         Tower tower = mapCell.getTower();
 
-        if (owningPlayer != tower.getOwner()) {
+        if (tower.getPlayerNumber() != playerNumber) {
             displayErrorMessage("Du darfst nur eigene Türme aufrüsten!", playerNumber);
         } else if (owningPlayer.getResources() < tower.getUpgradePrice()) {
             displayErrorMessage("Du hast nicht genug Geld, um diesen Turm aufzurüsten!", playerNumber);
