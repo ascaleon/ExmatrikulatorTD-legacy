@@ -690,7 +690,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         final Table towerinfoTable = new Table();
         towerinfoTable.add(towerinfoLabel).left().align(RIGHT);
-        defaultScreen.add(towerinfoTable).bottom().right();
 
         final Table statsTable = new Table();
         //statsTable.setBackground(background);
@@ -849,6 +848,7 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add().expand().colspan(3);
         defaultScreen.row();
         defaultScreen.add(bottomOfScreen).bottom().center().colspan(2).expandX();
+        defaultScreen.add(towerinfoTable).bottom().right();
         mainUiStack.addActor(defaultScreen);
         //mainUiStack.addActor(upgradeSell);
 

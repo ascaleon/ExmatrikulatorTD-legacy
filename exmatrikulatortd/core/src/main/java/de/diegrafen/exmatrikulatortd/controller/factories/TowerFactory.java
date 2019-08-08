@@ -19,15 +19,15 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.*;
  */
 public final class TowerFactory {
 
-    private static final String REGULAR_TOWER_DESCRIPTION = "Standardturm";
+    private static final String REGULAR_TOWER_DESCRIPTION = "Standardturm" + "\n" + "Kosten: 200";
 
-    private static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner";
+    private static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner" + "\n" + "Kosten: 500";
 
-    private static final String CORRUPTION_TOWER_DESCRIPTION = "Verringert die Ruestung der Gegner";
+    private static final String CORRUPTION_TOWER_DESCRIPTION = "Verringert die Ruestung der Gegner" + "\n" + "Kosten: 300";
 
-    private static final String EXPLOSIVE_TOWER_DESCRIPTION = "Verursacht Flaechenschaden";
+    private static final String EXPLOSIVE_TOWER_DESCRIPTION = "Verursacht Flaechenschaden" + "\n" + "Kosten: 500";
 
-    private static final String AURA_TOWER_DESCRIPTION = "Aura verbessert Tuerme in der Naehe";
+    private static final String AURA_TOWER_DESCRIPTION = "Aura verbessert Tuerme in der Naehe" + "\n" + "Kosten: 1000";
 
     /**
      * Versteckter Konstruktor
