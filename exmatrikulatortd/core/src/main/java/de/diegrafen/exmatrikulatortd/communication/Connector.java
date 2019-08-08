@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.communication;
 import com.esotericsoftware.kryo.Kryo;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
 
 /**
  *
@@ -37,6 +38,7 @@ public abstract class Connector implements ConnectorInterface {
         kryo.register(AllPlayersReadyResponse.class);
         kryo.register(FinishedLoadingRequest.class);
 
+        kryo.register(Gamestate.class);
         kryo.register(java.util.LinkedList.class);
         kryo.register(java.util.Date.class);
         kryo.register(String[].class);
