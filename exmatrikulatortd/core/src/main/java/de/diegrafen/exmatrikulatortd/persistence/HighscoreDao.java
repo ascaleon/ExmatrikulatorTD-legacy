@@ -1,7 +1,10 @@
 package de.diegrafen.exmatrikulatortd.persistence;
 
 import de.diegrafen.exmatrikulatortd.model.Highscore;
+import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.Profile;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -42,5 +45,17 @@ public class HighscoreDao extends BaseDao<Highscore> {
         final List<Highscore> highscores = session.createNamedQuery("Highscore.findHighestScores", getClazz()).setMaxResults(limit).getResultList();
         closeCurrentSessionwithTransaction();
         return highscores;
+    }
+
+    public Highscore findHighestScoreForProfile(Profile profile) {
+        Session session = openCurrentSessionwithTransaction();
+        Query<Highscore> highscoreQuery = session.createNamedQuery("Highscore.findHighestScoresForProfile", getClazz());
+        highscoreQuery.setParameter("profile", profile);
+        Highscore highscore = null;
+        if (!highscoreQuery.getResultList().isEmpty()) {
+            highscore = highscoreQuery.getResultList().get(0);
+        }
+        closeCurrentSessionwithTransaction();
+        return highscore;
     }
 }

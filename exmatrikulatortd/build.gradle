@@ -83,8 +83,8 @@ project(":core") {
         compile 'com.github.crykn:kryonet:2.22.3'
         compile "org.hibernate:hibernate-core:$hibernateVersion"
         compile group: 'org.hibernate', name: 'hibernate-c3p0', version: "$hibernateVersion"
+        compile group: 'c3p0', name: 'c3p0', version: '0.9.1.2'
         compile group: 'org.apache.derby', name: 'derby', version: '10.14.1.0'
-        
     }
 
     jacocoTestReport {

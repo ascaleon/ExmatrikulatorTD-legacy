@@ -87,6 +87,7 @@ public class GameLogicController implements LogicController {
         this.server = true;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
+        System.out.println("Blah.");
     }
 
     /**
@@ -118,7 +119,7 @@ public class GameLogicController implements LogicController {
 
     private Gamestate createGameState(int gamemode, int numberOfPlayers) {
         // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
-        return createNewGame(gamemode, numberOfPlayers);
+        return createNewGame(gamemode, numberOfPlayers, profile.getPreferredDifficulty());
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
@@ -144,15 +145,11 @@ public class GameLogicController implements LogicController {
         this.multiplayer = saveState.isMultiplayer();
         this.gameScreen = gameView;
         this.loaded = true;
-
-        gamestate.getPlayers().size();
-
+        //gamestate.getPlayers().size();
         this.gameScreen.setLogicController(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
-        gameStateDao.openCurrentSessionwithTransaction();
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
-        gameStateDao.closeCurrentSessionwithTransaction();
         initializeMap(mapPath);
 
         this.gameScreen.loadMap(mapPath);
@@ -198,12 +195,7 @@ public class GameLogicController implements LogicController {
             deltaTime = maxDelta;
         }
         if (deltaTime > maxDelta) {
-            float remainingDeltaTime = deltaTime;
-            while (remainingDeltaTime > maxDelta) {
-                update(maxDelta);
-                remainingDeltaTime -= maxDelta;
-            }
-            update(remainingDeltaTime);
+            skipFrames(deltaTime, maxDelta);
         } else {
             if (!gamestate.isGameOver() && !pause) {
                 determineNewRound();
@@ -216,9 +208,9 @@ public class GameLogicController implements LogicController {
                         gamestate.setRoundEnded(false);
                         startNewRound();
                     }
-                    gameLogicUnit.spawnWave(deltaTime);  //spawnWave(deltaTime);
-                    gameLogicUnit.applyAuras(deltaTime, gamestate); //applyAuras(deltaTime);
-                    gameLogicUnit.applyMovement(deltaTime, gamestate); //applyMovement(deltaTime);
+                    gameLogicUnit.spawnWave(deltaTime);
+                    gameLogicUnit.applyAuras(deltaTime, gamestate);
+                    gameLogicUnit.applyMovement(deltaTime, gamestate);
                     gameLogicUnit.makeAttacks(deltaTime);
                     gameLogicUnit.moveProjectiles(deltaTime);
                     gameLogicUnit.applyBuffsToTowers(deltaTime);
@@ -226,6 +218,15 @@ public class GameLogicController implements LogicController {
                 }
             }
         }
+    }
+
+    private void skipFrames(float deltaTime, float maxDeltaTime){
+        float remainingDeltaTime = deltaTime;
+        while (remainingDeltaTime > maxDeltaTime) {
+            update(maxDeltaTime);
+            remainingDeltaTime -= maxDeltaTime;
+        }
+        update(remainingDeltaTime);
     }
 
     /**
@@ -270,7 +271,21 @@ public class GameLogicController implements LogicController {
 
         gamestate.setGameOver(gameOver);
         if(gamestate.isGameOver()){
-            gameScreen.endOfGameScreen();
+            Player localPlayer = getLocalPlayer();
+            HighscoreDao highscoreDao = mainController.getHighScoreDao();
+            try {
+                highscoreDao.create(new Highscore(profile, localPlayer.getScore(), gamestate.getRoundNumber(), new Date()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Highscore highscore = highscoreDao.findHighestScoreForProfile(profile);
+            int highscoreValue;
+            if (highscore != null) {
+                highscoreValue = highscore.getScore();
+            } else {
+                highscoreValue = 0;
+            }
+            gameScreen.endOfGameScreen(localPlayer.isVictorious(), localPlayer.getScore(), highscoreValue);
         }
     }
 
@@ -472,7 +487,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void buildTower(int towerType, int xCoordinate, int yCoordinate, int playerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde darf nicht gebaut werden!", playerNumber);
             return;
         }
@@ -553,7 +568,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void sellTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde darf nicht verkauft werden!", playerNumber);
             return;
         }
@@ -601,7 +616,7 @@ public class GameLogicController implements LogicController {
     @Override
     public void upgradeTower(int xCoordinate, int yCoordinate, int playerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde darf nicht aufgerüstet werden!", playerNumber);
             return;
         }
@@ -614,7 +629,7 @@ public class GameLogicController implements LogicController {
             displayErrorMessage("Du darfst nur eigene Türme aufrüsten!", playerNumber);
         } else if (owningPlayer.getResources() < tower.getUpgradePrice()) {
             displayErrorMessage("Du hast nicht genug Geld, um diesen Turm aufzurüsten!", playerNumber);
-        } else {
+        } else if (tower.getUpgradeLevel() < tower.getMaxUpgradeLevel()){
             owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
             TowerUpgrader.upgradeTower(tower);
             owningPlayer.notifyObserver();
@@ -622,6 +637,10 @@ public class GameLogicController implements LogicController {
             if (server) {
                 gameServer.upgradeTower(xCoordinate, yCoordinate, playerNumber);
             }
+
+        }
+        else {
+            displayErrorMessage("Das maximale Upgradelevel wurde erreicht", playerNumber);
         }
     }
 
@@ -635,8 +654,12 @@ public class GameLogicController implements LogicController {
     @Override
     public void sendEnemy(int enemyType, int playerToSendToNumber, int sendingPlayerNumber) {
 
-        if (isActiveRound()) {
+        if (isActiveMultiplayerRound()) {
             displayErrorMessage("Während der Runde dürfen keine Gegner geschickt werden!", sendingPlayerNumber);
+            return;
+        }
+
+        if (!multiplayer) {
             return;
         }
 
@@ -644,8 +667,8 @@ public class GameLogicController implements LogicController {
         Player sendingPlayer = gamestate.getPlayerByNumber(sendingPlayerNumber);
         if (sendingPlayer.getResources() >= enemy.getSendPrice()) {
             Player playerToSendTo = gamestate.getPlayerByNumber(playerToSendToNumber);
-            if (playerToSendTo.getWaves().size() > gamestate.getRoundNumber() + 1) {
-                playerToSendTo.getWaves().get(gamestate.getRoundNumber() + 1).addEnemy(enemy);
+            if (playerToSendTo.getWaves().size() > gamestate.getRoundNumber()) {
+                playerToSendTo.getWaves().get(gamestate.getRoundNumber()).addEnemy(enemy);
                 sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
                 sendingPlayer.notifyObserver();
                 System.out.println("Enemy added!");
@@ -693,10 +716,9 @@ public class GameLogicController implements LogicController {
 
     @Override
     public void saveGame(String saveGameName) {
-        System.out.println(saveGameName);
         Gamestate newGameState = new Gamestate(gamestate);
         gameStateDao.create(newGameState);
-        SaveState saveState = new SaveState(new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
+        SaveState saveState = new SaveState(saveGameName, new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
         saveStateDao.create(saveState);
     }
 
@@ -751,6 +773,10 @@ public class GameLogicController implements LogicController {
     public boolean isActiveRound() {
         // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
         return gamestate.getTimeUntilNextRound() < 0;
+    }
+
+    private boolean isActiveMultiplayerRound() {
+        return multiplayer & isActiveRound();
     }
 
     @Override

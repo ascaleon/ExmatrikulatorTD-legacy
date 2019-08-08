@@ -16,6 +16,9 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name="Highscore.findHighestScores",
                 query="SELECT h FROM Highscore h ORDER BY h.score DESC"),
+        @NamedQuery(name="Highscore.findHighestScoresForProfile",
+                query = "SELECT h FROM Highscore h WHERE h.profile = :profile ORDER BY h.score DESC"
+        )
 })
 public class Highscore extends BaseModel {
 

@@ -29,7 +29,7 @@ public class SplashScreen extends BaseScreen {
             if (getMainController().isDatabaseLoaded()) {
                 getMainController().showIntroScreen();
             } else {
-                System.out.println("Warte auf Datenbank...");
+                //System.out.println("Warte auf Datenbank...");
             }
         } else {
             System.out.println("Current Progress: " + getAssetManager().getProgress());

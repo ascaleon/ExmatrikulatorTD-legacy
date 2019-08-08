@@ -1,11 +1,8 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
 import com.badlogic.gdx.Gdx;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.ServerDiscoveryHandler;
-import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
@@ -16,8 +13,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MULTIPLAYER_MAP_PATH;
@@ -87,12 +82,9 @@ public class GameServer extends Connector implements ServerInterface {
         this.udpPort = UDP_PORT;
         this.server = new Server();
         registerObjects(server.getKryo());
-        // TODO: Listener besser organisieren!
-        attachGetGameInfoRequestListener();
-        attachClientReadyRequestListener();
+        this.server.addListener(new ConnectionListener(this));
         System.out.println("Server created!");
     }
-
 
     /**
      * Startet den GameServer
@@ -111,8 +103,6 @@ public class GameServer extends Connector implements ServerInterface {
                 @Override
                 public boolean onDiscoverHost(DatagramChannel datagramChannel, InetSocketAddress fromAddress) throws IOException {
 
-                    String numberOfPlayers = Integer.toString(2);
-
                     if (openSlotsLeft() > 0) {
                         lookingForPlayers = true;
                         String newData = mapName + "\n" + numberOfPlayers;
@@ -124,9 +114,8 @@ public class GameServer extends Connector implements ServerInterface {
 
                         int bytesSent = datagramChannel.send(buf, fromAddress);
                         return bytesSent > 0;
-                    } else {
-                        return false;
                     }
+                    return false;
                 }
             });
             server.start();
@@ -139,7 +128,7 @@ public class GameServer extends Connector implements ServerInterface {
      * Zählt, wie viele Spielerinnen-Slots noch offen sind
      * @return Die Anzahl der offenen Spielerinnen-Slots
      */
-    private int openSlotsLeft() {
+    int openSlotsLeft() {
         int openSlots = 0;
 
         for (boolean slotFilled : slotsFilled) {
@@ -166,54 +155,10 @@ public class GameServer extends Connector implements ServerInterface {
      */
     public void attachRequestListeners(final LogicController logicController) {
         this.logicController = logicController;
-
-        attachClientFinishedLoadingRequest(logicController);
-        attachBuildRequestListener(logicController);
-        attachSellRequestListener(logicController);
-        attachSendEnemyRequestListener(logicController);
-        attachUpgradeRequestListener(logicController);
-        attachGetServerStateRequestListener(logicController);
-        // TODO: Die letzten Listener scheinen nicht mehr erreicht zu werden
+        server.addListener(new GameListener(this, logicController));
     }
 
-    private void attachClientFinishedLoadingRequest(LogicController logicController) {
-        server.addListener(new Listener() {
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof FinishedLoadingRequest) {
-                    System.out.println("FinishedLoadingRequest erhalten!");
-                    playersfinishedLoading[connectionAndPlayerNumbers.get(connection.getID())] = true;
-                    System.err.println(connection.getID() + " ist bereit!");
-                    if (haveAllPlayersFinishedLoading()) {
-                        gameRunning = true;
-                        server.sendToAllTCP(new StartGameResponse());
-                        //gameRunning = true;
-                        Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
-                        }
-                    }
-                }
-            });
-        }
-
-    private void attachClientReadyRequestListener() {
-        server.addListener(new Listener() {
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof ClientReadyRequest) {
-                    playersReady[connectionAndPlayerNumbers.get(connection.getID())] = true;
-
-                    System.out.println("ClientReadyRequest erhalten!");
-                    if (areAllPlayersReady()) {
-                        server.sendToAllTCP(new AllPlayersReadyResponse());
-                        //mainController.showLoadScreen();
-                        Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
-                    }
-                }
-            }
-        });
-    }
-
-    private boolean haveAllPlayersFinishedLoading() {
+    boolean haveAllPlayersFinishedLoading() {
         boolean allPlayersFinishedLoading = true;
 
         for (boolean hasPlayerFinishedLoading : playersfinishedLoading) {
@@ -221,138 +166,6 @@ public class GameServer extends Connector implements ServerInterface {
         }
 
         return allPlayersFinishedLoading;
-    }
-
-    /**
-     * Fügt einen Request-Listener für das Bauen eines Turms hinzu und assoziiert ihn mit einem LogicController
-     *
-     * @param logicController Der zu assoziierende LogicController
-     */
-    private void attachBuildRequestListener(final LogicController logicController) {
-        server.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof BuildRequest) {
-                    final BuildRequest request = (BuildRequest) object;
-                    Gdx.app.postRunnable(() -> logicController.buildTower(request.getTowerType(), request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                }
-            }
-        });
-    }
-
-    /**
-     * mainController.showScreen(logicController.getGameScreen());
-     * Fügt einen Request-Listener für das Verkaufen eines Turms hinzu und assoziiert ihn mit einem LogicController
-     *
-     * @param logicController Der zu assoziierende LogicController
-     */
-    private void attachSellRequestListener(final LogicController logicController) {
-        server.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof SellRequest) {
-                    final SellRequest request = (SellRequest) object;
-                    Gdx.app.postRunnable(() -> logicController.sellTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-                }
-            }
-        });
-    }
-
-    /**
-     * Fügt einen Request-Listener für das Senden eines Gegners hinzu und assoziiert ihn mit einem LogicController
-     *
-     * @param logicController Der zu assoziierende LogicController
-     */
-    private void attachSendEnemyRequestListener(final LogicController logicController) {
-        server.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof SendEnemyRequest) {
-                    final SendEnemyRequest request = (SendEnemyRequest) object;
-                    Gdx.app.postRunnable(() -> logicController.sendEnemy(request.getEnemyType(), request.getPlayerToSendTo(), request.getSendingPlayer()));
-
-                }
-            }
-        });
-    }
-
-    /**
-     * Fügt einen Request-Listener für das Aufrüsten eines Turms hinzu und assoziiert ihn mit einem LogicController
-     *
-     * @param logicController Der zu assoziierende LogicController
-     */
-    private void attachUpgradeRequestListener(final LogicController logicController) {
-        server.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof UpgradeRequest) {
-                    final UpgradeRequest request = (UpgradeRequest) object;
-                    Gdx.app.postRunnable(() -> logicController.upgradeTower(request.getxCoordinate(), request.getyCoordinate(), request.getPlayerNumber()));
-
-                }
-            }
-        });
-    }
-
-    /**
-     * Fügt einen Request-Listener für das Abrufen des Server-Spielzustandes hinzu und assoziiert ihn mit einem LogicController
-     *
-     * @param logicController Der zu assoziierende LogicController
-     */
-    private void attachGetServerStateRequestListener(final LogicController logicController) {
-        server.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof GetServerStateRequest) {
-                    connection.sendTCP(logicController.getGamestate());
-                }
-            }
-        });
-    }
-
-    private void attachGetGameInfoRequestListener() {
-
-        // TODO: Alle RequestListener in einem zusammenfassen
-        server.addListener(new Listener() {
-            final List<String> playerNames = new LinkedList<>();
-            final List<String> playerProfilePicturePaths = new LinkedList<>();
-
-            @Override
-            public void connected(Connection connection) {
-
-                int playerNumber = allocatePlayerNumber();
-
-                connectionAndPlayerNumbers.put(connection.getID(), playerNumber);
-
-                if (openSlotsLeft() <= 0) {
-                    lookingForPlayers = false;
-                }
-
-                GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, playerNames, playerProfilePicturePaths, mapPath);
-                server.sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
-                getGameInfoResponse.setUpdate(false);
-                connection.sendTCP(getGameInfoResponse);
-                System.out.println("Looking for Players? " + lookingForPlayers);
-                //if (!lookingForPlayers) {
-                    //gameRunning = true;
-                //}
-            }
-
-            @Override
-            public void disconnected(Connection connection) {
-                if (!gameRunning) {
-                    slotsFilled[connectionAndPlayerNumbers.get(connection.getID())] = false;
-                    connectionAndPlayerNumbers.remove(connection.getID());
-                    lookingForPlayers = true;
-                } else {
-                    Gdx.app.postRunnable(logicController::gameConnectionLost);
-                    gameRunning = false;
-                    server.close();
-                }
-            }
-
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof GetGameInfoRequest) {
-                    connection.sendTCP(new GetGameInfoResponse(true, 1, playerNames, playerProfilePicturePaths, mapPath));
-                }
-            }
-        });
     }
 
     /**
@@ -420,7 +233,7 @@ public class GameServer extends Connector implements ServerInterface {
      * Überprüft, ob alle Spielerinnen bereit sind
      * @return {@code true}, wenn alle Spielerinnen bereit sind, ansonsten {@code false}
      */
-    private boolean areAllPlayersReady() {
+    boolean areAllPlayersReady() {
 
         boolean allPlayersReady = true;
 
@@ -431,7 +244,7 @@ public class GameServer extends Connector implements ServerInterface {
         return allPlayersReady;
     }
 
-    private int allocatePlayerNumber() {
+    int allocatePlayerNumber() {
         int returnValue = -1;
 
         for (int i = 0; i < slotsFilled.length; i++) {
@@ -463,9 +276,64 @@ public class GameServer extends Connector implements ServerInterface {
     public void serverFinishedLoading() {
         playersfinishedLoading[0] = true;
         if (haveAllPlayersFinishedLoading()) {
+            System.out.println("Start Game!");
             gameRunning = true;
             server.sendToAllTCP(new StartGameResponse());
             Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
         }
+    }
+
+    boolean isLookingForPlayers() {
+        return lookingForPlayers;
+    }
+
+    boolean isGameRunning() {
+        return gameRunning;
+    }
+
+    void setGameRunning(boolean gameRunning) {
+        this.gameRunning = gameRunning;
+    }
+
+    int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    String[] getPlayerNames() {
+        return playerNames;
+    }
+
+    String[] getProfilePicturePaths() {
+        return profilePicturePaths;
+    }
+
+    HashMap<Integer, Integer> getConnectionAndPlayerNumbers() {
+        return connectionAndPlayerNumbers;
+    }
+
+    public String getMapPath() {
+        return mapPath;
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    void setLookingForPlayers(boolean lookingForPlayers) {
+        this.lookingForPlayers = lookingForPlayers;
+    }
+
+    void emptySlot(int connectionID) {
+        slotsFilled[connectionAndPlayerNumbers.get(connectionID)] = false;
+        connectionAndPlayerNumbers.remove(connectionID);
+        lookingForPlayers = true;
+    }
+
+    void setPlayerReady(int connectionID) {
+        playersReady[connectionAndPlayerNumbers.get(connectionID)] = true;
+    }
+
+    void registerClientAsFinishedLoading(int connectionID) {
+        playersfinishedLoading[connectionAndPlayerNumbers.get(connectionID)] = true;
     }
 }
