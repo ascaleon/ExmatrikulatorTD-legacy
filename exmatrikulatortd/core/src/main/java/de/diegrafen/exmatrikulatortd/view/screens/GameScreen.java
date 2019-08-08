@@ -132,6 +132,12 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      *
      */
+    private Label.LabelStyle towerinfoLabelsStyle = new Label.LabelStyle(getBitmapFont(), Color.WHITE);
+    private Label towerinfoLabel = new Label(null, towerinfoLabelsStyle);
+
+    /**
+     *
+     */
     private float touchDownX;
 
     /**
@@ -381,6 +387,26 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 position = getCamera().unproject(movedtoCoordinates);
                 mouseXPosition = position.x;
                 mouseYPosition = position.y;
+                int xCoordinate = logicController.getXCoordinateByPosition(position.x);
+                int yCoordinate = logicController.getYCoordinateByPosition(position.y);
+                Coordinates coordinates = gameState.getMapCellByListIndex(xCoordinate + yCoordinate * gameState.getNumberOfColumns());
+
+                if(logicController.hasCellTower(xCoordinate, yCoordinate)){
+                    towerinfoLabel.setText(
+                                    "Name: " + coordinates.getTower().getName() + "\n" +
+                                    "Level: " + coordinates.getTower().getUpgradeLevel() + "\n" +
+                                    "Angriff: " + coordinates.getTower().getBaseAttackDamage() + "\n" +
+                                    "eff. Angriff: " + coordinates.getTower().getCurrentAttackDamage() + "\n" +
+                                    "Speed: " + coordinates.getTower().getAttackSpeed() + "\n" +
+                                    "eff. Speed: " + coordinates.getTower().getCurrentAttackSpeed() + "\n" +
+                                    "Reichweite: " + coordinates.getTower().getAttackRange() + "\n" +
+                                    "Upgradekosten: " + coordinates.getTower().getUpgradePrice() + "\n" +
+                                    "Verkaufen: " + coordinates.getTower().getSellPrice()
+                    );
+                }else{
+                    towerinfoLabel.setText(null);
+                }
+
                 return updatePreviewTower(position.x, position.y);
             }
 
@@ -661,6 +687,10 @@ public class GameScreen extends BaseScreen implements GameView {
             sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
 
         }
+
+        final Table towerinfoTable = new Table();
+        towerinfoTable.add(towerinfoLabel).left().align(RIGHT);
+        defaultScreen.add(towerinfoTable).bottom().right();
 
         final Table statsTable = new Table();
         //statsTable.setBackground(background);
