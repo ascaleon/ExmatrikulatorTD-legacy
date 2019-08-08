@@ -424,7 +424,8 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 final String profileName = profileNameTextField.getText();
                 if (!profileName.isEmpty()) {
-                    getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    Profile p = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(p);
                     profileNameTextField.setColor(Color.WHITE);
                     profileNameTextField.setText("");
                     showSelectProfileMenu(newProfileMenuTable);
@@ -489,7 +490,7 @@ public class MenuScreen extends BaseScreen {
                 playerName = highscore.getProfile().getProfileName();
             }
 
-            TextButton rowTable = new TextButton( "Player: " + playerName +
+            TextButton rowTable = new TextButton("Player: " + playerName +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
                     "\nDate played: " + DATE_FORMAT.format(highscore.getDatePlayed()), basicSkin);
             rowTable.setDisabled(true);

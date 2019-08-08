@@ -140,12 +140,13 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
+        return profile;
     }
 
-    public Profile updateProfile(final Profile profile,final String newProfileName,final Difficulty newDifficulty, final String newProfilePicturePath){
+    public Profile updateProfile(final Profile profile, final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
         profile.setProfileName(newProfileName);
         profile.setPreferredDifficulty(newDifficulty);
         profile.setProfilePicturePath(newProfilePicturePath);
@@ -153,7 +154,7 @@ public class MainController {
         return profile;
     }
 
-    public void deleteProfile(final Profile profile){
+    public void deleteProfile(final Profile profile) {
         profileDao.delete(profile);
     }
 
@@ -195,7 +196,7 @@ public class MainController {
         }
 
         //if (!servers.isEmpty()) {
-            //gameClient.connect(servers.get(0).getHostName());
+        //gameClient.connect(servers.get(0).getHostName());
         //} else {
         if (servers.isEmpty()) {
             System.out.println("Keine Server gefunden!");
@@ -232,7 +233,7 @@ public class MainController {
         return gameClient.connect(host);
     }
 
-    public List<SaveState> getAllSavestates(){
+    public List<SaveState> getAllSavestates() {
         return saveStateDao.findAllSaveStates();
     }
 
@@ -299,20 +300,20 @@ public class MainController {
         showScreen(gameScreen);
     }
 
-    public List<Profile> retrieveProfiles(){
+    public List<Profile> retrieveProfiles() {
         /*try{
             return profileDao.openCurrentSession().createQuery("from Profiles").list();
         } catch (final Exception e){
             return new LinkedList<>();
         }*/
-        final Session session=profileDao.openCurrentSession();
-        CriteriaBuilder criteriaBuilder=session.getCriteriaBuilder();
-        CriteriaQuery<Profile> criteriaQuery=criteriaBuilder.createQuery(Profile.class);
+        final Session session = profileDao.openCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Profile> criteriaQuery = criteriaBuilder.createQuery(Profile.class);
         criteriaQuery.from(Profile.class);
         return session.createQuery(criteriaQuery).getResultList();
     }
 
-    public boolean noProfilesYet(){
+    public boolean noProfilesYet() {
         return retrieveProfiles().isEmpty();
     }
 
