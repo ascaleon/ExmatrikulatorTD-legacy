@@ -119,11 +119,15 @@ public class Tower extends ObservableModel implements ObservableTower {
      */
     private int maxUpgradeLevel;
 
-    /**
-     * Die Position des Turmes auf der Spielkarte
-     */
-    @OneToOne(mappedBy = "tower")
-    private Coordinates position;
+//    /**
+//     * Die Position des Turmes auf der Spielkarte
+//     */
+//    @OneToOne(mappedBy = "tower")
+//    private Coordinates position;
+
+    private float xPosition;
+
+    private float yPosition;
 
 //    /**
 //     * Der Spieler, dem der Turm gehört
@@ -248,6 +252,8 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.currentAttackDelay = baseAttackDelay;
         this.attackDelayTimer = baseAttackDelay;
         this.playerNumber = -1;
+        this.xPosition = -1;
+        this.yPosition = -1;
     }
 
     /**
@@ -291,7 +297,6 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.projectileSpeed = projectileSpeed;
         this.currentAttackDelay = baseAttackDelay;
         this.attackDelayTimer = baseAttackDelay;
-
     }
 
     /**
@@ -331,6 +336,8 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.currentAttackDelay = tower.currentAttackDelay;
         this.attackDelayTimer = tower.attackDelayTimer;
         this.playerNumber = tower.playerNumber;
+        this.xPosition = tower.xPosition;
+        this.yPosition = tower.yPosition;
 
         this.auras = new LinkedList<>();
         this.buffs = new LinkedList<>();
@@ -341,14 +348,14 @@ public class Tower extends ObservableModel implements ObservableTower {
         tower.getAttackDebuffs().forEach(debuff -> attackDebuffs.add(new Debuff(debuff)));
 
         this.template = false;
-        this.position = null;
+//        this.position =  new Coordinates(tower.position);
         this.currentTarget = null;
         //this.gamestate = null;
     }
 
-    public void setPosition(Coordinates position) {
-        this.position = position;
-    }
+//    public void setPosition(Coordinates position) {
+//        this.position = position;
+//    }
 
     public String getName() {
         return name;
@@ -360,20 +367,22 @@ public class Tower extends ObservableModel implements ObservableTower {
 
     @Override
     public float getxPosition() {
-        if (position != null) {
-            return position.getXCoordinate() * position.getWidth();
-        } else {
-            return 0;
-        }
+//        if (position != null) {
+//            return position.getXCoordinate() * position.getWidth();
+//        } else {
+//            return 0;
+//        }
+        return xPosition;
     }
 
     @Override
     public float getyPosition() {
-        if (position != null) {
-            return position.getYCoordinate() * position.getHeight();
-        } else {
-            return 0;
-        }
+//        if (position != null) {
+//            return position.getYCoordinate() * position.getHeight();
+//        } else {
+//            return 0;
+//        }
+        return yPosition;
     }
 
     @Override
@@ -402,9 +411,9 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.sellPrice = sellPrice;
     }
 
-    public Coordinates getPosition() {
-        return position;
-    }
+//    public Coordinates getPosition() {
+//        return position;
+//    }
 
     public float getTimeSinceLastSearch() {
         return timeSinceLastSearch;
@@ -602,5 +611,13 @@ public class Tower extends ObservableModel implements ObservableTower {
     @Override
     public String getSelectedPortraitPath() {
         return this.selectedPortraitPath;
+    }
+
+    public void setxPosition(float xPosition) {
+        this.xPosition = xPosition;
+    }
+
+    public void setyPosition(float yPosition) {
+        this.yPosition = yPosition;
     }
 }

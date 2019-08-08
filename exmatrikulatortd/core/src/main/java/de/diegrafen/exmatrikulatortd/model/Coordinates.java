@@ -53,9 +53,9 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Coordinates> neighbours;
+//    @ManyToMany
+//    @LazyCollection(LazyCollectionOption.FALSE)
+//    private List<Coordinates> neighbours;
 
 
     /**
@@ -85,7 +85,7 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer, int width, int height) {
         this(xCoordinate, yCoordinate, width, height);
         this.buildableByPlayer = buildableByPlayer;
-        this.neighbours = new ArrayList<>();
+//        this.neighbours = new ArrayList<>();
     }
 
     public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex, int width, int height) {
@@ -96,7 +96,7 @@ public class Coordinates extends BaseModel {
 
 
 
-    Coordinates(Coordinates coordinates) {
+    public Coordinates(Coordinates coordinates) {
         this.xCoordinate = coordinates.xCoordinate;
         this.yCoordinate = coordinates.yCoordinate;
         this.playerNumber = coordinates.playerNumber;
@@ -104,10 +104,9 @@ public class Coordinates extends BaseModel {
         this.waypointIndex = coordinates.waypointIndex;
         this.width = coordinates.width;
         this.height = coordinates.height;
-        if (coordinates.getTower() != null) {
-            this.tower = new Tower(coordinates.tower);
-        }
-        this.neighbours = null;
+        this.tower = null;
+
+//        this.neighbours = null;
     }
 
     public int getXCoordinate() {
@@ -146,9 +145,9 @@ public class Coordinates extends BaseModel {
         return buildableByPlayer;
     }
 
-    public void addNeighbour (Coordinates neighbour) {
-        this.neighbours.add(neighbour);
-    }
+//    public void addNeighbour (Coordinates neighbour) {
+//        this.neighbours.add(neighbour);
+//    }
 
     @Override
     public String toString () {

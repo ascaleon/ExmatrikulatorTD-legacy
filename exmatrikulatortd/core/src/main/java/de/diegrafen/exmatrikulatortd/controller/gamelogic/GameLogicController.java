@@ -476,15 +476,16 @@ public class GameLogicController implements LogicController {
 
 
 
-    void addTower(Tower tower, int xPosition, int yPosition, int playerNumber) {
+    void addTower(Tower tower, int xCoordinate, int yCoordinate, int playerNumber) {
         //Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
         //tower.setOwner(owningPlayer);
         tower.setPlayerNumber(playerNumber);
         //owningPlayer.addTower(tower);
 
-        Coordinates coordinates = getMapCellByXandYCoordinates(xPosition, yPosition);
-        tower.setPosition(coordinates);
+        Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
         coordinates.setTower(tower);
+        tower.setxPosition(xCoordinate * gamestate.getTileWidth());
+        tower.setyPosition(yCoordinate * gamestate.getTileHeight());
 
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
@@ -616,7 +617,10 @@ public class GameLogicController implements LogicController {
     void removeTower(Tower tower) {
         tower.setRemoved(true);
         //tower.getOwner().removeTower(tower);
-        tower.getPosition().setTower(null);
+        int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
+        int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
+        getMapCellByXandYCoordinates(xCoordinate, yCoordinate).setTower(null);
+//        tower.getPosition().setTower(null);
         gamestate.removeTower(tower);
         tower.setRemoved(true);
         tower.notifyObserver();

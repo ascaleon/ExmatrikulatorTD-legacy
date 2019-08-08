@@ -163,9 +163,10 @@ public class Gamestate extends BaseModel implements Observable {
         for (Coordinates mapCell : gamestate.collisionMatrix) {
             Coordinates coordinates = new Coordinates(mapCell);
             this.collisionMatrix.add(coordinates);
-            Tower tower = coordinates.getTower();
-            if (tower != null) {
-                tower.setPosition(coordinates);
+            if (mapCell.getTower() != null) {
+                Tower tower = new Tower(mapCell.getTower());
+                coordinates.setTower(tower);
+//                tower.setPosition(coordinates);
 //                Player owner = players.get(coordinates.getBuildableByPlayer());
 //                owner.addTower(tower);
 //                tower.setOwner(owner);
