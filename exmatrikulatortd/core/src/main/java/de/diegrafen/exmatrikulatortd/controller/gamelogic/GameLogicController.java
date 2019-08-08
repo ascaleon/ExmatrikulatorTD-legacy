@@ -199,6 +199,7 @@ public class GameLogicController implements LogicController {
         } else {
             if (!gamestate.isGameOver() && !pause) {
                 determineNewRound();
+                determineGameOver();
                 if (gamestate.isRoundEnded()) {
                     determineGameOver();
                 }
