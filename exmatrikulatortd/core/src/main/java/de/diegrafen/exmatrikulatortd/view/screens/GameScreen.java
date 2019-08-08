@@ -967,10 +967,20 @@ public class GameScreen extends BaseScreen implements GameView {
                 logicController.exitGame(false);
             }
         });
+        TextButton stats = new TextButton("Statistiken", skin);
+        stats.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                endScreenGroup.setVisible(false);
+                gameStatsScreen();
+            }
+        });
+
 
         //buttonTable.add(resultLabel).center().row();
         buttonTable.add(currentScoreLabel).center().row();
         buttonTable.add(highscoreLabel).center().row();
+        buttonTable.add(stats).top().center().spaceRight(10);
         buttonTable.add(back2main).top().center().row();
         buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / 2);
 
@@ -1028,6 +1038,33 @@ public class GameScreen extends BaseScreen implements GameView {
         previewTowers.add(new TowerObject(observableTower, getAssetManager()));
     }
 
+
+    private void gameStatsScreen(){
+        Group statScreen = new Group();
+
+        Player local = logicController.getLocalPlayer();
+        Image background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+
+
+        Table firstColum = new Table();
+        Table secondColum = new Table();
+        firstColum.add(new Label("", skin)).row();
+        secondColum.row();
+        firstColum.add(new Label("Score", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getScore()), skin)).row();
+        firstColum.add(new Label("Besiegte Gegner", skin)).row();
+        secondColum.add(new Label("Integer.toString()", skin)).row();
+        firstColum.add(new Label("Abgeschlossene Wellen", skin)).row();
+        secondColum.add(new Label("Placeholder", skin)).row();
+        firstColum.add(new Label("", skin)).row();
+        secondColum.row();
+
+        Table statTable = new Table();
+        statTable.add(firstColum).expandX();
+        statTable.add(secondColum).expandX();
+        statScreen.addActor(background);
+        statScreen.addActor(statTable);
+    }
     /**
      * Legt einen Spielzustand als Attribut der GameView fest
      *
