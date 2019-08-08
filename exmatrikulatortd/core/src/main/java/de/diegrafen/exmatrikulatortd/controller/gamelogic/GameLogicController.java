@@ -172,7 +172,8 @@ public class GameLogicController implements LogicController {
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
      * @param gamestate  Der Spielzustand für die Reinitialisierung
      */
-    private void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+    void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+        gameScreen.clearGameObjects();
         gamestate.getProjectiles().forEach(projectile -> {
             gameScreen.addProjectile(projectile);
             projectile.notifyObserver();
@@ -200,6 +201,16 @@ public class GameLogicController implements LogicController {
         if (deltaTime > maxDelta) {
             skipFrames(deltaTime, maxDelta);
         } else {
+
+            if (server & deltaTime != maxDelta) {
+                if (sendGameStateTimer < 0) {
+                    gameServer.sendServerGameState(gamestate);
+                    sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
+                } else {
+                    sendGameStateTimer -= deltaTime;
+                }
+            }
+
             if (!gamestate.isGameOver() && !pause) {
                 determineNewRound();
                 determineGameOver();

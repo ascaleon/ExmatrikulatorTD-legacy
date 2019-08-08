@@ -156,14 +156,11 @@ class GameLogicUnit {
 
             if (tower.getCooldown() > 0) {
                 tower.setCooldown(tower.getCooldown() - deltaTime);
-            } else {
+            } else if (tower.getCurrentTarget() != null) {
+                tower.setAttacking(true);
+                tower.notifyObserver();
+                applyAttackDelay(tower, deltaTime);
 
-                if (tower.getCurrentTarget() != null) {
-                    tower.setAttacking(true);
-                    tower.notifyObserver();
-                    applyAttackDelay(tower, deltaTime);
-
-                }
             }
         }
     }

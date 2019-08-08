@@ -184,4 +184,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         super.exitGame(false);
         gameClient.shutdown();
     }
+
+    @Override
+    public void setGamestateFromServer(Gamestate gamestate) {
+        super.reinitializeGame(getGameScreen(), gamestate);
+    }
 }

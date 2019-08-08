@@ -100,7 +100,7 @@ public class GameListener implements Listener {
 
 
     private void handleGetServerStateResponse(final GetServerStateResponse getServerStateResponse) {
-        clientLogicController.setGamestate(getServerStateResponse.getGamestate());
+        clientLogicController.setGamestateFromServer(getServerStateResponse.getGamestate());
     }
 
     /**

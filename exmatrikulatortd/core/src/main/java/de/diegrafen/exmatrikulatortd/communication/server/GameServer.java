@@ -7,6 +7,7 @@ import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -281,6 +282,11 @@ public class GameServer extends Connector implements ServerInterface {
             server.sendToAllTCP(new StartGameResponse());
             Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
         }
+    }
+
+    @Override
+    public void sendServerGameState(Gamestate gamestate) {
+        server.sendToAllTCP(new GetServerStateResponse(gamestate));
     }
 
     boolean isLookingForPlayers() {

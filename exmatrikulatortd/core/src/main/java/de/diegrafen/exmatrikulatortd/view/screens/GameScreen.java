@@ -1105,4 +1105,9 @@ public class GameScreen extends BaseScreen implements GameView {
     public void setGameState(Gamestate gameState) {
         this.gameState = gameState;
     }
+
+    @Override
+    public void clearGameObjects() {
+        gameObjects.clear();
+    }
 }
