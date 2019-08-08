@@ -77,6 +77,8 @@ public class GameLogicController implements LogicController {
 
     private final GameLogicUnit gameLogicUnit;
 
+    private float sendGameStateTimer;
+
     /**
      *
      */
@@ -85,6 +87,7 @@ public class GameLogicController implements LogicController {
         this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath);
         this.gameServer = gameServer;
         this.server = true;
+        this.sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
     }

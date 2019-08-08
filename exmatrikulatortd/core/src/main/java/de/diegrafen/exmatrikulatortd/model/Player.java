@@ -320,4 +320,6 @@ public class Player extends BaseModel implements Observable {
         this.lost = lost;
     }
 
+    public void incrementKillCounter() {
+    }
 }

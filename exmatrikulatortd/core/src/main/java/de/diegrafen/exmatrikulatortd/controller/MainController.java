@@ -238,7 +238,6 @@ public class MainController {
      */
     public void createNewSinglePlayerGame(int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        this.currentProfile = createNewProfile("Sherlock Holmes", Difficulty.EASY, "Sherlock.png");
         new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
         showScreen(gameScreen);
     }

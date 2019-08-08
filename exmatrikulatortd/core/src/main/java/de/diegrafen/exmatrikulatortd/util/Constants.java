@@ -10,6 +10,8 @@ public final class Constants {
 
     public static final int MIN_NUMBER_OF_UPDATES = 30;
 
+    public static final int GAMESTATE_REFRESHS_PER_SECONDS = 15;
+
     public static final int NUMBER_OF_TOWERS = 5;
 
     public static final int REGULAR_TOWER = 0;

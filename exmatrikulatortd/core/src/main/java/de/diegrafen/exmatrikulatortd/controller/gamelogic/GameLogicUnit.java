@@ -475,6 +475,7 @@ class GameLogicUnit {
                 attackedPlayer.notifyObserver();
             }
             if (!enemy.isRemoved()) {
+                attackedPlayer.incrementKillCounter();
                 removeEnemy(enemy);
             }
             // TODO: In eigene Methode verschieben
