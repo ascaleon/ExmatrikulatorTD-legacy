@@ -162,10 +162,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private List<TowerObject> previewTowers;
 
-    private ImageButton upgradeButton;
-
-    private ImageButton sellButton;
-
     private TowerObject previewTower;
 
     private LogicController logicController;
@@ -202,6 +198,8 @@ public class GameScreen extends BaseScreen implements GameView {
     private float mouseYPosition;
 
     private int numberOfPlayers;
+
+    private Image background;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
@@ -282,13 +280,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     }
                 }
 
-                if (keycode == Input.Keys.D) {
-                    upgradeButton.setChecked(!upgradeButton.isChecked());
-                }
-                if (keycode == Input.Keys.S) {
-                    sellButton.setChecked(!sellButton.isChecked());
-                }
-
                 return false;
             }
 
@@ -350,14 +341,6 @@ public class GameScreen extends BaseScreen implements GameView {
                                 logicController.buildTower(towerButton.getTowerNumber(), xCoordinate, yCoordinate, localPlayerNumber);
                                 return true;
                             }
-                        }
-                    } else if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        if (sellButton.isChecked()) {
-                            logicController.sellTower(xCoordinate, yCoordinate, localPlayerNumber);
-                            return true;
-                        } else if (upgradeButton.isChecked()) {
-                            logicController.upgradeTower(xCoordinate, yCoordinate, localPlayerNumber);
-                            return true;
                         }
                     }
                 }
@@ -421,6 +404,7 @@ public class GameScreen extends BaseScreen implements GameView {
         //multiplexer.addProcessor(inputProcessorCam);
 
         numberOfPlayers = gameState.getPlayers().size();
+        background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
         initializeUserInterface();
 
         multiplexer.addProcessor(inputProcessorCam);
@@ -695,33 +679,27 @@ public class GameScreen extends BaseScreen implements GameView {
         //statsTable.setBackground(background);
         Label.LabelStyle infoLabelsStyle = new Label.LabelStyle();
         infoLabelsStyle.font = getBitmapFont();
-        Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
-        scoreLabelStyle.font = getBitmapFont();
-        Label.LabelStyle liveLabelStyle = new Label.LabelStyle();
-        liveLabelStyle.font = getBitmapFont();
-        Label.LabelStyle roundLabelStyle = new Label.LabelStyle();
-        roundLabelStyle.font = getBitmapFont();
 
 
         // score
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).right().padLeft(10).expandX();
-        scoreLabel = new Label(Integer.toString(localPlayer.getScore()), scoreLabelStyle);
+        scoreLabel = new Label(Integer.toString(localPlayer.getScore()), infoLabelsStyle);
         statsTable.add(scoreLabel).left().align(RIGHT);
         statsTable.row();
         // money
         statsTable.add(new Label("Geld: ", infoLabelsStyle)).right().padLeft(10).expandX();
-        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), scoreLabelStyle);
+        resourcesLabel = new Label(Integer.toString(localPlayer.getResources()), infoLabelsStyle);
         statsTable.add(resourcesLabel).left().align(RIGHT);
         statsTable.row();
         // lives
         statsTable.add(new Label("Leben: ", infoLabelsStyle)).right().padLeft(10).expandX();
-        livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), liveLabelStyle);
+        livesLabel = new Label(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives(), infoLabelsStyle);
         statsTable.add(livesLabel).left().align(RIGHT);
         statsTable.row();
         // Rounds
         statsTable.add(new Label("Runde: ", infoLabelsStyle)).right().padLeft(10).expandX();
         String roundsLabelText = (gameState.getRoundNumber() + 1) + "/" + gameState.getNumberOfRounds();
-        roundsLabel = new Label(roundsLabelText, liveLabelStyle);
+        roundsLabel = new Label(roundsLabelText, infoLabelsStyle);
         statsTable.add(roundsLabel).left().align(RIGHT);
         statsTable.row();
         // Time
@@ -737,21 +715,12 @@ public class GameScreen extends BaseScreen implements GameView {
         //TextButtonStyle style = new TextButtonStyle();
         towerSelect = new Table();
 
-        //Die einzelnen Towerbuttons
+        //Erstellen der Towerbuttons
         logicController.createTowerButtons(this);
 
-        upgradeButton = new ImageButton(upgradeIcon);
-        sellButton = new ImageButton(sellIcon);
-        //upgradeButton.setSize(X_SIZE, Y_SIZE);
-        //sellButton.setSize(X_SIZE, Y_SIZE);
 
-        TextButton instaLoose = new TextButton("L", skin);
-        instaLoose.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                localPlayer.setCurrentLives(0);
-            }
-        });
+        ImageButton upgradeButton = new ImageButton(upgradeIcon);
+        ImageButton sellButton = new ImageButton(sellIcon);
 
         upgradeButton.addListener(new ClickListener() {
             @Override
@@ -768,9 +737,13 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-
         upgradeButton.addListener(new TextTooltip("Upgraden", tooltipManager, skin));
         sellButton.addListener(new TextTooltip("Verkaufen", tooltipManager, skin));
+
+        popUpButtons = new Group();
+        upgradeSell = new Table();
+        upgradeSell.add(upgradeButton).size(X_SIZE, Y_SIZE).row();
+        upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
 
         //Exit
         final Table exit = new Table();
@@ -791,11 +764,6 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        popUpButtons = new Group();
-        upgradeSell = new Table();
-        upgradeSell.add(upgradeButton).size(X_SIZE, Y_SIZE).row();
-        upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
-
         exit.add(exitButton).size(X_SIZE, Y_SIZE);
 
         messageArea = new Table();
@@ -815,7 +783,7 @@ public class GameScreen extends BaseScreen implements GameView {
         countdown = new Table();
         countdown.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10);
         String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
-        timelabel = new Label(timeLabelText, liveLabelStyle);
+        timelabel = new Label(timeLabelText, infoLabelsStyle);
         countdown.add(timelabel).top().left().align(RIGHT);
 
         topLeft.add(messageArea).center().top().padLeft(50).colspan(2);
@@ -961,8 +929,7 @@ public class GameScreen extends BaseScreen implements GameView {
     private void pauseScreen() {
         if (logicController.isPause()) {
             pauseGroup = new Group();
-            Image semiTransparentBackground = new Image(getAssetManager().get(TRANSPARENT_BACKGROUND_IMAGE, Texture.class));
-            semiTransparentBackground.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+            background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
             Table buttonTable = new Table();
             TextButton resume = new TextButton("Resume", skin);
@@ -1008,7 +975,7 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            pauseGroup.addActor(semiTransparentBackground);
+            pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
 
             defaultScreen.setVisible(false);
@@ -1040,7 +1007,6 @@ public class GameScreen extends BaseScreen implements GameView {
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
         Label highscoreLabel = new Label("Highscore: " + highscore, skin);
         // TODO: Zum Assetmanager hinzufügen
-        Image background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
 
         Table buttonTable = new Table();
 
@@ -1120,5 +1086,12 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void setGameState(Gamestate gameState) {
         this.gameState = gameState;
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
     }
 }
