@@ -213,7 +213,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
      */
     private void reinitializeGame(GameView gameScreen, List<Tower> towers) {
-        gameScreen.clearGameObjects();
+        //gameScreen.clearGameObjects();
+        List<Tower> towers1 = getGamestate().getTowers();
+        towers1.forEach(this::removeTower);
 //        gamestate.getProjectiles().forEach(projectile -> {
 //            gameScreen.addProjectile(projectile);
 //            projectile.notifyObserver();

@@ -204,10 +204,9 @@ public class GameLogicController implements LogicController {
 
             if (server & deltaTime != maxDelta) {
                 if (sendGameStateTimer < 0) {
-                    List<Tower> towersToSend = new LinkedList<>();
-                    gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
+//                    List<Tower> towersToSend = new LinkedList<>();
+//                    gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
 
-                    gameServer.sendServerGameState(towersToSend);
                     sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
                 } else {
                     sendGameStateTimer -= deltaTime;
@@ -364,11 +363,17 @@ public class GameLogicController implements LogicController {
      */
     private void startNewRound() {
         System.out.println("New round started!");
-        gamestate.setNewRound(true);
-        gamestate.setRoundEnded(false);
         for (Player player : gamestate.getPlayers()) {
             player.setEnemiesSpawned(false);
         }
+        if (server) {
+            List<Tower> towersToSend = new LinkedList<>();
+            gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
+            gameServer.sendServerGameState(towersToSend);
+        }
+        gamestate.setNewRound(true);
+        gamestate.setRoundEnded(false);
+
         gamestate.setTimeUntilNextRound(TIME_BETWEEN_ROUNDS);
     }
 
