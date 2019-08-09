@@ -190,12 +190,13 @@ class GameLogicUnit {
             tower.setCurrentAttackSpeed(tower.getBaseAttackSpeed());
 
             for (Buff buff : tower.getBuffs()) {
-                tower.setCurrentAttackSpeed(tower.getCurrentAttackSpeed() * (1 / buff.getAttackSpeedMultiplier()));
-                tower.setCurrentAttackDamage(tower.getCurrentAttackDamage() * buff.getAttackDamageMultiplier());
                 buff.setDuration(buff.getDuration() - deltaTime);
                 if (buff.getDuration() < 0) {
                     buffsToRemove.add(buff);
                 }
+                tower.setCurrentAttackSpeed(tower.getCurrentAttackSpeed() * (1 / buff.getAttackSpeedMultiplier()));
+                tower.setCurrentAttackDamage(tower.getCurrentAttackDamage() * buff.getAttackDamageMultiplier());
+
             }
 
             buffsToRemove.forEach(tower::removeBuff);
@@ -254,19 +255,16 @@ class GameLogicUnit {
 
     /**
      * Lässt einen Turm angreifen
-     * @param tower
+     * @param tower Der angreifende Turm
      */
     private void letTowerAttack(Tower tower) {
         switch (tower.getAttackStyle()) {
-            // TODO: Differenzierung nach Projektilarten einbauen
             case PROJECTILE:
                 addProjectile(tower);
                 break;
-
             case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
                 applyDamageToTarget(tower);
         }
-
     }
 
     private void applyAttackDelay(Tower tower, float deltaTime) {

@@ -1,0 +1,76 @@
+package de.diegrafen.exmatrikulatortd.communication.server;
+
+import com.badlogic.gdx.Gdx;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.ClientReadyRequest;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.GetGameInfoRequest;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.AllPlayersReadyResponse;
+import de.diegrafen.exmatrikulatortd.communication.server.responses.GetGameInfoResponse;
+import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
+
+/**
+ * @author janro
+ * @version 07.08.2019 01:25
+ */
+public class ConnectionListener implements Listener {
+
+    private GameServer gameServer;
+
+    ConnectionListener(GameServer gameServer) {
+        this.gameServer = gameServer;
+    }
+
+    @Override
+    public void connected(Connection connection) {
+        int playerNumber = gameServer.allocatePlayerNumber();
+
+        gameServer.getConnectionAndPlayerNumbers().put(connection.getID(), playerNumber);
+
+        if (gameServer.openSlotsLeft() <= 0) {
+            gameServer.setLookingForPlayers(false);
+        }
+
+        GetGameInfoResponse getGameInfoResponse = new GetGameInfoResponse(true, playerNumber, gameServer.getPlayerNames(), gameServer.getProfilePicturePaths(), gameServer.getMapPath());
+        gameServer.getServer().sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
+        getGameInfoResponse.setUpdate(false);
+        connection.sendTCP(getGameInfoResponse);
+        System.out.println("Looking for Players? " + gameServer.isLookingForPlayers());
+    }
+
+    @Override
+    public void disconnected(Connection connection) {
+        if (!gameServer.isGameRunning()) {
+            gameServer.emptySlot(connection.getID());
+        }
+    }
+
+    @Override
+    public void received(Connection connection, Object object) {
+        if (object instanceof GetGameInfoRequest) {
+            handleGetGameInfoRequest(connection);
+        } else if (object instanceof ClientReadyRequest) {
+            handleClientReadyRequest(connection);
+        }
+    }
+
+    private void handleGetGameInfoRequest(Connection connection) {
+        connection.sendTCP(new GetGameInfoResponse(true, 1, gameServer.getPlayerNames(), gameServer.getProfilePicturePaths(), gameServer.getMapPath()));
+    }
+
+    private void handleClientReadyRequest(Connection connection) {
+        gameServer.setPlayerReady(connection.getID());
+
+        System.out.println("ClientReadyRequest erhalten!");
+        if (gameServer.areAllPlayersReady()) {
+            gameServer.getServer().sendToAllTCP(new AllPlayersReadyResponse());
+            //mainController.showLoadScreen();
+            Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath()));
+        }
+    }
+}

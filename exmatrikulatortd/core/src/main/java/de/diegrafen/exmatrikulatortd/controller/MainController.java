@@ -13,6 +13,7 @@ import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
 import org.hibernate.Session;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
@@ -89,6 +90,13 @@ public class MainController {
         this.highScoreDao = new HighscoreDao();
         this.saveStateDao = new SaveStateDao();
 
+        long profileID = game.getPreferences().getLong("profileID", -1L);
+        if (profileID != -1L) {
+            currentProfile = profileDao.retrieve(profileID);
+        }
+        if (currentProfile == null) {
+            game.getPreferences().putLong("profileID", -1L);
+        }
         //
     }
 
@@ -122,6 +130,8 @@ public class MainController {
     }
 
     public void setCurrentProfile(Profile currentProfile) {
+        game.getPreferences().putLong("profileID", currentProfile.getId());
+        game.getPreferences().flush();
         this.currentProfile = currentProfile;
     }
 
@@ -137,17 +147,20 @@ public class MainController {
         return profile;
     }
 
-    public Profile updateProfile(final Profile profile,final String newProfileName,final Difficulty newDifficulty, final String newProfilePicturePath){
-        Profile updatedProfile = profile;
-        updatedProfile.setProfileName(newProfileName);
-        updatedProfile.setPreferredDifficulty(newDifficulty);
-        updatedProfile.setProfilePicturePath(newProfilePicturePath);
-        profileDao.update(updatedProfile);
-        return updatedProfile;
+    public Profile updateProfile(final Profile profile, final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
+        profile.setProfileName(newProfileName);
+        profile.setPreferredDifficulty(newDifficulty);
+        profile.setProfilePicturePath(newProfilePicturePath);
+        profileDao.update(profile);
+        return profile;
     }
 
-    public void deleteProfile(final Profile profile){
-        profileDao.delete(profile);
+    public void deleteProfile(final Profile profile) {
+        try{
+            profileDao.delete(profile);
+        } catch (final PersistenceException e){
+            System.out.println(e);
+        }
     }
 
     /**
@@ -188,7 +201,7 @@ public class MainController {
         }
 
         //if (!servers.isEmpty()) {
-            //gameClient.connect(servers.get(0).getHostName());
+        //gameClient.connect(servers.get(0).getHostName());
         //} else {
         if (servers.isEmpty()) {
             System.out.println("Keine Server gefunden!");
@@ -225,12 +238,19 @@ public class MainController {
         return gameClient.connect(host);
     }
 
+    public List<SaveState> getAllSavestates() {
+        return saveStateDao.findAllSaveStates();
+    }
+
+    public List<SaveState> getSaveStatesForCurrentProfile() {
+        return saveStateDao.findSaveStatesForProfile(currentProfile);
+    }
+
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
     public void createNewSinglePlayerGame(int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        this.currentProfile = createNewProfile("Sherlock Holmes", Difficulty.EASY, "Sherlock.png");
         new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
         showScreen(gameScreen);
     }
@@ -238,17 +258,12 @@ public class MainController {
     /**
      * Lädt ein Einzelspieler-Spiel
      *
-     * @param saveState Der Spielzustand, der geladen werden soll
+     * @param idToLoad Die Datenbank-ID des Spielzustandes, der geladen werden soll
      */
-    //public void loadSinglePlayerGame(SaveState saveState) {
-    public void loadSinglePlayerGame() {
-        List<SaveState> saveStates = saveStateDao.findAllSaveStates();
-        SaveState saveState = saveStates.get(saveStates.size() - 1);
+    public void loadSinglePlayerGame(Long idToLoad) {
+        SaveState saveState = saveStateDao.retrieve(idToLoad);
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen);
-        for (SaveState saveState1 : saveStateDao.findAllSaveStates()) {
-            System.out.println(saveState1.getGamestate().getMapName());
-        }
         showScreen(gameScreen);
     }
 
@@ -290,20 +305,20 @@ public class MainController {
         showScreen(gameScreen);
     }
 
-    public List<Profile> retrieveProfiles(){
+    public List<Profile> retrieveProfiles() {
         /*try{
             return profileDao.openCurrentSession().createQuery("from Profiles").list();
         } catch (final Exception e){
             return new LinkedList<>();
         }*/
-        final Session session=profileDao.openCurrentSession();
-        CriteriaBuilder criteriaBuilder=session.getCriteriaBuilder();
-        CriteriaQuery<Profile> criteriaQuery=criteriaBuilder.createQuery(Profile.class);
+        final Session session = profileDao.openCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Profile> criteriaQuery = criteriaBuilder.createQuery(Profile.class);
         criteriaQuery.from(Profile.class);
         return session.createQuery(criteriaQuery).getResultList();
     }
 
-    public boolean noProfilesYet(){
+    public boolean noProfilesYet() {
         return retrieveProfiles().isEmpty();
     }
 

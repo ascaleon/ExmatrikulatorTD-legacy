@@ -1,11 +1,7 @@
 package de.diegrafen.exmatrikulatortd.communication.client;
 
-import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.ClientDiscoveryHandler;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
-import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientLogicController;
@@ -79,8 +75,7 @@ public class GameClient extends Connector implements ClientInterface {
                 receivedSessionInfo.add(serverInformation);
             }
         });
-        attachGetGameInfoReponseListener();
-        attachGameReadyResponseListener();
+        client.addListener(new ConnectionListener(this));
         client.start(); // Startet den Client in einem neuen Thread
     }
 
@@ -172,17 +167,16 @@ public class GameClient extends Connector implements ClientInterface {
      * @return @code{true}, wenn die Verbindung erfolgreich hergestellt wurde. Ansonsten @code{false}
      */
     public boolean connect(final String host) {
-        connected = false;
+        boolean connected;
         try {
             client.connect(5000, host, tcpPort, udpPort);
-            if (client.isConnected()) {
-                connected = true;
-            }
-            return true;
+            connected = client.isConnected();
         } catch (final IOException e) {
-            e.printStackTrace();    // nur zum Debugging!
+            e.printStackTrace();
             connected = false;
         }
+
+        this.connected = connected;
 
         return connected;
     }
@@ -209,158 +203,7 @@ public class GameClient extends Connector implements ClientInterface {
      * @param logicController Der LogicController, an den empfangene Antworten weitergeleitet werden
      */
     public void attachResponseListeners(final ClientLogicController logicController) {
-
-        attachBuildResponseListener(logicController);
-        attachGetServerStateResponseListener(logicController);
-        attachSellResponseListener(logicController);
-        attachSendEnemyResponseListener(logicController);
-        attachUpgradeResponseListener(logicController);
-        attachStartGameReponseListener(logicController);
-        attachErrorResponseListener(logicController);
-    }
-
-    private void attachErrorResponseListener(ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof ErrorResponse) {
-                    ErrorResponse response = (ErrorResponse) object;
-                    logicController.displayErrorMessage(response.getErrorMessage(), response.getPlayerNumber());
-                }
-            }
-
-            @Override
-            public void disconnected(Connection connection) {
-                if (gameRunning) {
-                    // Todo: Statt exitGame() aufzurufen, das Anzeigen eines passenden Fensters triggern
-                    System.err.println("Der Server hat die Verbindung geschlossen!");
-                    Gdx.app.postRunnable(logicController::gameConnectionLost);
-                    gameRunning = false;
-                    mainController.shutdownConnections();
-                }
-            }
-        });
-    }
-
-    private void attachGameReadyResponseListener() {
-        client.addListener(new Listener() {
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof AllPlayersReadyResponse) {
-                    //mainController.showLoadScreen();
-                    Gdx.app.postRunnable(() -> mainController.createNewMultiplayerClientGame(2, localPlayerNumber, MULTIPLAYER_DUEL, mapPath));
-                }
-            }
-        });
-    }
-
-    private void attachStartGameReponseListener(ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof StartGameResponse) {
-                    if (!gameRunning) {
-                        gameRunning = true;
-                        System.err.println("Spiel läuft!");
-                        Gdx.app.postRunnable(() -> mainController.showScreen(logicController.getGameScreen()));
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
-     */
-    private void attachBuildResponseListener(final ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof BuildResponse) {
-                    final BuildResponse response = (BuildResponse) object;
-
-                    Gdx.app.postRunnable(() -> logicController.addTowerFromServer(response.getTowerType(),
-                            response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
-
-                    System.out.println("Response received!");
-                }
-            }
-        });
-    }
-
-    /**
-     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
-     */
-    private void attachSellResponseListener(final ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof SellResponse) {
-                    final SellResponse response = (SellResponse) object;
-                    Gdx.app.postRunnable(() -> logicController.sellTowerFromServer(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
-                }
-            }
-        });
-    }
-
-    /**
-     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
-     */
-    private void attachSendEnemyResponseListener(final ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof SendEnemyResponse) {
-                    final SendEnemyResponse response = (SendEnemyResponse) object;
-                    Gdx.app.postRunnable(() -> logicController.sendEnemyFromServer(response.getEnemyType(), response.getPlayerToSendTo(), response.getSendingPlayer()));
-
-                }
-            }
-        });
-    }
-
-    /**
-     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
-     */
-    private void attachUpgradeResponseListener(final ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof UpgradeResponse) {
-                    final UpgradeResponse response = (UpgradeResponse) object;
-                    Gdx.app.postRunnable(() -> logicController.upgradeTowerFromServer(response.getxCoordinate(), response.getyCoordinate(), response.getPlayerNumber()));
-
-                }
-            }
-        });
-    }
-
-    /**
-     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
-     */
-    private void attachGetServerStateResponseListener(final ClientLogicController logicController) {
-        client.addListener(new Listener() {
-            public void received(Connection connection, Object object) {
-                if (object instanceof GetServerStateResponse) {
-                    GetServerStateResponse response = (GetServerStateResponse) object;
-                    logicController.setGamestate(response.getGamestate());
-                }
-            }
-        });
-    }
-
-    private void attachGetGameInfoReponseListener() {
-        client.addListener(new Listener() {
-            @Override
-            public void received(Connection connection, Object object) {
-                if (object instanceof GetGameInfoResponse) {
-                    GetGameInfoResponse response = (GetGameInfoResponse) object;
-                    //if (response.isUpdate()) {
-                        // Update-Code kommt hierhin
-                    //} else {
-                    if (!response.isUpdate()) {
-                        localPlayerNumber = response.getAllocatedPlayerNumber();
-                        mapPath = response.getMapPath();
-                    }
-                }
-            }
-        });
+        client.addListener(new GameListener(this, logicController));
     }
 
     public List<String> getReceivedSessionInfo() {
@@ -375,5 +218,29 @@ public class GameClient extends Connector implements ClientInterface {
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
+    }
+
+    boolean isGameRunning() {
+        return gameRunning;
+    }
+
+    void setGameRunning(boolean gameRunning) {
+        this.gameRunning = gameRunning;
+    }
+
+    int getLocalPlayerNumber() {
+        return localPlayerNumber;
+    }
+
+    public String getMapPath() {
+        return mapPath;
+    }
+
+    void setLocalPlayerNumber(int localPlayerNumber) {
+        this.localPlayerNumber = localPlayerNumber;
+    }
+
+    public void setMapPath(String mapPath) {
+        this.mapPath = mapPath;
     }
 }

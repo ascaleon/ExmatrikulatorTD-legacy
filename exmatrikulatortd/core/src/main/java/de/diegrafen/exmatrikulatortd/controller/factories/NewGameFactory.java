@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.factories;
 
+import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
@@ -32,30 +33,29 @@ public final class NewGameFactory {
 
     }
 
-    // TODO: Irgendwie muss hier noch der Schwierigkeitsgrad berücksichtigt werden
-    public static Gamestate createNewGame(int gameMode, int numberOfPlayers) {
+    public static Gamestate createNewGame(int gameMode, int numberOfPlayers, Difficulty difficulty) {
 
         Gamestate gamestate = null;
 
         if (numberOfPlayers == 1) {
             switch (gameMode) {
                 case STANDARD_SINGLE_PLAYER_GAME:
-                    gamestate = createStandardSinglePlayerGame();
+                    gamestate = createStandardSinglePlayerGame(difficulty);
                     break;
                 case ENDLESS_SINGLE_PLAYER_GAME:
-                    gamestate = createEndlessSinglePlayerGame();
+                    gamestate = createEndlessSinglePlayerGame(difficulty);
                     break;
             }
         } else if (numberOfPlayers > 1 & numberOfPlayers <= MAX_PLAYERS) {
             switch (gameMode) {
                 case MULTIPLAYER_DUEL:
-                    gamestate = createMultiPlayerDuell(numberOfPlayers);
+                    gamestate = createMultiPlayerDuell(numberOfPlayers, difficulty);
                     break;
                 case MULTIPLAYER_STANDARD_GAME:
-                    gamestate = createMultiStandardGame(numberOfPlayers);
+                    gamestate = createMultiStandardGame(numberOfPlayers, difficulty);
                     break;
                 case MULTIPLAYER_ENDLESS_GAME:
-                    gamestate = createMultiEndlessGame(numberOfPlayers);
+                    gamestate = createMultiEndlessGame(numberOfPlayers, difficulty);
                     break;
             }
         }
@@ -67,35 +67,32 @@ public final class NewGameFactory {
         return gamestate;
     }
 
-    private static Gamestate createStandardSinglePlayerGame() {
-        List<Player> players = createPlayers(1);
+    private static Gamestate createStandardSinglePlayerGame(Difficulty difficulty) {
+        List<Player> players = createPlayers(1, difficulty);
         List<Wave> waves = createWaves();
-        //List<Tower> buildableTowers = createBuildableTowers();
         return new Gamestate(players, waves);
     }
 
-    private static Gamestate createEndlessSinglePlayerGame() {
-        Gamestate gamestate = createStandardSinglePlayerGame();
+    private static Gamestate createEndlessSinglePlayerGame(Difficulty difficulty) {
+        Gamestate gamestate = createStandardSinglePlayerGame(difficulty);
         gamestate.setEndlessGame(true);
         return gamestate;
     }
 
-    private static Gamestate createMultiPlayerDuell(int numberOfPlayers) {
-        Gamestate gamestate = createMultiStandardGame(numberOfPlayers);
+    private static Gamestate createMultiPlayerDuell(int numberOfPlayers, Difficulty difficulty) {
+        Gamestate gamestate = createMultiStandardGame(numberOfPlayers, difficulty);
         //gamestate.setDuel();
-
         return gamestate;
     }
 
-    private static Gamestate createMultiStandardGame(int numberOfPlayers) {
-        List<Player> players = createPlayers(numberOfPlayers);
+    private static Gamestate createMultiStandardGame(int numberOfPlayers, Difficulty difficulty) {
+        List<Player> players = createPlayers(numberOfPlayers, difficulty);
         List<Wave> waves = createWaves();
-        //List<Tower> buildableTowers = createBuildableTowers();
         return new Gamestate(players, waves);
     }
 
-    private static Gamestate createMultiEndlessGame(int numberOfPlayers) {
-        Gamestate gamestate = createMultiStandardGame(numberOfPlayers);
+    private static Gamestate createMultiEndlessGame(int numberOfPlayers, Difficulty difficulty) {
+        Gamestate gamestate = createMultiStandardGame(numberOfPlayers, difficulty);
         gamestate.setEndlessGame(true);
         return gamestate;
     }
@@ -113,7 +110,7 @@ public final class NewGameFactory {
         return waves;
     }
 
-    private static List<Player> createPlayers(int numberOfPlayers) {
+    private static List<Player> createPlayers(int numberOfPlayers, Difficulty difficulty) {
         List<Player> players = new LinkedList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = new Player(i);
@@ -121,7 +118,7 @@ public final class NewGameFactory {
             player.setMaxLives(25);
             player.setResources(1000);
             player.setScore(0);
-            player.setDifficulty(EASY);
+            player.setDifficulty(difficulty);
             players.add(player);
         }
         return players;

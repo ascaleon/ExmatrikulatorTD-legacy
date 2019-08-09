@@ -1,7 +1,9 @@
 package de.diegrafen.exmatrikulatortd.persistence;
 
+import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.SaveState;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -29,5 +31,15 @@ public class SaveStateDao extends BaseDao<SaveState> {
         final List<SaveState> saveStates = session.createNamedQuery("SaveState.findAll", getClazz()).getResultList();
         closeCurrentSessionwithTransaction();
         return saveStates;
+    }
+
+    public List<SaveState> findSaveStatesForProfile(Profile profile) {
+
+        Session session = openCurrentSessionwithTransaction();
+        Query<SaveState> query = session.createNamedQuery("SaveState.findSaveStatesForProfile", getClazz());
+        query.setParameter("profile", profile);
+        List<SaveState> result = query.getResultList();
+        closeCurrentSessionwithTransaction();
+        return result;
     }
 }

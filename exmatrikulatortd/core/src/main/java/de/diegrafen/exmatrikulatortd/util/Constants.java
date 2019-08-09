@@ -1,5 +1,8 @@
 package de.diegrafen.exmatrikulatortd.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 /**
  * Definiert globale Konstanten, die von anderen Modulen genutzt werden können
  *
@@ -11,6 +14,10 @@ public final class Constants {
     public static final int MIN_NUMBER_OF_UPDATES = 30;
 
     public static final int NUMBER_OF_TOWERS = 5;
+
+    public static final float CAMERA_TRANSLATE_VALUE = 5;
+
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     public static final int REGULAR_TOWER = 0;
 

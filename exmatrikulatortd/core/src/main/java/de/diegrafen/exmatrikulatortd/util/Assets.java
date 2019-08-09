@@ -15,6 +15,8 @@ public final class Assets {
 
     public static final String MENU_BACKGROUND_IMAGE = "196922.jpg";
 
+    public static final String TRANSPARENT_BACKGROUND_IMAGE = "transparentBG.png";
+
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
     public static final String REGULAR_TOWER_ASSETS = "tower_gun";
@@ -71,6 +73,7 @@ public final class Assets {
 
         // load Textures
         assetManager.load(MENU_BACKGROUND_IMAGE, Texture.class);
+        assetManager.load(TRANSPARENT_BACKGROUND_IMAGE, Texture.class);
 
         // load atlasses
         assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), TextureAtlas.class);

@@ -16,6 +16,8 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name="SaveState.findAll",
                 query="SELECT s FROM SaveState s"),
+        @NamedQuery(name="SaveState.findSaveStatesForProfile",
+                query="SELECT s FROM SaveState s WHERE s.profile = :profile"),
 })
 public class SaveState extends BaseModel {
 
@@ -23,6 +25,8 @@ public class SaveState extends BaseModel {
      * Die eindeutige Serialisierungs-ID
      */
     static final long serialVersionUID = 4918147183123L;
+
+    private String saveStateName;
 
     /**
      * Das Datum des Spielstandes
@@ -54,7 +58,8 @@ public class SaveState extends BaseModel {
     public SaveState() {
     }
 
-    public SaveState(Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber, String mapPath) {
+    public SaveState(String saveStateName, Date saveDate, boolean multiplayer, Profile profile, Gamestate gamestate, int localPlayerNumber, String mapPath) {
+        this.saveStateName = saveStateName;
         this.saveDate = saveDate;
         this.multiplayer = multiplayer;
         this.profile = profile;
@@ -105,5 +110,9 @@ public class SaveState extends BaseModel {
 
     public String getMapPath() {
         return mapPath;
+    }
+
+    public String getSaveStateName() {
+        return saveStateName;
     }
 }
