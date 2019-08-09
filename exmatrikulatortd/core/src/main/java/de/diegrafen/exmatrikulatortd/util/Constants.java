@@ -13,8 +13,6 @@ public final class Constants {
 
     public static final int MIN_NUMBER_OF_UPDATES = 30;
 
-    public static final float GAMESTATE_REFRESHS_PER_SECONDS = 0.5f;
-
     public static final int NUMBER_OF_TOWERS = 5;
 
     public static final float CAMERA_TRANSLATE_VALUE = 5;
@@ -46,7 +44,8 @@ public final class Constants {
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
      */
-    public static final float SEARCH_TARGET_INTERVAL = 0.1f;
+    //public static final float SEARCH_TARGET_INTERVAL = 0.1f;
+    public static final float SEARCH_TARGET_INTERVAL = 0;
 
     public static final int TILE_SIZE = 64;
 

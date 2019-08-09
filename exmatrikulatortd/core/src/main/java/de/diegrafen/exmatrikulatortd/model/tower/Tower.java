@@ -119,22 +119,9 @@ public class Tower extends ObservableModel implements ObservableTower {
      */
     private int maxUpgradeLevel;
 
-//    /**
-//     * Die Position des Turmes auf der Spielkarte
-//     */
-//    @OneToOne(mappedBy = "tower")
-//    private Coordinates position;
-
     private float xPosition;
 
     private float yPosition;
-
-//    /**
-//     * Der Spieler, dem der Turm gehört
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "player_id")
-//    private Player owner;
 
     private int playerNumber;
 
@@ -348,14 +335,8 @@ public class Tower extends ObservableModel implements ObservableTower {
         tower.getAttackDebuffs().forEach(debuff -> attackDebuffs.add(new Debuff(debuff)));
 
         this.template = false;
-//        this.position =  new Coordinates(tower.position);
         this.currentTarget = null;
-        //this.gamestate = null;
     }
-
-//    public void setPosition(Coordinates position) {
-//        this.position = position;
-//    }
 
     public String getName() {
         return name;
@@ -367,21 +348,11 @@ public class Tower extends ObservableModel implements ObservableTower {
 
     @Override
     public float getxPosition() {
-//        if (position != null) {
-//            return position.getXCoordinate() * position.getWidth();
-//        } else {
-//            return 0;
-//        }
         return xPosition;
     }
 
     @Override
     public float getyPosition() {
-//        if (position != null) {
-//            return position.getYCoordinate() * position.getHeight();
-//        } else {
-//            return 0;
-//        }
         return yPosition;
     }
 
@@ -390,7 +361,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         if (currentTarget != null) {
             return currentTarget.getxPosition();
         } else {
-            return 0;
+            return xPosition;
         }
     }
 
@@ -399,7 +370,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         if (currentTarget != null) {
             return currentTarget.getyPosition();
         } else {
-            return 0;
+            return yPosition;
         }
     }
 
@@ -410,10 +381,6 @@ public class Tower extends ObservableModel implements ObservableTower {
     public void setSellPrice(int sellPrice) {
         this.sellPrice = sellPrice;
     }
-
-//    public Coordinates getPosition() {
-//        return position;
-//    }
 
     public float getTimeSinceLastSearch() {
         return timeSinceLastSearch;

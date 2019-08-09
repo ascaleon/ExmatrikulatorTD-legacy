@@ -77,8 +77,6 @@ public class GameLogicController implements LogicController {
 
     private final GameLogicUnit gameLogicUnit;
 
-    private float sendGameStateTimer;
-
     /**
      *
      */
@@ -87,7 +85,6 @@ public class GameLogicController implements LogicController {
         this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath);
         this.gameServer = gameServer;
         this.server = true;
-        this.sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
         System.out.println("Blah.");
@@ -148,7 +145,6 @@ public class GameLogicController implements LogicController {
         this.multiplayer = saveState.isMultiplayer();
         this.gameScreen = gameView;
         this.loaded = true;
-        //gamestate.getPlayers().size();
         this.gameScreen.setLogicController(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
@@ -172,7 +168,7 @@ public class GameLogicController implements LogicController {
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
      * @param gamestate  Der Spielzustand für die Reinitialisierung
      */
-    void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+    private void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
         gameScreen.clearGameObjects();
         gamestate.getProjectiles().forEach(projectile -> {
             gameScreen.addProjectile(projectile);
@@ -200,42 +196,25 @@ public class GameLogicController implements LogicController {
         }
         if (deltaTime > maxDelta) {
             skipFrames(deltaTime, maxDelta);
-        } else {
-
-            if (server & deltaTime != maxDelta) {
-                if (sendGameStateTimer < 0) {
-                        List<Tower> towersToSend = new LinkedList<>();
-                        gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
-                        gameServer.sendServerGameState(towersToSend);
-//                    List<Tower> towersToSend = new LinkedList<>();
-//                    gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
-
-                    sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
-                } else {
-                    sendGameStateTimer -= deltaTime;
-                }
+        } else if (!gamestate.isGameOver() && !pause) {
+            determineNewRound();
+            determineGameOver();
+            if (gamestate.isRoundEnded()) {
+                determineGameOver();
             }
 
-            if (!gamestate.isGameOver() && !pause) {
-                determineNewRound();
-                determineGameOver();
+            if (!gamestate.isGameOver()) {
                 if (gamestate.isRoundEnded()) {
-                    determineGameOver();
+                    gamestate.setRoundEnded(false);
+                    startNewRound();
                 }
-
-                if (!gamestate.isGameOver()) {
-                    if (gamestate.isRoundEnded()) {
-                        gamestate.setRoundEnded(false);
-                        startNewRound();
-                    }
-                    gameLogicUnit.spawnWave(deltaTime);
-                    gameLogicUnit.applyAuras(deltaTime, gamestate);
-                    gameLogicUnit.applyMovement(deltaTime, gamestate);
-                    gameLogicUnit.makeAttacks(deltaTime);
-                    gameLogicUnit.moveProjectiles(deltaTime);
-                    gameLogicUnit.applyBuffsToTowers(deltaTime);
-                    gameLogicUnit.applyDebuffsToEnemies(deltaTime);
-                }
+                gameLogicUnit.spawnWave(deltaTime);
+                gameLogicUnit.applyAuras(deltaTime, gamestate);
+                gameLogicUnit.applyMovement(deltaTime, gamestate);
+                gameLogicUnit.makeAttacks(deltaTime);
+                gameLogicUnit.moveProjectiles(deltaTime);
+                gameLogicUnit.applyBuffsToTowers(deltaTime);
+                gameLogicUnit.applyDebuffsToEnemies(deltaTime);
             }
         }
     }
@@ -369,11 +348,11 @@ public class GameLogicController implements LogicController {
         for (Player player : gamestate.getPlayers()) {
             player.setEnemiesSpawned(false);
         }
-//        if (server) {
-//            List<Tower> towersToSend = new LinkedList<>();
-//            gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
-//            gameServer.sendServerGameState(towersToSend);
-//        }
+        if (server) {
+            List<Tower> towersToSend = new LinkedList<>();
+            gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
+            gameServer.sendServerGameState(towersToSend);
+        }
         gamestate.setNewRound(true);
         gamestate.setRoundEnded(false);
 
@@ -423,27 +402,6 @@ public class GameLogicController implements LogicController {
                 addGameMapTile(j, i, buildableByPlayer, tileWidth, tileHeight);
             }
         }
-
-//        // TODO: Eventuell obsolet, es sei denn, wir wollen Graph-Algorithmen auf der Map einsetzen.
-//        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
-//
-//            int mapCellXCoordinate = mapCell.getxCoordinate();
-//            int mapCellYCoordinate = mapCell.getyCoordinate();
-//            int numberOfCols = gamestate.getNumberOfColumns();
-//
-//            if (mapCellXCoordinate > 0) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
-//            }
-//            if (mapCellXCoordinate < numberOfColumns - 1) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
-//            }
-//            if (mapCellYCoordinate > 0) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
-//            }
-//            if (mapCellYCoordinate < numberOfRows - 1) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
-//            }
-//        }
     }
 
     /**
@@ -488,10 +446,7 @@ public class GameLogicController implements LogicController {
 
 
     void addTower(Tower tower, int xCoordinate, int yCoordinate, int playerNumber) {
-        //Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
-        //tower.setOwner(owningPlayer);
         tower.setPlayerNumber(playerNumber);
-        //owningPlayer.addTower(tower);
 
         Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
         coordinates.setTower(tower);
@@ -626,18 +581,15 @@ public class GameLogicController implements LogicController {
      * @param tower Der zu entfernende Turm
      */
     void removeTower(Tower tower) {
-        //tower.getOwner().removeTower(tower);
         int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
         int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
         getMapCellByXandYCoordinates(xCoordinate, yCoordinate).setTower(null);
-//        tower.getPosition().setTower(null);
         gamestate.removeTower(tower);
         tower.setRemoved(true);
         tower.notifyObserver();
     }
 
     void removeAllTowers() {
-        //tower.getOwner().removeTower(tower);
         for (Tower tower : gamestate.getTowers()) {
             int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
             int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
@@ -645,7 +597,6 @@ public class GameLogicController implements LogicController {
             tower.setRemoved(true);
             tower.notifyObserver();
         }
-//        tower.getPosition().setTower(null);
         gamestate.getTowers().clear();
     }
 

@@ -166,10 +166,6 @@ public class Gamestate extends BaseModel implements Observable {
             if (mapCell.getTower() != null) {
                 Tower tower = new Tower(mapCell.getTower());
                 coordinates.setTower(tower);
-//                tower.setPosition(coordinates);
-//                Player owner = players.get(coordinates.getBuildableByPlayer());
-//                owner.addTower(tower);
-//                tower.setOwner(owner);
                 this.towers.add(tower);
             }
         }
@@ -183,14 +179,6 @@ public class Gamestate extends BaseModel implements Observable {
                 Enemy enemy = enemies.get(enemyIndex);
                 this.projectiles.get(i).setTarget(enemy);
             }
-
-//            if (towerIndex >= 0) {
-//                Tower tower = towers.get(towerIndex);
-//                this.projectiles.get(i).setTowerThatShot(tower);
-//                if (enemy != null) {
-//                    tower.setCurrentTarget(enemy);
-//                }
-//            }
         }
 
         for (int i = 0; i < gamestate.towers.size(); i++) {
@@ -201,9 +189,7 @@ public class Gamestate extends BaseModel implements Observable {
                 Enemy enemy = enemies.get(enemyIndex);
                 this.towers.get(i).setCurrentTarget(enemy);
             }
-
         }
-
     }
 
     public void addEnemy (Enemy enemy) {
@@ -277,10 +263,6 @@ public class Gamestate extends BaseModel implements Observable {
     public List<Tower> getTowers() {
         return towers;
     }
-
-    //public List<Tower> getBuildableTowers() {
-        //return buildableTowers;
-    //}
 
     public boolean isNewRound() {
         return newRound;
