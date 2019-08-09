@@ -1,8 +1,6 @@
 package de.diegrafen.exmatrikulatortd.model;
 
-import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.enemy.Wave;
-import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.Observer;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -116,8 +114,6 @@ public class Player extends BaseModel implements Observable {
     }
 
     public Player(int playerNumber) {
-        //this.attackingEnemies = new ArrayList<>();
-//        this.towers = new ArrayList<>();
         this.wayPoints = new ArrayList<>();
         this.waves = new ArrayList<>();
         this.observers = new ArrayList<>();
@@ -143,30 +139,13 @@ public class Player extends BaseModel implements Observable {
         this.difficulty = player.difficulty;
         this.victorious = player.victorious;
         this.lost = player.lost;
-//        this.towers = new LinkedList<>();
 
         this.wayPoints = new LinkedList<>();
         player.getWayPoints().forEach(waypoint -> wayPoints.add(new Coordinates(waypoint)));
 
         this.waves = new LinkedList<>();
         player.getWaves().forEach(wave -> waves.add(new Wave(wave)));
-
-//        //this.attackingEnemies = new LinkedList<>();
-//
-//        for (Enemy enemy : player.getAttackingEnemies()) {
-//            Enemy newEnemy = new Enemy(enemy);
-//            //attackingEnemies.add(newEnemy);
-//            gamestate.addEnemy(newEnemy);
-//        }
     }
-
-//    public void addEnemy(Enemy attackingEnemy) {
-//        this.attackingEnemies.add(attackingEnemy);
-//    }
-
-//    public void addTower(Tower tower) {
-//        towers.add(tower);
-//    }
 
     public List<Coordinates> getWayPoints() {
         return wayPoints;
@@ -193,10 +172,6 @@ public class Player extends BaseModel implements Observable {
         notifyObserver();
     }
 
-//    public void removeEnemy(Enemy enemy) {
-//        attackingEnemies.remove(enemy);
-//    }
-
     public int getPlayerNumber() {
         return playerNumber;
     }
@@ -221,10 +196,6 @@ public class Player extends BaseModel implements Observable {
         this.score += score;
     }
 
-//    public void removeTower(Tower tower) {
-//        towers.remove(tower);
-//    }
-
     public float getTimeSinceLastSpawn() {
         return timeSinceLastSpawn;
     }
@@ -245,25 +216,9 @@ public class Player extends BaseModel implements Observable {
         this.score = score;
     }
 
-//    public List<Tower> getTowers() {
-//        return towers;
-//    }
-//
-//    public void setTowers(List<Tower> towers) {
-//        this.towers = towers;
-//    }
-
     public List<Wave> getWaves() {
         return waves;
     }
-
-    public void setWaves(List<Wave> waves) {
-        this.waves = waves;
-    }
-
-//    public List<Enemy> getAttackingEnemies() {
-//        return attackingEnemies;
-//    }
 
     public boolean isEnemiesSpawned() {
         return enemiesSpawned;

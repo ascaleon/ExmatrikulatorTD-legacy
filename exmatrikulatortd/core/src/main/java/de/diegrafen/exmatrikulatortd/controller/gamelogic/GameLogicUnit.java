@@ -267,8 +267,6 @@ class GameLogicUnit {
         }
     }
 
-
-
     private void moveInTargetDirection(Enemy enemy, float deltaTime) {
         float xPosition = enemy.getxPosition();
         float yPosition = enemy.getyPosition();
@@ -281,9 +279,7 @@ class GameLogicUnit {
     }
 
     private void addEnemy(Enemy enemy, int playerNumber) {
-        //Player attackedPlayer = gamestate.getPlayerByNumber(playerNumber);
-        //attackedPlayer.addEnemy(enemy);
-        enemy.setPlayerNumber(playerNumber); //setAttackedPlayer(attackedPlayer);
+        enemy.setPlayerNumber(playerNumber);
         gamestate.addEnemy(enemy);
         Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
         enemy.addDebuff(generateDifficultyDebuff(attackedPlayer.getDifficulty()));
@@ -300,11 +296,6 @@ class GameLogicUnit {
     }
 
     private void removeEnemy(Enemy enemy) {
-//        Player attackedPlayer = enemy.getAttackedPlayer();
-//        if (attackedPlayer != null) {
-//            enemy.getAttackedPlayer().removeEnemy(enemy);
-//            //enemy.setAttackedPlayer(null);
-//        }
         enemy.clearDebuffs();
         gamestate.removeEnemy(enemy);
         enemy.setRemoved(true);
@@ -467,13 +458,6 @@ class GameLogicUnit {
             if (!enemy.isRemoved()) {
                 removeEnemy(enemy);
             }
-//            // TODO: In eigene Methode verschieben
-//            if (tower.getCurrentTarget() != null) {
-//                if (tower.getCurrentTarget().equals(enemy)) {
-//                    tower.setCurrentTarget(null);
-//                }
-//
-//            }
         }
     }
 

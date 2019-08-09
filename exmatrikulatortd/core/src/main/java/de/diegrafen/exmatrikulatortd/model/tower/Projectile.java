@@ -35,9 +35,6 @@ public class Projectile extends ObservableModel {
     @ManyToOne
     private Enemy target;
 
-//    @ManyToOne
-//    private Tower towerThatShot;
-
     private int playerNumber;
 
     private float targetxPosition;
@@ -88,7 +85,6 @@ public class Projectile extends ObservableModel {
         this.applyingDebuffs = new LinkedList<>();
 
         this.target = null;
-        //this.towerThatShot = null;
 
         projectile.getApplyingDebuffs().forEach(debuff -> applyingDebuffs.add(new Debuff(debuff)));
     }
@@ -165,12 +161,6 @@ public class Projectile extends ObservableModel {
         return applyingDebuffs;
     }
 
-
-
-//    public Tower getTowerThatShot() {
-//        return towerThatShot;
-//    }
-
     public int getAttackType() {
         return attackType;
     }
@@ -178,11 +168,6 @@ public class Projectile extends ObservableModel {
     public void setTarget(Enemy target) {
         this.target = target;
     }
-
-//    public void setTowerThatShot(Tower towerThatShot) {
-//        this.towerThatShot = towerThatShot;
-//    }
-
 
     public int getPlayerNumber() {
         return playerNumber;
