@@ -823,7 +823,7 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX().colspan(2);
         defaultScreen.row();
-        defaultScreen.setDebug(true);
+        //defaultScreen.setDebug(true);
 
         statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
         defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
