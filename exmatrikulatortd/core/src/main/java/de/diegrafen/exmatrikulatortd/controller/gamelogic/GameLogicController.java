@@ -204,7 +204,10 @@ public class GameLogicController implements LogicController {
 
             if (server & deltaTime != maxDelta) {
                 if (sendGameStateTimer < 0) {
-                    gameServer.sendServerGameState(gamestate.getTowers());
+                    List<Tower> towersToSend = new LinkedList<>();
+                    gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
+
+                    gameServer.sendServerGameState(towersToSend);
                     sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
                 } else {
                     sendGameStateTimer -= deltaTime;
