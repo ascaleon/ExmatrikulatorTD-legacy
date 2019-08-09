@@ -37,13 +37,13 @@ public class Profile extends BaseModel {
     /**
      * Die mit dem Profil assozierten Highscores
      */
-    @OneToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE)
     private List<Highscore> highscores;
 
     /**
      * Die mit dem Profil assozierten Speicherstände
      */
-    @OneToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE)
     private List<SaveState> saveStates;
 
     /**

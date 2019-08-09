@@ -15,6 +15,7 @@ import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.SaveState;
+import de.diegrafen.exmatrikulatortd.view.screens.uielements.ProfileTextButton;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +31,6 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.DATE_FORMAT;
  */
 public class MenuScreen extends BaseScreen {
 
-    //private Stage stage;
-
     private Table mainMenuTable;
 
     private Table preferencesMenuTable;
@@ -41,8 +40,6 @@ public class MenuScreen extends BaseScreen {
     private Table loadOrNewGameTable;
 
     private Table savestatesTable;
-
-    private List<Profile> profiles;
 
     private Table selectProfileMenuTable;
 
@@ -223,8 +220,8 @@ public class MenuScreen extends BaseScreen {
 
         for (SaveState saveState : savestates) {
             savestatesTable.row();
-            String buttonText = saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString();
-            TextButton savestateButton = new TextButton(buttonText, basicSkin);
+            String buttonText = "Player name:" + saveState.getProfile().getProfileName() + "\n" + saveState.getSaveStateName() + "\nSaved: " + DATE_FORMAT.format(saveState.getSaveDate().toString());
+            TextButton savestateButton = new TextButton(buttonText, skin);
             savestateButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -286,19 +283,29 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void refreshProfilesTable() {
-        profiles = getMainController().retrieveProfiles();
-        //if(!profilesButtonGroup.getButtons().isEmpty()) profilesButtonGroup.remove(profilesButtonGroup.getButtons().toArray());
-        for (final TextButton button : profilesButtonGroup.getButtons()) {
-            profilesButtonGroup.remove(button);
-        }
+        List<Profile> profiles = getMainController().retrieveProfiles();
+        final Profile currentProfile = getMainController().getCurrentProfile();
+        profilesButtonGroup.clear();
         profilesTable.clearChildren();
+        profilesTable.add(new Label("Profil auswählen.", skin));
         for (final Profile profile : profiles) {
             profilesTable.row();
-            TextButton profileButton = new TextButton(profile.getProfileName(), basicSkin);
+            ProfileTextButton profileButton = new ProfileTextButton(profile.getProfileName(), skin, profile.getId());
 
-            final Profile currentProfile = getMainController().getCurrentProfile();
-            if (currentProfile != null && currentProfile.getProfileName().equals(profile.getProfileName()))
-                profileButton.setColor(Color.GREEN);
+            profileButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    profilesButtonGroup.getButtons().forEach(button -> button.setColor(Color.WHITE));
+                    getMainController().setCurrentProfile(profile);
+                    System.out.println(profileButton.getColor());
+                    profileButton.setColor(Color.GREEN);
+                    refreshSavestatesTable();
+                }
+            });
+
+            if (currentProfile != null && currentProfile.getId().equals(profile.getId())) {
+                profileButton.setChecked(true);
+            }
 
             profilesTable.add(profileButton);
             profilesButtonGroup.add(profileButton);
@@ -306,14 +313,12 @@ public class MenuScreen extends BaseScreen {
     }
 
     private Profile getSelectedProfileFromButtonGroup() {
-        final TextButton selectedProfileButton = profilesButtonGroup.getChecked();
-        final String selectedProfileButtonText = selectedProfileButton.getText().toString();
-        for (Profile profile : profiles) {
-            if (profile.getProfileName().equals(selectedProfileButtonText)) {
-                return profile;
-            }
+        final ProfileTextButton selectedProfileButton = (ProfileTextButton) profilesButtonGroup.getChecked();
+        if (selectedProfileButton != null) {
+            return getMainController().retrieveProfile(selectedProfileButton.getID());
+        } else {
+            return null;
         }
-        return null;
     }
 
     private void createSelectProfileMenuTable(Stack menuStack) {
@@ -334,7 +339,7 @@ public class MenuScreen extends BaseScreen {
 
         Table buttonsTable = new Table();
 
-        TextButton switchProfile = new TextButton("Profil wechseln", skin);
+        //TextButton switchProfile = new TextButton("Profil wechseln", skin);
         TextButton createNewProfile = new TextButton("Neues Profil", skin);
         TextButton editProfile = new TextButton("Profil bearbeiten", skin);
         TextButton deleteProfile = new TextButton("Profil entfernen", skin);
@@ -345,16 +350,6 @@ public class MenuScreen extends BaseScreen {
         createGenericMenuTable(menuStack, selectProfileMenuTable);
 
         selectProfileMenuTable.row().pad(10, 0, 10, 0);
-
-        switchProfile.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Profile profile = getSelectedProfileFromButtonGroup();
-                if (profile != null) {
-                    getMainController().setCurrentProfile(profile);
-                }
-            }
-        });
 
         createNewProfile.addListener(new ChangeListener() {
             @Override
@@ -392,8 +387,6 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        buttonsTable.add(switchProfile).fillX();
-        buttonsTable.row().pad(10, 0, 10, 0);
         buttonsTable.add(createNewProfile).fillX();
         buttonsTable.row().pad(10, 0, 10, 0);
         buttonsTable.add(editProfile).fillX();
@@ -424,11 +417,12 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 final String profileName = profileNameTextField.getText();
                 if (!profileName.isEmpty()) {
-                    Profile p = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
-                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(p);
+                    Profile profile = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    getMainController().setCurrentProfile(profile);
                     profileNameTextField.setColor(Color.WHITE);
                     profileNameTextField.setText("");
                     showSelectProfileMenu(newProfileMenuTable);
+                    refreshProfilesTable();
                 } else {
                     profileNameTextField.setColor(Color.RED);
                 }
@@ -712,6 +706,8 @@ public class MenuScreen extends BaseScreen {
     private void showSelectGameTypeMenu(Table callingTable) {
         if (getMainController().noProfilesYet()) {
             showNewProfileMenu(callingTable);
+        } else if (getMainController().getCurrentProfile() == null) {
+            showSelectProfileMenu(callingTable);
         } else {
             showTable(callingTable, selectGameTypeTable);
         }

@@ -123,11 +123,11 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
         }
         //assertNotNull(t);
         if (t.getId() > 0) {
-            final T entity = retrieve(t.getId());
-            if (entity != null) {
+            //final T entity = retrieve(t.getId());
+            //if (entity != null) {
                 openCurrentSessionwithTransaction().delete(t);
                 closeCurrentSessionwithTransaction();
-            }
+            //}
             t.clearId();
         }
         else throw new IllegalArgumentException("The id of the parameter must not be zero!");
