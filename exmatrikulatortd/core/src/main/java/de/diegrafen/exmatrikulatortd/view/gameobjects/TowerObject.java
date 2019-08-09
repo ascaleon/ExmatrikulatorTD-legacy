@@ -56,11 +56,11 @@ public class TowerObject extends BaseObject {
         attackRightAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
 
         //skaliere angriffsgeschwindigkeit
-        attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
-        if (attackFrameDuration < attackLeftAnimation.getFrameDuration()){
-            attackLeftAnimation.setFrameDuration(attackFrameDuration);
-            attackRightAnimation.setFrameDuration(attackFrameDuration);
-        }
+        //attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
+//        if (attackFrameDuration < attackLeftAnimation.getFrameDuration()){
+//            attackLeftAnimation.setFrameDuration(attackFrameDuration);
+//            attackRightAnimation.setFrameDuration(attackFrameDuration);
+//        }
     }
 
     /**
