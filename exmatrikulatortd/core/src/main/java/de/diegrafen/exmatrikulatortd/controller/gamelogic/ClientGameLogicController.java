@@ -214,8 +214,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      */
     private void reinitializeGame(GameView gameScreen, List<Tower> towers) {
         //gameScreen.clearGameObjects();
-        List<Tower> towers1 = getGamestate().getTowers();
-        towers1.forEach(this::removeTower);
+        removeAllTowers();
 //        gamestate.getProjectiles().forEach(projectile -> {
 //            gameScreen.addProjectile(projectile);
 //            projectile.notifyObserver();

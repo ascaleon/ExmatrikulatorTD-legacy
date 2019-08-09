@@ -623,7 +623,6 @@ public class GameLogicController implements LogicController {
      * @param tower Der zu entfernende Turm
      */
     void removeTower(Tower tower) {
-        tower.setRemoved(true);
         //tower.getOwner().removeTower(tower);
         int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
         int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
@@ -632,6 +631,19 @@ public class GameLogicController implements LogicController {
         gamestate.removeTower(tower);
         tower.setRemoved(true);
         tower.notifyObserver();
+    }
+
+    void removeAllTowers() {
+        //tower.getOwner().removeTower(tower);
+        for (Tower tower : gamestate.getTowers()) {
+            int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
+            int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
+            getMapCellByXandYCoordinates(xCoordinate, yCoordinate).setTower(null);
+            tower.setRemoved(true);
+            tower.notifyObserver();
+        }
+//        tower.getPosition().setTower(null);
+        gamestate.getTowers().clear();
     }
 
 
