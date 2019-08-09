@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
- * Definiert globale Konstanten, die von anderen Modulen genutzt werden können
+ * Definiert globale Konstanten, die von anderen Komponenten genutzt werden können
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 02.07.2019 22:09
@@ -13,7 +13,7 @@ public final class Constants {
 
     public static final int MIN_NUMBER_OF_UPDATES = 30;
 
-    public static final int GAMESTATE_REFRESHS_PER_SECONDS = 15;
+    public static final float GAMESTATE_REFRESHS_PER_SECONDS = 0.5f;
 
     public static final int NUMBER_OF_TOWERS = 5;
 

@@ -21,6 +21,8 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.cr
  */
 public class ClientGameLogicController extends GameLogicController implements ClientLogicController {
 
+    private List<Tower> updateTowers;
+
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
      */
@@ -39,6 +41,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
         gameClient.reportFinishedLoading();
+        this.updateTowers = null;
     }
 
     public ClientGameLogicController(MainController mainController, SaveState saveState, int allocatedPlayerNumber, GameView gameView, GameClient gameClient) {
@@ -48,6 +51,17 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         setLocalPlayerNumber(allocatedPlayerNumber);
     }
 
+    /**
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
+     */
+    @Override
+    public void update(float deltaTime) {
+        if (updateTowers != null) {
+            reinitializeGame(getGameScreen(), updateTowers);
+            updateTowers = null;
+        }
+        super.update(deltaTime);
+    }
 
     /**
      * Rüstet einen Turm auf
@@ -190,14 +204,13 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     @Override
     public void setGamestateFromServer(List<Tower> towers) {
-        reinitializeGame(getGameScreen(), towers);
+        updateTowers = towers;
     }
 
     /**
      * Reinitialisiert den Spielbildschirm nach dem Laden
      *
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
-     * @param gamestate  Der Spielzustand für die Reinitialisierung
      */
     private void reinitializeGame(GameView gameScreen, List<Tower> towers) {
         gameScreen.clearGameObjects();
