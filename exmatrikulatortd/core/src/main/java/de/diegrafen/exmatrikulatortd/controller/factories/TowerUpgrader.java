@@ -61,9 +61,9 @@ public final class TowerUpgrader {
             successful = false;
         } else {
             tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
-            tower.setBaseAttackDamage(tower.getBaseAttackDamage() + 25);
-            //tower.setUpgradePrice(tower.getUpgradePrice() * 2);
-            tower.setSellPrice(tower.getSellPrice() + 100);
+            tower.setBaseAttackDamage(tower.getBaseAttackDamage() + 25); // tower.getAttackDamageUpgradeBonus()
+            //tower.setUpgradePrice(tower.getUpgradePrice() * 2);  // tower.getAttackSpeedUpgradeBonus()
+            tower.setSellPrice(tower.getSellPrice() + 100);        // tower.getAttackRangeUpgradeBonus()
             tower.setAssetsName(UPGRADED_REGULAR_TOWER_ASSETS);
             tower.notifyObserver();
             System.out.println("Upgraded!");
