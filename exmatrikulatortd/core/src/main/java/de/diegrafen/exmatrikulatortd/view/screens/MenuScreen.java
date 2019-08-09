@@ -50,7 +50,7 @@ public class MenuScreen extends BaseScreen {
 
     private Table profilesTable;
 
-    private Table newProfileMenuTable;
+    private Table newOrEditProfileMenuTable;
 
     private TextField profileNameTextField;
 
@@ -84,6 +84,8 @@ public class MenuScreen extends BaseScreen {
 
     private Long idToLoad = -1L;
 
+    private TextButton saveNewOrEditedProfileButton=new TextButton(null,skin);
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -107,7 +109,7 @@ public class MenuScreen extends BaseScreen {
         createSelectGameTypeTable(menuStack);
         createLoadOrNewGameTable(menuStack);
         createSelectProfileMenuTable(menuStack);
-        createNewProfileMenuTable(menuStack);
+        createNewOrEditProfileMenuTable(menuStack);
         createHighscoreMenuTable(menuStack);
         createSelectClientOrServerMenu(menuStack);
         createServerListTable(menuStack);
@@ -368,7 +370,7 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 Profile profile = getSelectedProfileFromButtonGroup();
                 if (profile != null) {
-                    showNewProfileMenu(selectProfileMenuTable, profile);
+                    showEditProfileMenu(selectProfileMenuTable, profile);
                 }
             }
         });
@@ -406,20 +408,25 @@ public class MenuScreen extends BaseScreen {
         selectProfileMenuTable.add(buttonsTable).expand();
     }
 
-    private void createNewProfileMenuTable(Stack menuStack) {
-        newProfileMenuTable = new Table();
+    private void cleanupNewOrEditProfileMenu(){
+        profileNameTextField.setColor(Color.WHITE);
+        profileNameTextField.setText("");
+        difficultySelectBox.setSelected(Difficulty.EASY);
+    }
+
+    private void createNewOrEditProfileMenuTable(Stack menuStack) {
+        newOrEditProfileMenuTable = new Table();
         profileNameTextField = new TextField("", skin);
         difficultySelectBox = new SelectBox(skin);
-        TextButton createProfileButton = new TextButton("Profil erstellen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         profileNameTextField.setMessageText("Name");
         profileNameTextField.setMaxLength(255);
         difficultySelectBox.setItems(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD, Difficulty.TESTMODE);
 
-        createGenericMenuTable(menuStack, newProfileMenuTable);
+        createGenericMenuTable(menuStack, newOrEditProfileMenuTable);
 
-        createProfileButton.addListener(new ChangeListener() {
+        /*createProfileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 final String profileName = profileNameTextField.getText();
@@ -428,30 +435,29 @@ public class MenuScreen extends BaseScreen {
                     if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(p);
                     profileNameTextField.setColor(Color.WHITE);
                     profileNameTextField.setText("");
-                    showSelectProfileMenu(newProfileMenuTable);
+                    showSelectProfileMenu(newOrEditProfileMenuTable);
                 } else {
                     profileNameTextField.setColor(Color.RED);
                 }
             }
-        });
+        });*/
 
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showSelectProfileMenu(newProfileMenuTable);
+                showSelectProfileMenu(newOrEditProfileMenuTable);
                 backButton.setChecked(false);
-                profileNameTextField.setText("");
-                difficultySelectBox.setSelected(Difficulty.EASY);
+                cleanupNewOrEditProfileMenu();
             }
         });
 
-        newProfileMenuTable.add(profileNameTextField).fill();
-        newProfileMenuTable.row().pad(10, 0, 10, 0);
-        newProfileMenuTable.add(difficultySelectBox).fill();
-        newProfileMenuTable.row().pad(10, 0, 10, 0);
-        newProfileMenuTable.add(createProfileButton);
-        newProfileMenuTable.row().pad(10, 0, 10, 0);
-        newProfileMenuTable.add(backButton).fillX().uniformX();
+        newOrEditProfileMenuTable.add(profileNameTextField).fill();
+        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
+        newOrEditProfileMenuTable.add(difficultySelectBox).fill();
+        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
+        newOrEditProfileMenuTable.add(saveNewOrEditedProfileButton);
+        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
+        newOrEditProfileMenuTable.add(backButton).fillX().uniformX();
     }
 
     private void createPreferenceMenuTable(Stack menuStack) {
@@ -699,7 +705,7 @@ public class MenuScreen extends BaseScreen {
     private void createNewSinglePlayerGameMenu() {
 
     }
-
+    
     private void showTable(Table callingTable, Table calledTable) {
         callingTable.setVisible(false);
         calledTable.setVisible(true);
@@ -735,13 +741,43 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void showNewProfileMenu(Table callingTable) {
-        showTable(callingTable, newProfileMenuTable);
+        saveNewOrEditedProfileButton.setText("Profil erstellen");
+        saveNewOrEditedProfileButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                final String profileName = profileNameTextField.getText();
+                if (!profileName.isEmpty()) {
+                    Profile p = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(p);
+                    cleanupNewOrEditProfileMenu();
+                    showSelectProfileMenu(newOrEditProfileMenuTable);
+                } else {
+                    profileNameTextField.setColor(Color.RED);
+                }
+            }
+        });
+        showTable(callingTable, newOrEditProfileMenuTable);
     }
 
-    private void showNewProfileMenu(Table callingTable, final Profile profile) {
+    private void showEditProfileMenu(Table callingTable, final Profile profile){
+        saveNewOrEditedProfileButton.setText("Profil aktualisieren");
         profileNameTextField.setText(profile.getProfileName());
         difficultySelectBox.setSelected(profile.getPreferredDifficulty());
-        showNewProfileMenu(callingTable);
+        saveNewOrEditedProfileButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                final String profileName = profileNameTextField.getText();
+                if (!profileName.isEmpty()) {
+                    getMainController().updateProfile(profile,profileName,(Difficulty)difficultySelectBox.getSelected(),"");
+                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(profile);
+                    cleanupNewOrEditProfileMenu();
+                    showSelectProfileMenu(newOrEditProfileMenuTable);
+                } else {
+                    profileNameTextField.setColor(Color.RED);
+                }
+            }
+        });
+        showTable(callingTable, newOrEditProfileMenuTable);
     }
 
     private void showHighScoreMenu(Table callingTable) {

@@ -13,6 +13,7 @@ import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
 import org.hibernate.Session;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
@@ -155,7 +156,11 @@ public class MainController {
     }
 
     public void deleteProfile(final Profile profile) {
-        profileDao.delete(profile);
+        try{
+            profileDao.delete(profile);
+        } catch (final PersistenceException e){
+            System.out.println(e);
+        }
     }
 
     /**
