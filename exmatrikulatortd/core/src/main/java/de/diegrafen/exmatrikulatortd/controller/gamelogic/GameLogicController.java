@@ -115,7 +115,6 @@ public class GameLogicController implements LogicController {
         initializeMap(mapPath);
 
         this.gameScreen.loadMap(mapPath);
-        setLocalPlayerName();
     }
 
     private Gamestate createGameState(int gamemode, int numberOfPlayers) {
@@ -758,10 +757,6 @@ public class GameLogicController implements LogicController {
 
     void setLocalPlayerNumber(int localPlayerNumber) {
         this.localPlayerNumber = localPlayerNumber;
-    }
-
-    void setLocalPlayerName() {
-        getLocalPlayer().setPlayerName(mainController.getCurrentProfile().getProfileName());
     }
 
     public boolean isPause() {
