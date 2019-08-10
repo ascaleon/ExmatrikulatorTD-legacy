@@ -13,7 +13,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
@@ -47,11 +46,17 @@ public class GameClient extends Connector implements ClientInterface {
 
     private String mapPath;
 
+    private String[] playerNames;
+
+    private String[] profilePicturePaths;
+
+    private int[] difficulties;
+
     /**
      * Erzeugt einen neuen GameClient
      */
     public GameClient() {
-        client = new Client();
+        client = new Client(16384*8, 2048*8);
         registerObjects(client.getKryo());
         tcpPort = TCP_PORT;
         udpPort = UDP_PORT;
@@ -242,5 +247,28 @@ public class GameClient extends Connector implements ClientInterface {
 
     public void setMapPath(String mapPath) {
         this.mapPath = mapPath;
+    }
+
+    public String[] getPlayerNames() {
+        return playerNames;
+    }
+
+    void setPlayerNames(String[] playerNames) {
+        this.playerNames = playerNames;
+    }
+
+    public String[] getProfilePicturePaths() {
+        return profilePicturePaths;
+    }
+
+    public void setProfilePicturePaths(String[] profilePicturePaths) {
+        this.profilePicturePaths = profilePicturePaths;
+    }
+
+    void sendGetGameInfoRequest() {
+        String profileName = getMainController().getCurrentProfileName();
+        int difficulty = getMainController().getCurrentProfilePreferredDifficulty();
+        String profilePictureName = getMainController().getCurrentProfilePicturePath();
+        client.sendTCP(new GetGameInfoRequest(profileName, difficulty, profilePictureName));
     }
 }
