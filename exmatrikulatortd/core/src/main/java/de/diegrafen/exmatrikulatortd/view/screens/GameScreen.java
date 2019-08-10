@@ -154,6 +154,8 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      */
     private Group pauseGroup;
+
+    private Group endScreenGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
     private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
@@ -991,7 +993,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
-        Group endScreenGroup = new Group();
+        endScreenGroup = new Group();
 
         //Label resultLabel;
         Image resultImage;
@@ -1092,25 +1094,54 @@ public class GameScreen extends BaseScreen implements GameView {
         Group statScreen = new Group();
 
         Player local = logicController.getLocalPlayer();
-        Image background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
-
 
         Table firstColum = new Table();
         Table secondColum = new Table();
-        firstColum.add(new Label("", skin)).row();
-        secondColum.row();
+        Table thirdColum = new Table();
+        firstColum.add(new Label("Statistiken:", skin)).row();
+        secondColum.add(new Label(local.getPlayerName(), skin)).row();
         firstColum.add(new Label("Score", skin)).row();
         secondColum.add(new Label(Integer.toString(local.getScore()), skin)).row();
         firstColum.add(new Label("Besiegte Gegner", skin)).row();
         secondColum.add(new Label(Integer.toString(local.getKillTracker()), skin)).row();
         firstColum.add(new Label("Abgeschlossene Wellen", skin)).row();
         secondColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
-        firstColum.add(new Label("", skin)).row();
-        secondColum.row();
+        firstColum.add(new Label("Erbaute Tuerme", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getTowerCounter()), skin)).row();
+        firstColum.add(new Label("Verdientes Gold", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getResources() - 1000), skin)).row();
+
+        if(logicController.isMultiplayer()){
+            Player opponent = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
+            thirdColum.add(new Label(opponent.getPlayerName(), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getScore()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getKillTracker()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getTowerCounter()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getResources() -1000), skin)).row();
+        }
+
+        TextButton back = new TextButton("Zurueck", skin);
+        back.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                statScreen.setVisible(false);
+                endScreenGroup.setVisible(true);
+            }
+        });
 
         Table statTable = new Table();
         statTable.add(firstColum).center().expandX();
         statTable.add(secondColum).center().expandX();
+        if(logicController.isMultiplayer()){
+            statTable.add(thirdColum).center().expandX();
+            statTable.row();
+            statTable.add(back).center().colspan(3);
+        }
+        else {
+            statTable.row();
+            statTable.add(back).center().colspan(2);
+        }
         statTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
         statScreen.addActor(background);
         statScreen.addActor(statTable);

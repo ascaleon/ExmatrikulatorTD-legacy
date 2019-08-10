@@ -110,6 +110,8 @@ public class Player extends BaseModel implements Observable {
 
     private int killTracker;
 
+    private int towerCounter;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -127,6 +129,8 @@ public class Player extends BaseModel implements Observable {
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
+        this.killTracker = 0;
+        this.towerCounter = 0;
     }
 
     /**
@@ -161,6 +165,8 @@ public class Player extends BaseModel implements Observable {
             attackingEnemies.add(newEnemy);
             gamestate.addEnemy(newEnemy);
         }
+        this.killTracker = player.killTracker;
+        this.towerCounter = player.towerCounter;
     }
 
     public void addEnemy(Enemy attackingEnemy) {
@@ -238,6 +244,9 @@ public class Player extends BaseModel implements Observable {
 
     public String getPlayerName() {
         return playerName;
+    }
+    public void setPlayerName(String name) {
+        playerName = name;
     }
 
     public int getScore() {
@@ -328,5 +337,12 @@ public class Player extends BaseModel implements Observable {
 
     public int getKillTracker(){
         return killTracker;
+    }
+
+    public void incrementTowerCounter(){
+        towerCounter++;
+    }
+    public int getTowerCounter() {
+        return towerCounter;
     }
 }
