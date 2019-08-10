@@ -49,6 +49,7 @@ public class EnemyObject extends BaseObject {
     @Override
     void initializeSprite() {
         super.initializeSprite();
+        //dies ist eine änderung
 
         String assetsName = getAssetsName();
         TextureAtlas deathAnimationAtlas = getAssetManager().get(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
