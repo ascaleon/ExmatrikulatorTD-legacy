@@ -21,13 +21,13 @@ public final class TowerFactory {
 
     private static final String REGULAR_TOWER_DESCRIPTION = "Standardturm" + "\n" + "Kosten: 200";
 
-    private static final String SLOW_TOWER_DESCRIPTION = "Verlangsamt Gegner" + "\n" + "Kosten: 500";
+    private static final String SLOW_TOWER_DESCRIPTION = "Verlangsamungsturm\n" + "Verlangsamt Gegner" + "\n" + "Kosten: 500";
 
-    private static final String CORRUPTION_TOWER_DESCRIPTION = "Verringert die Ruestung der Gegner" + "\n" + "Kosten: 300";
+    private static final String CORRUPTION_TOWER_DESCRIPTION = "Verderbnisturm\n" + "Verringert die Ruestung von Gegnern" + "\n" + "Kosten: 300";
 
-    private static final String EXPLOSIVE_TOWER_DESCRIPTION = "Verursacht Flaechenschaden" + "\n" + "Kosten: 500";
+    private static final String EXPLOSIVE_TOWER_DESCRIPTION = "Explosivturm\n" + "Verursacht Flaechenschaden" + "\n" + "Kosten: 500";
 
-    private static final String AURA_TOWER_DESCRIPTION = "Aura verbessert Tuerme in der Naehe" + "\n" + "Kosten: 1000";
+    private static final String AURA_TOWER_DESCRIPTION = "Auraturm" + "Beschleunigt eigene Türme in der Naehe" + "\n" + "Kosten: 1000";
 
     /**
      * Versteckter Konstruktor
@@ -74,22 +74,10 @@ public final class TowerFactory {
      * @return Der erzeugte normalen Turm
      */
     private static Tower createRegularTower() {
-        LinkedList<Aura> auras = new LinkedList<>();
-        List<Debuff> attackDebuffs = new LinkedList<>();
-        LinkedList<Debuff> debuffs = new LinkedList<>();
-
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
-        
-        debuffs.add(slowDebuff);
-        auras.add(slowAura);
-        attackDebuffs.add(frostDebuff);
-
-        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 25, 4 * TILE_SIZE, 0.5f,
-                NORMAL, 0.45f, new LinkedList<>(), 0, 200, 100, 200, 1, 10,
+        return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 25, 4, 0.5f,
+                NORMAL, 0.45f, new LinkedList<>(), 0, 200, 100, 1, 10,
                 REGULAR_TOWER_ASSETS, REGULAR_TOWER_PORTRAIT, REGULAR_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(),
-                true);
+                true, 25, 1.03f, 0.125f, 0);
     }
 
     /**
@@ -99,20 +87,18 @@ public final class TowerFactory {
      */
     private static Tower createSlowTower() {
         LinkedList<Aura> auras = new LinkedList<>();
-        List<Debuff> attackDebuffs = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
 
         Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
         Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
 
         debuffs.add(slowDebuff);
         auras.add(slowAura);
-        attackDebuffs.add(frostDebuff);
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 10,
-                4 * TILE_SIZE, 3, NORMAL, 0.15f,auras, 0, 500, 250, 500,
-                1, 1, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(), true);
+                4, 3, NORMAL, 0.15f,auras, 0, 500, 500,
+                1, 3, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(), true,
+                5, 1.03f, 0.25f, 0.25f);
     }
 
 
@@ -122,22 +108,14 @@ public final class TowerFactory {
      * @return Der erzeugte Corruption-Turm
      */
     private static Tower createCorruptionTower() {
-        LinkedList<Aura> auras = new LinkedList<>();
         List<Debuff> attackDebuffs = new LinkedList<>();
-        LinkedList<Debuff> debuffs = new LinkedList<>();
+        Debuff corruptionDebuff = new Debuff("Corruption-Debuff", 3, -3, 1, -50, false);
+        attackDebuffs.add(corruptionDebuff);
 
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
-
-        debuffs.add(slowDebuff);
-        auras.add(slowAura);
-        attackDebuffs.add(frostDebuff);
-
-        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4 * TILE_SIZE, 1,
-                PIERCING, 0.4f, new LinkedList<>(), 0, 300, 150, 300, 1, 10,
+        return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4, 1,
+                PIERCING, 0.4f, new LinkedList<>(), 0, 300, 300, 1, 10,
                 CORRUPTION_TOWER_ASSETS, CORRUPTION_TOWER_PORTRAIT, CORRUPTION_TOWER_PORTRAIT_SELECTED,
-                0, 0, attackDebuffs, true);
+                0, 0, attackDebuffs, true, 50, 1.03f, 0.33f, 0);
     }
 
     /**
@@ -146,21 +124,10 @@ public final class TowerFactory {
      * @return Der erzeugte Explosiv-Turm
      */
     private static Tower createExplosiveTower() {
-        LinkedList<Aura> auras = new LinkedList<>();
-        List<Debuff> attackDebuffs = new LinkedList<>();
-        LinkedList<Debuff> debuffs = new LinkedList<>();
-
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-        Debuff frostDebuff = new Debuff("Frost-Debuff", 3, -5, 0.5f, -50, false);
-
-        debuffs.add(slowDebuff);
-        auras.add(slowAura);
-        attackDebuffs.add(frostDebuff);
-
-        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4 * TILE_SIZE, 3,
+        return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4, 3,
                 EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 500, 250, 500, 1, 10, EXPLOSIVE_TOWER_ASSETS, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED,
-                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true);
+                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true, 100,
+                1.03f, 0.25f,0);
     }
 
     /**
@@ -181,8 +148,9 @@ public final class TowerFactory {
         auras.add(hasteAura);
 
         return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 10,
-                4 * TILE_SIZE, 3, NORMAL, 0, auras,
-                4 * TILE_SIZE, 1000, 500, 1000, 1,
-                1, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0, 0, attackDebuffs, true);
+                4, 3, NORMAL, 0, auras,
+                4, 1000, 750, 1,
+                1, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0, 0, attackDebuffs, true,
+                10, 0.25f,0.5f, 1);
     }
 }

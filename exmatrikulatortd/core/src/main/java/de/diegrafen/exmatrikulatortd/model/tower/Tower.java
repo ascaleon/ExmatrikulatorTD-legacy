@@ -177,6 +177,14 @@ public class Tower extends ObservableModel implements ObservableTower {
 
     private boolean template;
 
+    private float attackDamageUpgradeBonus;
+
+    private float attackSpeedUpgradeMultiplier;
+
+    private float attackRangeUpgradeBonus;
+
+    private float auraRangeUpgradeBonus;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -197,7 +205,6 @@ public class Tower extends ObservableModel implements ObservableTower {
      * @param auras
      * @param auraRange
      * @param price
-     * @param sellPrice
      * @param upgradePrice
      * @param upgradeLevel
      * @param maxUpgradeLevel
@@ -205,8 +212,9 @@ public class Tower extends ObservableModel implements ObservableTower {
      */
     public Tower(String name, String descriptionText, int towerType, float baseAttackDamage,
                  float attackRange, float baseAttackSpeed, int attackType, float baseAttackDelay, List<Aura> auras, float auraRange, int price,
-                 int sellPrice, int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, String portraitPath, String selectedPortraitPath,
-                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs, boolean template) {
+                 int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, String portraitPath, String selectedPortraitPath,
+                 float splashAmount, float splashRadius, List<Debuff> attackDebuffs, boolean template, float attackDamageUpgradeBonus,
+                 float attackSpeedUpgradeMultiplier, float attackRangeUpgradeBonus, float auraRangeUpgradeBonus) {
         super();
 
         this.name = name;
@@ -222,7 +230,7 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.auras = auras;
         this.auraRange = auraRange;
         this.price = price;
-        this.sellPrice = sellPrice;
+        this.sellPrice = price / 2;
         this.upgradePrice = upgradePrice;
         this.upgradeLevel = upgradeLevel;
         this.maxUpgradeLevel = maxUpgradeLevel;
@@ -242,6 +250,10 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.playerNumber = -1;
         this.xPosition = -1;
         this.yPosition = -1;
+        this.attackDamageUpgradeBonus = attackDamageUpgradeBonus;
+        this.attackSpeedUpgradeMultiplier = attackSpeedUpgradeMultiplier;
+        this.attackRangeUpgradeBonus = attackRangeUpgradeBonus;
+        this.auraRangeUpgradeBonus = auraRangeUpgradeBonus;
     }
 
     /**
@@ -274,11 +286,13 @@ public class Tower extends ObservableModel implements ObservableTower {
                  float baseAttackSpeed, int attackType, float baseAttackDelay, List<Aura> auras, float auraRange, int price, int sellPrice,
                  int upgradePrice, int upgradeLevel, int maxUpgradeLevel, String assetsName, String portraitPath, String selectedPortraitPath, float splashAmount,
                  float splashRadius, List<Debuff> attackDebuffs, String projectileName, String projectileAssetsName,
-                 float projectileSpeed, boolean template) {
+                 float projectileSpeed, boolean template, float attackDamageUpgradeBonus,
+                 float attackSpeedUpgradeMultiplier, float attackRangeUpgradeBonus, float auraRangeUpgradeBonus) {
         this(name, descriptionText, towerType, baseAttackDamage,
                 attackRange, baseAttackSpeed, attackType, baseAttackDelay, auras, auraRange, price,
-                sellPrice, upgradePrice, upgradeLevel, maxUpgradeLevel, assetsName, portraitPath, selectedPortraitPath,
-                splashAmount, splashRadius, attackDebuffs, template);
+                upgradePrice, upgradeLevel, maxUpgradeLevel, assetsName, portraitPath, selectedPortraitPath,
+                splashAmount, splashRadius, attackDebuffs, template, attackDamageUpgradeBonus,
+                attackSpeedUpgradeMultiplier, attackRangeUpgradeBonus, auraRangeUpgradeBonus);
         this.attackStyle = AttackStyle.PROJECTILE;
         this.projectileName = projectileName;
         this.projectileAssetsName = projectileAssetsName;
@@ -326,6 +340,10 @@ public class Tower extends ObservableModel implements ObservableTower {
         this.playerNumber = tower.playerNumber;
         this.xPosition = tower.xPosition;
         this.yPosition = tower.yPosition;
+        this.attackRangeUpgradeBonus = tower.attackRangeUpgradeBonus;
+        this.attackSpeedUpgradeMultiplier = tower.attackSpeedUpgradeMultiplier;
+        this.attackDamageUpgradeBonus = tower.attackDamageUpgradeBonus;
+        this.auraRangeUpgradeBonus = tower.auraRangeUpgradeBonus;
 
         this.auras = new LinkedList<>();
         this.buffs = new LinkedList<>();
@@ -587,5 +605,34 @@ public class Tower extends ObservableModel implements ObservableTower {
 
     public void setyPosition(float yPosition) {
         this.yPosition = yPosition;
+    }
+
+    public void setAttackRange(float attackRange) {
+        this.attackRange = attackRange;
+    }
+
+    public void setBaseAttackSpeed(float baseAttackSpeed) {
+        this.baseAttackSpeed = baseAttackSpeed;
+    }
+
+    public float getAttackDamageUpgradeBonus() {
+        return attackDamageUpgradeBonus;
+    }
+
+
+    public float getAttackSpeedUpgradeMultiplier() {
+        return attackSpeedUpgradeMultiplier;
+    }
+
+    public float getAttackRangeUpgradeBonus() {
+        return attackRangeUpgradeBonus;
+    }
+
+    public void setAuraRange(float auraRange) {
+        this.auraRange = auraRange;
+    }
+
+    public float getAuraRangeUpgradeBonus() {
+        return auraRangeUpgradeBonus;
     }
 }

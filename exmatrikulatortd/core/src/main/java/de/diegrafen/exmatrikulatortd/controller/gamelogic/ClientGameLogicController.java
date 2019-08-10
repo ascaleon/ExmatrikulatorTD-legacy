@@ -2,7 +2,6 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
@@ -89,7 +88,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         Player owningPlayer = getGamestate().getPlayerByNumber(playerNumber);
         Tower tower = mapCell.getTower();
         owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
-        TowerUpgrader.upgradeTower(tower);
+        super.upgradeTower(tower);
         owningPlayer.notifyObserver();
         tower.notifyObserver();
     }

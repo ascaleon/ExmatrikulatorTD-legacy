@@ -1,6 +1,9 @@
 package de.diegrafen.exmatrikulatortd.controller;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -11,8 +14,10 @@ import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
+import de.diegrafen.exmatrikulatortd.view.screens.uielements.ProfileTextButton;
 import org.hibernate.Session;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
@@ -128,10 +133,10 @@ public class MainController {
         return currentProfile;
     }
 
-    public void setCurrentProfile(Profile currentProfile) {
+    public void setCurrentProfile(long profileId) {
         game.getPreferences().putLong("profileID", currentProfile.getId());
         game.getPreferences().flush();
-        this.currentProfile = currentProfile;
+        this.currentProfile = profileDao.retrieve(profileId);
     }
 
     /**
@@ -140,22 +145,26 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
-        return profile;
+        currentProfile = profile;
     }
 
-    public Profile updateProfile(final Profile profile, final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
-        profile.setProfileName(newProfileName);
-        profile.setPreferredDifficulty(newDifficulty);
-        profile.setProfilePicturePath(newProfilePicturePath);
-        profileDao.update(profile);
-        return profile;
+    public void updateProfile(final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
+        currentProfile.setProfileName(newProfileName);
+        currentProfile.setPreferredDifficulty(newDifficulty);
+        currentProfile.setProfilePicturePath(newProfilePicturePath);
+        profileDao.update(currentProfile);
     }
 
-    public void deleteProfile(final Profile profile) {
-        profileDao.delete(profile);
+    public void deleteProfile(final long profileId) {
+        try{
+            Profile profile = profileDao.retrieve(profileId);
+            profileDao.delete(profile);
+        } catch (final PersistenceException e){
+            System.out.println(e);
+        }
     }
 
     /**
@@ -368,5 +377,20 @@ public class MainController {
 
     public ProfileDao getProfileDao() {
         return profileDao;
+    }
+
+    public void updateProfileButtons(MenuScreen menuScreen) {
+        for (final Profile profile : profileDao.findAllProfiles()) {
+
+            boolean isCurrentProfile = false;
+
+            if (currentProfile != null) {
+                if (currentProfile.getId().equals(profile.getId())) {
+                    isCurrentProfile = true;
+                }
+            }
+
+            menuScreen.addProfileButton(profile.getProfileName(), profile.getId(), isCurrentProfile);
+        }
     }
 }

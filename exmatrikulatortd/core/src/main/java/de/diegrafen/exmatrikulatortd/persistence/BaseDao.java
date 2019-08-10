@@ -4,6 +4,8 @@ import de.diegrafen.exmatrikulatortd.model.BaseModel;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import javax.persistence.PersistenceException;
+
 import static de.diegrafen.exmatrikulatortd.util.HibernateUtils.getSessionFactory;
 
 /**
@@ -73,8 +75,14 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
      */
     @Override
     public T retrieve(final Long id) {
-        T t = openCurrentSessionwithTransaction().get(getClazz(), id);
-        closeCurrentSessionwithTransaction();
+        //T t = openCurrentSessionwithTransaction().get(getClazz(), id);
+        T t=null;
+        try{
+            t = openCurrentSessionwithTransaction().get(getClazz(), id);
+            closeCurrentSessionwithTransaction();
+        } catch (final PersistenceException e){
+            System.out.println(e);
+        }
         return t;
     }
 
@@ -123,11 +131,11 @@ public abstract class BaseDao<T extends BaseModel> implements Dao<T>  {
         }
         //assertNotNull(t);
         if (t.getId() > 0) {
-            //final T entity = retrieve(t.getId());
-            //if (entity != null) {
+            final T entity = retrieve(t.getId());
+            if (entity != null) {
                 openCurrentSessionwithTransaction().delete(t);
                 closeCurrentSessionwithTransaction();
-            //}
+            }
             t.clearId();
         }
         else throw new IllegalArgumentException("The id of the parameter must not be zero!");

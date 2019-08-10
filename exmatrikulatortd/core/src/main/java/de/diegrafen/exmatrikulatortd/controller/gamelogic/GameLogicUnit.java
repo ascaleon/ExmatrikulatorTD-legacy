@@ -96,14 +96,14 @@ class GameLogicUnit {
                 List<Buff> buffs = aura.getBuffs();
 
                 for (Debuff debuff : debuffs) {
-                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, aura.getRange());
+                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, calculateRangeFromTilesize(tower.getAuraRange()));
                     for (Enemy enemyInRange : enemiesInRange) {
                         addDebuffToEnemy(enemyInRange, debuff);
                     }
                 }
 
                 for (Buff buff : buffs) {
-                    List<Tower> towersInRange = getTowersInRange(gamestate, tower.getxPosition(), tower.getyPosition(), aura.getRange());
+                    List<Tower> towersInRange = getTowersInRange(gamestate, tower.getxPosition(), tower.getyPosition(), calculateRangeFromTilesize(aura.getRange()));
                     for (Tower towerInRange : towersInRange) {
                         addBuffToTower(towerInRange, buff);
                     }
@@ -606,7 +606,7 @@ class GameLogicUnit {
 
         Enemy target = tower.getCurrentTarget();
 
-        return target != null && !target.isRemoved() & isEnemyInRangeOfTower(target, tower, tower.getAttackRange());
+        return target != null && !target.isRemoved() & isEnemyInRangeOfTower(target, tower, calculateRangeFromTilesize(tower.getAttackRange()));
     }
 
     /**
@@ -618,8 +618,8 @@ class GameLogicUnit {
     private List<Enemy> getEnemiesInSplashRadius(Projectile projectile) {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
-        for (Enemy enemy : gamestate.getEnemies()) {// projectile.getTowerThatShot().getOwner().getAttackingEnemies()) {
-            if (projectile.getPlayerNumber() == enemy.getPlayerNumber() &  isEnemyInSplashRadius(enemy, projectile.getxPosition(), projectile.getyPosition(), projectile.getSplashRadius())) {
+        for (Enemy enemy : gamestate.getEnemies()) {
+            if (isEnemyInSplashRadius(enemy, projectile)) {
                 enemiesInRange.add(enemy);
             }
         }
@@ -630,8 +630,8 @@ class GameLogicUnit {
     private List<Enemy> getEnemiesInSplashRadius(Tower tower) {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
-        for (Enemy enemy : gamestate.getEnemies()) { // tower.getOwner().getAttackingEnemies()) {
-            if (tower.getPlayerNumber() == enemy.getPlayerNumber() & isEnemyInSplashRadius(enemy, tower.getxPosition(), tower.getyPosition(), tower.getSplashRadius())) {
+        for (Enemy enemy : gamestate.getEnemies()) {
+            if (isEnemyInSplashRadius(enemy, tower)) {
                 enemiesInRange.add(enemy);
             }
         }
@@ -640,14 +640,37 @@ class GameLogicUnit {
     }
 
     /**
+     * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Turms befindet.
+     *
+     * @param enemy      Der Gegner, der geprüft werden soll.
+     * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
+     */
+    private boolean isEnemyInSplashRadius(Enemy enemy, Tower tower) {
+        return isEnemyInSplashRadius(enemy, tower.getxPosition(), tower.getyPosition(), tower.getSplashRadius(), tower.getPlayerNumber());
+    }
+
+    /**
      * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Projektils befindet.
      *
      * @param enemy      Der Gegner, der geprüft werden soll.
      * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
      */
-    private boolean isEnemyInSplashRadius(Enemy enemy, float xPosition, float yPosition, float range) {
+    private boolean isEnemyInSplashRadius(Enemy enemy, Projectile projectile) {
+        return isEnemyInSplashRadius(enemy, projectile.getxPosition(), projectile.getyPosition(), projectile.getSplashRadius(), projectile.getPlayerNumber());
+    }
+
+    /**
+     * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Projektils befindet.
+     *
+     * @param enemy      Der Gegner, der geprüft werden soll.
+     * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
+     */
+    private boolean isEnemyInSplashRadius(Enemy enemy, float xPosition, float yPosition, float range, int playerNumber) {
+        if (enemy.getPlayerNumber() != playerNumber) {
+            return false;
+        }
         double distance = distance(xPosition, yPosition, enemy.getxPosition(), enemy.getyPosition());
-        return distance <= range;
+        return distance <= calculateRangeFromTilesize(range);
     }
 
     private void findTargetforTower(Tower tower, float deltaTime) {
@@ -663,9 +686,24 @@ class GameLogicUnit {
     }
 
     private Enemy findClosestEnemy(Tower tower) {
-        List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, tower.getAttackRange());
+        List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, calculateRangeFromTilesize(tower.getAttackRange()));
         enemiesInRange.sort(new DistanceComparator(tower.getxPosition(), tower.getyPosition()));
         return !enemiesInRange.isEmpty() ? enemiesInRange.get(0) : null;
+    }
+
+    /**
+     * Wandelt eine relativ zur Größe der Kartenfelder gegebene Reicheweite in absolute Werte um.
+     *
+     * Dabei wird der Durchschnitt von Höhe und Breite als Größe der Kartenfelder herangezogen, um (theoretisch) auch
+     * rechteckige Felder berücksichtigen zu können.
+     *
+     * @param range Die in Kartenfeldern ausgedrückte Reichweite
+     * @return Die in absoluten Werten ausgedrückte Reichweite
+     */
+    private float calculateRangeFromTilesize(float range) {
+        range *= ((gamestate.getTileHeight() + gamestate.getTileWidth()) / 2.0f);
+        System.out.println(range);
+        return range;
     }
 
 }

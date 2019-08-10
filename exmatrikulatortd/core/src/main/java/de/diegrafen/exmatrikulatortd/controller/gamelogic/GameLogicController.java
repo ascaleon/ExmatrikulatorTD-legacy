@@ -5,7 +5,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.*;
@@ -626,7 +625,7 @@ public class GameLogicController implements LogicController {
             displayErrorMessage("Du hast nicht genug Geld, um diesen Turm aufzurüsten!", playerNumber);
         } else if (tower.getUpgradeLevel() < tower.getMaxUpgradeLevel()){
             owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
-            TowerUpgrader.upgradeTower(tower);
+            upgradeTower(tower);
             owningPlayer.notifyObserver();
             tower.notifyObserver();
             if (server) {
@@ -720,6 +719,22 @@ public class GameLogicController implements LogicController {
     @Override
     public void loadGame(int id) {
 
+    }
+
+    /**
+     * Rüstet einen Turm gemäß der in ihm festgelegten Upgrade-Wert auf.
+     * @param tower Der aufzurüstende Turm
+     */
+    void upgradeTower(Tower tower) {
+        tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
+        tower.setBaseAttackDamage(tower.getBaseAttackDamage() + tower.getAttackDamageUpgradeBonus()); // tower.getAttackDamageUpgradeBonus()
+        tower.setBaseAttackSpeed(tower.getBaseAttackSpeed() * tower.getAttackSpeedUpgradeMultiplier());
+        tower.setAttackRange(tower.getAttackRange() + tower.getAttackRangeUpgradeBonus());
+        tower.setAuraRange(tower.getAuraRange() + tower.getAuraRangeUpgradeBonus());
+        tower.setUpgradePrice(tower.getUpgradePrice() * 2);
+        tower.setSellPrice(tower.getUpgradePrice() * 2);
+        tower.notifyObserver();
+        System.out.println("Upgraded!");
     }
 
     /**

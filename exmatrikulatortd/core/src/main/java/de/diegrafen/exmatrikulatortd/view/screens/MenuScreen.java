@@ -47,7 +47,7 @@ public class MenuScreen extends BaseScreen {
 
     private Table profilesTable;
 
-    private Table newProfileMenuTable;
+    private Table newOrEditProfileMenuTable;
 
     private TextField profileNameTextField;
 
@@ -81,6 +81,10 @@ public class MenuScreen extends BaseScreen {
 
     private Long idToLoad = -1L;
 
+    private TextButton saveNewOrEditedProfileButton = new TextButton(null, skin);
+
+    private boolean updateProfile;
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -104,7 +108,7 @@ public class MenuScreen extends BaseScreen {
         createSelectGameTypeTable(menuStack);
         createLoadOrNewGameTable(menuStack);
         createSelectProfileMenuTable(menuStack);
-        createNewProfileMenuTable(menuStack);
+        createNewOrEditProfileMenuTable(menuStack);
         createHighscoreMenuTable(menuStack);
         createSelectClientOrServerMenu(menuStack);
         createServerListTable(menuStack);
@@ -288,28 +292,31 @@ public class MenuScreen extends BaseScreen {
         profilesButtonGroup.clear();
         profilesTable.clearChildren();
         profilesTable.add(new Label("Profil auswählen.", skin));
-        for (final Profile profile : profiles) {
-            profilesTable.row();
-            ProfileTextButton profileButton = new ProfileTextButton(profile.getProfileName(), skin, profile.getId());
+        getMainController().updateProfileButtons(this);
 
-            profileButton.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    profilesButtonGroup.getButtons().forEach(button -> button.setColor(Color.WHITE));
-                    getMainController().setCurrentProfile(profile);
-                    System.out.println(profileButton.getColor());
-                    profileButton.setColor(Color.GREEN);
-                    refreshSavestatesTable();
-                }
-            });
+    }
 
-            if (currentProfile != null && currentProfile.getId().equals(profile.getId())) {
-                profileButton.setChecked(true);
+    public void addProfileButton(final String profileName, final long profileId, final boolean isCurrentProfile) {
+        profilesTable.row();
+        ProfileTextButton profileButton = new ProfileTextButton(profileName, skin, profileId);
+
+        profileButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                profilesButtonGroup.getButtons().forEach(button -> button.setColor(Color.WHITE));
+                getMainController().setCurrentProfile(profileId);
+                System.out.println(profileButton.getColor());
+                profileButton.setColor(Color.GREEN);
+                refreshSavestatesTable();
             }
+        });
 
-            profilesTable.add(profileButton);
-            profilesButtonGroup.add(profileButton);
+        if (isCurrentProfile) {
+            profileButton.setChecked(true);
         }
+
+        profilesTable.add(profileButton);
+        profilesButtonGroup.add(profileButton);
     }
 
     private Profile getSelectedProfileFromButtonGroup() {
@@ -362,8 +369,8 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Profile profile = getSelectedProfileFromButtonGroup();
-                if (profile != null) {
-                    showNewProfileMenu(selectProfileMenuTable, profile);
+                if (getMainController().getCurrentProfile() != null) {
+                    showEditProfileMenu(selectProfileMenuTable, profile);
                 }
             }
         });
@@ -371,9 +378,10 @@ public class MenuScreen extends BaseScreen {
         deleteProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile profile = getSelectedProfileFromButtonGroup();
-                if (profile != null) {
-                    getMainController().deleteProfile(profile);
+
+                final ProfileTextButton selectedProfileButton = (ProfileTextButton) profilesButtonGroup.getChecked();
+                if (selectedProfileButton != null) {
+                    getMainController().deleteProfile(selectedProfileButton.getID());
                 }
                 refreshProfilesTable();
             }
@@ -399,53 +407,60 @@ public class MenuScreen extends BaseScreen {
         selectProfileMenuTable.add(buttonsTable).expand();
     }
 
-    private void createNewProfileMenuTable(Stack menuStack) {
-        newProfileMenuTable = new Table();
+    private void cleanupNewOrEditProfileMenu() {
+        profileNameTextField.setColor(Color.WHITE);
+        profileNameTextField.setText("");
+        difficultySelectBox.setSelected(Difficulty.EASY);
+    }
+
+    private void createNewOrEditProfileMenuTable(Stack menuStack) {
+        newOrEditProfileMenuTable = new Table();
         profileNameTextField = new TextField("", skin);
         difficultySelectBox = new SelectBox(skin);
-        TextButton createProfileButton = new TextButton("Profil erstellen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         profileNameTextField.setMessageText("Name");
         profileNameTextField.setMaxLength(255);
         difficultySelectBox.setItems(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD, Difficulty.TESTMODE);
 
-        createGenericMenuTable(menuStack, newProfileMenuTable);
+//        createGenericMenuTable(menuStack, newOrEditProfileMenuTable);
 
-        createProfileButton.addListener(new ChangeListener() {
+        saveNewOrEditedProfileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 final String profileName = profileNameTextField.getText();
                 if (!profileName.isEmpty()) {
-                    Profile profile = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
-                    getMainController().setCurrentProfile(profile);
-                    profileNameTextField.setColor(Color.WHITE);
-                    profileNameTextField.setText("");
-                    showSelectProfileMenu(newProfileMenuTable);
-                    refreshProfilesTable();
+                    if (updateProfile) {
+                        getMainController().updateProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    } else {
+                        getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
+                    }
+                    cleanupNewOrEditProfileMenu();
+                    showSelectProfileMenu(newOrEditProfileMenuTable);
                 } else {
                     profileNameTextField.setColor(Color.RED);
                 }
             }
         });
 
+        createGenericMenuTable(menuStack, newOrEditProfileMenuTable);
+
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showSelectProfileMenu(newProfileMenuTable);
+                showSelectProfileMenu(newOrEditProfileMenuTable);
                 backButton.setChecked(false);
-                profileNameTextField.setText("");
-                difficultySelectBox.setSelected(Difficulty.EASY);
+                cleanupNewOrEditProfileMenu();
             }
         });
 
-        newProfileMenuTable.add(profileNameTextField).fill();
-        newProfileMenuTable.row().pad(10, 0, 10, 0);
-        newProfileMenuTable.add(difficultySelectBox).fill();
-        newProfileMenuTable.row().pad(10, 0, 10, 0);
-        newProfileMenuTable.add(createProfileButton);
-        newProfileMenuTable.row().pad(10, 0, 10, 0);
-        newProfileMenuTable.add(backButton).fillX().uniformX();
+        newOrEditProfileMenuTable.add(profileNameTextField).fill();
+        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
+        newOrEditProfileMenuTable.add(difficultySelectBox).fill();
+        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
+        newOrEditProfileMenuTable.add(saveNewOrEditedProfileButton);
+        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
+        newOrEditProfileMenuTable.add(backButton).fillX().uniformX();
     }
 
     private void createPreferenceMenuTable(Stack menuStack) {
@@ -686,14 +701,6 @@ public class MenuScreen extends BaseScreen {
         getSpriteBatch().end();
     }
 
-    private void createSaveGameMenu() {
-
-    }
-
-    private void createNewSinglePlayerGameMenu() {
-
-    }
-
     private void showTable(Table callingTable, Table calledTable) {
         callingTable.setVisible(false);
         calledTable.setVisible(true);
@@ -731,13 +738,17 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void showNewProfileMenu(Table callingTable) {
-        showTable(callingTable, newProfileMenuTable);
+        saveNewOrEditedProfileButton.setText("Profil erstellen");
+        updateProfile = false;
+        showTable(callingTable, newOrEditProfileMenuTable);
     }
 
-    private void showNewProfileMenu(Table callingTable, final Profile profile) {
-        profileNameTextField.setText(profile.getProfileName());
-        difficultySelectBox.setSelected(profile.getPreferredDifficulty());
-        showNewProfileMenu(callingTable);
+    private void showEditProfileMenu(Table callingTable, final Profile profile) {
+        saveNewOrEditedProfileButton.setText("Profil aktualisieren");
+        profileNameTextField.setText(getMainController().getCurrentProfile().getProfileName());
+        difficultySelectBox.setSelected(getMainController().getCurrentProfile().getPreferredDifficulty());
+        updateProfile = true;
+        showTable(callingTable, newOrEditProfileMenuTable);
     }
 
     private void showHighScoreMenu(Table callingTable) {
