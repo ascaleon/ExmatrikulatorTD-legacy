@@ -481,7 +481,7 @@ public class GameScreen extends BaseScreen implements GameView {
             } else {
                 opposingPlayerNumber = 0;
             }
-            Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
+            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
             if (opposingPlayer != null) {
                 opponentHealth.setValue(opposingPlayer.getCurrentLives());
                 opponentScore.setText(opposingPlayer.getScore());
