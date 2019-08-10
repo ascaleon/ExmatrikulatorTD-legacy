@@ -33,9 +33,11 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> debuffs;
 
-    @ManyToOne
-    @JoinColumn(name="player_id")
-    private Player attackedPlayer;
+//    @ManyToOne
+//    @JoinColumn(name="player_id")
+//    private Player attackedPlayer;
+
+    private int playerNumber;
 
     private float xPosition, yPosition;
 
@@ -122,7 +124,7 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         this.currentHitPoints = currentHitPoints;
         this.currentMaxHitPoints = currentMaxHitPoints;
         this.debuffs = debuffs;
-        this.attackedPlayer = attackedPlayer;
+        //this.attackedPlayer = attackedPlayer;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.amountOfDamageToPlayer = amountOfDamageToPlayer;
@@ -166,14 +168,16 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         this.wayPointIndex = enemy.wayPointIndex;
         this.armorType = enemy.armorType;
         this.isAttacking = enemy.isAttacking;
+        this.playerNumber = enemy.playerNumber;
 
         this.respawning = enemy.isRespawning();
-        this.attackedPlayer = null;
+        //this.attackedPlayer = null;
     }
 
-    public Enemy(Enemy enemy, Player player) {
+    public Enemy(int playerNumber, Enemy enemy) {
         this(enemy);
-        this.attackedPlayer = player;
+        this.playerNumber = playerNumber;
+        //this.attackedPlayer = player;
     }
 
     public Enemy(Enemy enemy, int wayPointIndex) {
@@ -181,9 +185,9 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         this.wayPointIndex = wayPointIndex;
     }
 
-    public void setAttackedPlayer(Player attackedPlayer) {
-        this.attackedPlayer = attackedPlayer;
-    }
+    //public void setAttackedPlayer(Player attackedPlayer) {
+        //this.attackedPlayer = attackedPlayer;
+    //}
 
     public float getxPosition() {
         return xPosition;
@@ -209,9 +213,9 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         return name;
     }
 
-    public Player getAttackedPlayer() {
-        return attackedPlayer;
-    }
+//    public Player getAttackedPlayer() {
+//        return attackedPlayer;
+//    }
 
     public int getAmountOfDamageToPlayer() {
         return amountOfDamageToPlayer;
@@ -335,4 +339,12 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
     }
 
     public boolean isAttacking(){return this.isAttacking;}
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
+    }
 }

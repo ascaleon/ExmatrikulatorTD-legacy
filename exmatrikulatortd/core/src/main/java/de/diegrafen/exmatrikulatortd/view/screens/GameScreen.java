@@ -205,6 +205,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private Image background;
 
+    private int opposingPlayerNumber;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -253,7 +255,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
                 if (keycode == Input.Keys.I) {
-                    int numberOfPlayers = gameState.getPlayers().size();
+                    int numberOfPlayers = logicController.getNumberOfPlayers();
                     if (numberOfPlayers > 1) {
                         int playerToSendTo = Math.floorMod(localPlayerNumber - numberOfPlayers + 1, numberOfPlayers);
                         logicController.sendEnemy(REGULAR_ENEMY, playerToSendTo, localPlayerNumber);
@@ -472,9 +474,16 @@ public class GameScreen extends BaseScreen implements GameView {
 
         if (logicController.isMultiplayer()) {
             //int numberOfPlayers = gameState.getPlayers().size();
-            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
-            opponentHealth.setValue(opposingPlayer.getCurrentLives());
-            opponentScore.setText(opposingPlayer.getScore());
+            if (logicController.getLocalPlayerNumber() == 0) {
+                opposingPlayerNumber = 1;
+            } else {
+                opposingPlayerNumber = 0;
+            }
+            Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
+            if (opposingPlayer != null) {
+                opponentHealth.setValue(opposingPlayer.getCurrentLives());
+                opponentScore.setText(opposingPlayer.getScore());
+            }
         }
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
@@ -688,7 +697,7 @@ public class GameScreen extends BaseScreen implements GameView {
         //Toprow table
         final Table topRow = new Table();
         final Table topLeft = new Table();
-        if (!logicController.isMultiplayer()) {
+        if (logicController.isMultiplayer()) {
             topLeft.add(opponent).left().padRight(10).padLeft(10);
         }
         topRow.add(exit).top().right();
@@ -714,7 +723,7 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
         //defaultScreen.row();
         defaultScreen.add(countdown).top().right().colspan(4).padRight(20).row();
-        if (!logicController.isMultiplayer()) {
+        if (logicController.isMultiplayer()) {
             defaultScreen.add(sendEnemy).top().right().colspan(4).padRight(20).row();
         }
         defaultScreen.add(towerinfoTable).left().colspan(1).padLeft(10);
@@ -975,7 +984,7 @@ public class GameScreen extends BaseScreen implements GameView {
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(true);
+                    logicController.exitGame(false);
                 }
             });
 
@@ -998,25 +1007,22 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Der Bildschirm der am Ende vom Spiel dargestellt wird.
      * Gewonnen/Verloren + Punkte + Highscore des Users
+     *
+     * @param victorious Gibt an, ob der lokale Spieler siegreich war
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
         Group endScreenGroup = new Group();
 
-        //Label resultLabel;
         Image resultImage;
         if (victorious) {
-            //resultLabel =  new Label("Gewonnen!", skin);
             resultImage = new Image(new Texture(Gdx.files.internal("win.png")));
         } else {
-            //resultLabel =  new Label("Verloren!", skin);
             resultImage = new Image(new Texture(Gdx.files.internal("loose.png")));
-            //resultLabel.setFontScale(3);
         }
 
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
         Label highscoreLabel = new Label("Highscore: " + highscore, skin);
-        // TODO: Zum Assetmanager hinzufügen
 
         Table buttonTable = new Table();
 
@@ -1096,6 +1102,18 @@ public class GameScreen extends BaseScreen implements GameView {
     @Override
     public void setGameState(Gamestate gameState) {
         this.gameState = gameState;
+    }
+
+    @Override
+    public void clearGameObjects() {
+        List<GameObject> objectsToRemove = new LinkedList<>();
+        gameObjects.forEach(gameObject -> {
+            if (gameObject instanceof TowerObject) {
+                objectsToRemove.add(gameObject);
+            }
+        });
+        objectsToRemove.forEach(gameObjects::remove);
+        //gameObjects.clear();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.diegrafen.exmatrikulatortd.persistence;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 
 /**
@@ -16,6 +17,7 @@ interface Dao<T> extends Serializable {
      * @param object Das hinzuzufügende Objekt
      * @throws IllegalArgumentException Wenn ein nicht zulässiges Objekt der Datenbank hinzugefügt werden soll
      */
+    @Transactional
     void create(final T object) throws IllegalArgumentException;
 
     /**
@@ -23,6 +25,7 @@ interface Dao<T> extends Serializable {
      * @param id Die ID des Objektes
      * @return Das zu entnehmende Objekt
      */
+    @Transactional
     T retrieve(Long id);
 
     /**
@@ -30,6 +33,7 @@ interface Dao<T> extends Serializable {
      * @param object Das zu aktualisierende Objekt
      * @throws IllegalArgumentException Wenn der Datenbankeintrag eines nicht zulässigen Objekt aktualisiert werden soll
      */
+    @Transactional
     void update(T object) throws IllegalArgumentException;
 
     /**
@@ -37,5 +41,6 @@ interface Dao<T> extends Serializable {
      * @param object Das zu löschende Objekt
      * @throws IllegalArgumentException Wenn ein nicht zulässiges Objekt aus der Datenbank entfernt werden soll
      */
+    @Transactional
     void delete(final T object) throws IllegalArgumentException;
 }
