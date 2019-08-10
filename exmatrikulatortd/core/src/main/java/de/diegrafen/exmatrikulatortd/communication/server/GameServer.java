@@ -9,6 +9,7 @@ import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
@@ -295,8 +296,8 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     @Override
-    public void sendServerGameState(List<Tower> towers) {
-        server.sendToAllTCP(new GetServerStateResponse(towers));
+    public void sendServerGameState(List<Tower> towers, List<Player> players) {
+        server.sendToAllTCP(new GetServerStateResponse(towers, players));
     }
 
     boolean isLookingForPlayers() {

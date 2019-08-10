@@ -354,4 +354,8 @@ public class Gamestate extends BaseModel implements Observable {
     public String getMapName() {
         return mapName;
     }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
 }

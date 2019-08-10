@@ -22,6 +22,8 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     private List<Tower> updateTowers;
 
+    private List<Player> updatePlayers;
+
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
      */
@@ -55,9 +57,10 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      */
     @Override
     public void update(float deltaTime) {
-        if (updateTowers != null) {
-            reinitializeGame(getGameScreen(), updateTowers);
+        if (updateTowers != null & updatePlayers != null) {
+            reinitializeGame(getGameScreen(), updateTowers, updatePlayers);
             updateTowers = null;
+            updatePlayers = null;
         }
         super.update(deltaTime);
     }
@@ -202,8 +205,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     @Override
-    public void setGamestateFromServer(List<Tower> towers) {
+    public void setGamestateFromServer(List<Tower> towers, List<Player> players) {
         updateTowers = towers;
+        updatePlayers = players;
     }
 
     /**
@@ -211,13 +215,14 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      *
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
      */
-    private void reinitializeGame(GameView gameScreen, List<Tower> towers) {
+    private void reinitializeGame(GameView gameScreen, List<Tower> towers, List<Player> players) {
         //gameScreen.clearGameObjects();
         removeAllTowers();
 //        gamestate.getProjectiles().forEach(projectile -> {
 //            gameScreen.addProjectile(projectile);
 //            projectile.notifyObserver();
 //        });
+        getGamestate().setPlayers(updatePlayers);
         towers.forEach(tower -> {
             int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
             int yCoordinate = getYCoordinateByPosition(tower.getyPosition());

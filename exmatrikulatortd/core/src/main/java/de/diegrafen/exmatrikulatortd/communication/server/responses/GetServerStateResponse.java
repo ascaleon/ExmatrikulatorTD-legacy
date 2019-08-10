@@ -1,6 +1,8 @@
 package de.diegrafen.exmatrikulatortd.communication.server.responses;
 
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.util.List;
@@ -15,14 +17,17 @@ public class GetServerStateResponse extends Response {
 
     private List<Tower> towers;
 
+    private List<Player> players;
+
 
     public GetServerStateResponse() {
         super();
     }
 
-    public GetServerStateResponse(List<Tower> towers) {
+    public GetServerStateResponse(List<Tower> towers, List<Player> players) {
         super();
         this.towers = towers;
+        this.players = players;
         //this.gamestate = gamestate;
     }
 
@@ -32,5 +37,9 @@ public class GetServerStateResponse extends Response {
 
     public List<Tower> getTowers() {
         return towers;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
     }
 }

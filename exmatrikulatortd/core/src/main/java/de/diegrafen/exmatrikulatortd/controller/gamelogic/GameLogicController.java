@@ -352,8 +352,10 @@ public class GameLogicController implements LogicController {
         }
         if (server) {
             List<Tower> towersToSend = new LinkedList<>();
+            List<Player> playersToSend = new LinkedList<>();
             gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
-            gameServer.sendServerGameState(towersToSend);
+            gamestate.getPlayers().forEach(player -> playersToSend.add(new Player(player)));
+            gameServer.sendServerGameState(towersToSend, playersToSend);
         }
         gamestate.setNewRound(true);
         gamestate.setRoundEnded(false);
