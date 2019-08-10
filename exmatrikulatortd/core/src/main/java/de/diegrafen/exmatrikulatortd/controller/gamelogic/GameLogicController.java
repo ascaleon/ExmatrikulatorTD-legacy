@@ -193,23 +193,30 @@ public class GameLogicController implements LogicController {
             if (gamestate.isRoundEnded()) {
                 determineGameOver();
             }
-
-            if (!gamestate.isGameOver()) {
-                if (gamestate.isRoundEnded()) {
-                    gamestate.setRoundEnded(false);
-                    startNewRound();
+                if (!gamestate.isGameOver()) {
+                    if (gamestate.isRoundEnded()) {
+                        gamestate.setRoundEnded(false);
+                        startNewRound();
+                    }
+                    gameLogicUnit.spawnWave(deltaTime);
+                    gameLogicUnit.applyAuras(deltaTime, gamestate);
+                    gameLogicUnit.applyMovement(deltaTime, gamestate);
+                    gameLogicUnit.makeAttacks(deltaTime);
+                    gameLogicUnit.moveProjectiles(deltaTime);
+                    gameLogicUnit.applyBuffsToTowers(deltaTime);
+                    gameLogicUnit.applyDebuffsToEnemies(deltaTime);
+                    gameLogicUnit.applyAttackDelay(deltaTime);
                 }
-                gameLogicUnit.spawnWave(deltaTime);
-                gameLogicUnit.applyAuras(deltaTime, gamestate);
-                gameLogicUnit.applyMovement(deltaTime, gamestate);
-                gameLogicUnit.makeAttacks(deltaTime);
-                gameLogicUnit.moveProjectiles(deltaTime);
-                gameLogicUnit.applyBuffsToTowers(deltaTime);
-                gameLogicUnit.applyDebuffsToEnemies(deltaTime);
             }
         }
-    }
 
+    /**
+     * Führt, wenn deltaTime einen festgelegten Maximalwert überschreitet, mehrere Update-Zyklen hintereinander aus,
+     * um den zeitlichen Abstand auszugleichen
+     *
+     * @param deltaTime Die Zeit seit dem letzten Rendern
+     * @param maxDeltaTime Der Maximalwert, der zwischen zwei Updates liegen darf
+     */
     private void skipFrames(float deltaTime, float maxDeltaTime){
         float remainingDeltaTime = deltaTime;
         while (remainingDeltaTime > maxDeltaTime) {
@@ -435,7 +442,13 @@ public class GameLogicController implements LogicController {
     }
 
 
-
+    /**
+     *
+     * @param tower
+     * @param xCoordinate
+     * @param yCoordinate
+     * @param playerNumber
+     */
     void addTower(Tower tower, int xCoordinate, int yCoordinate, int playerNumber) {
         tower.setPlayerNumber(playerNumber);
 
@@ -487,15 +500,21 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    /**
+     * Überprüft, ob ausgewählte Koordinaten vom angegebenen Spieler bebaut werden dürfen.
+     *
+     * @param xCoordinate Die x-Koordinate des betreffenden Feldes
+     * @param yCoordinate Die y-Koordinate des betreffenden Feldes
+     * @param playerNumber Die Nummer des betreffenden Spielers
+     * @return true, wenn die betreffende Map-Zelle bebaut werden darf, ansonsten false
+     */
     public boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber) {
 
         boolean buildable = true;
 
         if (!coordinatesOnTheMap(xCoordinate, yCoordinate, gamestate)) {
-            System.out.println("Koordinaten nicht auf der Map!");
             buildable = false;
         } else if (!playerExists(playerNumber, gamestate)) {
-            System.out.println("Spieler gibt es nicht!");
             buildable = false;
         } else {
             Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
@@ -509,6 +528,14 @@ public class GameLogicController implements LogicController {
         return buildable;
     }
 
+    /**
+     * Überprüft, ob sich Koordinaten auf dem Spielfeld befinden
+     *
+     * @param xCoordinate Die zu überprüfende x-Koordinate
+     * @param yCoordinate Die zu überprüfende y-Koordinate
+     * @param gamestate Der Spielzustand
+     * @return true, wenn die Koordinaten auf dem Spielfeld sind, ansonsten false
+     */
     private boolean coordinatesOnTheMap(int xCoordinate, int yCoordinate, Gamestate gamestate) {
 
         boolean onTheMap;
@@ -522,10 +549,23 @@ public class GameLogicController implements LogicController {
         return onTheMap;
     }
 
+    /**
+     * Überprüft, ob ein Spieler zu einer Spielernummer existiert
+     * @param playerNumber
+     * @param gamestate
+     * @return
+     */
     private boolean playerExists(int playerNumber, Gamestate gamestate) {
         return playerNumber >= 0 | gamestate.getPlayers().size() < playerNumber;
     }
 
+    /**
+     * Überprüft, ob sich auf einem Feld des Spielwelt ein Turm befindet
+     *
+     * @param xCoordinate
+     * @param yCoordinate
+     * @return
+     */
     public boolean hasCellTower(int xCoordinate, int yCoordinate) {
         Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
 
@@ -580,6 +620,9 @@ public class GameLogicController implements LogicController {
         tower.notifyObserver();
     }
 
+    /**
+     * Entfernt alle Türme aus dem Spiel
+     */
     void removeAllTowers() {
         for (Tower tower : gamestate.getTowers()) {
             int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
@@ -631,7 +674,7 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Schickt einen Gegner zum gegnerischen Spieler
+     * Schickt einen Gegner zu einem gegnerischen Spieler
      *
      * @param enemyType            Der Typ des zu schickenden Gegners
      * @param playerToSendToNumber Die Nummer der Spielerin, an die der Gegner geschickt werden soll
@@ -685,21 +728,35 @@ public class GameLogicController implements LogicController {
         this.gamestate = gamestate;
     }
 
+    /**
+     * Zeigt eine Fehlermeldung für einen Spieler an. Sendet im Multiplayer-Medus die Fehlernachricht an den betreffenden
+     * Spieler
+     *
+     * @param errorMessage Die Fehlermeldung
+     * @param playerNumber Die Nummer des Spielers, bei dem der Fehler aufgetreten ist
+     */
     @Override
     public void displayErrorMessage(String errorMessage, int playerNumber) {
         if (playerNumber == localPlayerNumber) {
             gameScreen.displayErrorMessage(errorMessage);
         } else {
-            System.out.println(playerNumber);
-            System.out.println(localPlayerNumber);
             gameServer.sendErrorMessage(errorMessage, playerNumber);
         }
     }
 
+    /**
+     * Gibt den Spielbildschirm zurück
+     * @return Der Spielbildschirm
+     */
     public GameView getGameScreen() {
         return gameScreen;
     }
 
+    /**
+     * Speichert das Spiel
+     *
+     * @param saveGameName Der Name des Spielstandes
+     */
     @Override
     public void saveGame(String saveGameName) {
         Gamestate newGameState = new Gamestate(gamestate);
@@ -708,6 +765,10 @@ public class GameLogicController implements LogicController {
         saveStateDao.create(saveState);
     }
 
+    /**
+     * Lädt ein Spiel
+     * @param id
+     */
     @Override
     public void loadGame(int id) {
 
@@ -745,11 +806,21 @@ public class GameLogicController implements LogicController {
         mainController.setEndScreen(gamestate);
     }
 
+    /**
+     * Gibt den lokalen Spieler zurück
+     *
+     * @return Der lokale Spieler
+     */
     @Override
     public Player getLocalPlayer() {
         return gamestate.getPlayers().get(localPlayerNumber);
     }
 
+    /**
+     * Gibt die Nummer des lokalen Spielers zurück
+     *
+     * @return
+     */
     public int getLocalPlayerNumber() {
         return localPlayerNumber;
     }

@@ -41,6 +41,10 @@ public class ConnectionListener implements Listener {
             gameClient.setLocalPlayerNumber(getGameInfoResponse.getAllocatedPlayerNumber());
             gameClient.setMapPath(getGameInfoResponse.getMapPath());
             gameClient.setProfilePicturePaths(getGameInfoResponse.getPlayerProfilePicturePaths());
+
+            for (String playerName : gameClient.getPlayerNames()) {
+                System.out.println(playerName);
+            }
         } else {
             gameClient.setLocalPlayerNumber(getGameInfoResponse.getAllocatedPlayerNumber());
             gameClient.setMapPath(getGameInfoResponse.getMapPath());
