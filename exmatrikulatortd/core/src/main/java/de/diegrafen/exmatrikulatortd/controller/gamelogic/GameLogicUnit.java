@@ -15,6 +15,7 @@ import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static java.awt.geom.Point2D.distance;
@@ -30,6 +31,9 @@ class GameLogicUnit {
     private final LogicController logicController;
 
     private final Gamestate gamestate;
+
+    private List<Tower> attackingTowers = new LinkedList<>();
+
 
     GameLogicUnit(LogicController logicController) {
         this.logicController = logicController;
@@ -169,7 +173,8 @@ class GameLogicUnit {
                 if (tower.getCurrentTarget() != null) {
                     tower.setAttacking(true);
                     tower.notifyObserver();
-                    applyAttackDelay(tower, deltaTime);
+                    attackingTowers.add(tower);
+                    tower.setCooldown(tower.getCurrentAttackSpeed());
 
                 }
             }
@@ -267,15 +272,20 @@ class GameLogicUnit {
         }
     }
 
-    private void applyAttackDelay(Tower tower, float deltaTime) {
-        float attackdelay = tower.getAttackDelayTimer();
-        if (attackdelay <= 0) {
-            letTowerAttack(tower);
-            tower.setAttackDelayTimer(tower.getCurrentAttackDelay());
-            tower.setCooldown(tower.getCurrentAttackSpeed() - tower.getCurrentAttackDelay());
-        } else {
-            tower.setAttackDelayTimer(attackdelay - deltaTime);
+    public void applyAttackDelay(float deltaTime) {
+        List<Tower> towersToRemove = new LinkedList<>();
+        for (Tower tower : attackingTowers) {
+            float attackdelay = tower.getAttackDelayTimer();
+            if (attackdelay <= 0) {
+                towersToRemove.add(tower);
+                letTowerAttack(tower);
+                tower.setAttackDelayTimer(tower.getCurrentAttackDelay());
+            } else {
+                tower.setAttackDelayTimer(attackdelay - deltaTime);
+            }
         }
+        towersToRemove.forEach(tower -> attackingTowers.remove(tower));
+
     }
 
 
@@ -517,9 +527,12 @@ class GameLogicUnit {
     private void applyDamageToTarget(Tower tower){
         List<Enemy> enemiesHit = new LinkedList<>();
         Enemy mainTarget = tower.getCurrentTarget();
+        if (mainTarget != null) {
+            mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints()
+                    - tower.getCurrentAttackDamage() * calculateDamageMultiplier(mainTarget, tower.getAttackType()));
+            enemiesHit.add(mainTarget);
+        }
 
-        mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints() - tower.getCurrentAttackDamage() * calculateDamageMultiplier(mainTarget, tower.getAttackType()));
-        enemiesHit.add(mainTarget);
 
         if (tower.getSplashRadius() > 0) {
             List<Enemy> enemiesInSplashRadius = getEnemiesInSplashRadius(tower);

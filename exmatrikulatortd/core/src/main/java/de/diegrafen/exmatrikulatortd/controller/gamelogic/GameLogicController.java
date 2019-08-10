@@ -217,6 +217,7 @@ public class GameLogicController implements LogicController {
                     gameLogicUnit.moveProjectiles(deltaTime);
                     gameLogicUnit.applyBuffsToTowers(deltaTime);
                     gameLogicUnit.applyDebuffsToEnemies(deltaTime);
+                    gameLogicUnit.applyAttackDelay(deltaTime);
                 }
             }
         }
