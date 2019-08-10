@@ -475,12 +475,6 @@ public class GameScreen extends BaseScreen implements GameView {
         Player localPlayer = logicController.getLocalPlayer();
 
         if (logicController.isMultiplayer()) {
-            //int numberOfPlayers = gameState.getPlayers().size();
-            if (logicController.getLocalPlayerNumber() == 0) {
-                opposingPlayerNumber = 1;
-            } else {
-                opposingPlayerNumber = 0;
-            }
             Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
             if (opposingPlayer != null) {
                 opponentHealth.setValue(opposingPlayer.getCurrentLives());
@@ -544,7 +538,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         List<GameObject> objectsToRemove = new ArrayList<>();
 
-        //
         gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
 
         for (GameObject gameObject : gameObjects) {
@@ -610,8 +603,6 @@ public class GameScreen extends BaseScreen implements GameView {
      * Erstellt das Userinterface mit Scene2d Tabellen
      */
     private void initializeUserInterface() {
-
-        // TODO: Diese Methode erfordert noch erhebliches Refactoring.
 
         opponent = new Table();
         sendEnemy = new Table();
@@ -740,7 +731,12 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     private void initMultiplayerUiComponents(Player localPlayer){
-        Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
+        if (logicController.getLocalPlayerNumber() == 0) {
+            opposingPlayerNumber = 1;
+        } else {
+            opposingPlayerNumber = 0;
+        }
+        Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
         opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
         opponentHealth.setScale(1 / 2);
         opponentHealth.setValue(opposingPlayer.getCurrentLives());
@@ -752,9 +748,6 @@ public class GameScreen extends BaseScreen implements GameView {
         opponent.add(new Label(opposingPlayer.getPlayerName(), scoreLabelStyle)).left().row();
         opponent.add(opponentScore).left().row();
         opponent.add(opponentHealth).left();
-
-//            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
-//            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
 
         Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
         Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));

@@ -108,7 +108,7 @@ public final class TowerFactory {
      */
     private static Tower createCorruptionTower() {
         List<Debuff> attackDebuffs = new LinkedList<>();
-        Debuff corruptionDebuff = new Debuff("Corruption-Debuff", 3, -3, 1, -50, false);
+        Debuff corruptionDebuff = new Debuff("Corruption-Debuff", 3, -2, 1, -25, false);
         attackDebuffs.add(corruptionDebuff);
 
         return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4, 1,
@@ -140,7 +140,7 @@ public final class TowerFactory {
         LinkedList<Debuff> debuffs = new LinkedList<>();
         LinkedList<Buff> buffs = new LinkedList<>();
 
-        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 1.3f, 1, false);
+        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 1.2f, 1, false);
         buffs.add(hasteBuff);
         Aura hasteAura = new Aura(debuffs, buffs);
 
@@ -150,6 +150,6 @@ public final class TowerFactory {
                 4, 3, NORMAL, 0, auras,
                 4, 1000, 750, 1,
                 1, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0, 0, attackDebuffs, true,
-                10, 0.25f,0.5f, 1);
+                10, 0.25f,0.5f, 1.5f);
     }
 }
