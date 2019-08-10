@@ -158,6 +158,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
 
+    private ProgressBar.ProgressBarStyle healthBarStyle;
+
     private List<TowerButton> towerButtons;
 
     private List<TowerObject> previewTowers;
@@ -172,6 +174,8 @@ public class GameScreen extends BaseScreen implements GameView {
     private Table messageArea;
     private Table upgradeSell;
     private Table countdown;
+    private Table opponent;
+    private Table sendEnemy;
 
     private Group popUpButtons;
 
@@ -606,8 +610,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
         // TODO: Diese Methode erfordert noch erhebliches Refactoring.
 
-        Table opponent = new Table();
-        Table sendEnemy = new Table();
+        opponent = new Table();
+        sendEnemy = new Table();
 
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
@@ -616,75 +620,18 @@ public class GameScreen extends BaseScreen implements GameView {
 
         defaultScreen.setFillParent(true);
 
-        TooltipManager tooltipManager = new TooltipManager();
-        tooltipManager.instant();
+        initProgressbarStyle();
 
-        Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
-        pixRed.setColor(Color.RED);
-        pixRed.fill();
-        TextureRegionDrawable redBG = new TextureRegionDrawable(new TextureRegion(new Texture(pixRed)));
-        pixRed.dispose();
-        Pixmap pixHidden = new Pixmap(0, 20, Pixmap.Format.RGBA8888);
-        pixHidden.setColor(Color.GREEN);
-        pixHidden.fill();
-        TextureRegionDrawable hiddenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixHidden)));
-        pixHidden.dispose();
-        Pixmap pixGreen = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
-        pixGreen.setColor(Color.GREEN);
-        pixGreen.fill();
-        TextureRegionDrawable greenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixGreen)));
-        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
-        progressBarStyle.background = redBG;
-        progressBarStyle.knob = hiddenBar;
-        progressBarStyle.knobBefore = greenBar;
-
-        if (logicController.isMultiplayer()) {
-            Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
-            opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, progressBarStyle);
-            opponentHealth.setScale(1 / 2);
-            opponentHealth.setValue(opposingPlayer.getCurrentLives());
-            opponentHealth.setAnimateDuration(1);
-            Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
-            scoreLabelStyle.font = getBitmapFont();
-            opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
-            opponent.setBounds(0, 50, 100, 100);
-            opponent.add(new Label(opposingPlayer.getPlayerName(), scoreLabelStyle)).left().row();
-            opponent.add(opponentScore).left().row();
-            opponent.add(opponentHealth).left();
-
-            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
-            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
-
-            ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
-            ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
-
-            sendRegEnemy.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayerNumber, logicController.getLocalPlayerNumber());
-                }
-            });
-            sendHvyEnemy.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayerNumber,  logicController.getLocalPlayerNumber());
-                }
-            });
-            sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", tooltipManager, skin));
-            sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", tooltipManager, skin));
-            sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
-            sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
-
+        if (!logicController.isMultiplayer()) {
+            initMultiplayerUiComponents(localPlayer);
         }
 
         final Table towerinfoTable = new Table();
         towerinfoTable.add(towerinfoLabel).left().align(RIGHT);
 
         final Table statsTable = new Table();
-        //statsTable.setBackground(background);
         Label.LabelStyle infoLabelsStyle = new Label.LabelStyle();
         infoLabelsStyle.font = getBitmapFont();
-
 
         // score
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).right().padLeft(10).expandX();
@@ -710,45 +657,17 @@ public class GameScreen extends BaseScreen implements GameView {
         // Time
         statsTable.row().pad(10, 0, 10, 0);
 
-        playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, progressBarStyle);
+        playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, healthBarStyle);
         playerHealth.setValue(localPlayer.getCurrentLives());
         playerHealth.setAnimateDuration(1);
 
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
-        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
-        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
+
         //TextButtonStyle style = new TextButtonStyle();
         towerSelect = new Table();
 
         //Erstellen der Towerbuttons
         logicController.createTowerButtons(this);
-
-
-        ImageButton upgradeButton = new ImageButton(upgradeIcon);
-        ImageButton sellButton = new ImageButton(sellIcon);
-
-        upgradeButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                logicController.upgradeTower(xCoord, yCoord, localPlayer.getPlayerNumber());
-                popUpButtons.setVisible(false);
-            }
-        });
-        sellButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                logicController.sellTower(xCoord, yCoord, localPlayer.getPlayerNumber());
-                popUpButtons.setVisible(false);
-            }
-        });
-
-        upgradeButton.addListener(new TextTooltip("Upgraden", tooltipManager, skin));
-        sellButton.addListener(new TextTooltip("Verkaufen", tooltipManager, skin));
-
-        popUpButtons = new Group();
-        upgradeSell = new Table();
-        upgradeSell.add(upgradeButton).size(X_SIZE, Y_SIZE).row();
-        upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
 
         //Exit
         final Table exit = new Table();
@@ -770,6 +689,8 @@ public class GameScreen extends BaseScreen implements GameView {
         });
 
         exit.add(exitButton).size(X_SIZE, Y_SIZE);
+
+        initPopUpContent(localPlayer);
 
         messageArea = new Table();
 
@@ -813,6 +734,99 @@ public class GameScreen extends BaseScreen implements GameView {
 
         getUi().addActor(mainUiStack);
         multiplexer.addProcessor(getUi());
+    }
+
+    private void initMultiplayerUiComponents(Player localPlayer){
+        Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
+        opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
+        opponentHealth.setScale(1 / 2);
+        opponentHealth.setValue(opposingPlayer.getCurrentLives());
+        opponentHealth.setAnimateDuration(1);
+        Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
+        scoreLabelStyle.font = getBitmapFont();
+        opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
+        opponent.setBounds(0, 50, 100, 100);
+        opponent.add(new Label(opposingPlayer.getPlayerName(), scoreLabelStyle)).left().row();
+        opponent.add(opponentScore).left().row();
+        opponent.add(opponentHealth).left();
+
+//            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
+//            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
+
+        Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
+        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
+
+        ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
+        ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
+
+        sendRegEnemy.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logicController.sendEnemy(REGULAR_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+            }
+        });
+        sendHvyEnemy.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logicController.sendEnemy(HEAVY_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+            }
+        });
+        sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", tooltipManager, skin));
+        sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", tooltipManager, skin));
+        sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
+        sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
+    }
+
+    private void initPopUpContent(Player localPlayer) {
+        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
+        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
+
+        ImageButton upgradeButton = new ImageButton(upgradeIcon);
+        ImageButton sellButton = new ImageButton(sellIcon);
+
+        upgradeButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logicController.upgradeTower(xCoord, yCoord, localPlayer.getPlayerNumber());
+                popUpButtons.setVisible(false);
+            }
+        });
+        sellButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logicController.sellTower(xCoord, yCoord, localPlayer.getPlayerNumber());
+                popUpButtons.setVisible(false);
+            }
+        });
+
+        upgradeButton.addListener(new TextTooltip("Upgraden", tooltipManager, skin));
+        sellButton.addListener(new TextTooltip("Verkaufen", tooltipManager, skin));
+
+        popUpButtons = new Group();
+        upgradeSell = new Table();
+        upgradeSell.add(upgradeButton).size(X_SIZE, Y_SIZE).row();
+        upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
+    }
+
+    private void initProgressbarStyle(){
+        Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixRed.setColor(Color.RED);
+        pixRed.fill();
+        TextureRegionDrawable redBG = new TextureRegionDrawable(new TextureRegion(new Texture(pixRed)));
+        pixRed.dispose();
+        Pixmap pixHidden = new Pixmap(0, 20, Pixmap.Format.RGBA8888);
+        pixHidden.setColor(Color.GREEN);
+        pixHidden.fill();
+        TextureRegionDrawable hiddenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixHidden)));
+        pixHidden.dispose();
+        Pixmap pixGreen = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixGreen.setColor(Color.GREEN);
+        pixGreen.fill();
+        TextureRegionDrawable greenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixGreen)));
+        healthBarStyle = new ProgressBar.ProgressBarStyle();
+        healthBarStyle.background = redBG;
+        healthBarStyle.knob = hiddenBar;
+        healthBarStyle.knobBefore = greenBar;
     }
 
     /**
