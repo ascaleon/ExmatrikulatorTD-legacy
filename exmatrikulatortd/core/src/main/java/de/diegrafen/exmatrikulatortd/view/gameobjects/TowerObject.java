@@ -80,16 +80,16 @@ public class TowerObject extends BaseObject {
     public void update() {
         super.update();
 
-        attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
-        if (attackFrameDuration < 0.05f){
-            attackLeftAnimation.setFrameDuration(attackFrameDuration);
-            attackRightAnimation.setFrameDuration(attackFrameDuration);
-        } else {
-            attackLeftAnimation.setFrameDuration(0.05f);
-            attackRightAnimation.setFrameDuration(0.05f);
-        }
-
         if (getObservable() != null) {
+            attackFrameDuration = getObservable().getAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
+            if (attackFrameDuration < 0.05f){
+                attackLeftAnimation.setFrameDuration(attackFrameDuration);
+                attackRightAnimation.setFrameDuration(attackFrameDuration);
+            } else {
+                attackLeftAnimation.setFrameDuration(0.05f);
+                attackRightAnimation.setFrameDuration(0.05f);
+            }
+
             attacking = getObservable().isAttacking();
             speed = getObservable().getBaseAttackSpeed() / getObservable().getCurrentAttackSpeed();
         }
