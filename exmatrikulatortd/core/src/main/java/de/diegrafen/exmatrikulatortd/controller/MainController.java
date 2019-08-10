@@ -72,12 +72,24 @@ public class MainController {
      */
     private GameClient gameClient;
 
+    /**
+     * Der Introbildschirm
+     */
     private final Screen introScreen;
 
+    /**
+     * Gibt an, ob die Datenbank geladen ist
+     */
     private boolean databaseLoaded;
 
+    /**
+     * Die aktuelle Hostadresse im Multiplayer
+     */
     private String hostAdress = "";
 
+    /**
+     * Gibt an, ob die aktuelle Spielinstanz Host im Multiplayer-Modus ist
+     */
     private boolean host;
 
     /**
@@ -151,6 +163,13 @@ public class MainController {
         currentProfile = profile;
     }
 
+    /**
+     * Aktualisiert das aktuell ausgewählte Profil
+     *
+     * @param newProfileName Der neue Profilname
+     * @param newDifficulty Der neue Schwierigkeitsgrad
+     * @param newProfilePicturePath Das neue Profilbild
+     */
     public void updateProfile(final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
         currentProfile.setProfileName(newProfileName);
         currentProfile.setPreferredDifficulty(newDifficulty);
@@ -158,12 +177,18 @@ public class MainController {
         profileDao.update(currentProfile);
     }
 
+    /**
+     *
+     * Löscht das Profil mit der angegebenen ID
+     *
+     * @param profileId Die ID des zu löschenden Profils
+     */
     public void deleteProfile(final long profileId) {
         try{
             Profile profile = profileDao.retrieve(profileId);
             profileDao.delete(profile);
         } catch (final PersistenceException e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -186,34 +211,19 @@ public class MainController {
         }
     }
 
+    /**
+     *
+     * Holt Informationen über lokale Spielserver vom GameClient, enkodiert in einen String
+     *
+     * @return Die Informationen über lokale Spielserver als String
+     */
     public List<String> getLocalGameServers() {
-
-        // Code, um Server-Funktionalität zu testen.
-        List<InetAddress> servers = gameClient.discoverLocalServers();
-
-
-        // TODO: Empfangene Informationen müssen geparst werden
-        //for (InetAddress inetAddress : servers) {
-        //System.out.println(inetAddress.getHostAddress());
-        //serverList.add(inetAddress.getHostAddress());
-        //}
-
-        List<String> serverList = gameClient.getReceivedSessionInfo();
-
-        for (String string : serverList) {
-            System.out.println(string);
-        }
-
-        //if (!servers.isEmpty()) {
-        //gameClient.connect(servers.get(0).getHostName());
-        //} else {
-        if (servers.isEmpty()) {
-            System.out.println("Keine Server gefunden!");
-        }
-
-        return serverList;
+        return gameClient.getReceivedSessionInfo();
     }
 
+    /**
+     * Schließt alle Verbindungen mit GameClients oder GameServern
+     */
     public void shutdownConnections() {
         if (gameClient != null) {
             gameClient.shutdown();
@@ -242,10 +252,20 @@ public class MainController {
         return gameClient.connect(host);
     }
 
+    /**
+     * Holt alle Spielstände aus der Datenbank
+     *
+     * @return Eine Liste aller in der Datenbank gespeicherten Spielstände
+     */
     public List<SaveState> getAllSavestates() {
         return saveStateDao.findAllSaveStates();
     }
 
+    /**
+     * Holt alle Spielstände für das aktuell ausgewählte Profil aus der Datenbank
+     *
+     * @return Eine Liste aller in der Datenbank gespeicherten Spielstände für das aktuell ausgewählte Profil
+     */
     public List<SaveState> getSaveStatesForCurrentProfile() {
         return saveStateDao.findSaveStatesForProfile(currentProfile);
     }
@@ -277,7 +297,6 @@ public class MainController {
     public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
-        //showScreen(gameScreen);
     }
 
     /**
@@ -321,40 +340,54 @@ public class MainController {
         return retrieveProfiles().isEmpty();
     }
 
+    /**
+     * Holt eine bestimmte Anzahl der höchsten HighScores aus der Datenbank
+     *
+     * @param limit Die Anzahl der HighScores, die aus der Datenbank geholt werden sollen
+     * @return Die Liste der HighScores
+     */
     public List<Highscore> retrieveHighscores(int limit) {
-
-/*        createNewProfile("Sherlock Holmes", Difficulty.EASY, "sherlock.png.");
-
-        Profile profile = profileDao.retrieve(1L);
-
-        Highscore highscore1 = new Highscore(profile, 9000, 25, new Date());
-        Highscore highscore2 = new Highscore(profile, 5012, 691, new Date());
-        Highscore highscore3 = new Highscore(profile, 1337, 42, new Date());
-
-        highScoreDao.create(highscore1);
-        highScoreDao.create(highscore2);
-        highScoreDao.create(highscore3);*/
-
-        //return new LinkedList<>();
         return highScoreDao.findHighestScores(limit);
     }
 
+    /**
+     * Zeigt einen Screen an
+     *
+     * @param screen Der anzuzeigende Screen
+     */
     public void showScreen(Screen screen) {
         game.setScreen(screen);
     }
 
+    /**
+     * Zeigt den Introbildschirm an
+     */
     public void showIntroScreen() {
         game.setScreen(introScreen);
     }
 
+    /**
+     * Gibt Auskunft darüber, ob die Datenbank geladen ist
+     *
+     * @return true, wenn die Datenbank geladen ist, ansonsten false
+     */
     public boolean isDatabaseLoaded() {
         return databaseLoaded;
     }
 
+    /**
+     * Setzt die Variable, die Auskunft darüber gibt, ob die Datenbank geladen ist, auf true oder false
+     *
+     * @param databaseLoaded Der neue Wahrheitswert
+     */
     public void setDatabaseLoaded(boolean databaseLoaded) {
         this.databaseLoaded = databaseLoaded;
     }
 
+    /**
+     * Gibt die aktuelle HostAdresse zurück
+     * @return Die Hostadresse
+     */
     public String getHostAdress() {
         return hostAdress;
     }
@@ -363,6 +396,10 @@ public class MainController {
         this.hostAdress = hostAdress;
     }
 
+    /**
+     * Ändert den Bereitschaftszustand der Spielinstanz im Multiplayer und schickt als Client eine entsprechende
+     * Nachricht an den Server
+     */
     public void toggleReady() {
         if (host) {
             gameServer.setServerReady();
@@ -371,14 +408,19 @@ public class MainController {
         }
     }
 
+    /**
+     * Gibt das HighScoreDao des Controllers zurück
+     *
+     * @return Das HighScoreDao
+     */
     public HighscoreDao getHighScoreDao() {
         return highScoreDao;
     }
 
-    public ProfileDao getProfileDao() {
-        return profileDao;
-    }
-
+    /**
+     * Aktualisiert die Profilauswahl-Buttons eines MenuScreens
+     * @param menuScreen Der MenuScreen, dessen Profilauswahl-Buttons aktualisiert werden sollen
+     */
     public void updateProfileButtons(MenuScreen menuScreen) {
         for (final Profile profile : profileDao.findAllProfiles()) {
 
