@@ -118,7 +118,7 @@ public class EnemyObject extends BaseObject {
             }
         }
 
-        spriteBatch.draw(currentFrame, getxPosition(), getyPosition());
+        spriteBatch.draw(currentFrame, getxPosition()+ (32-currentFrame.getRegionWidth()/2), getyPosition());
         int healthBarHeight = 10;
         spriteBatch.draw(redHealthBar,getxPosition(),getyPosition() + 64, healthBarMaxWitdth, healthBarHeight);
         spriteBatch.draw(greenHealthBar,getxPosition(),getyPosition() + 64, currentHealthBarWidth, healthBarHeight);

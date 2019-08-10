@@ -53,9 +53,13 @@ public final class Assets {
 
     private static final String ENEMY_SPRITE_PATH = "sprites/objects/enemies/";
 
-    public static final String REGULAR_ENEMY_ASSETS = "monster_cacto";
+    public static final String REGULAR_ENEMY_ASSETS = "enemy_regular";
 
-    public static final String HEAVY_ENEMY_ASSETS = "monster_golem";
+    public static final String HEAVY_ENEMY_ASSETS = "enemy_heavy";
+
+    public static final String FAST_ENEMY_ASSETS = "enemy_fast";
+
+    public static final String BOSS_ENEMY_ASSETS = "enemy_boss";
 
     public static final String DEATH_ANIMATION_SPRITE_PATH = "sprites/objects/projectiles/mine/";
 

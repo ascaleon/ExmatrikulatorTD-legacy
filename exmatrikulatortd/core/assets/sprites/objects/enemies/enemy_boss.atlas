@@ -1,0 +1,89 @@
+enemy_boss.png
+size: 828, 96
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+enemy_boss_moveDown
+  rotate: false
+  xy: 0, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 0
+enemy_boss_moveDown
+  rotate: false
+  xy: 69, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 1
+enemy_boss_moveDown
+  rotate: false
+  xy: 138, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 2
+enemy_boss_moveLeft
+  rotate: false
+  xy: 207, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 0
+enemy_boss_moveLeft
+  rotate: false
+  xy: 276, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 1
+enemy_boss_moveLeft
+  rotate: false
+  xy: 345, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 2
+enemy_boss_moveRight
+  rotate: false
+  xy: 414, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 0
+enemy_boss_moveRight
+  rotate: false
+  xy: 483, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 1
+enemy_boss_moveRight
+  rotate: false
+  xy: 552, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 2
+enemy_boss_moveUp
+  rotate: false
+  xy: 621, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 0
+enemy_boss_moveUp
+  rotate: false
+  xy: 690, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 1
+enemy_boss_moveUp
+  rotate: false
+  xy: 759, 0
+  size: 69, 96
+  orig: 69, 96
+  offset: 0, 0
+  index: 2
