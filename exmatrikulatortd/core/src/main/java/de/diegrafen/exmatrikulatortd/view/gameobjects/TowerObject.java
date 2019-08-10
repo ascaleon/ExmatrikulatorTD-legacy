@@ -52,8 +52,8 @@ public class TowerObject extends BaseObject {
         idleLeftAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleLeft"), Animation.PlayMode.LOOP);
         idleRightAnimation = new Animation<>(0.10f, getTextureAtlas().findRegions(assetsName + "_idleRight"), Animation.PlayMode.LOOP);
 
-        attackLeftAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackLeft"), Animation.PlayMode.LOOP);
-        attackRightAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackRight"), Animation.PlayMode.LOOP);
+        attackLeftAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackLeft"));
+        attackRightAnimation = new Animation<>(0.05f, getTextureAtlas().findRegions(assetsName + "_attackRight"));
 
         //skaliere angriffsgeschwindigkeit
         /*
@@ -91,7 +91,6 @@ public class TowerObject extends BaseObject {
 
         if (getObservable() != null) {
             attacking = getObservable().isAttacking();
-            speed = getObservable().getBaseAttackSpeed() / getObservable().getCurrentAttackSpeed();
         }
 
         lookingLeft = getxPosition() - getxTargetPosition() > 0;
@@ -119,7 +118,7 @@ public class TowerObject extends BaseObject {
 
         if (attacking){
             if (isAnimated()) {
-                animationTime += deltaTime * speed;
+                animationTime += deltaTime;
             }
             if (lookingLeft) {
                 currentFrame = attackLeftAnimation.getKeyFrame(animationTime);
