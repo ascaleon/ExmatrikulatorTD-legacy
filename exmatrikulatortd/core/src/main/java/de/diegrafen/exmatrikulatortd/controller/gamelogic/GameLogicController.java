@@ -71,6 +71,8 @@ public class GameLogicController implements LogicController {
 
     private final GameLogicUnit gameLogicUnit;
 
+    private int numberOfPlayers;
+
     /**
      *
      */
@@ -89,6 +91,7 @@ public class GameLogicController implements LogicController {
     public GameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
                                int gamemode, GameView gameScreen, String mapPath, String[] names) {
         this.mainController = mainController;
+        this.numberOfPlayers = numberOfPlayers;
         this.mapPath = mapPath;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
@@ -140,6 +143,7 @@ public class GameLogicController implements LogicController {
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        this.numberOfPlayers = this.gamestate.getPlayers().size();
         initializeMap(mapPath);
 
         this.gameScreen.loadMap(mapPath);
@@ -704,6 +708,8 @@ public class GameLogicController implements LogicController {
                 if (server) {
                     gameServer.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
                 }
+            } else {
+                displayErrorMessage("Dies ist die letzte Runde!", sendingPlayerNumber);
             }
         } else {
             displayErrorMessage("Nicht genug Geld vorhanden, um diesen Gegner zu senden!", sendingPlayerNumber);
@@ -855,5 +861,9 @@ public class GameLogicController implements LogicController {
     @Override
     public boolean isMultiplayer() {
         return multiplayer;
+    }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
     }
 }

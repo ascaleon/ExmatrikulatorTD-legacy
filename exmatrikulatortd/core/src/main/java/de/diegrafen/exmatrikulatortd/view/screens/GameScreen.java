@@ -201,6 +201,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private Image background;
 
+    private int localPlayerNumber;
+
+    private int opposingPlayerNumber;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -249,7 +253,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
                 if (keycode == Input.Keys.I) {
-                    int numberOfPlayers = gameState.getPlayers().size();
+                    int numberOfPlayers = logicController.getNumberOfPlayers();
                     if (numberOfPlayers > 1) {
                         int playerToSendTo = Math.floorMod(localPlayerNumber - numberOfPlayers + 1, numberOfPlayers);
                         logicController.sendEnemy(REGULAR_ENEMY, playerToSendTo, localPlayerNumber);
@@ -636,7 +640,6 @@ public class GameScreen extends BaseScreen implements GameView {
         progressBarStyle.knobBefore = greenBar;
 
         if (logicController.isMultiplayer()) {
-            //int numberOfPlayers = gameState.getPlayers().size();
             Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
             opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, progressBarStyle);
             opponentHealth.setScale(1 / 2);
@@ -662,13 +665,13 @@ public class GameScreen extends BaseScreen implements GameView {
             sendRegEnemy.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayerNumber, localPlayerNumber);
                 }
             });
             sendHvyEnemy.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayerNumber, localPlayerNumber);
                 }
             });
             sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", ttm, skin));
