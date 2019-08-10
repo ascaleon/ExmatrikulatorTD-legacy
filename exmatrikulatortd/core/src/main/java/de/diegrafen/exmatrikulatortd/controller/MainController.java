@@ -301,16 +301,11 @@ public class MainController {
     }
 
     public List<Profile> retrieveProfiles() {
-        /*try{
-            return profileDao.openCurrentSession().createQuery("from Profiles").list();
-        } catch (final Exception e){
-            return new LinkedList<>();
-        }*/
-        final Session session = profileDao.openCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Profile> criteriaQuery = criteriaBuilder.createQuery(Profile.class);
-        criteriaQuery.from(Profile.class);
-        return session.createQuery(criteriaQuery).getResultList();
+        return profileDao.findAllProfiles();
+    }
+
+    public Profile retrieveProfile(long id) {
+        return profileDao.retrieve(id);
     }
 
     public boolean noProfilesYet() {
