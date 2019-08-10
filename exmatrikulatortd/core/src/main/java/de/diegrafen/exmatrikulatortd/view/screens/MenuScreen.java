@@ -607,7 +607,9 @@ public class MenuScreen extends BaseScreen {
         for (String server : serverList) {
             String[] lines = server.split("\n");
             serverListTable.row();
+            System.out.println(lines.length);
             if (lines.length == 4) {
+                System.out.println("Hallo?");
                 int difficulty = Integer.parseInt(lines[3]);
                 String difficultyString = difficultyList.get(difficulty);
                 TextButton rowTable = new TextButton("Map: " + lines[1] + "\nAnzahl Spieler: " + lines[2] +
@@ -635,13 +637,14 @@ public class MenuScreen extends BaseScreen {
 
         serverListMenuTable = new Table();
         serverListTable = new Table();
-        final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, skin);
+        final ScrollPane serverScrollPane = new ScrollPane(serverListTable, skin);
 
         TextButton connectButton = new TextButton("Verbinden", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         createGenericMenuTable(menuStack, serverListMenuTable);
 
+        addUIElement(serverListMenuTable, serverScrollPane);
         addUIElement(serverListMenuTable, connectButton);
         addUIElement(serverListMenuTable, backButton);
 

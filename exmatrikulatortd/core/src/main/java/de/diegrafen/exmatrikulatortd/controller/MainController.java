@@ -13,6 +13,7 @@ import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
 
 import javax.persistence.PersistenceException;
+import java.net.InetAddress;
 import java.util.List;
 
 /**
@@ -210,6 +211,7 @@ public class MainController {
      * @return Die Informationen über lokale Spielserver als String
      */
     public List<String> getLocalGameServers() {
+        List<InetAddress> servers = gameClient.discoverLocalServers();
         return gameClient.getReceivedSessionInfo();
     }
 
