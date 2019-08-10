@@ -56,7 +56,7 @@ public class GameClient extends Connector implements ClientInterface {
      * Erzeugt einen neuen GameClient
      */
     public GameClient() {
-        client = new Client(16384*8, 2048*8);
+        client = new Client(50000, 50000);
         registerObjects(client.getKryo());
         tcpPort = TCP_PORT;
         udpPort = UDP_PORT;

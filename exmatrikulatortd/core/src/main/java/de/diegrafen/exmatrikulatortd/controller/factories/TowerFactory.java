@@ -90,14 +90,13 @@ public final class TowerFactory {
         LinkedList<Debuff> debuffs = new LinkedList<>();
 
         Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
-        Aura slowAura = new Aura(200, debuffs, new LinkedList<>());
-
         debuffs.add(slowDebuff);
+        Aura slowAura = new Aura(debuffs, new LinkedList<>());
         auras.add(slowAura);
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 10,
-                4, 3, NORMAL, 0.15f,auras, 0, 500, 500,
-                1, 3, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(), true,
+                4, 3, NORMAL, 0.15f, auras, 4, 500, 500,
+                1, 3, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, debuffs, true,
                 5, 1.03f, 0.25f, 0.25f);
     }
 
@@ -126,7 +125,7 @@ public final class TowerFactory {
     private static Tower createExplosiveTower() {
         return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4, 3,
                 EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 500, 250, 500, 1, 10, EXPLOSIVE_TOWER_ASSETS, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED,
-                0.5f, 100, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true, 100,
+                0.5f, 1, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true, 100,
                 1.03f, 0.25f,0);
     }
 
@@ -143,7 +142,7 @@ public final class TowerFactory {
 
         Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 1.3f, 1, false);
         buffs.add(hasteBuff);
-        Aura hasteAura = new Aura(200, debuffs, buffs);
+        Aura hasteAura = new Aura(debuffs, buffs);
 
         auras.add(hasteAura);
 

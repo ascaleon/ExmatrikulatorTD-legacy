@@ -544,6 +544,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         List<GameObject> objectsToRemove = new ArrayList<>();
 
+        //
         gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
 
         for (GameObject gameObject : gameObjects) {

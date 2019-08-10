@@ -106,7 +106,7 @@ class GameLogicUnit {
                 }
 
                 for (Buff buff : buffs) {
-                    List<Tower> towersInRange = getTowersInRange(gamestate, tower.getxPosition(), tower.getyPosition(), calculateRangeFromTilesize(aura.getRange()));
+                    List<Tower> towersInRange = getTowersInRange(gamestate, tower.getxPosition(), tower.getyPosition(), calculateRangeFromTilesize(tower.getAuraRange()));
                     for (Tower towerInRange : towersInRange) {
                         addBuffToTower(towerInRange, buff);
                     }
@@ -130,6 +130,7 @@ class GameLogicUnit {
             if (attackedPlayer == null) {
                 System.out.println("Kein Spieler vorhanden!");
             }
+
             if (enemy.getWayPointIndex() >= attackedPlayer.getWayPoints().size()) {
                 applyDamageToPlayer(enemy);
                 if (enemy.isRespawning()) {
@@ -210,7 +211,6 @@ class GameLogicUnit {
             enemy.setCurrentSpeed(enemy.getBaseSpeed());
             enemy.setCurrentArmor(enemy.getBaseArmor());
             enemy.setCurrentMaxHitPoints(enemy.getBaseMaxHitPoints());
-            // TODO: Damage over Time Debuffs ergänzen.
 
             for (Debuff debuff : enemy.getDebuffs()) {
                 enemy.setCurrentSpeed(enemy.getCurrentSpeed() * debuff.getSpeedMultiplier());
