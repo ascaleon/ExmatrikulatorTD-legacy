@@ -128,22 +128,13 @@ public final class Constants {
 
     public final static String TESTMODE_STRING = "Tutormodus";
 
+    public static final int STANDARD_SINGLE_PLAYER_GAME = 0;
 
-    public static String getStringForDifficulty(int difficulty) {
-        String difficultyString = "Unbekannter Schwierigkeitsgrad";
-        switch (difficulty) {
-            case EASY:
-                difficultyString = EASY_STRING;
-                break;
-            case MEDIUM:
-                difficultyString = MEDIUM_STRING;
-            case HARD:
-                difficultyString = HARD_STRING;
-            case TESTMODE:
-                difficultyString = TESTMODE_STRING;
-                break;
-        }
+    public static final int ENDLESS_SINGLE_PLAYER_GAME = 1;
 
-        return difficultyString;
-    }
+    public static final int MULTIPLAYER_DUEL = 2;
+
+    public static final int MULTIPLAYER_STANDARD_GAME = 3;
+
+    public static final int MULTIPLAYER_ENDLESS_GAME = 4;
 }

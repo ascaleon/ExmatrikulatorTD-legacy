@@ -20,7 +20,6 @@ import de.diegrafen.exmatrikulatortd.view.screens.uielements.ProfileTextButton;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;

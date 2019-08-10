@@ -202,6 +202,7 @@ public class MainController {
             this.gameClient = new GameClient();
             this.gameClient.setMainController(this);
         }
+        host = false;
     }
 
     /**

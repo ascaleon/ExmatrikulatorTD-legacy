@@ -8,7 +8,7 @@ import de.diegrafen.exmatrikulatortd.communication.client.requests.GetGameInfoRe
 import de.diegrafen.exmatrikulatortd.communication.server.responses.AllPlayersReadyResponse;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.GetGameInfoResponse;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
+import static de.diegrafen.exmatrikulatortd.util.Constants.MULTIPLAYER_DUEL;
 
 /**
  * @author janro

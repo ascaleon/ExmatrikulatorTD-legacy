@@ -104,6 +104,7 @@ public class GameLogicController implements LogicController {
         this.gamestate = createGameState(gamemode, numberOfPlayers, difficulty, names);
         this.gameLogicUnit = new GameLogicUnit(this);
         this.gameScreen.setGameState(gamestate);
+        System.out.println(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
 
@@ -113,7 +114,6 @@ public class GameLogicController implements LogicController {
     }
 
     private Gamestate createGameState(int gamemode, int numberOfPlayers, int difficulty, String[] names) {
-        // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
         return createNewGame(gamemode, numberOfPlayers, difficulty, names);
     }
 

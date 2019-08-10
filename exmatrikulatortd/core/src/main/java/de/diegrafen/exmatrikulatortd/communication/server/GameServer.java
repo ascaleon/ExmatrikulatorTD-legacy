@@ -18,10 +18,8 @@ import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MULTIPLAYER_MAP_PATH;
-import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
-import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
  * GameServer-Klasse
@@ -231,8 +229,6 @@ public class GameServer extends Connector implements ServerInterface {
     @Override
     public void setServerReady() {
         playersReady[0] = true;
-
-        System.out.println(areAllPlayersReady());
 
         if (areAllPlayersReady()) {
             for (Connection connection : server.getConnections()) {

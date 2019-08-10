@@ -10,20 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.WaveFactory.*;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 public final class NewGameFactory {
-
-    private static final int MAX_PLAYERS = 2;
-
-    public static final int STANDARD_SINGLE_PLAYER_GAME = 0;
-
-    public static final int ENDLESS_SINGLE_PLAYER_GAME = 1;
-
-    public static final int MULTIPLAYER_DUEL = 2;
-
-    public static final int MULTIPLAYER_STANDARD_GAME = 3;
-
-    public static final int MULTIPLAYER_ENDLESS_GAME = 4;
 
     private NewGameFactory() {
 
@@ -42,7 +31,7 @@ public final class NewGameFactory {
                     gamestate = createEndlessSinglePlayerGame(difficulty, names);
                     break;
             }
-        } else if (numberOfPlayers > 1 & numberOfPlayers <= MAX_PLAYERS) {
+        } else if (numberOfPlayers > 1) {
             switch (gameMode) {
                 case MULTIPLAYER_DUEL:
                     gamestate = createMultiPlayerDuell(numberOfPlayers, difficulty, names);

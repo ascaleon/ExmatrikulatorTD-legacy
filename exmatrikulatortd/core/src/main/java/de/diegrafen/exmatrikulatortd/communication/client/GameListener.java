@@ -5,9 +5,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.ClientLogicController;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
-
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 
 /**
  * @author janro

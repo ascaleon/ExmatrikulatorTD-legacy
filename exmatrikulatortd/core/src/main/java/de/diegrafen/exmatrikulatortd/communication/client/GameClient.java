@@ -13,7 +13,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 import static de.diegrafen.exmatrikulatortd.util.Constants.TCP_PORT;
 import static de.diegrafen.exmatrikulatortd.util.Constants.UDP_PORT;
 
