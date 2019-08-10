@@ -118,7 +118,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         Player sendingPlayer = getGamestate().getPlayerByNumber(sendingPlayerNumber);
         Player playerToSendTo = getGamestate().getPlayerByNumber(playerToSendToNumber);
 
-        playerToSendTo.getWaves().get(getGamestate().getRoundNumber() + 1).addEnemy(enemy);
+        playerToSendTo.getWaves().get(getGamestate().getRoundNumber()).addEnemy(enemy);
         sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
         sendingPlayer.notifyObserver();
     }
