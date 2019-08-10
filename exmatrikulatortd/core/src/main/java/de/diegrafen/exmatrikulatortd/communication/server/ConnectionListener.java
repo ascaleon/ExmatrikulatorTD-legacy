@@ -5,13 +5,8 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.ClientReadyRequest;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.GetGameInfoRequest;
-import de.diegrafen.exmatrikulatortd.communication.client.requests.SendPlayerNameRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.AllPlayersReadyResponse;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.GetGameInfoResponse;
-import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.MULTIPLAYER_DUEL;
 
@@ -32,6 +27,8 @@ public class ConnectionListener implements Listener {
         int playerNumber = gameServer.allocatePlayerNumber();
 
         gameServer.getConnectionAndPlayerNumbers().put(connection.getID(), playerNumber);
+
+        System.out.println(playerNumber);
 
         if (gameServer.openSlotsLeft() <= 0) {
             gameServer.setLookingForPlayers(false);
@@ -56,8 +53,6 @@ public class ConnectionListener implements Listener {
             handleGetGameInfoRequest(connection, (GetGameInfoRequest) object);
         } else if (object instanceof ClientReadyRequest) {
             handleClientReadyRequest(connection);
-        } else if (object instanceof SendPlayerNameRequest) {
-            handleSendPlayerNameRequest(connection, (SendPlayerNameRequest) object);
         }
     }
 
@@ -78,11 +73,5 @@ public class ConnectionListener implements Listener {
             //mainController.showLoadScreen();
             Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), gameServer.getMainController().getCurrentProfilePreferredDifficulty(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath(), gameServer.getPlayerNames()));
         }
-    }
-
-    private void handleSendPlayerNameRequest(Connection connection, SendPlayerNameRequest sendPlayerNameRequest) {
-        int playerNumber = gameServer.getConnectionAndPlayerNumbers().get(connection.getID());
-        gameServer.getPlayerNames()[playerNumber] = sendPlayerNameRequest.getPlayerName();
-        gameServer.getServer().sendToAllTCP(new GetGameInfoResponse());
     }
 }

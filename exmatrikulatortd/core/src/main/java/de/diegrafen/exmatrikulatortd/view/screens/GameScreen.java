@@ -201,8 +201,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private Image background;
 
-    private int localPlayerNumber;
-
     private int opposingPlayerNumber;
 
     /**
@@ -471,7 +469,6 @@ public class GameScreen extends BaseScreen implements GameView {
         Player localPlayer = logicController.getLocalPlayer();
 
         if (logicController.isMultiplayer()) {
-            int opposingPlayerNumber;
             //int numberOfPlayers = gameState.getPlayers().size();
             if (logicController.getLocalPlayerNumber() == 0) {
                 opposingPlayerNumber = 1;
@@ -617,8 +614,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
         defaultScreen.setFillParent(true);
 
-        TooltipManager ttm = new TooltipManager();
-        ttm.instant();
+        TooltipManager tooltipManager = new TooltipManager();
+        tooltipManager.instant();
 
         Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
         pixRed.setColor(Color.RED);
@@ -640,7 +637,7 @@ public class GameScreen extends BaseScreen implements GameView {
         progressBarStyle.knobBefore = greenBar;
 
         if (logicController.isMultiplayer()) {
-            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
+            Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
             opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, progressBarStyle);
             opponentHealth.setScale(1 / 2);
             opponentHealth.setValue(opposingPlayer.getCurrentLives());
@@ -653,9 +650,6 @@ public class GameScreen extends BaseScreen implements GameView {
             opponent.add(opponentScore).left().row();
             opponent.add(opponentHealth).left();
 
-//            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
-//            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
-
             Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
             Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
 
@@ -665,17 +659,17 @@ public class GameScreen extends BaseScreen implements GameView {
             sendRegEnemy.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayerNumber, localPlayerNumber);
+                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayerNumber, logicController.getLocalPlayerNumber());
                 }
             });
             sendHvyEnemy.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayerNumber, localPlayerNumber);
+                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayerNumber,  logicController.getLocalPlayerNumber());
                 }
             });
-            sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", ttm, skin));
-            sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", ttm, skin));
+            sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", tooltipManager, skin));
+            sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", tooltipManager, skin));
             sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
             sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
 

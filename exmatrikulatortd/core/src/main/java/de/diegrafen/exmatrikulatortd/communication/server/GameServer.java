@@ -103,6 +103,10 @@ public class GameServer extends Connector implements ServerInterface {
             this.numberOfPlayers = numberOfPlayers;
             this.difficulty = difficulty;
             playersReady = new boolean[numberOfPlayers];
+            playerNames = new String[numberOfPlayers];
+            playerNames[0] = mainController.getCurrentProfileName();
+            profilePicturePaths = new String[numberOfPlayers];
+            profilePicturePaths[0] = mainController.getCurrentProfilePicturePath();
             playersfinishedLoading = new boolean[numberOfPlayers];
             slotsFilled = new boolean[numberOfPlayers];
             slotsFilled[0] = true;
