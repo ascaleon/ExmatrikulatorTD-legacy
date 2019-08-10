@@ -1,16 +1,9 @@
 package de.diegrafen.exmatrikulatortd.util;
 
-import de.diegrafen.exmatrikulatortd.model.Highscore;
-import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
-import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
-import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
-import java.util.Date;
-import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.util.Constants.NUMBER_OF_TOWERS;
@@ -44,7 +37,6 @@ public class HibernateUtils {
         }
     }
 
-
     /**
      * Gibt die Session-Factory zurück
      *
@@ -61,16 +53,17 @@ public class HibernateUtils {
         getSessionFactory().close();
     }
 
+    /**
+     * Erzeugt mithilfe der TowerFactory die baubaren Türme, die während des Spiels aus der Datenbank abgerufen werden
+     * können
+     */
     public static void createTemplateTowers() {
         TowerDao towerDao = new TowerDao();
-        System.out.println("Türme vorhanden? " + towerDao.hasTableTemplateTowers());
         if (!towerDao.hasTableTemplateTowers()) {
             for (int i = 0; i < NUMBER_OF_TOWERS; i++) {
                 Tower buildableTower = createNewTower(i);
                 towerDao.create(buildableTower);
             }
         }
-        List<Tower> buildableTowers = towerDao.retrieveTemplateTowers();
-        buildableTowers.forEach(tower -> System.out.println(tower.getName()));
     }
 }
