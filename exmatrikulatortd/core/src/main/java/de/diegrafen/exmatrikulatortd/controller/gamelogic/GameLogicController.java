@@ -495,6 +495,7 @@ public class GameLogicController implements LogicController {
                     gameServer.buildTower(towerType, xCoordinate, yCoordinate, playerNumber);
                 }
                 player.setResources(playerResources - towerPrice);
+                player.incrementTowerCounter();
                 addTower(tower, xCoordinate, yCoordinate, playerNumber);
                 player.notifyObserver();
 

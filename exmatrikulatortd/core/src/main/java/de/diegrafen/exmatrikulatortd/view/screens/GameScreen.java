@@ -154,6 +154,8 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      */
     private Group pauseGroup;
+
+    private Group endScreenGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
     private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
@@ -1012,7 +1014,7 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
-        Group endScreenGroup = new Group();
+        endScreenGroup = new Group();
 
         Image resultImage;
         if (victorious) {
@@ -1033,10 +1035,19 @@ public class GameScreen extends BaseScreen implements GameView {
                 logicController.exitGame(false);
             }
         });
+        TextButton stats = new TextButton("Statistiken", skin);
+        stats.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                endScreenGroup.setVisible(false);
+                gameStatsScreen();
+            }
+        });
 
         //buttonTable.add(resultLabel).center().row();
         buttonTable.add(currentScoreLabel).center().row();
         buttonTable.add(highscoreLabel).center().row();
+        buttonTable.add(stats).top().center().spaceRight(10);
         buttonTable.add(back2main).top().center().row();
         buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / 2);
 
@@ -1094,6 +1105,65 @@ public class GameScreen extends BaseScreen implements GameView {
         previewTowers.add(new TowerObject(observableTower, getAssetManager()));
     }
 
+
+    private void gameStatsScreen(){
+        Group statScreen = new Group();
+
+        Player local = logicController.getLocalPlayer();
+
+        Table firstColum = new Table();
+        Table secondColum = new Table();
+        Table thirdColum = new Table();
+        firstColum.add(new Label("Statistiken:", skin)).row();
+        secondColum.add(new Label(local.getPlayerName(), skin)).row();
+        firstColum.add(new Label("Score", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getScore()), skin)).row();
+        firstColum.add(new Label("Besiegte Gegner", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getKillTracker()), skin)).row();
+        firstColum.add(new Label("Abgeschlossene Wellen", skin)).row();
+        secondColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
+        firstColum.add(new Label("Erbaute Tuerme", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getTowerCounter()), skin)).row();
+        firstColum.add(new Label("Verdientes Gold", skin)).row();
+        secondColum.add(new Label(Integer.toString(local.getResources() - 1000), skin)).row();
+
+        if(logicController.isMultiplayer()){
+            Player opponent = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
+            thirdColum.add(new Label(opponent.getPlayerName(), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getScore()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getKillTracker()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getTowerCounter()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opponent.getResources() -1000), skin)).row();
+        }
+
+        TextButton back = new TextButton("Zurueck", skin);
+        back.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                statScreen.setVisible(false);
+                endScreenGroup.setVisible(true);
+            }
+        });
+
+        Table statTable = new Table();
+        statTable.add(firstColum).center().expandX();
+        statTable.add(secondColum).center().expandX();
+        if(logicController.isMultiplayer()){
+            statTable.add(thirdColum).center().expandX();
+            statTable.row();
+            statTable.add(back).center().colspan(3);
+        }
+        else {
+            statTable.row();
+            statTable.add(back).center().colspan(2);
+        }
+        statTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        statScreen.addActor(background);
+        statScreen.addActor(statTable);
+
+        getUi().addActor(statScreen);
+    }
     /**
      * Legt einen Spielzustand als Attribut der GameView fest
      *

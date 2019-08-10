@@ -91,6 +91,10 @@ public class Player extends BaseModel implements Observable {
 
     private boolean lost;
 
+    private int killTracker;
+
+    private int towerCounter;
+
     /**
      * Default-Konstruktur. Wird von JPA vorausgesetzt.
      */
@@ -106,6 +110,8 @@ public class Player extends BaseModel implements Observable {
 
         this.timeSinceLastSpawn = 0;
         this.enemiesSpawned = false;
+        this.killTracker = 0;
+        this.towerCounter = 0;
     }
 
     /**
@@ -130,6 +136,9 @@ public class Player extends BaseModel implements Observable {
 
         this.waves = new LinkedList<>();
         player.getWaves().forEach(wave -> waves.add(new Wave(wave)));
+
+        this.killTracker = player.killTracker;
+        this.towerCounter = player.towerCounter;
     }
 
     public List<Coordinates> getWayPoints() {
@@ -264,5 +273,19 @@ public class Player extends BaseModel implements Observable {
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+    }
+    public void incrementBodyTracker() {
+        killTracker++;
+    }
+
+    public int getKillTracker(){
+        return killTracker;
+    }
+
+    public void incrementTowerCounter(){
+        towerCounter++;
+    }
+    public int getTowerCounter() {
+        return towerCounter;
     }
 }

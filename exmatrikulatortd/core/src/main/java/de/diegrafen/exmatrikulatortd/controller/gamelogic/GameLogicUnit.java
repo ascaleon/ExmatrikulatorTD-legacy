@@ -461,6 +461,7 @@ class GameLogicUnit {
             if (attackedPlayer != null) {
                 attackedPlayer.addToResources(enemy.getBounty());
                 attackedPlayer.addToScore(enemy.getPointsGranted());
+                attackedPlayer.incrementBodyTracker();
                 attackedPlayer.notifyObserver();
             }
             if (!enemy.isRemoved()) {
