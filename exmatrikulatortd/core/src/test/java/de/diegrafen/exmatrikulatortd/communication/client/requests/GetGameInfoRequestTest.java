@@ -1,10 +1,9 @@
 package de.diegrafen.exmatrikulatortd.communication.client.requests;
 
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import static de.diegrafen.exmatrikulatortd.util.Constants.MEDIUM;
 import static org.junit.Assert.*;
 
 /**
@@ -17,7 +16,7 @@ public class GetGameInfoRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        getGameInfoRequest = new GetGameInfoRequest("Player 1", Difficulty.MEDIUM, "profilePictures/player1.jpg");
+        getGameInfoRequest = new GetGameInfoRequest("Player 1", MEDIUM, "profilePictures/player1.jpg");
     }
 
     @Test
@@ -27,7 +26,7 @@ public class GetGameInfoRequestTest {
 
     @Test
     public void getDifficulty() {
-        assertEquals(Difficulty.MEDIUM, getGameInfoRequest.getDifficulty());
+        assertEquals(MEDIUM, getGameInfoRequest.getDifficulty());
     }
 
     @Test
