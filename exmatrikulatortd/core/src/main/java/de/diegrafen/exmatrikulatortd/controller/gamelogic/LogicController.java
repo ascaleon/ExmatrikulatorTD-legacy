@@ -94,4 +94,6 @@ public interface LogicController {
     void loadGame(int id);
 
     boolean isActiveRound();
+
+    int getNumberOfPlayers();
 }

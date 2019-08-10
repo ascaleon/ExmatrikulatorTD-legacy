@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Date;
 
 /**

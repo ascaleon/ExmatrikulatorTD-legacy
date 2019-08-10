@@ -66,4 +66,5 @@ public interface GameView extends Observer, Screen {
 
     void addTowerButton(ObservableTower observableTower);
 
+    void clearGameObjects();
 }

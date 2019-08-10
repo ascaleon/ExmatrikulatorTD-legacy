@@ -19,4 +19,8 @@ public interface ObservableTower extends ObservableUnit {
     boolean isAttacking();
 
     float getAttackSpeed();
+
+    float getCurrentAttackSpeed();
+
+    float getBaseAttackSpeed();
 }

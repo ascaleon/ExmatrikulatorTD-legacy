@@ -5,7 +5,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.*;
@@ -43,11 +42,6 @@ public class GameLogicController implements LogicController {
     private final GameView gameScreen;
 
     /**
-     * Das lokale Spieler-Profil
-     */
-    private final Profile profile;
-
-    /**
      * DAO für CRUD-Operationen mit Spielzustand-Objekten
      */
     private final GameStateDao gameStateDao;
@@ -77,29 +71,27 @@ public class GameLogicController implements LogicController {
 
     private final GameLogicUnit gameLogicUnit;
 
-    private float sendGameStateTimer;
+    private int numberOfPlayers;
 
     /**
      *
      */
-    public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                               int gamemode, GameView gameScreen, String mapPath, GameServer gameServer) {
-        this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath);
+    public GameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
+                               int gamemode, GameView gameScreen, String mapPath, GameServer gameServer, String[] names) {
+        this(mainController, difficulty, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath, names);
         this.gameServer = gameServer;
         this.server = true;
-        this.sendGameStateTimer = 1 / GAMESTATE_REFRESHS_PER_SECONDS;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
-        System.out.println("Blah.");
     }
 
     /**
      *
      */
-    public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                               int gamemode, GameView gameScreen, String mapPath) {
+    public GameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
+                               int gamemode, GameView gameScreen, String mapPath, String[] names) {
         this.mainController = mainController;
-        this.profile = profile;
+        this.numberOfPlayers = numberOfPlayers;
         this.mapPath = mapPath;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
@@ -109,9 +101,10 @@ public class GameLogicController implements LogicController {
         this.gameScreen = gameScreen;
         this.gameScreen.setLogicController(this);
 
-        this.gamestate = createGameState(gamemode, numberOfPlayers);
+        this.gamestate = createGameState(gamemode, numberOfPlayers, difficulty, names);
         this.gameLogicUnit = new GameLogicUnit(this);
         this.gameScreen.setGameState(gamestate);
+        System.out.println(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
 
@@ -120,9 +113,8 @@ public class GameLogicController implements LogicController {
         this.gameScreen.loadMap(mapPath);
     }
 
-    private Gamestate createGameState(int gamemode, int numberOfPlayers) {
-        // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
-        return createNewGame(gamemode, numberOfPlayers, profile.getPreferredDifficulty());
+    private Gamestate createGameState(int gamemode, int numberOfPlayers, int difficulty, String[] names) {
+        return createNewGame(gamemode, numberOfPlayers, difficulty, names);
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
@@ -142,17 +134,16 @@ public class GameLogicController implements LogicController {
         }
         this.gamestate = gameStateDao.retrieve(saveState.getGamestate().getId());
         this.gameLogicUnit = new GameLogicUnit(this);
-        this.profile = saveState.getProfile();
         this.mapPath = saveState.getMapPath();
         this.localPlayerNumber = saveState.getLocalPlayerNumber();
         this.multiplayer = saveState.isMultiplayer();
         this.gameScreen = gameView;
         this.loaded = true;
-        //gamestate.getPlayers().size();
         this.gameScreen.setLogicController(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        this.numberOfPlayers = this.gamestate.getPlayers().size();
         initializeMap(mapPath);
 
         this.gameScreen.loadMap(mapPath);
@@ -173,6 +164,7 @@ public class GameLogicController implements LogicController {
      * @param gamestate  Der Spielzustand für die Reinitialisierung
      */
     private void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+        gameScreen.clearGameObjects();
         gamestate.getProjectiles().forEach(projectile -> {
             gameScreen.addProjectile(projectile);
             projectile.notifyObserver();
@@ -199,14 +191,12 @@ public class GameLogicController implements LogicController {
         }
         if (deltaTime > maxDelta) {
             skipFrames(deltaTime, maxDelta);
-        } else {
-            if (!gamestate.isGameOver() && !pause) {
-                determineNewRound();
+        } else if (!gamestate.isGameOver() && !pause) {
+            determineNewRound();
+            determineGameOver();
+            if (gamestate.isRoundEnded()) {
                 determineGameOver();
-                if (gamestate.isRoundEnded()) {
-                    determineGameOver();
-                }
-
+            }
                 if (!gamestate.isGameOver()) {
                     if (gamestate.isRoundEnded()) {
                         gamestate.setRoundEnded(false);
@@ -219,11 +209,18 @@ public class GameLogicController implements LogicController {
                     gameLogicUnit.moveProjectiles(deltaTime);
                     gameLogicUnit.applyBuffsToTowers(deltaTime);
                     gameLogicUnit.applyDebuffsToEnemies(deltaTime);
+                    gameLogicUnit.applyAttackDelay(deltaTime);
                 }
             }
         }
-    }
 
+    /**
+     * Führt, wenn deltaTime einen festgelegten Maximalwert überschreitet, mehrere Update-Zyklen hintereinander aus,
+     * um den zeitlichen Abstand auszugleichen
+     *
+     * @param deltaTime Die Zeit seit dem letzten Rendern
+     * @param maxDeltaTime Der Maximalwert, der zwischen zwei Updates liegen darf
+     */
     private void skipFrames(float deltaTime, float maxDeltaTime){
         float remainingDeltaTime = deltaTime;
         while (remainingDeltaTime > maxDeltaTime) {
@@ -278,11 +275,11 @@ public class GameLogicController implements LogicController {
             Player localPlayer = getLocalPlayer();
             HighscoreDao highscoreDao = mainController.getHighScoreDao();
             try {
-                highscoreDao.create(new Highscore(profile, localPlayer.getScore(), gamestate.getRoundNumber(), new Date()));
+                highscoreDao.create(new Highscore(mainController.getCurrentProfile(), localPlayer.getScore(), gamestate.getRoundNumber(), new Date()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Highscore highscore = highscoreDao.findHighestScoreForProfile(profile);
+            Highscore highscore = highscoreDao.findHighestScoreForProfile(mainController.getCurrentProfile());
             int highscoreValue;
             if (highscore != null) {
                 highscoreValue = highscore.getScore();
@@ -350,11 +347,19 @@ public class GameLogicController implements LogicController {
      */
     private void startNewRound() {
         System.out.println("New round started!");
-        gamestate.setNewRound(true);
-        gamestate.setRoundEnded(false);
         for (Player player : gamestate.getPlayers()) {
             player.setEnemiesSpawned(false);
         }
+        if (server) {
+            List<Tower> towersToSend = new LinkedList<>();
+            List<Player> playersToSend = new LinkedList<>();
+            gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
+            gamestate.getPlayers().forEach(player -> playersToSend.add(new Player(player)));
+            gameServer.sendServerGameState(towersToSend, playersToSend);
+        }
+        gamestate.setNewRound(true);
+        gamestate.setRoundEnded(false);
+
         gamestate.setTimeUntilNextRound(TIME_BETWEEN_ROUNDS);
     }
 
@@ -401,27 +406,6 @@ public class GameLogicController implements LogicController {
                 addGameMapTile(j, i, buildableByPlayer, tileWidth, tileHeight);
             }
         }
-
-//        // TODO: Eventuell obsolet, es sei denn, wir wollen Graph-Algorithmen auf der Map einsetzen.
-//        for (Coordinates mapCell : gamestate.getCollisionMatrix()) {
-//
-//            int mapCellXCoordinate = mapCell.getxCoordinate();
-//            int mapCellYCoordinate = mapCell.getyCoordinate();
-//            int numberOfCols = gamestate.getNumberOfColumns();
-//
-//            if (mapCellXCoordinate > 0) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate - 1));
-//            }
-//            if (mapCellXCoordinate < numberOfColumns - 1) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * mapCellYCoordinate + mapCellXCoordinate + 1));
-//            }
-//            if (mapCellYCoordinate > 0) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate - 1) + mapCellXCoordinate));
-//            }
-//            if (mapCellYCoordinate < numberOfRows - 1) {
-//                mapCell.addNeighbour(gamestate.getMapCellByListIndex(numberOfCols * (mapCellYCoordinate + 1) + mapCellXCoordinate));
-//            }
-//        }
     }
 
     /**
@@ -464,15 +448,20 @@ public class GameLogicController implements LogicController {
     }
 
 
+    /**
+     *
+     * @param tower
+     * @param xCoordinate
+     * @param yCoordinate
+     * @param playerNumber
+     */
+    void addTower(Tower tower, int xCoordinate, int yCoordinate, int playerNumber) {
+        tower.setPlayerNumber(playerNumber);
 
-    void addTower(Tower tower, int xPosition, int yPosition, int playerNumber) {
-        Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
-        tower.setOwner(owningPlayer);
-        owningPlayer.addTower(tower);
-
-        Coordinates coordinates = getMapCellByXandYCoordinates(xPosition, yPosition);
-        tower.setPosition(coordinates);
+        Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
         coordinates.setTower(tower);
+        tower.setxPosition(xCoordinate * gamestate.getTileWidth());
+        tower.setyPosition(yCoordinate * gamestate.getTileHeight());
 
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
@@ -506,6 +495,7 @@ public class GameLogicController implements LogicController {
                     gameServer.buildTower(towerType, xCoordinate, yCoordinate, playerNumber);
                 }
                 player.setResources(playerResources - towerPrice);
+                player.incrementTowerCounter();
                 addTower(tower, xCoordinate, yCoordinate, playerNumber);
                 player.notifyObserver();
 
@@ -517,15 +507,21 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    /**
+     * Überprüft, ob ausgewählte Koordinaten vom angegebenen Spieler bebaut werden dürfen.
+     *
+     * @param xCoordinate Die x-Koordinate des betreffenden Feldes
+     * @param yCoordinate Die y-Koordinate des betreffenden Feldes
+     * @param playerNumber Die Nummer des betreffenden Spielers
+     * @return true, wenn die betreffende Map-Zelle bebaut werden darf, ansonsten false
+     */
     public boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber) {
 
         boolean buildable = true;
 
         if (!coordinatesOnTheMap(xCoordinate, yCoordinate, gamestate)) {
-            System.out.println("Koordinaten nicht auf der Map!");
             buildable = false;
         } else if (!playerExists(playerNumber, gamestate)) {
-            System.out.println("Spieler gibt es nicht!");
             buildable = false;
         } else {
             Coordinates mapCell = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
@@ -539,6 +535,14 @@ public class GameLogicController implements LogicController {
         return buildable;
     }
 
+    /**
+     * Überprüft, ob sich Koordinaten auf dem Spielfeld befinden
+     *
+     * @param xCoordinate Die zu überprüfende x-Koordinate
+     * @param yCoordinate Die zu überprüfende y-Koordinate
+     * @param gamestate Der Spielzustand
+     * @return true, wenn die Koordinaten auf dem Spielfeld sind, ansonsten false
+     */
     private boolean coordinatesOnTheMap(int xCoordinate, int yCoordinate, Gamestate gamestate) {
 
         boolean onTheMap;
@@ -552,10 +556,23 @@ public class GameLogicController implements LogicController {
         return onTheMap;
     }
 
+    /**
+     * Überprüft, ob ein Spieler zu einer Spielernummer existiert
+     * @param playerNumber
+     * @param gamestate
+     * @return
+     */
     private boolean playerExists(int playerNumber, Gamestate gamestate) {
         return playerNumber >= 0 | gamestate.getPlayers().size() < playerNumber;
     }
 
+    /**
+     * Überprüft, ob sich auf einem Feld des Spielwelt ein Turm befindet
+     *
+     * @param xCoordinate
+     * @param yCoordinate
+     * @return
+     */
     public boolean hasCellTower(int xCoordinate, int yCoordinate) {
         Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
 
@@ -583,11 +600,12 @@ public class GameLogicController implements LogicController {
 
         if (tower == null) {
             displayErrorMessage("Hier gibt es keinen Turm zum Verkaufen!", playerNumber);
-        } else if (tower.getOwner().getPlayerNumber() != playerNumber) {
+        } else if (tower.getPlayerNumber() != playerNumber) {
             displayErrorMessage("Du darfst diesen Turm nicht verkaufen!", playerNumber);
         } else {
-            tower.getOwner().addToResources(tower.getSellPrice());
-            tower.getOwner().notifyObserver();
+            Player player = gamestate.getPlayers().get(playerNumber);
+            player.addToResources(tower.getSellPrice());
+            player.notifyObserver();
             removeTower(tower);
             if (server) {
                 gameServer.sellTower(xCoordinate, yCoordinate, playerNumber);
@@ -601,12 +619,26 @@ public class GameLogicController implements LogicController {
      * @param tower Der zu entfernende Turm
      */
     void removeTower(Tower tower) {
-        tower.setRemoved(true);
-        tower.getOwner().removeTower(tower);
-        tower.getPosition().setTower(null);
+        int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
+        int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
+        getMapCellByXandYCoordinates(xCoordinate, yCoordinate).setTower(null);
         gamestate.removeTower(tower);
         tower.setRemoved(true);
         tower.notifyObserver();
+    }
+
+    /**
+     * Entfernt alle Türme aus dem Spiel
+     */
+    void removeAllTowers() {
+        for (Tower tower : gamestate.getTowers()) {
+            int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
+            int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
+            getMapCellByXandYCoordinates(xCoordinate, yCoordinate).setTower(null);
+            tower.setRemoved(true);
+            tower.notifyObserver();
+        }
+        gamestate.getTowers().clear();
     }
 
 
@@ -629,13 +661,13 @@ public class GameLogicController implements LogicController {
         Player owningPlayer = gamestate.getPlayerByNumber(playerNumber);
         Tower tower = mapCell.getTower();
 
-        if (owningPlayer != tower.getOwner()) {
+        if (tower.getPlayerNumber() != playerNumber) {
             displayErrorMessage("Du darfst nur eigene Türme aufrüsten!", playerNumber);
         } else if (owningPlayer.getResources() < tower.getUpgradePrice()) {
             displayErrorMessage("Du hast nicht genug Geld, um diesen Turm aufzurüsten!", playerNumber);
         } else if (tower.getUpgradeLevel() < tower.getMaxUpgradeLevel()){
             owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
-            TowerUpgrader.upgradeTower(tower);
+            upgradeTower(tower);
             owningPlayer.notifyObserver();
             tower.notifyObserver();
             if (server) {
@@ -649,7 +681,7 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Schickt einen Gegner zum gegnerischen Spieler
+     * Schickt einen Gegner zu einem gegnerischen Spieler
      *
      * @param enemyType            Der Typ des zu schickenden Gegners
      * @param playerToSendToNumber Die Nummer der Spielerin, an die der Gegner geschickt werden soll
@@ -679,6 +711,8 @@ public class GameLogicController implements LogicController {
                 if (server) {
                     gameServer.sendEnemy(enemyType, playerToSendToNumber, sendingPlayerNumber);
                 }
+            } else {
+                displayErrorMessage("Dies ist die letzte Runde!", sendingPlayerNumber);
             }
         } else {
             displayErrorMessage("Nicht genug Geld vorhanden, um diesen Gegner zu senden!", sendingPlayerNumber);
@@ -703,32 +737,66 @@ public class GameLogicController implements LogicController {
         this.gamestate = gamestate;
     }
 
+    /**
+     * Zeigt eine Fehlermeldung für einen Spieler an. Sendet im Multiplayer-Medus die Fehlernachricht an den betreffenden
+     * Spieler
+     *
+     * @param errorMessage Die Fehlermeldung
+     * @param playerNumber Die Nummer des Spielers, bei dem der Fehler aufgetreten ist
+     */
     @Override
     public void displayErrorMessage(String errorMessage, int playerNumber) {
         if (playerNumber == localPlayerNumber) {
             gameScreen.displayErrorMessage(errorMessage);
         } else {
-            System.out.println(playerNumber);
-            System.out.println(localPlayerNumber);
             gameServer.sendErrorMessage(errorMessage, playerNumber);
         }
     }
 
+    /**
+     * Gibt den Spielbildschirm zurück
+     * @return Der Spielbildschirm
+     */
     public GameView getGameScreen() {
         return gameScreen;
     }
 
+    /**
+     * Speichert das Spiel
+     *
+     * @param saveGameName Der Name des Spielstandes
+     */
     @Override
     public void saveGame(String saveGameName) {
         Gamestate newGameState = new Gamestate(gamestate);
         gameStateDao.create(newGameState);
-        SaveState saveState = new SaveState(saveGameName, new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
+        SaveState saveState = new SaveState(saveGameName, new Date(), multiplayer, mainController.getCurrentProfile(), newGameState, localPlayerNumber, mapPath);
         saveStateDao.create(saveState);
     }
 
+    /**
+     * Lädt ein Spiel
+     * @param id
+     */
     @Override
     public void loadGame(int id) {
 
+    }
+
+    /**
+     * Rüstet einen Turm gemäß der in ihm festgelegten Upgrade-Wert auf.
+     * @param tower Der aufzurüstende Turm
+     */
+    void upgradeTower(Tower tower) {
+        tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
+        tower.setBaseAttackDamage(tower.getBaseAttackDamage() + tower.getAttackDamageUpgradeBonus()); // tower.getAttackDamageUpgradeBonus()
+        tower.setBaseAttackSpeed(tower.getBaseAttackSpeed() * tower.getAttackSpeedUpgradeMultiplier());
+        tower.setAttackRange(tower.getAttackRange() + tower.getAttackRangeUpgradeBonus());
+        tower.setAuraRange(tower.getAuraRange() + tower.getAuraRangeUpgradeBonus());
+        tower.setUpgradePrice(tower.getUpgradePrice() * 2);
+        tower.setSellPrice(tower.getUpgradePrice() * 2);
+        tower.notifyObserver();
+        System.out.println("Upgraded!");
     }
 
     /**
@@ -747,11 +815,21 @@ public class GameLogicController implements LogicController {
         mainController.setEndScreen(gamestate);
     }
 
+    /**
+     * Gibt den lokalen Spieler zurück
+     *
+     * @return Der lokale Spieler
+     */
     @Override
     public Player getLocalPlayer() {
         return gamestate.getPlayers().get(localPlayerNumber);
     }
 
+    /**
+     * Gibt die Nummer des lokalen Spielers zurück
+     *
+     * @return
+     */
     public int getLocalPlayerNumber() {
         return localPlayerNumber;
     }
@@ -786,5 +864,9 @@ public class GameLogicController implements LogicController {
     @Override
     public boolean isMultiplayer() {
         return multiplayer;
+    }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
     }
 }

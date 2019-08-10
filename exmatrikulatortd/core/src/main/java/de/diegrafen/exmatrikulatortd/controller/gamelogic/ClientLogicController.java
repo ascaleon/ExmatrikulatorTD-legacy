@@ -1,5 +1,11 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
+import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.tower.Tower;
+
+import java.util.List;
+
 /**
  * Interface für einen Spiellogik-Controller, über den ein Spielclient Befehle vom Gameserver
  * lokal ausführen kann
@@ -48,4 +54,6 @@ public interface ClientLogicController extends LogicController {
      * @param playerNumber Die Nummer der Spielerin, der der Turm gehört
      */
     void upgradeTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber);
+
+    void setGamestateFromServer(List<Tower> towers, List<Player> players);
 }

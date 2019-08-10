@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
@@ -15,6 +14,7 @@ import de.diegrafen.exmatrikulatortd.util.DistanceComparator;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 import static java.awt.geom.Point2D.distance;
@@ -30,6 +30,9 @@ class GameLogicUnit {
     private final LogicController logicController;
 
     private final Gamestate gamestate;
+
+    private List<Tower> attackingTowers = new LinkedList<>();
+
 
     GameLogicUnit(LogicController logicController) {
         this.logicController = logicController;
@@ -96,14 +99,14 @@ class GameLogicUnit {
                 List<Buff> buffs = aura.getBuffs();
 
                 for (Debuff debuff : debuffs) {
-                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, aura.getRange());
+                    List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, calculateRangeFromTilesize(tower.getAuraRange()));
                     for (Enemy enemyInRange : enemiesInRange) {
                         addDebuffToEnemy(enemyInRange, debuff);
                     }
                 }
 
                 for (Buff buff : buffs) {
-                    List<Tower> towersInRange = getTowersInRange(gamestate, tower.getxPosition(), tower.getyPosition(), aura.getRange());
+                    List<Tower> towersInRange = getTowersInRange(gamestate, tower.getxPosition(), tower.getyPosition(), calculateRangeFromTilesize(aura.getRange()));
                     for (Tower towerInRange : towersInRange) {
                         addBuffToTower(towerInRange, buff);
                     }
@@ -123,13 +126,14 @@ class GameLogicUnit {
                 enemy.incrementWayPointIndex();
                 setTargetToNextWayPoint(enemy);
             }
-            if (enemy.getAttackedPlayer() == null) {
+            Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
+            if (attackedPlayer == null) {
                 System.out.println("Kein Spieler vorhanden!");
             }
-            if (enemy.getWayPointIndex() >= enemy.getAttackedPlayer().getWayPoints().size()) {
+            if (enemy.getWayPointIndex() >= attackedPlayer.getWayPoints().size()) {
                 applyDamageToPlayer(enemy);
                 if (enemy.isRespawning()) {
-                    addEnemy(new Enemy(enemy), enemy.getAttackedPlayer().getPlayerNumber());
+                    addEnemy(new Enemy(enemy), attackedPlayer.getPlayerNumber());
                 }
                 break;
             }
@@ -156,14 +160,11 @@ class GameLogicUnit {
 
             if (tower.getCooldown() > 0) {
                 tower.setCooldown(tower.getCooldown() - deltaTime);
-            } else {
-
-                if (tower.getCurrentTarget() != null) {
+            } else if (tower.getCurrentTarget() != null) {
                     tower.setAttacking(true);
                     tower.notifyObserver();
-                    applyAttackDelay(tower, deltaTime);
-
-                }
+                    attackingTowers.add(tower);
+                    tower.setCooldown(tower.getCurrentAttackSpeed());
             }
         }
     }
@@ -258,18 +259,21 @@ class GameLogicUnit {
         }
     }
 
-    private void applyAttackDelay(Tower tower, float deltaTime) {
-        float attackdelay = tower.getAttackDelayTimer();
-        if (attackdelay <= 0) {
-            letTowerAttack(tower);
-            tower.setAttackDelayTimer(tower.getCurrentAttackDelay());
-            tower.setCooldown(tower.getCurrentAttackSpeed() - tower.getCurrentAttackDelay());
-        } else {
-            tower.setAttackDelayTimer(attackdelay - deltaTime);
+    public void applyAttackDelay(float deltaTime) {
+        List<Tower> towersToRemove = new LinkedList<>();
+        for (Tower tower : attackingTowers) {
+            float attackdelay = tower.getAttackDelayTimer();
+            if (attackdelay <= 0) {
+                towersToRemove.add(tower);
+                letTowerAttack(tower);
+                tower.setAttackDelayTimer(tower.getCurrentAttackDelay());
+            } else {
+                tower.setAttackDelayTimer(attackdelay - deltaTime);
+            }
         }
+        towersToRemove.forEach(tower -> attackingTowers.remove(tower));
+
     }
-
-
 
     private void moveInTargetDirection(Enemy enemy, float deltaTime) {
         float xPosition = enemy.getxPosition();
@@ -283,11 +287,10 @@ class GameLogicUnit {
     }
 
     private void addEnemy(Enemy enemy, int playerNumber) {
-        Player attackedPlayer = gamestate.getPlayerByNumber(playerNumber);
-        attackedPlayer.addEnemy(enemy);
-        enemy.setAttackedPlayer(attackedPlayer);
+        enemy.setPlayerNumber(playerNumber);
         gamestate.addEnemy(enemy);
-        enemy.addDebuff(generateDifficultyDebuff(enemy.getAttackedPlayer().getDifficulty()));
+        Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
+        enemy.addDebuff(generateDifficultyDebuff(attackedPlayer.getDifficulty()));
         enemy.addDebuff(generateRoundNumberDebuff());
         setEnemyToStartPosition(enemy);
         logicController.getGameScreen().addEnemy(enemy);
@@ -295,17 +298,12 @@ class GameLogicUnit {
     }
 
     private void applyDamageToPlayer(Enemy enemy) {
-        Player attackedPlayer = enemy.getAttackedPlayer();
+        Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
         attackedPlayer.setCurrentLives(attackedPlayer.getCurrentLives() - enemy.getAmountOfDamageToPlayer());
         removeEnemy(enemy);
     }
 
     private void removeEnemy(Enemy enemy) {
-        Player attackedPlayer = enemy.getAttackedPlayer();
-        if (attackedPlayer != null) {
-            enemy.getAttackedPlayer().removeEnemy(enemy);
-            enemy.setAttackedPlayer(null);
-        }
         enemy.clearDebuffs();
         gamestate.removeEnemy(enemy);
         enemy.setRemoved(true);
@@ -321,8 +319,9 @@ class GameLogicUnit {
     }
 
     private void setTargetToNextWayPoint(Enemy enemy) {
-        if (enemy.getWayPointIndex() < enemy.getAttackedPlayer().getWayPoints().size()) {
-            Coordinates nextWayPoint = enemy.getAttackedPlayer().getWayPoints().get(enemy.getWayPointIndex());
+        Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
+        if (enemy.getWayPointIndex() < attackedPlayer.getWayPoints().size()) {
+            Coordinates nextWayPoint = attackedPlayer.getWayPoints().get(enemy.getWayPointIndex());
             enemy.setTargetxPosition(nextWayPoint.getXCoordinate() * gamestate.getTileWidth());
             enemy.setTargetyPosition(nextWayPoint.getYCoordinate() * gamestate.getTileHeight());
         }
@@ -361,8 +360,8 @@ class GameLogicUnit {
     private List<Enemy> getEnemiesInTowerRange(Tower tower, float range) {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
-        for (Enemy enemy : tower.getOwner().getAttackingEnemies()) {
-            if (isEnemyInRangeOfTower(enemy, tower, range)) {
+        for (Enemy enemy : gamestate.getEnemies()) {
+            if (enemy.getPlayerNumber() == tower.getPlayerNumber() & isEnemyInRangeOfTower(enemy, tower, range)) {
                 enemiesInRange.add(enemy);
             }
         }
@@ -409,7 +408,7 @@ class GameLogicUnit {
         tower.addBuff(new Buff(buff));
     }
 
-    private Debuff generateDifficultyDebuff(Difficulty difficulty) {
+    private Debuff generateDifficultyDebuff(int difficulty) {
 
         Debuff difficultyDebuff = new Debuff();
 
@@ -450,28 +449,23 @@ class GameLogicUnit {
      * @param enemy Der Gegner, der an die Startposition (zurück)gesetzt werden soll
      */
     private void setEnemyToStartPosition(Enemy enemy) {
-        Coordinates startCoordinates = enemy.getAttackedPlayer().getWayPoints().get(0);
+        Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
+        Coordinates startCoordinates = attackedPlayer.getWayPoints().get(0);
         enemy.setxPosition(startCoordinates.getXCoordinate() * gamestate.getTileWidth());
         enemy.setyPosition(startCoordinates.getYCoordinate() * gamestate.getTileHeight());
         setTargetToNextWayPoint(enemy);
     }
-    private void calculateDamageImpact(Enemy enemy, Tower tower) {
+    private void calculateDamageImpact(Enemy enemy) {
         if (enemy.getCurrentHitPoints() <= 0) {
-            Player attackedPlayer = enemy.getAttackedPlayer();
+            Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
             if (attackedPlayer != null) {
                 attackedPlayer.addToResources(enemy.getBounty());
                 attackedPlayer.addToScore(enemy.getPointsGranted());
+                attackedPlayer.incrementBodyTracker();
                 attackedPlayer.notifyObserver();
             }
             if (!enemy.isRemoved()) {
                 removeEnemy(enemy);
-            }
-            // TODO: In eigene Methode verschieben
-            if (tower.getCurrentTarget() != null) {
-                if (tower.getCurrentTarget().equals(enemy)) {
-                    tower.setCurrentTarget(null);
-                }
-
             }
         }
     }
@@ -499,7 +493,7 @@ class GameLogicUnit {
             for (Debuff debuff : projectile.getApplyingDebuffs()) {
                 addDebuffToEnemy(enemyHit, debuff);
             }
-            calculateDamageImpact(enemyHit, projectile.getTowerThatShot());
+            calculateDamageImpact(enemyHit);
         }
         removeProjectile(projectile);
     }
@@ -507,9 +501,12 @@ class GameLogicUnit {
     private void applyDamageToTarget(Tower tower){
         List<Enemy> enemiesHit = new LinkedList<>();
         Enemy mainTarget = tower.getCurrentTarget();
+        if (mainTarget != null) {
+            mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints()
+                    - tower.getCurrentAttackDamage() * calculateDamageMultiplier(mainTarget, tower.getAttackType()));
+            enemiesHit.add(mainTarget);
+        }
 
-        mainTarget.setCurrentHitPoints(mainTarget.getCurrentHitPoints() - tower.getCurrentAttackDamage() * calculateDamageMultiplier(mainTarget, tower.getAttackType()));
-        enemiesHit.add(mainTarget);
 
         if (tower.getSplashRadius() > 0) {
             List<Enemy> enemiesInSplashRadius = getEnemiesInSplashRadius(tower);
@@ -524,7 +521,7 @@ class GameLogicUnit {
             for (Debuff debuff : tower.getAttackDebuffs()) {
                 addDebuffToEnemy(enemyHit, debuff);
             }
-            calculateDamageImpact(enemyHit, tower);
+            calculateDamageImpact(enemyHit);
         }
     }
 
@@ -621,7 +618,7 @@ class GameLogicUnit {
 
         Enemy target = tower.getCurrentTarget();
 
-        return target != null && !target.isRemoved() & isEnemyInRangeOfTower(target, tower, tower.getAttackRange());
+        return target != null && !target.isRemoved() & isEnemyInRangeOfTower(target, tower, calculateRangeFromTilesize(tower.getAttackRange()));
     }
 
     /**
@@ -633,7 +630,7 @@ class GameLogicUnit {
     private List<Enemy> getEnemiesInSplashRadius(Projectile projectile) {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
-        for (Enemy enemy : projectile.getTowerThatShot().getOwner().getAttackingEnemies()) {
+        for (Enemy enemy : gamestate.getEnemies()) {
             if (isEnemyInSplashRadius(enemy, projectile)) {
                 enemiesInRange.add(enemy);
             }
@@ -645,7 +642,7 @@ class GameLogicUnit {
     private List<Enemy> getEnemiesInSplashRadius(Tower tower) {
         List<Enemy> enemiesInRange = new LinkedList<>();
 
-        for (Enemy enemy : tower.getOwner().getAttackingEnemies()) {
+        for (Enemy enemy : gamestate.getEnemies()) {
             if (isEnemyInSplashRadius(enemy, tower)) {
                 enemiesInRange.add(enemy);
             }
@@ -655,20 +652,37 @@ class GameLogicUnit {
     }
 
     /**
+     * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Turms befindet.
+     *
+     * @param enemy      Der Gegner, der geprüft werden soll.
+     * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
+     */
+    private boolean isEnemyInSplashRadius(Enemy enemy, Tower tower) {
+        return isEnemyInSplashRadius(enemy, tower.getxPosition(), tower.getyPosition(), tower.getSplashRadius(), tower.getPlayerNumber());
+    }
+
+    /**
      * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Projektils befindet.
      *
      * @param enemy      Der Gegner, der geprüft werden soll.
-     * @param projectile Das Projektil, von dem der Flächenschaden ausgeht.
      * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
      */
     private boolean isEnemyInSplashRadius(Enemy enemy, Projectile projectile) {
-        double distance = distance(projectile.getxPosition(), projectile.getyPosition(), enemy.getxPosition(), enemy.getyPosition());
-        return distance <= projectile.getSplashRadius();
+        return isEnemyInSplashRadius(enemy, projectile.getxPosition(), projectile.getyPosition(), projectile.getSplashRadius(), projectile.getPlayerNumber());
     }
 
-    private boolean isEnemyInSplashRadius(Enemy enemy, Tower tower) {
-        double distance = distance(tower.getTargetxPosition(), tower.getTargetyPosition(), enemy.getxPosition(), enemy.getyPosition());
-        return distance <= tower.getSplashRadius();
+    /**
+     * Überprüft, ob sich ein Gegner im Flächenschaden-Radius eines Projektils befindet.
+     *
+     * @param enemy      Der Gegner, der geprüft werden soll.
+     * @return {@code true}, wenn sich der Gegner im Radius befindet. Ansonsten {@code false}
+     */
+    private boolean isEnemyInSplashRadius(Enemy enemy, float xPosition, float yPosition, float range, int playerNumber) {
+        if (enemy.getPlayerNumber() != playerNumber) {
+            return false;
+        }
+        double distance = distance(xPosition, yPosition, enemy.getxPosition(), enemy.getyPosition());
+        return distance <= calculateRangeFromTilesize(range);
     }
 
     private void findTargetforTower(Tower tower, float deltaTime) {
@@ -684,9 +698,24 @@ class GameLogicUnit {
     }
 
     private Enemy findClosestEnemy(Tower tower) {
-        List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, tower.getAttackRange());
+        List<Enemy> enemiesInRange = getEnemiesInTowerRange(tower, calculateRangeFromTilesize(tower.getAttackRange()));
         enemiesInRange.sort(new DistanceComparator(tower.getxPosition(), tower.getyPosition()));
         return !enemiesInRange.isEmpty() ? enemiesInRange.get(0) : null;
+    }
+
+    /**
+     * Wandelt eine relativ zur Größe der Kartenfelder gegebene Reicheweite in absolute Werte um.
+     *
+     * Dabei wird der Durchschnitt von Höhe und Breite als Größe der Kartenfelder herangezogen, um (theoretisch) auch
+     * rechteckige Felder berücksichtigen zu können.
+     *
+     * @param range Die in Kartenfeldern ausgedrückte Reichweite
+     * @return Die in absoluten Werten ausgedrückte Reichweite
+     */
+    private float calculateRangeFromTilesize(float range) {
+        range *= ((gamestate.getTileHeight() + gamestate.getTileWidth()) / 2.0f);
+        System.out.println(range);
+        return range;
     }
 
 }

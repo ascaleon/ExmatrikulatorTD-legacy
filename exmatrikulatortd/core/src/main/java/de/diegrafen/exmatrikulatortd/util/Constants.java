@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
- * Definiert globale Konstanten, die von anderen Modulen genutzt werden können
+ * Definiert globale Konstanten, die von anderen Komponenten genutzt werden können
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 02.07.2019 22:09
@@ -12,8 +12,6 @@ import java.text.SimpleDateFormat;
 public final class Constants {
 
     public static final int MIN_NUMBER_OF_UPDATES = 30;
-
-    public static final int GAMESTATE_REFRESHS_PER_SECONDS = 15;
 
     public static final int NUMBER_OF_TOWERS = 5;
 
@@ -46,7 +44,8 @@ public final class Constants {
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
      */
-    public static final float SEARCH_TARGET_INTERVAL = 0.25f;
+    //public static final float SEARCH_TARGET_INTERVAL = 0.1f;
+    public static final float SEARCH_TARGET_INTERVAL = 0;
 
     public static final int TILE_SIZE = 64;
 
@@ -91,7 +90,7 @@ public final class Constants {
     /**
      * Rüstungstyp "mittlere Rüstung"
      */
-    public static final int MEDIUM = 2;
+    public static final int REGULAR = 2;
 
     /**
      * Rüstungstyp "schwere Rüstung"
@@ -111,4 +110,31 @@ public final class Constants {
             {1.50f, 2.00f, 0.75f, 0.70f, 0},
             {1.50f, 0.50f, 1.00f, 2.00f, 0},
             {1.00f, 1.25f, 0.75f, 1.50f, 0}};
+
+
+    public final static int EASY = 0;
+
+    public final static String EASY_STRING = "Leicht";
+
+    public final static int MEDIUM = 1;
+
+    public final static String MEDIUM_STRING = "Mittel";
+
+    public final static int HARD = 2;
+
+    public final static String HARD_STRING = "Schwer";
+
+    public final static int TESTMODE = 3;
+
+    public final static String TESTMODE_STRING = "Tutormodus";
+
+    public static final int STANDARD_SINGLE_PLAYER_GAME = 0;
+
+    public static final int ENDLESS_SINGLE_PLAYER_GAME = 1;
+
+    public static final int MULTIPLAYER_DUEL = 2;
+
+    public static final int MULTIPLAYER_STANDARD_GAME = 3;
+
+    public static final int MULTIPLAYER_ENDLESS_GAME = 4;
 }
