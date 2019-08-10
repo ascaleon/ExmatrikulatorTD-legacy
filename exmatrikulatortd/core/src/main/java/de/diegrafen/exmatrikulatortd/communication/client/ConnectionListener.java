@@ -24,14 +24,14 @@ public class ConnectionListener implements Listener {
     public void received(Connection connection, Object object) {
 
         if (object instanceof AllPlayersReadyResponse) {
-            handleAllPlayersReadyReponse();
+            handleAllPlayersReadyResponse((AllPlayersReadyResponse) object);
         } else if (object instanceof GetGameInfoResponse) {
             handleGetGameInfoReponse((GetGameInfoResponse) object);
         }
     }
 
-    private void handleAllPlayersReadyReponse() {
-        Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(2, gameClient.getLocalPlayerNumber(), MULTIPLAYER_DUEL, gameClient.getMapPath()));
+    private void handleAllPlayersReadyResponse(AllPlayersReadyResponse allPlayersReadyResponse) {
+        Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(allPlayersReadyResponse.getNumberOfPlayers(), allPlayersReadyResponse.getAllocatedPlayerNumber(), allPlayersReadyResponse.getDifficulty(), allPlayersReadyResponse.getGamemode(), allPlayersReadyResponse.getMapPath()));
     }
 
     private void handleGetGameInfoReponse(GetGameInfoResponse getGameInfoResponse) {

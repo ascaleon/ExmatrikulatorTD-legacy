@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.controller;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
@@ -51,6 +52,8 @@ public class MainController {
      * Das aktuelle Profil
      */
     private Profile currentProfile;
+
+    private boolean hasCurrentProfile;
 
     /**
      * Splashscreen
@@ -146,7 +149,7 @@ public class MainController {
     }
 
     public void setCurrentProfile(long profileId) {
-        game.getPreferences().putLong("profileID", currentProfile.getId());
+        game.getPreferences().putLong("profileID", profileId);
         game.getPreferences().flush();
         this.currentProfile = profileDao.retrieve(profileId);
     }
@@ -157,7 +160,7 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public void createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    public void createNewProfile(String profileName, int preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
         currentProfile = profile;
@@ -170,7 +173,7 @@ public class MainController {
      * @param newDifficulty Der neue Schwierigkeitsgrad
      * @param newProfilePicturePath Das neue Profilbild
      */
-    public void updateProfile(final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
+    public void updateProfile(final String newProfileName, final int newDifficulty, final String newProfilePicturePath) {
         currentProfile.setProfileName(newProfileName);
         currentProfile.setPreferredDifficulty(newDifficulty);
         currentProfile.setProfilePicturePath(newProfilePicturePath);
@@ -240,7 +243,7 @@ public class MainController {
      * Startet den GameServer
      */
     public void startServer() {
-        gameServer.startServer(2);
+        gameServer.startServer(2, currentProfile.getPreferredDifficulty());
     }
 
     /**
@@ -294,7 +297,7 @@ public class MainController {
     /**
      * Erzeugt ein neues Multiplayer-Spiel als Client
      */
-    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int difficulty, int gamemode, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
     }
@@ -433,6 +436,27 @@ public class MainController {
             }
 
             menuScreen.addProfileButton(profile.getProfileName(), profile.getId(), isCurrentProfile);
+        }
+    }
+
+    public boolean hasCurrentProfile() {
+
+        return currentProfile != null;
+    }
+
+    public String getCurrentProfileName() {
+        return currentProfile.getProfileName();
+    }
+
+    public int getCurrentProfilePreferredDifficulty() {
+        return currentProfile.getPreferredDifficulty();
+    }
+
+    public void updateSaveStateButtons(MenuScreen menuScreen) {
+
+        for (SaveState saveState : saveStateDao.findAllSaveStates()) {
+            menuScreen.addSaveStateButton("Player name:" + saveState.getProfile().getProfileName() + "\n" + saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString(),
+                    saveState.getId());
         }
     }
 }

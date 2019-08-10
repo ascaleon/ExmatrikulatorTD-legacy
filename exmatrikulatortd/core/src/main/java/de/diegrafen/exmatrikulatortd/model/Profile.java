@@ -49,15 +49,14 @@ public class Profile extends BaseModel {
     /**
      * Der Standardschwierigkeitsgrad, der für das Profil gewählt wurde
      */
-    @Enumerated(EnumType.ORDINAL)
-    private Difficulty preferredDifficulty;
+    private int preferredDifficulty;
 
     public Profile() {
         this.highscores = new ArrayList<>();
         this.saveStates = new ArrayList<>();
     }
 
-    public Profile(String profileName, Difficulty preferredDifficulty, String profilePicturePath) {
+    public Profile(String profileName, int preferredDifficulty, String profilePicturePath) {
         this();
         this.profileName = profileName;
         this.preferredDifficulty = preferredDifficulty;
@@ -100,11 +99,11 @@ public class Profile extends BaseModel {
         this.saveStates = saveStates;
     }
 
-    public Difficulty getPreferredDifficulty() {
+    public int getPreferredDifficulty() {
         return preferredDifficulty;
     }
 
-    public void setPreferredDifficulty(Difficulty preferredDifficulty) {
+    public void setPreferredDifficulty(int preferredDifficulty) {
         this.preferredDifficulty = preferredDifficulty;
     }
 }

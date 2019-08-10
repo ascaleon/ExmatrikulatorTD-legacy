@@ -1,6 +1,5 @@
 package de.diegrafen.exmatrikulatortd.util;
 
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;

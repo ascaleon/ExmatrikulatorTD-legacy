@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
@@ -400,7 +399,7 @@ class GameLogicUnit {
         tower.addBuff(new Buff(buff));
     }
 
-    private Debuff generateDifficultyDebuff(Difficulty difficulty) {
+    private Debuff generateDifficultyDebuff(int difficulty) {
 
         Debuff difficultyDebuff = new Debuff();
 

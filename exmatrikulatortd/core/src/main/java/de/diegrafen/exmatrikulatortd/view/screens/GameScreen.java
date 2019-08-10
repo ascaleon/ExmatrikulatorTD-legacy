@@ -965,7 +965,7 @@ public class GameScreen extends BaseScreen implements GameView {
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(true);
+                    logicController.exitGame(false);
                 }
             });
 
@@ -988,25 +988,22 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Der Bildschirm der am Ende vom Spiel dargestellt wird.
      * Gewonnen/Verloren + Punkte + Highscore des Users
+     *
+     * @param victorious Gibt an, ob der lokale Spieler siegreich war
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
         Group endScreenGroup = new Group();
 
-        //Label resultLabel;
         Image resultImage;
         if (victorious) {
-            //resultLabel =  new Label("Gewonnen!", skin);
             resultImage = new Image(new Texture(Gdx.files.internal("win.png")));
         } else {
-            //resultLabel =  new Label("Verloren!", skin);
             resultImage = new Image(new Texture(Gdx.files.internal("loose.png")));
-            //resultLabel.setFontScale(3);
         }
 
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
         Label highscoreLabel = new Label("Highscore: " + highscore, skin);
-        // TODO: Zum Assetmanager hinzufügen
 
         Table buttonTable = new Table();
 

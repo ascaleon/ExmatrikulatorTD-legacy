@@ -4,7 +4,6 @@ import com.esotericsoftware.kryo.Kryo;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.*;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
 import de.diegrafen.exmatrikulatortd.model.Coordinates;
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Debuff;
@@ -51,7 +50,6 @@ public abstract class Connector implements ConnectorInterface {
         kryo.register(Coordinates.class);
         kryo.register(ArrayList.class);
         kryo.register(Player.class);
-        kryo.register(Difficulty.class);
         kryo.register(Tower.class);
         kryo.register(AttackStyle.class);
         kryo.register(Projectile.class);
@@ -60,7 +58,6 @@ public abstract class Connector implements ConnectorInterface {
         kryo.register(Enemy.class);
         kryo.register(Buff.class);
         kryo.register(Debuff.class);
-
 
         kryo.register(java.util.LinkedList.class);
         kryo.register(java.util.Date.class);

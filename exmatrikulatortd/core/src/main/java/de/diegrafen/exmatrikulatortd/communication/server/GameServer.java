@@ -1,6 +1,7 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
 import com.badlogic.gdx.Gdx;
+import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.ServerDiscoveryHandler;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.*;
@@ -70,6 +71,8 @@ public class GameServer extends Connector implements ServerInterface {
 
     private final HashMap<Integer, Integer> connectionAndPlayerNumbers = new HashMap<>();
 
+    private int difficulty;
+
     /**
      * Der zum Starten des Spiels verwendete Kartenpfad
      */
@@ -93,11 +96,12 @@ public class GameServer extends Connector implements ServerInterface {
      * Startet den GameServer
      * @param numberOfPlayers Die maximale Anzahl an Spielerinnen, die sich mit dem Server verbinden können
      */
-    public void startServer(int numberOfPlayers) {
+    public void startServer(int numberOfPlayers, int difficulty) {
         try {
             server.bind(tcpPort, udpPort);
             System.out.println("Server started!");
             this.numberOfPlayers = numberOfPlayers;
+            this.difficulty = difficulty;
             playersReady = new boolean[numberOfPlayers];
             playersfinishedLoading = new boolean[numberOfPlayers];
             slotsFilled = new boolean[numberOfPlayers];
@@ -108,7 +112,7 @@ public class GameServer extends Connector implements ServerInterface {
 
                     if (openSlotsLeft() > 0) {
                         lookingForPlayers = true;
-                        String newData = mapName + "\n" + numberOfPlayers;
+                        String newData = mapName + "\n" + numberOfPlayers + "\n" + difficulty;
 
                         ByteBuffer buf = ByteBuffer.allocate(48);
                         buf.clear();
@@ -227,7 +231,11 @@ public class GameServer extends Connector implements ServerInterface {
         System.out.println(areAllPlayersReady());
 
         if (areAllPlayersReady()) {
-            server.sendToAllTCP(new AllPlayersReadyResponse());
+            for (Connection connection : server.getConnections()) {
+                int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
+                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath));
+            }
+
             Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
         }
     }

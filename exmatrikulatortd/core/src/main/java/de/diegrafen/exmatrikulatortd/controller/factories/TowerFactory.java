@@ -27,7 +27,7 @@ public final class TowerFactory {
 
     private static final String EXPLOSIVE_TOWER_DESCRIPTION = "Explosivturm\n" + "Verursacht Flaechenschaden" + "\n" + "Kosten: 500";
 
-    private static final String AURA_TOWER_DESCRIPTION = "Auraturm" + "Beschleunigt eigene Türme in der Naehe" + "\n" + "Kosten: 1000";
+    private static final String AURA_TOWER_DESCRIPTION = "Auraturm\n" + "Beschleunigt eigene Türme in der Naehe" + "\n" + "Kosten: 1000";
 
     /**
      * Versteckter Konstruktor
@@ -141,7 +141,7 @@ public final class TowerFactory {
         LinkedList<Debuff> debuffs = new LinkedList<>();
         LinkedList<Buff> buffs = new LinkedList<>();
 
-        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 4f, 1, false);
+        Buff hasteBuff = new Buff("Haste-Buff", AURA_REFRESH_RATE, 1.3f, 1, false);
         buffs.add(hasteBuff);
         Aura hasteAura = new Aura(200, debuffs, buffs);
 

@@ -74,13 +74,6 @@ public class Player extends BaseModel implements Observable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Wave> waves;
 
-//    /**
-//     * Die Angriffswellen, die mit dem Spieler assoziiert sind
-//     */
-//    @OneToMany(mappedBy = "attackedPlayer", cascade = CascadeType.ALL)
-//    @LazyCollection(LazyCollectionOption.FALSE)
-//    private List<Enemy> attackingEnemies;
-
     /**
      * Die Wegpunkte, die Gegner auf der Karte auf dem Weg zum Endpunkt zurücklegen
      */
@@ -99,8 +92,7 @@ public class Player extends BaseModel implements Observable {
     /**
      * Der Schwierigkeitsgrad des Spieles
      */
-    @Enumerated(EnumType.ORDINAL)
-    private Difficulty difficulty;
+    private int difficulty;
 
     private boolean victorious;
 
@@ -243,11 +235,11 @@ public class Player extends BaseModel implements Observable {
         observers.forEach(Observer::update);
     }
 
-    public Difficulty getDifficulty() {
+    public int getDifficulty() {
         return difficulty;
     }
 
-    public void setDifficulty(Difficulty difficulty) {
+    public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }
 

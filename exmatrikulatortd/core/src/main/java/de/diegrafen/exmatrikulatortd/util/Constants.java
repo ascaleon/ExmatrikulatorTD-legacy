@@ -90,7 +90,7 @@ public final class Constants {
     /**
      * Rüstungstyp "mittlere Rüstung"
      */
-    public static final int MEDIUM = 2;
+    public static final int REGULAR = 2;
 
     /**
      * Rüstungstyp "schwere Rüstung"
@@ -110,4 +110,40 @@ public final class Constants {
             {1.50f, 2.00f, 0.75f, 0.70f, 0},
             {1.50f, 0.50f, 1.00f, 2.00f, 0},
             {1.00f, 1.25f, 0.75f, 1.50f, 0}};
+
+
+    public final static int EASY = 0;
+
+    public final static String EASY_STRING = "Leicht";
+
+    public final static int MEDIUM = 1;
+
+    public final static String MEDIUM_STRING = "Mittel";
+
+    public final static int HARD = 2;
+
+    public final static String HARD_STRING = "Schwer";
+
+    public final static int TESTMODE = 3;
+
+    public final static String TESTMODE_STRING = "Tutormodus";
+
+
+    public static String getStringForDifficulty(int difficulty) {
+        String difficultyString = "Unbekannter Schwierigkeitsgrad";
+        switch (difficulty) {
+            case EASY:
+                difficultyString = EASY_STRING;
+                break;
+            case MEDIUM:
+                difficultyString = MEDIUM_STRING;
+            case HARD:
+                difficultyString = HARD_STRING;
+            case TESTMODE:
+                difficultyString = TESTMODE_STRING;
+                break;
+        }
+
+        return difficultyString;
+    }
 }

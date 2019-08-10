@@ -45,8 +45,6 @@ public class GameListener implements Listener {
 
         if (object instanceof ErrorResponse) {
             handleErrorResponse((ErrorResponse) object);
-        } else if (object instanceof AllPlayersReadyResponse) {
-            handleAllPlayersReadyResponse();
         } else if (object instanceof StartGameResponse) {
             handleStartGameReponse();
         } else if (object instanceof BuildResponse) {
@@ -64,10 +62,6 @@ public class GameListener implements Listener {
 
     private void handleErrorResponse(ErrorResponse errorResponse) {
         clientLogicController.displayErrorMessage(errorResponse.getErrorMessage(), errorResponse.getPlayerNumber());
-    }
-
-    private void handleAllPlayersReadyResponse() {
-        Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(2, gameClient.getLocalPlayerNumber(), MULTIPLAYER_DUEL, gameClient.getMapPath()));
     }
 
     private void handleStartGameReponse() {
@@ -100,12 +94,11 @@ public class GameListener implements Listener {
 
 
     private void handleGetServerStateResponse(final GetServerStateResponse getServerStateResponse) {
-//        clientLogicController.setGamestateFromServer(getServerStateResponse.getGamestate());
         Gdx.app.postRunnable(() -> clientLogicController.setGamestateFromServer(getServerStateResponse.getTowers()));
     }
 
     /**
-     * @param logicController Der LogicController, an den die empfangene Antwort weitergeleitet wird
+     *
      */
     private void handleUpgradeReponse(final UpgradeResponse upgradeResponse) {
         Gdx.app.postRunnable(() -> clientLogicController.upgradeTowerFromServer(upgradeResponse.getxCoordinate(), upgradeResponse.getyCoordinate(), upgradeResponse.getPlayerNumber()));
