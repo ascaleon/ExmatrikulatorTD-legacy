@@ -625,7 +625,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         initProgressbarStyle();
 
-        if (!logicController.isMultiplayer()) {
+        if (logicController.isMultiplayer()) {
             initMultiplayerUiComponents(localPlayer);
         }
 
