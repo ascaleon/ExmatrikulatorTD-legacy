@@ -34,9 +34,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * @param profile        Das Spieler-Profil
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
-    public ClientGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                                     int gamemode, GameView gameView, String mapPath, GameClient gameClient) {
-        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath);
+    public ClientGameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
+                                     int gamemode, GameView gameView, String mapPath, GameClient gameClient, String[] names) {
+        super(mainController, difficulty, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath, names);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
         gameClient.reportFinishedLoading();

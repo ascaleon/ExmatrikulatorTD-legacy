@@ -233,10 +233,10 @@ public class GameServer extends Connector implements ServerInterface {
         if (areAllPlayersReady()) {
             for (Connection connection : server.getConnections()) {
                 int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
-                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath));
+                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
             }
 
-            Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, 0, MULTIPLAYER_DUEL, mapPath));
+            Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, difficulty, 0, MULTIPLAYER_DUEL, mapPath, playerNames));
         }
     }
 

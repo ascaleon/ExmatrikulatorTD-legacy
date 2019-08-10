@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.communication.client;
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.SendPlayerNameRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.AllPlayersReadyResponse;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.GetGameInfoResponse;
 
@@ -31,16 +32,19 @@ public class ConnectionListener implements Listener {
     }
 
     private void handleAllPlayersReadyResponse(AllPlayersReadyResponse allPlayersReadyResponse) {
-        Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(allPlayersReadyResponse.getNumberOfPlayers(), allPlayersReadyResponse.getAllocatedPlayerNumber(), allPlayersReadyResponse.getDifficulty(), allPlayersReadyResponse.getGamemode(), allPlayersReadyResponse.getMapPath()));
+        Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(allPlayersReadyResponse.getNumberOfPlayers(), allPlayersReadyResponse.getAllocatedPlayerNumber(), allPlayersReadyResponse.getDifficulty(), allPlayersReadyResponse.getGamemode(), allPlayersReadyResponse.getMapPath(), allPlayersReadyResponse.getPlayerNames()));
     }
 
     private void handleGetGameInfoReponse(GetGameInfoResponse getGameInfoResponse) {
-        //if (response.isUpdate()) {
-        // Update-Code kommt hierhin
-        //} else {
-        if (!getGameInfoResponse.isUpdate()) {
+        if (getGameInfoResponse.isUpdate()) {
+            gameClient.setPlayerNames(getGameInfoResponse.getPlayerNames());
             gameClient.setLocalPlayerNumber(getGameInfoResponse.getAllocatedPlayerNumber());
             gameClient.setMapPath(getGameInfoResponse.getMapPath());
+            gameClient.setProfilePicturePaths(getGameInfoResponse.getPlayerProfilePicturePaths());
+        } else {
+            gameClient.setLocalPlayerNumber(getGameInfoResponse.getAllocatedPlayerNumber());
+            gameClient.setMapPath(getGameInfoResponse.getMapPath());
+            gameClient.sendGetGameInfoRequest();
         }
     }
 }

@@ -29,29 +29,29 @@ public final class NewGameFactory {
 
     }
 
-    public static Gamestate createNewGame(int gameMode, int numberOfPlayers, int difficulty) {
+    public static Gamestate createNewGame(int gameMode, int numberOfPlayers, int difficulty, String[] names) {
 
         Gamestate gamestate = null;
 
         if (numberOfPlayers == 1) {
             switch (gameMode) {
                 case STANDARD_SINGLE_PLAYER_GAME:
-                    gamestate = createStandardSinglePlayerGame(difficulty);
+                    gamestate = createStandardSinglePlayerGame(difficulty, names);
                     break;
                 case ENDLESS_SINGLE_PLAYER_GAME:
-                    gamestate = createEndlessSinglePlayerGame(difficulty);
+                    gamestate = createEndlessSinglePlayerGame(difficulty, names);
                     break;
             }
         } else if (numberOfPlayers > 1 & numberOfPlayers <= MAX_PLAYERS) {
             switch (gameMode) {
                 case MULTIPLAYER_DUEL:
-                    gamestate = createMultiPlayerDuell(numberOfPlayers, difficulty);
+                    gamestate = createMultiPlayerDuell(numberOfPlayers, difficulty, names);
                     break;
                 case MULTIPLAYER_STANDARD_GAME:
-                    gamestate = createMultiStandardGame(numberOfPlayers, difficulty);
+                    gamestate = createMultiStandardGame(numberOfPlayers, difficulty, names);
                     break;
                 case MULTIPLAYER_ENDLESS_GAME:
-                    gamestate = createMultiEndlessGame(numberOfPlayers, difficulty);
+                    gamestate = createMultiEndlessGame(numberOfPlayers, difficulty, names);
                     break;
             }
         }
@@ -63,32 +63,32 @@ public final class NewGameFactory {
         return gamestate;
     }
 
-    private static Gamestate createStandardSinglePlayerGame(int difficulty) {
-        List<Player> players = createPlayers(1, difficulty);
+    private static Gamestate createStandardSinglePlayerGame(int difficulty, String[] names) {
+        List<Player> players = createPlayers(1, difficulty, names);
         List<Wave> waves = createWaves();
         return new Gamestate(players, waves);
     }
 
-    private static Gamestate createEndlessSinglePlayerGame(int difficulty) {
-        Gamestate gamestate = createStandardSinglePlayerGame(difficulty);
+    private static Gamestate createEndlessSinglePlayerGame(int difficulty, String[] names) {
+        Gamestate gamestate = createStandardSinglePlayerGame(difficulty, names);
         gamestate.setEndlessGame(true);
         return gamestate;
     }
 
-    private static Gamestate createMultiPlayerDuell(int numberOfPlayers, int difficulty) {
-        Gamestate gamestate = createMultiStandardGame(numberOfPlayers, difficulty);
+    private static Gamestate createMultiPlayerDuell(int numberOfPlayers, int difficulty, String[] names) {
+        Gamestate gamestate = createMultiStandardGame(numberOfPlayers, difficulty, names);
         //gamestate.setDuel();
         return gamestate;
     }
 
-    private static Gamestate createMultiStandardGame(int numberOfPlayers, int difficulty) {
-        List<Player> players = createPlayers(numberOfPlayers, difficulty);
+    private static Gamestate createMultiStandardGame(int numberOfPlayers, int difficulty, String[] names) {
+        List<Player> players = createPlayers(numberOfPlayers, difficulty, names);
         List<Wave> waves = createWaves();
         return new Gamestate(players, waves);
     }
 
-    private static Gamestate createMultiEndlessGame(int numberOfPlayers, int difficulty) {
-        Gamestate gamestate = createMultiStandardGame(numberOfPlayers, difficulty);
+    private static Gamestate createMultiEndlessGame(int numberOfPlayers, int difficulty, String[] names) {
+        Gamestate gamestate = createMultiStandardGame(numberOfPlayers, difficulty, names);
         gamestate.setEndlessGame(true);
         return gamestate;
     }
@@ -106,10 +106,15 @@ public final class NewGameFactory {
         return waves;
     }
 
-    private static List<Player> createPlayers(int numberOfPlayers, int difficulty) {
+    private static List<Player> createPlayers(int numberOfPlayers, int difficulty, String[] names) {
         List<Player> players = new LinkedList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = new Player(i);
+            if (names[i] != null) {
+                player.setPlayerName(names[i]);
+            } else {
+                player.setPlayerName("Name unbekannt.");
+            }
             player.setCurrentLives(25);
             player.setMaxLives(25);
             player.setResources(1000);

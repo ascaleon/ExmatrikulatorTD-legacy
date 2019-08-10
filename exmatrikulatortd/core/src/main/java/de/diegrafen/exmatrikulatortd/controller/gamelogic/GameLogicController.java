@@ -42,11 +42,6 @@ public class GameLogicController implements LogicController {
     private final GameView gameScreen;
 
     /**
-     * Das lokale Spieler-Profil
-     */
-    private final Profile profile;
-
-    /**
      * DAO für CRUD-Operationen mit Spielzustand-Objekten
      */
     private final GameStateDao gameStateDao;
@@ -79,23 +74,21 @@ public class GameLogicController implements LogicController {
     /**
      *
      */
-    public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                               int gamemode, GameView gameScreen, String mapPath, GameServer gameServer) {
-        this(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath);
+    public GameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
+                               int gamemode, GameView gameScreen, String mapPath, GameServer gameServer, String[] names) {
+        this(mainController, difficulty, numberOfPlayers, localPlayerNumber, gamemode, gameScreen, mapPath, names);
         this.gameServer = gameServer;
         this.server = true;
         gameServer.attachRequestListeners(this);
         gameServer.serverFinishedLoading();
-        System.out.println("Blah.");
     }
 
     /**
      *
      */
-    public GameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                               int gamemode, GameView gameScreen, String mapPath) {
+    public GameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
+                               int gamemode, GameView gameScreen, String mapPath, String[] names) {
         this.mainController = mainController;
-        this.profile = profile;
         this.mapPath = mapPath;
         this.gameStateDao = new GameStateDao();
         this.saveStateDao = new SaveStateDao();
@@ -105,7 +98,7 @@ public class GameLogicController implements LogicController {
         this.gameScreen = gameScreen;
         this.gameScreen.setLogicController(this);
 
-        this.gamestate = createGameState(gamemode, numberOfPlayers);
+        this.gamestate = createGameState(gamemode, numberOfPlayers, difficulty, names);
         this.gameLogicUnit = new GameLogicUnit(this);
         this.gameScreen.setGameState(gamestate);
         this.gamestate.registerObserver(gameScreen);
@@ -116,9 +109,9 @@ public class GameLogicController implements LogicController {
         this.gameScreen.loadMap(mapPath);
     }
 
-    private Gamestate createGameState(int gamemode, int numberOfPlayers) {
+    private Gamestate createGameState(int gamemode, int numberOfPlayers, int difficulty, String[] names) {
         // TODO: Informationen wie Spielerinnen-Name etc. müssen auch irgendwie berücksichtigt werden
-        return createNewGame(gamemode, numberOfPlayers, profile.getPreferredDifficulty());
+        return createNewGame(gamemode, numberOfPlayers, difficulty, names);
     }
 
     public GameLogicController(MainController mainController, SaveState saveState, GameView gameView, GameServer gameServer) {
@@ -138,7 +131,6 @@ public class GameLogicController implements LogicController {
         }
         this.gamestate = gameStateDao.retrieve(saveState.getGamestate().getId());
         this.gameLogicUnit = new GameLogicUnit(this);
-        this.profile = saveState.getProfile();
         this.mapPath = saveState.getMapPath();
         this.localPlayerNumber = saveState.getLocalPlayerNumber();
         this.multiplayer = saveState.isMultiplayer();
@@ -272,11 +264,11 @@ public class GameLogicController implements LogicController {
             Player localPlayer = getLocalPlayer();
             HighscoreDao highscoreDao = mainController.getHighScoreDao();
             try {
-                highscoreDao.create(new Highscore(profile, localPlayer.getScore(), gamestate.getRoundNumber(), new Date()));
+                highscoreDao.create(new Highscore(mainController.getCurrentProfile(), localPlayer.getScore(), gamestate.getRoundNumber(), new Date()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Highscore highscore = highscoreDao.findHighestScoreForProfile(profile);
+            Highscore highscore = highscoreDao.findHighestScoreForProfile(mainController.getCurrentProfile());
             int highscoreValue;
             if (highscore != null) {
                 highscoreValue = highscore.getScore();
@@ -712,7 +704,7 @@ public class GameLogicController implements LogicController {
     public void saveGame(String saveGameName) {
         Gamestate newGameState = new Gamestate(gamestate);
         gameStateDao.create(newGameState);
-        SaveState saveState = new SaveState(saveGameName, new Date(), multiplayer, profile, newGameState, localPlayerNumber, mapPath);
+        SaveState saveState = new SaveState(saveGameName, new Date(), multiplayer, mainController.getCurrentProfile(), newGameState, localPlayerNumber, mapPath);
         saveStateDao.create(saveState);
     }
 

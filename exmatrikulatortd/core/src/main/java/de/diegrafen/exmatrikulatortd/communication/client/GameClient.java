@@ -47,6 +47,12 @@ public class GameClient extends Connector implements ClientInterface {
 
     private String mapPath;
 
+    private String[] playerNames;
+
+    private String[] profilePicturePaths;
+
+    private int[] difficulties;
+
     /**
      * Erzeugt einen neuen GameClient
      */
@@ -242,5 +248,28 @@ public class GameClient extends Connector implements ClientInterface {
 
     public void setMapPath(String mapPath) {
         this.mapPath = mapPath;
+    }
+
+    public String[] getPlayerNames() {
+        return playerNames;
+    }
+
+    void setPlayerNames(String[] playerNames) {
+        this.playerNames = playerNames;
+    }
+
+    public String[] getProfilePicturePaths() {
+        return profilePicturePaths;
+    }
+
+    public void setProfilePicturePaths(String[] profilePicturePaths) {
+        this.profilePicturePaths = profilePicturePaths;
+    }
+
+    void sendGetGameInfoRequest() {
+        String profileName = getMainController().getCurrentProfileName();
+        int difficulty = getMainController().getCurrentProfilePreferredDifficulty();
+        String profilePictureName = getMainController().getCurrentProfilePicturePath();
+        client.sendTCP(new GetGameInfoRequest(profileName, difficulty, profilePictureName));
     }
 }

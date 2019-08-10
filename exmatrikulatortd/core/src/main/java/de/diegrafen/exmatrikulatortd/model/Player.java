@@ -60,13 +60,6 @@ public class Player extends BaseModel implements Observable {
      */
     private int currentLives;
 
-//    /**
-//     * Die Türme des Spielers
-//     */
-//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-//    @LazyCollection(LazyCollectionOption.FALSE)
-//    private List<Tower> towers;
-
     /**
      * Die Angriffswellen, die mit dem Spieler assoziiert sind
      */
@@ -267,5 +260,9 @@ public class Player extends BaseModel implements Observable {
     }
 
     public void incrementKillCounter() {
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 }

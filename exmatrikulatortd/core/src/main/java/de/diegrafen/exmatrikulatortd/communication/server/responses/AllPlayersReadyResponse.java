@@ -12,17 +12,20 @@ public class AllPlayersReadyResponse extends Response {
 
     private String mapPath;
 
+    private String[] playerNames;
+
     public AllPlayersReadyResponse() {
         super();
     }
 
-    public AllPlayersReadyResponse(int difficulty, int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+    public AllPlayersReadyResponse(int difficulty, int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath, String[] playerNames) {
         this();
         this.difficulty = difficulty;
         this.numberOfPlayers = numberOfPlayers;
         this.allocatedPlayerNumber = allocatedPlayerNumber;
         this.gamemode = gamemode;
         this.mapPath = mapPath;
+        this.playerNames = playerNames;
     }
 
     public int getDifficulty() {
@@ -43,5 +46,9 @@ public class AllPlayersReadyResponse extends Response {
 
     public String getMapPath() {
         return mapPath;
+    }
+
+    public String[] getPlayerNames() {
+        return playerNames;
     }
 }

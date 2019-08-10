@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.ClientReadyRequest;
 import de.diegrafen.exmatrikulatortd.communication.client.requests.GetGameInfoRequest;
+import de.diegrafen.exmatrikulatortd.communication.client.requests.SendPlayerNameRequest;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.AllPlayersReadyResponse;
 import de.diegrafen.exmatrikulatortd.communication.server.responses.GetGameInfoResponse;
 import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
@@ -40,7 +41,6 @@ public class ConnectionListener implements Listener {
         gameServer.getServer().sendToAllExceptTCP(connection.getID(), getGameInfoResponse);
         getGameInfoResponse.setUpdate(false);
         connection.sendTCP(getGameInfoResponse);
-        System.out.println("Looking for Players? " + gameServer.isLookingForPlayers());
     }
 
     @Override
@@ -53,14 +53,20 @@ public class ConnectionListener implements Listener {
     @Override
     public void received(Connection connection, Object object) {
         if (object instanceof GetGameInfoRequest) {
-            handleGetGameInfoRequest(connection);
+            handleGetGameInfoRequest(connection, (GetGameInfoRequest) object);
         } else if (object instanceof ClientReadyRequest) {
             handleClientReadyRequest(connection);
+        } else if (object instanceof SendPlayerNameRequest) {
+            handleSendPlayerNameRequest(connection, (SendPlayerNameRequest) object);
         }
     }
 
-    private void handleGetGameInfoRequest(Connection connection) {
-        connection.sendTCP(new GetGameInfoResponse(true, 1, gameServer.getPlayerNames(), gameServer.getProfilePicturePaths(), gameServer.getMapPath()));
+    private void handleGetGameInfoRequest(Connection connection, GetGameInfoRequest getGameInfoRequest) {
+        int playerNumber = gameServer.getConnectionAndPlayerNumbers().get(connection.getID());
+        gameServer.getPlayerNames()[playerNumber] = getGameInfoRequest.getPlayerName();
+        gameServer.getProfilePicturePaths()[playerNumber] = getGameInfoRequest.getProfilePicturePath();
+
+        connection.sendTCP(new GetGameInfoResponse(true, playerNumber, gameServer.getPlayerNames(), gameServer.getProfilePicturePaths(), gameServer.getMapPath()));
     }
 
     private void handleClientReadyRequest(Connection connection) {
@@ -70,7 +76,13 @@ public class ConnectionListener implements Listener {
         if (gameServer.areAllPlayersReady()) {
             gameServer.getServer().sendToAllTCP(new AllPlayersReadyResponse());
             //mainController.showLoadScreen();
-            Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath()));
+            Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), gameServer.getMainController().getCurrentProfilePreferredDifficulty(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath(), gameServer.getPlayerNames()));
         }
+    }
+
+    private void handleSendPlayerNameRequest(Connection connection, SendPlayerNameRequest sendPlayerNameRequest) {
+        int playerNumber = gameServer.getConnectionAndPlayerNumbers().get(connection.getID());
+        gameServer.getPlayerNames()[playerNumber] = sendPlayerNameRequest.getPlayerName();
+        gameServer.getServer().sendToAllTCP(new GetGameInfoResponse());
     }
 }

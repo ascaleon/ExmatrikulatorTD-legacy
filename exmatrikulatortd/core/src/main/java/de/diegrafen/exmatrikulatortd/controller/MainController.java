@@ -1,10 +1,6 @@
 package de.diegrafen.exmatrikulatortd.controller;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.diegrafen.exmatrikulatortd.ExmatrikulatorTD;
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
@@ -15,13 +11,8 @@ import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
-import de.diegrafen.exmatrikulatortd.view.screens.uielements.ProfileTextButton;
-import org.hibernate.Session;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import java.net.InetAddress;
 import java.util.List;
 
 /**
@@ -52,8 +43,6 @@ public class MainController {
      * Das aktuelle Profil
      */
     private Profile currentProfile;
-
-    private boolean hasCurrentProfile;
 
     /**
      * Splashscreen
@@ -276,9 +265,10 @@ public class MainController {
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
-    public void createNewSinglePlayerGame(int gamemode, String mapPath) {
+    public void createNewSinglePlayerGame(int gamemode, int difficulty, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
+        String[] names = { currentProfile.getProfileName() };
+        new GameLogicController(this, difficulty, 1, 0, gamemode, gameScreen, mapPath, names);
         showScreen(gameScreen);
     }
 
@@ -297,9 +287,9 @@ public class MainController {
     /**
      * Erzeugt ein neues Multiplayer-Spiel als Client
      */
-    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int difficulty, int gamemode, String mapPath) {
+    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int difficulty, int gamemode, String mapPath, String[] names) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
+        new ClientGameLogicController(this, difficulty, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient, names);
     }
 
     /**
@@ -314,10 +304,9 @@ public class MainController {
     /**
      * Erzeugt ein Multiplayer-Spiel als Server
      */
-    public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+    public void createNewMultiplayerServerGame(int numberOfPlayers, int difficulty, int allocatedPlayerNumber, int gamemode, String mapPath, String[] names) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer);
-        //showScreen(gameScreen);
+        new GameLogicController(this, difficulty, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer, names);
     }
 
     /**
@@ -331,7 +320,7 @@ public class MainController {
         showScreen(gameScreen);
     }
 
-    public List<Profile> retrieveProfiles() {
+    private List<Profile> retrieveProfiles() {
         return profileDao.findAllProfiles();
     }
 
@@ -450,6 +439,10 @@ public class MainController {
 
     public int getCurrentProfilePreferredDifficulty() {
         return currentProfile.getPreferredDifficulty();
+    }
+
+    public String getCurrentProfilePicturePath() {
+        return currentProfile.getProfilePicturePath();
     }
 
     public void updateSaveStateButtons(MenuScreen menuScreen) {

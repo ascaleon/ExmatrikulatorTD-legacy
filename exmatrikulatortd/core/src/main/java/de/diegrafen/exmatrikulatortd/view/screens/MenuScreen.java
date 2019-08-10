@@ -257,7 +257,7 @@ public class MenuScreen extends BaseScreen {
         newSinglePlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, SINGLEPLAYER_MAP_PATH);
+                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, getMainController().getCurrentProfilePreferredDifficulty(), SINGLEPLAYER_MAP_PATH);
                 showMainMenu(selectGameTypeTable);
             }
         });
