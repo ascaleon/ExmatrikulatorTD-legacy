@@ -85,7 +85,7 @@ public class GameServer extends Connector implements ServerInterface {
     public GameServer() {
         this.tcpPort = TCP_PORT;
         this.udpPort = UDP_PORT;
-        this.server = new Server(16384*8, 2048*8);
+        this.server = new Server(50000, 50000);
         registerObjects(server.getKryo());
         this.server.addListener(new ConnectionListener(this));
         System.out.println("Server created!");
@@ -232,12 +232,16 @@ public class GameServer extends Connector implements ServerInterface {
         playersReady[0] = true;
 
         if (areAllPlayersReady()) {
-            for (Connection connection : server.getConnections()) {
-                int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
-                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
-            }
+            sendAllPlayersReadyResponse();
 
             Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, difficulty, 0, MULTIPLAYER_DUEL, mapPath, playerNames));
+        }
+    }
+
+    void sendAllPlayersReadyResponse() {
+        for (Connection connection : server.getConnections()) {
+            int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
+            server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
         }
     }
 
