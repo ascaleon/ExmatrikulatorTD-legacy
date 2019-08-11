@@ -247,7 +247,7 @@ public class MenuScreen extends BaseScreen {
         addUIElement(mainMenuTable, newGame);
         addUIElement(mainMenuTable, selectProfile);
         addUIElement(mainMenuTable, highScores);
-        addUIElement(mainMenuTable, preferences);
+        // addUIElement(mainMenuTable, preferences); // Auskommentiert, da aktuell keine Einstellungen vorhanden sind
         addUIElement(mainMenuTable, exit);
 
         newGame.addListener(new ChangeListener() {

@@ -219,7 +219,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     /**
-     * Synchronisiert den Spielzustand mit dem Server
+     * Synchronisiert den Spielzustand mit empfangenen Serverinformationen
      *
      * @param towers Die Türme, die synchronisiert werden sollen
      *

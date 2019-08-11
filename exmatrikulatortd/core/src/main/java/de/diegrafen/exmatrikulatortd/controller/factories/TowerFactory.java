@@ -89,7 +89,7 @@ public final class TowerFactory {
         LinkedList<Aura> auras = new LinkedList<>();
         LinkedList<Debuff> debuffs = new LinkedList<>();
 
-        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, -0.5f, 0.5f, 0, false);
+        Debuff slowDebuff = new Debuff("Slow-Effekt", AURA_REFRESH_RATE, 0, 0.5f, 0, false);
         debuffs.add(slowDebuff);
         Aura slowAura = new Aura(debuffs, new LinkedList<>());
         auras.add(slowAura);
