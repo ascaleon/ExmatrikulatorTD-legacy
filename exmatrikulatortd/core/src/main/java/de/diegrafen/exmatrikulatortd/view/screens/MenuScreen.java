@@ -48,12 +48,12 @@ public class MenuScreen extends BaseScreen {
     private Table loadOrNewGameTable;
 
     /**
-     * Untermenü für die Verwaltung von Spielstaenden
+     * Untermenü für die Verwaltung von Spielständen
      */
     private Table saveStatesMenuTable;
 
     /**
-     * Tabelle zur Auflistung der gespeicherten Spielstaende
+     * Tabelle zur Auflistung der gespeicherten Spielstände
      */
     private Table savestatesTable;
 
@@ -386,7 +386,7 @@ public class MenuScreen extends BaseScreen {
         loadSaveStateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Wenn das Menu fuer die Spielstaende gezeigt werden soll, wird zu erst die Tabelle dazu aktualisiert
+                // Wenn das Menü für die Spielstände gezeigt werden soll, wird zuerst die Tabelle dazu aktualisiert
                 refreshSavestatesTable();
                 showSaveStatesMenuTable(loadOrNewGameTable);
             }
@@ -406,7 +406,7 @@ public class MenuScreen extends BaseScreen {
      */
     private void refreshProfilesTable() {
         profilesButtonGroup.clear();
-        // Damit nicht Profile, die vorher die Tabelle befuellten, doppelt auftauchen
+        // Damit nicht Profile, die vorher die Tabelle befüllten, doppelt auftauchen
         profilesTable.clearChildren();
         profilesTable.add(new Label("Profil auswählen.", skin));
         getMainController().updateProfileButtons(this);
@@ -460,7 +460,7 @@ public class MenuScreen extends BaseScreen {
 
         final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, skin);
 
-        // Aufrufen von refreshProfilesTable bewirkt bei Initialisierung das die Tabelle ueberhaupt erst befuellt wird
+        // Aufrufen von refreshProfilesTable bewirkt bei Initialisierung, dass die Tabelle überhaupt erst befüllt wird
         refreshProfilesTable();
 
         Table buttonsTable = new Table();
@@ -593,7 +593,7 @@ public class MenuScreen extends BaseScreen {
      * Setzt das Profilerstellungs- und -bearbeitungsmenü zurück
      */
     private void cleanupNewOrEditProfileMenu() {
-        // Damit nicht beim erneuten Oeffnen des Menu die Werte von letzter Bearbeitung erhalten bleiben!
+        // Damit nicht beim erneuten Öffnen des Menu die Werte von letzter Bearbeitung erhalten bleiben!
         profileNameTextField.setColor(Color.WHITE);
         profileNameTextField.setText("");
         difficultySelectBox.setSelected(EASY_STRING);
@@ -830,7 +830,7 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Ist man nicht mehr im Begriff mit jmd. anderem zu spielen, besteht auch kein Grund dazu die Netzwerkfunktionalitaet laufen zu lassen
+                // Ist man nicht mehr im Begriff, mit jmd. anderem zu spielen, besteht auch kein Grund dazu, die Netzwerkfunktionalität laufen zu lassen
                 getMainController().shutdownConnections();
                 showClientOrServerMenu(gameLobbyTable);
                 backButton.setChecked(false);
