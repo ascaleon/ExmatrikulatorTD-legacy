@@ -330,6 +330,7 @@ public class MenuScreen extends BaseScreen {
      */
     private void refreshSavestatesTable() {
         savestatesTable.clearChildren();
+        multiPlayerSaveStatesTable.clearChildren();
         getMainController().updateSaveStateButtons(this);
     }
 
@@ -345,6 +346,7 @@ public class MenuScreen extends BaseScreen {
         savestateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("Savestate-ID: " + saveStateId);
                 idToLoad = saveStateId;
             }
         });
@@ -408,7 +410,6 @@ public class MenuScreen extends BaseScreen {
         profilesTable.clearChildren();
         profilesTable.add(new Label("Profil auswählen.", skin));
         getMainController().updateProfileButtons(this);
-
     }
 
     /**
@@ -559,7 +560,9 @@ public class MenuScreen extends BaseScreen {
         deleteButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().deleteSaveState(idToLoad);
+                if (idToLoad != -1L) {
+                    getMainController().deleteSaveState(idToLoad);
+                }
                 idToLoad = -1L;
                 refreshSavestatesTable();
             }
@@ -743,8 +746,8 @@ public class MenuScreen extends BaseScreen {
         createGenericMenuTable(menuStack, clientOrServerMenuTable);
 
         addUIElement(clientOrServerMenuTable, createGame);
-        addUIElement(clientOrServerMenuTable, loadGame);
         addUIElement(clientOrServerMenuTable, searchGame);
+        addUIElement(clientOrServerMenuTable, loadGame);
         addUIElement(clientOrServerMenuTable, backButton);
 
         createGame.addListener(new ChangeListener() {

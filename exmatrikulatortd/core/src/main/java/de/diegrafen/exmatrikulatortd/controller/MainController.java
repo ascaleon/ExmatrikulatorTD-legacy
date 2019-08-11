@@ -179,7 +179,9 @@ public class MainController {
     public void deleteProfile(final long profileId) {
         try{
             Profile profile = profileDao.retrieve(profileId);
-            profileDao.delete(profile);
+            if (profile != null ) {
+                profileDao.delete(profile);
+            }
         } catch (final PersistenceException e){
             e.printStackTrace();
         }
@@ -463,9 +465,15 @@ public class MainController {
         }
     }
 
-    public void deleteSaveState(Long idToLoad) {
-        SaveState saveState = saveStateDao.retrieve(idToLoad);
-        saveStateDao.delete(saveState);
+    /**
+     * Löscht den zu einer ID gehörenden Savestate (sofern ein solcher existiert)
+     * @param idToDelete Die ID des zu löschenden Savestates
+     */
+    public void deleteSaveState(Long idToDelete) {
+        SaveState saveState = saveStateDao.retrieve(idToDelete);
+        if (saveState != null) {
+            saveStateDao.delete(saveState);
+        }
     }
 
     /**

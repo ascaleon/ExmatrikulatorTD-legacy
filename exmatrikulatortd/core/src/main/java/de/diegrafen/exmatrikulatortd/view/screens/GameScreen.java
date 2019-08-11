@@ -589,10 +589,12 @@ public class GameScreen extends BaseScreen implements GameView {
                 opponentScore.setText(opposingPlayer.getScore());
             }
         }
-        scoreLabel.setText(localPlayer.getScore());
-        livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
-        playerHealth.setValue(localPlayer.getCurrentLives());
-        resourcesLabel.setText(localPlayer.getResources());
+        if (localPlayer != null) {
+            scoreLabel.setText(localPlayer.getScore());
+            livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
+            playerHealth.setValue(localPlayer.getCurrentLives());
+            resourcesLabel.setText(localPlayer.getResources());
+        }
         if (gameState.isEndlessGame()) {
             roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
         } else {

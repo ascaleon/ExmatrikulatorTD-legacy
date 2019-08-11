@@ -152,6 +152,7 @@ public class GameLogicController implements LogicController {
         this(mainController, gamestate, gameView, allocatedPlayerNumber, true, mapPath);
         this.gameServer = gameServer;
         gameServer.attachRequestListeners(this);
+        gameServer.serverFinishedLoading();
     }
 
     GameLogicController(MainController mainController, Gamestate gamestate, GameView gameView,
@@ -834,7 +835,7 @@ public class GameLogicController implements LogicController {
     public void exitGame(boolean saveBeforeExit) {
         gameScreen.dispose();
         if (saveBeforeExit) {
-            saveGame("Blah!");
+            saveGame("Autosave.");
         }
         if (server) {
             gameServer.shutdown();

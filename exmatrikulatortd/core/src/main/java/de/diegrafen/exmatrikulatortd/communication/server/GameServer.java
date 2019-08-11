@@ -258,7 +258,6 @@ public class GameServer extends Connector implements ServerInterface {
         for (Connection connection : server.getConnections()) {
             int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
             if (gamestate != null) {
-                System.out.println("Blah.");
                 server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(gamestate, allocatedPlayerNumber, mapPath));
             } else {
                 server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
