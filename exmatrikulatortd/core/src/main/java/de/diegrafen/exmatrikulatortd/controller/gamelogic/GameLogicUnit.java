@@ -33,7 +33,6 @@ class GameLogicUnit {
 
     private List<Tower> attackingTowers = new LinkedList<>();
 
-
     GameLogicUnit(LogicController logicController) {
         this.logicController = logicController;
         this.gamestate = logicController.getGamestate();
@@ -128,7 +127,7 @@ class GameLogicUnit {
             }
             Player attackedPlayer = gamestate.getPlayerByNumber(enemy.getPlayerNumber());
             if (attackedPlayer == null) {
-                System.out.println("Kein Spieler vorhanden!");
+                return;
             }
 
             if (enemy.getWayPointIndex() >= attackedPlayer.getWayPoints().size()) {
@@ -713,7 +712,6 @@ class GameLogicUnit {
      */
     private float calculateRangeFromTilesize(float range) {
         range *= ((gamestate.getTileHeight() + gamestate.getTileWidth()) / 2.0f);
-        System.out.println(range);
         return range;
     }
 

@@ -195,6 +195,16 @@ public class MainController {
     }
 
     /**
+     * Erzeugt einen neuen GameServer mit einem zu ladenden Spielstand
+     */
+    public void createServer(long idToLoad) {
+        SaveState saveState = saveStateDao.retrieve(idToLoad);
+        this.gameServer = new GameServer(new Gamestate(saveState.getGamestate()));
+        this.gameServer.setMainController(this);
+        this.host = true;
+    }
+
+    /**
      * Erzeugt einen neuen GameClient
      */
     public void createClient() {
@@ -451,7 +461,7 @@ public class MainController {
 
         for (SaveState saveState : saveStateDao.findAllSaveStates()) {
             menuScreen.addSaveStateButton("Player name:" + saveState.getProfile().getProfileName() + "\n" + saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString(),
-                    saveState.getId());
+                    saveState.getId(), saveState.isMultiplayer());
         }
     }
 

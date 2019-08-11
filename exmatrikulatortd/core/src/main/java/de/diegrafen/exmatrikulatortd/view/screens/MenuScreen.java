@@ -90,6 +90,10 @@ public class MenuScreen extends BaseScreen {
 
     private Table multiPlayerGameModeTable;
 
+    private Table multiPlayerLoadMenuTable;
+
+    private Table multiPlayerSaveStatesTable;
+
     /**
      * Die GameLobby-Tabelle
      */
@@ -173,6 +177,7 @@ public class MenuScreen extends BaseScreen {
         createSelectGameTypeTable(menuStack);
         createLoadOrNewGameTable(menuStack);
         createSaveStatesMenuTable(menuStack);
+        createMultiPlayerLoadMenuTable(menuStack);
         createSelectProfileMenuTable(menuStack);
         createNewOrEditProfileMenuTable(menuStack);
         createHighscoreMenuTable(menuStack);
@@ -307,17 +312,20 @@ public class MenuScreen extends BaseScreen {
      * @param text Der Buttontext
      * @param saveStateId Die ID des Spielstands
      */
-    public void addSaveStateButton(String text, long saveStateId) {
+    public void addSaveStateButton(String text, long saveStateId, boolean multiplayer) {
         savestatesTable.row();
         TextButton savestateButton = new TextButton(text, skin);
         savestateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //getMainController().loadSinglePlayerGame(saveStateId);
                 idToLoad = saveStateId;
             }
         });
-        savestatesTable.add(savestateButton);
+        if (multiplayer) {
+            multiPlayerSaveStatesTable.add(savestateButton);
+        } else {
+            savestatesTable.add(savestateButton);
+        }
     }
 
     /**
@@ -482,32 +490,41 @@ public class MenuScreen extends BaseScreen {
         selectProfileMenuTable.add(buttonsTable).expand();
     }
 
+    private void createSaveStatesMenuTable(Stack menuStack) {
+        saveStatesMenuTable = new Table();
+        savestatesTable = new Table();
+        createSaveStatesMenuTable(menuStack, saveStatesMenuTable, savestatesTable, false);
+    }
+
     /**
      * Erzeugt das Menü zum Laden von Spielständen
      *
      * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
      */
-    private void createSaveStatesMenuTable(Stack menuStack) {
-        saveStatesMenuTable = new Table();
-        savestatesTable = new Table();
-
-        final ScrollPane savestatesTableScrollPane = new ScrollPane(savestatesTable, skin);
+    private void createSaveStatesMenuTable(Stack menuStack, Table menuTable, Table listTable, boolean multiplayer) {
+        final ScrollPane savestatesTableScrollPane = new ScrollPane(listTable, skin);
         Table buttonsTable = new Table();
         TextButton loadButton = new TextButton("Spielstand laden", skin);
         TextButton deleteButton = new TextButton("Spielstand löschen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
-        savestatesTable.pad(10).defaults().expandX().space(4);
+        listTable.pad(10).defaults().expandX().space(4);
 
-        createGenericMenuTable(menuStack, saveStatesMenuTable);
+        createGenericMenuTable(menuStack, menuTable);
 
-        saveStatesMenuTable.row().pad(10, 0, 10, 0);
+        menuTable.row().pad(10, 0, 10, 0);
 
         loadButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (idToLoad != -1L) {
-                    getMainController().loadSinglePlayerGame(idToLoad);
+                    if (!multiplayer) {
+                        getMainController().loadSinglePlayerGame(idToLoad);
+                    } else {
+                        getMainController().createServer(idToLoad);
+                        getMainController().startServer();
+                        showGameLobbyMenu(menuTable);
+                    }
                 }
                 loadButton.setChecked(false);
             }
@@ -525,7 +542,11 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showLoadOrNewGameMenu(saveStatesMenuTable);
+                if (multiplayer) {
+                    showClientOrServerMenu(menuTable);
+                } else {
+                    showLoadOrNewGameMenu(menuTable);
+                }
                 backButton.setChecked(false);
             }
         });
@@ -534,8 +555,8 @@ public class MenuScreen extends BaseScreen {
         addUIElement(buttonsTable, deleteButton);
         addUIElement(buttonsTable, backButton);
 
-        saveStatesMenuTable.add(savestatesTableScrollPane).expand();
-        saveStatesMenuTable.add(buttonsTable).expand();
+        menuTable.add(savestatesTableScrollPane).expand();
+        menuTable.add(buttonsTable).expand();
     }
 
     /**
@@ -692,12 +713,14 @@ public class MenuScreen extends BaseScreen {
 
         clientOrServerMenuTable = new Table();
         TextButton createGame = new TextButton("Spiel erstellen", skin);
+        TextButton loadGame = new TextButton("Spiel laden", skin);
         TextButton searchGame = new TextButton("Spiel suchen", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         createGenericMenuTable(menuStack, clientOrServerMenuTable);
 
         addUIElement(clientOrServerMenuTable, createGame);
+        addUIElement(clientOrServerMenuTable, loadGame);
         addUIElement(clientOrServerMenuTable, searchGame);
         addUIElement(clientOrServerMenuTable, backButton);
 
@@ -710,11 +733,17 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
+        loadGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showMultiplayerLoadMenu(clientOrServerMenuTable);
+            }
+        });
+
         searchGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().createClient();
-                serverList = getMainController().getLocalGameServers();
                 updateServerList();
                 showServerListMenu(clientOrServerMenuTable);
             }
@@ -727,6 +756,18 @@ public class MenuScreen extends BaseScreen {
                 backButton.setChecked(false);
             }
         });
+    }
+
+    private void showMultiplayerLoadMenu(Table callingTable) {
+        showTable(callingTable, multiPlayerLoadMenuTable);
+    }
+
+
+
+    private void createMultiPlayerLoadMenuTable(Stack menuStack) {
+        multiPlayerLoadMenuTable = new Table();
+        multiPlayerSaveStatesTable = new Table();
+        createSaveStatesMenuTable(menuStack, multiPlayerLoadMenuTable, multiPlayerSaveStatesTable, true);
     }
 
     /**
@@ -759,7 +800,7 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().shutdownConnections();
-                showMainMenu(gameLobbyTable);
+                showClientOrServerMenu(gameLobbyTable);
                 backButton.setChecked(false);
             }
         });
@@ -771,12 +812,13 @@ public class MenuScreen extends BaseScreen {
     private void updateServerList() {
         serverListTable.clearChildren();
 
+        serverList = getMainController().getLocalGameServers();
+
         for (String server : serverList) {
             String[] lines = server.split("\n");
             serverListTable.row();
             System.out.println(lines.length);
             if (lines.length == 4) {
-                System.out.println("Hallo?");
                 int difficulty = Integer.parseInt(lines[3]);
                 String difficultyString = difficultyList.get(difficulty);
                 TextButton rowTable = new TextButton("Map: " + lines[1] + "\nAnzahl Spieler: " + lines[2] +
@@ -806,21 +848,19 @@ public class MenuScreen extends BaseScreen {
         serverListTable = new Table();
         final ScrollPane serverScrollPane = new ScrollPane(serverListTable, skin);
 
-        TextButton connectButton = new TextButton("Verbinden", skin);
+        TextButton refreshButton = new TextButton("Aktualisieren", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         createGenericMenuTable(menuStack, serverListMenuTable);
 
         addUIElement(serverListMenuTable, serverScrollPane);
-        addUIElement(serverListMenuTable, connectButton);
+        addUIElement(serverListMenuTable, refreshButton);
         addUIElement(serverListMenuTable, backButton);
 
-        connectButton.addListener(new ChangeListener() {
+        refreshButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (getMainController().connectToServer(getMainController().getHostAdress())) {
-                    showGameLobbyMenu(serverListMenuTable);
-                }
+                updateServerList();
             }
         });
 
@@ -828,7 +868,7 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().shutdownConnections();
-                showMainMenu(serverListMenuTable);
+                showClientOrServerMenu(serverListMenuTable);
                 backButton.setChecked(false);
             }
         });

@@ -825,7 +825,6 @@ public class GameLogicController implements LogicController {
         tower.setSellPrice(currentSellPrice + tower.getUpgradePrice() / 2);
         tower.setUpgradePrice(tower.getUpgradePrice() * 2);
         tower.notifyObserver();
-        System.out.println("Upgraded!");
     }
 
     /**
