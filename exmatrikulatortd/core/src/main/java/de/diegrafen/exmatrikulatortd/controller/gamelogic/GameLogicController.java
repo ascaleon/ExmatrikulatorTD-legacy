@@ -818,7 +818,7 @@ public class GameLogicController implements LogicController {
     void upgradeTower(Tower tower) {
         tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
         tower.setBaseAttackDamage(tower.getBaseAttackDamage() + tower.getAttackDamageUpgradeBonus()); // tower.getAttackDamageUpgradeBonus()
-        tower.setBaseAttackSpeed(tower.getBaseAttackSpeed() * tower.getAttackSpeedUpgradeMultiplier());
+        tower.setBaseAttackSpeed(tower.getBaseAttackSpeed() * (1 / tower.getAttackSpeedUpgradeMultiplier()));
         tower.setAttackRange(tower.getAttackRange() + tower.getAttackRangeUpgradeBonus());
         tower.setAuraRange(tower.getAuraRange() + tower.getAuraRangeUpgradeBonus());
         int currentSellPrice = tower.getSellPrice();
