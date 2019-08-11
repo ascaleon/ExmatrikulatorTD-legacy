@@ -191,7 +191,6 @@ class GameLogicUnit {
                     buffsToRemove.add(buff);
                 }
             }
-
             buffsToRemove.forEach(tower::removeBuff);
         }
     }
@@ -254,8 +253,9 @@ class GameLogicUnit {
             case PROJECTILE:
                 addProjectile(tower);
                 break;
-            case IMMEDIATE: //TODO: Animationen wie Blitze oder Ähnliches triggern lassen.
+            case IMMEDIATE:
                 applyDamageToTarget(tower);
+                break;
         }
     }
 
@@ -535,7 +535,6 @@ class GameLogicUnit {
         float armor = enemy.getCurrentArmor();
         float damageModifier = 1;
 
-        // TODO: Eindeutigeren Namen hinzufügen
         float armorEffect = ATTACK_DEFENSE_MATRIX[attackType][enemy.getArmorType()];
 
         if (armor > 0) {

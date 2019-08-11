@@ -14,35 +14,23 @@ import java.util.List;
  */
 public class GetServerStateResponse extends Response {
 
-    private Gamestate gamestate;
-
     private List<Tower> towers;
 
     private List<Player> players;
 
-    private List<Enemy> enemies;
-
-    private List<Projectile> projectiles;
+    private float timeUntilNextRound;
 
     public GetServerStateResponse() {
         super();
     }
 
-    public GetServerStateResponse(List<Tower> towers, List<Player> players, List<Enemy> enemies, List<Projectile> projectiles) {
-        super();
+    public GetServerStateResponse(List<Tower> towers, List<Player> players, float timeUntilNextRound) {
+        this();
         this.towers = towers;
         this.players = players;
-        this.enemies = enemies;
-        this.projectiles = projectiles;
+        this.timeUntilNextRound = timeUntilNextRound;
     }
 
-    public GetServerStateResponse(Gamestate gamestate) {
-        this.gamestate = gamestate;
-    }
-
-    public Gamestate getGamestate() {
-        return gamestate;
-    }
 
     public List<Tower> getTowers() {
         return towers;
@@ -52,11 +40,7 @@ public class GetServerStateResponse extends Response {
         return players;
     }
 
-    public List<Enemy> getEnemies() {
-        return enemies;
-    }
-
-    public List<Projectile> getProjectiles() {
-        return projectiles;
+    public float getTimeUntilNextRound() {
+        return timeUntilNextRound;
     }
 }

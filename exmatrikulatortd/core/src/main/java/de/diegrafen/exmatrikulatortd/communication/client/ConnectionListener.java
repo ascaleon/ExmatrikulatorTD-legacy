@@ -29,7 +29,12 @@ public class ConnectionListener implements Listener {
     }
 
     private void handleAllPlayersReadyResponse(AllPlayersReadyResponse allPlayersReadyResponse) {
-        Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(allPlayersReadyResponse.getNumberOfPlayers(), allPlayersReadyResponse.getAllocatedPlayerNumber(), allPlayersReadyResponse.getDifficulty(), allPlayersReadyResponse.getGamemode(), allPlayersReadyResponse.getMapPath(), allPlayersReadyResponse.getPlayerNames()));
+        if (allPlayersReadyResponse.getGamestate() == null) {
+            Gdx.app.postRunnable(() -> gameClient.getMainController().createNewMultiplayerClientGame(allPlayersReadyResponse.getNumberOfPlayers(), allPlayersReadyResponse.getAllocatedPlayerNumber(), allPlayersReadyResponse.getDifficulty(), allPlayersReadyResponse.getGamemode(), allPlayersReadyResponse.getMapPath(), allPlayersReadyResponse.getPlayerNames()));
+        } else {
+            Gdx.app.postRunnable(() -> gameClient.getMainController().loadMultiPlayerClientGame(allPlayersReadyResponse.getGamestate(), allPlayersReadyResponse.getAllocatedPlayerNumber(), allPlayersReadyResponse.getMapPath()));
+        }
+
     }
 
     private void handleGetGameInfoReponse(GetGameInfoResponse getGameInfoResponse) {
@@ -39,9 +44,6 @@ public class ConnectionListener implements Listener {
             gameClient.setMapPath(getGameInfoResponse.getMapPath());
             gameClient.setProfilePicturePaths(getGameInfoResponse.getPlayerProfilePicturePaths());
 
-            for (String playerName : gameClient.getPlayerNames()) {
-                System.out.println(playerName);
-            }
         } else {
             gameClient.setLocalPlayerNumber(getGameInfoResponse.getAllocatedPlayerNumber());
             gameClient.setMapPath(getGameInfoResponse.getMapPath());

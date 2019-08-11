@@ -81,6 +81,8 @@ public class GameServer extends Connector implements ServerInterface {
 
     private final String mapName = "Die Magieakademie";
 
+    private Gamestate gamestate;
+
     /**
      * Erzeugt einen neuen GameServer
      */
@@ -91,6 +93,11 @@ public class GameServer extends Connector implements ServerInterface {
         registerObjects(server.getKryo());
         this.server.addListener(new ConnectionListener(this));
         System.out.println("Server created!");
+    }
+
+    public GameServer(Gamestate gamestate) {
+        this();
+        this.gamestate = gamestate;
     }
 
     /**
@@ -235,15 +242,26 @@ public class GameServer extends Connector implements ServerInterface {
 
         if (areAllPlayersReady()) {
             sendAllPlayersReadyResponse();
+            createGame();
+        }
+    }
 
+    private void createGame() {
+        if (gamestate == null) {
             Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, difficulty, 0, MULTIPLAYER_DUEL, mapPath, playerNames));
+        } else {
+            Gdx.app.postRunnable(() -> mainController.loadMultiPlayerServerGame(gamestate, 0, mapPath));
         }
     }
 
     void sendAllPlayersReadyResponse() {
         for (Connection connection : server.getConnections()) {
             int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
-            server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
+            if (gamestate != null) {
+                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(gamestate, allocatedPlayerNumber, mapPath));
+            } else {
+                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
+            }
         }
     }
 
@@ -302,8 +320,8 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     @Override
-    public void sendServerGameState(Gamestate gamestate) {
-        server.sendToAllTCP(new GetServerStateResponse(gamestate));
+    public void sendServerGameState(List<Tower> towers, List<Player> players, float timeUntilNextRound) {
+        server.sendToAllTCP(new GetServerStateResponse(towers, players, timeUntilNextRound));
     }
 
     boolean isLookingForPlayers() {

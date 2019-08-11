@@ -34,11 +34,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     private int tileHeight;
 
-    /**
-     * Der Name der Map
-     */
-    private String mapName;
-
     private int numberOfColumns;
 
     private int numberOfRows;
@@ -135,7 +130,6 @@ public class Gamestate extends BaseModel implements Observable {
     public Gamestate(Gamestate gamestate) {
         this.tileWidth = gamestate.tileWidth;
         this.tileHeight = gamestate.tileHeight;
-        this.mapName = gamestate.mapName;
         this.numberOfColumns = gamestate.numberOfColumns;
         this.numberOfRows = gamestate.numberOfRows;
         this.roundNumber = gamestate.roundNumber;
@@ -349,10 +343,6 @@ public class Gamestate extends BaseModel implements Observable {
 
     public void setTileHeight(int tileHeight) {
         this.tileHeight = tileHeight;
-    }
-
-    public String getMapName() {
-        return mapName;
     }
 
     public void setPlayers(List<Player> players) {

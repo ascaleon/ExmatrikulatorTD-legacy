@@ -212,7 +212,7 @@ public class MainController {
      * @return Die Informationen über lokale Spielserver als String
      */
     public List<String> getLocalGameServers() {
-        List<InetAddress> servers = gameClient.discoverLocalServers();
+        gameClient.discoverLocalServers();
         return gameClient.getReceivedSessionInfo();
     }
 
@@ -298,9 +298,9 @@ public class MainController {
     /**
      * Lädt ein Multiplayerspiel als Client
      */
-    public void loadMultiPlayerClientGame(SaveState saveState, int allocatedPlayerNumber) {
+    public void loadMultiPlayerClientGame(Gamestate gamestate, int allocatedPlayerNumber, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new ClientGameLogicController(this, saveState, allocatedPlayerNumber, gameScreen, gameClient);
+        new ClientGameLogicController(this, gamestate, allocatedPlayerNumber, gameScreen, mapPath, gameClient);
         //showScreen(gameScreen);
     }
 
@@ -317,10 +317,9 @@ public class MainController {
      *
      * @param saveState Der Spielzustand, der geladen werden soll
      */
-    public void loadMultiPlayerServerGame(SaveState saveState) {
+    public void loadMultiPlayerServerGame(Gamestate gamestate, int allocatedPlayerNumber, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new GameLogicController(this, saveState, gameScreen, gameServer);
-        //showScreen(gameScreen);
+        new GameLogicController(this, gamestate, allocatedPlayerNumber, gameScreen, mapPath, gameServer);
     }
 
     private List<Profile> retrieveProfiles() {

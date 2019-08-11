@@ -1,8 +1,13 @@
 package de.diegrafen.exmatrikulatortd.util;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  *
@@ -16,6 +21,18 @@ public final class Assets {
     public static final String MENU_BACKGROUND_IMAGE = "196922.jpg";
 
     public static final String TRANSPARENT_BACKGROUND_IMAGE = "transparentBG.png";
+
+    public static final String MENU_ICON_PLACEHOLDER = "menuIcon_placeholder.png";
+
+    public static final String WIN_IMAGE = "win.png";
+
+    public static final String LOSE_IMAGE = "loose.png";
+
+    public static final String UPRADE_ICON = "upgradeIcon.png";
+
+    public static final String SELL_ICON = "sellIcon.png";
+
+    public static final String BUFF_PORTRAIT = "sellIcon.png";
 
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
@@ -69,16 +86,24 @@ public final class Assets {
 
     public static final String MULTIPLAYER_MAP_PATH = "sprites/gamemap/multiplayer_map.tmx";
 
-    private static final String PROJECTILE_SPRITE_PATH = "sprites/objects/projectiles/fireball/";
+    private static final String PROJECTILE_SPRITE_PATH = "sprites/objects/projectiles/";
 
     public static final String FIREBALL_ASSETS = "fireball";
+
+    public static final String SKIN = "ui-skin/golden-ui-skin.json";
+
 
     public static void queueAssets(AssetManager assetManager) {
 
         // load Textures
         assetManager.load(MENU_BACKGROUND_IMAGE, Texture.class);
         assetManager.load(TRANSPARENT_BACKGROUND_IMAGE, Texture.class);
-
+        assetManager.load(MENU_ICON_PLACEHOLDER, Texture.class);
+        assetManager.load(WIN_IMAGE, Texture.class);
+        assetManager.load(LOSE_IMAGE, Texture.class);
+        assetManager.load(UPRADE_ICON, Texture.class);
+        assetManager.load(SELL_ICON, Texture.class);
+        assetManager.load(BUFF_PORTRAIT, Texture.class);
         // load atlasses
         assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(UPGRADED_REGULAR_TOWER_ASSETS), TextureAtlas.class);
@@ -89,10 +114,12 @@ public final class Assets {
 
         assetManager.load(getEnemyAssetPath(REGULAR_ENEMY_ASSETS), TextureAtlas.class);
         assetManager.load(getEnemyAssetPath(HEAVY_ENEMY_ASSETS), TextureAtlas.class);
-        // TODO: In normale Spritesheets verschieben.
         assetManager.load(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
 
         assetManager.load(getProjectileAssetPath(FIREBALL_ASSETS), TextureAtlas.class);
+
+        // Load Skins
+        assetManager.load(SKIN, Skin.class);
     }
 
     public static String getTowerAssetPath(String towerAsset) {

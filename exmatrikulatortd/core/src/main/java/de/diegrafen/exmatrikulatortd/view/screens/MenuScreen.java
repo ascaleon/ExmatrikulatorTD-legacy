@@ -3,9 +3,7 @@ package de.diegrafen.exmatrikulatortd.view.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -13,18 +11,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
-import de.diegrafen.exmatrikulatortd.model.Profile;
-import de.diegrafen.exmatrikulatortd.model.SaveState;
 import de.diegrafen.exmatrikulatortd.view.screens.uielements.ProfileTextButton;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
-import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
+ *
+ * Bildschirm für das Hauptmenü
+ *
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 17.07.2019 19:26
  */
@@ -48,55 +46,114 @@ public class MenuScreen extends BaseScreen {
 
     private Table profilesTable;
 
+    /**
+     * Menü-Tabelle für das Bearbeiten oder Aktualisieren eines Profils
+     */
     private Table newOrEditProfileMenuTable;
 
+    /**
+     * Ein Textfeld, in das der Name eines zu erstellenden oder zu aktualisierenden Profils eingetragen wird
+     */
     private TextField profileNameTextField;
 
+    /**
+     * Die Auswahlbox für den Schwierigkeitsgrad eines Profils
+     */
     private SelectBox<String> difficultySelectBox;
 
+    /**
+     * Die Highscore-Menü-Tabelle
+     */
     private Table highScoreMenuTable;
 
+    /**
+     * Die Tabelle mit der Liste der Highscores
+     */
     private Table highScoreTable;
 
+    /**
+     * Die Menü-Tabelle zur Auswahl von Client- oder Server-Modus
+     */
     private Table clientOrServerMenuTable;
 
+    /**
+     * Das Menü, in dem die Liste der Server angezeigt wird
+     */
     private Table serverListMenuTable;
 
+    /**
+     * Die Serverlisten-Tabelle
+     */
     private Table serverListTable;
 
     private Table singlePlayerGameModeTable;
 
     private Table multiPlayerGameModeTable;
 
+    /**
+     * Die GameLobby-Tabelle
+     */
     private Table gameLobbyTable;
 
+    /**
+     * Die Liste mit den verfügbaren Servern
+     */
     private List<String> serverList;
 
+    /**
+     * Der Sprite des Hintergrunds
+     */
     private Sprite backgroundSprite;
 
+    /**
+     * Der Skalierungsfaktor für eine "Kamerafahrt" über das Hintergrundbild
+     */
     private float scaleFactor = 1;
 
-    private final Skin basicSkin = createBasicSkin();
+    /**
+     * Der Menü-Skin
+     */
+    private Skin skin;
 
-    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
-
+    /**
+     * Die aktuell ausgewählte Spielstands-ID, die geladen oder gelöscht werden soll
+     */
     private Long idToLoad = -1L;
 
-    private TextButton saveNewOrEditedProfileButton = new TextButton(null, skin);
+    /**
+     * Button, der das Menü zum Aktualisieren und Erstellen von Profilen aufruft
+     */
+    private TextButton saveNewOrEditedProfileButton;
 
+    /**
+     * Gibt an, ob sich das Menü im Zustand "Profil aktualisieren" (true) oder "Profil bearbeiten" (false) befindet
+     */
     private boolean updateProfile;
 
+    /**
+     * Speichert die auswählbaren Schwierigkeitsgrade
+     */
     private Array<String> difficultyList;
 
+    /**
+     * Konstruktor für den Menü-Bildschirm
+     * @param mainController Der Main-Controller des Spiels
+     * @param assetManager Der Asset-Manager des Spiels
+     */
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
     }
 
+    /**
+     * Initialisiert den Bildschirm
+     */
     @Override
     public void init() {
         super.init();
         Texture backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
+        skin = getAssetManager().get(SKIN, Skin.class);
+        saveNewOrEditedProfileButton = new TextButton(null, skin);
         backgroundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         backgroundSprite = new Sprite(backgroundTexture);
         difficultyList = new Array<>(false, 4);
@@ -126,12 +183,22 @@ public class MenuScreen extends BaseScreen {
         getUi().addActor(menuStack);
     }
 
+    /**
+     * Setzt die Standardwerte für eine neue Menü-Tabelle und fügt sie dem Menu-Stack hinzu
+     * @param menuStack Der Menu-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     * @param menuTable Die hinzuzufügende Tabelle
+     */
     private void createGenericMenuTable(Stack menuStack, Table menuTable) {
         menuTable.setFillParent(true);
         menuTable.setVisible(false);
         menuStack.addActor(menuTable);
     }
 
+    /**
+     * Erzeugt das Hauptmenü
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createMainMenuTable(Stack menuStack) {
         mainMenuTable = new Table();
         TextButton newGame = new TextButton("Neues Spiel", skin);
@@ -186,6 +253,11 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
+    /**
+     * Erzeugt ein Menü zur Wahl zwischen Single- und Multiplayer
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createSelectGameTypeTable(Stack menuStack) {
         selectGameTypeTable = new Table();
         TextButton newSinglePlayerGameButton = new TextButton("Singleplayer", skin);
@@ -221,11 +293,20 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
+    /**
+     * Aktualisiert die Tabelle mit den Spielständen
+     */
     private void refreshSavestatesTable() {
         savestatesTable.clearChildren();
         getMainController().updateSaveStateButtons(this);
     }
 
+    /**
+     * Fügt dem einen neuen Button zur Auswahl von Spielständen hinzu
+     *
+     * @param text Der Buttontext
+     * @param saveStateId Die ID des Spielstands
+     */
     public void addSaveStateButton(String text, long saveStateId) {
         savestatesTable.row();
         TextButton savestateButton = new TextButton(text, skin);
@@ -239,6 +320,12 @@ public class MenuScreen extends BaseScreen {
         savestatesTable.add(savestateButton);
     }
 
+    /**
+     * Erzeugt ein Menü, bei dem man im Singleplayer auswählen kann, ob man ein neues Spiel
+     * erstellen will oder einen Spielstand laden möchte.
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createLoadOrNewGameTable(Stack menuStack) {
         loadOrNewGameTable = new Table();
 
@@ -277,6 +364,9 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
+    /**
+     * Aktualisiert die Tabelle mit den auswählbaren Profilen
+     */
     private void refreshProfilesTable() {
         profilesButtonGroup.clear();
         profilesTable.clearChildren();
@@ -285,7 +375,14 @@ public class MenuScreen extends BaseScreen {
 
     }
 
-    public void addProfileButton(final String profileName, final long profileId, final boolean isCurrentProfile) {
+    /**
+     * Fügt dem Profilauswahlbildschirm einen neuen Button hinzu
+     *
+     * @param profileName Der Name des Profils
+     * @param profileId Die ID des Profils
+     * @param currentProfile Gibt an, ob sich bei dem hinzugefügten Profil um das aktuell ausgewählte handelt
+     */
+    public void addProfileButton(final String profileName, final long profileId, final boolean currentProfile) {
         profilesTable.row();
         ProfileTextButton profileButton = new ProfileTextButton(profileName, skin, profileId);
 
@@ -299,7 +396,7 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        if (isCurrentProfile) {
+        if (currentProfile) {
             profileButton.setChecked(true);
             profileButton.setColor(Color.GREEN);
         }
@@ -311,7 +408,7 @@ public class MenuScreen extends BaseScreen {
     /**
      * Erzeugt das Menü zur Auswahl von Profilen
      *
-     * @param menuStack
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
      */
     private void createSelectProfileMenuTable(Stack menuStack) {
         selectProfileMenuTable = new Table();
@@ -385,8 +482,11 @@ public class MenuScreen extends BaseScreen {
         selectProfileMenuTable.add(buttonsTable).expand();
     }
 
-
-
+    /**
+     * Erzeugt das Menü zum Laden von Spielständen
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createSaveStatesMenuTable(Stack menuStack) {
         saveStatesMenuTable = new Table();
         savestatesTable = new Table();
@@ -438,12 +538,21 @@ public class MenuScreen extends BaseScreen {
         saveStatesMenuTable.add(buttonsTable).expand();
     }
 
+    /**
+     * Setzt das Profilerstellungs- und -bearbeitungsmenü zurück
+     *
+     */
     private void cleanupNewOrEditProfileMenu() {
         profileNameTextField.setColor(Color.WHITE);
         profileNameTextField.setText("");
         difficultySelectBox.setSelected(EASY_STRING);
     }
 
+    /**
+     * Erzeugt as Menü zur Verwaltung von Profilen
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createNewOrEditProfileMenuTable(Stack menuStack) {
         newOrEditProfileMenuTable = new Table();
         profileNameTextField = new TextField("", skin);
@@ -491,6 +600,11 @@ public class MenuScreen extends BaseScreen {
         addUIElement(newOrEditProfileMenuTable, backButton);
     }
 
+    /**
+     * Erzeugt ein Einstellungsmenü
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createPreferenceMenuTable(Stack menuStack) {
 
         // TODO: Einstellungsmöglichkeiten für Bildschirmgröße etc. hinzufügen
@@ -512,6 +626,10 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
+    /**
+     * Aktualisiert die Highscore-Tabelle
+     *
+     */
     private void refreshHighscoresTable() {
         List<Highscore> highscoreList = getMainController().retrieveHighscores(20);
         highScoreTable.clearChildren();
@@ -528,12 +646,17 @@ public class MenuScreen extends BaseScreen {
 
             TextButton rowTable = new TextButton("Player: " + playerName +
                     "\nScore: " + highscore.getScore() + " Round reached: " + highscore.getRoundNumberReached() +
-                    "\nDate played: " + DATE_FORMAT.format(highscore.getDatePlayed()), basicSkin);
+                    "\nDate played: " + DATE_FORMAT.format(highscore.getDatePlayed()), skin);
             rowTable.setDisabled(true);
             highScoreTable.add(rowTable);
         }
     }
 
+    /**
+     * Erzeugt einen Bildschirm, auf dem die Highscores angezeigt werden
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createHighscoreMenuTable(Stack menuStack) {
 
         highScoreMenuTable = new Table();
@@ -560,6 +683,11 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
+    /**
+     * Erzeugt einen Auswahlbildschirm für das Suchen oder Erstellen von Partien im Multiplayermodus
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createSelectClientOrServerMenu(Stack menuStack) {
 
         clientOrServerMenuTable = new Table();
@@ -596,7 +724,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectGameTypeMenu(clientOrServerMenuTable);
-                //showMainMenu(clientOrServerMenuTable);
                 backButton.setChecked(false);
             }
         });
@@ -653,7 +780,7 @@ public class MenuScreen extends BaseScreen {
                 int difficulty = Integer.parseInt(lines[3]);
                 String difficultyString = difficultyList.get(difficulty);
                 TextButton rowTable = new TextButton("Map: " + lines[1] + "\nAnzahl Spieler: " + lines[2] +
-                        "\n Schwierigkeitsgrad: " + difficultyString, basicSkin);
+                        "\n Schwierigkeitsgrad: " + difficultyString, skin);
                 serverListTable.add(rowTable);
                 rowTable.addListener(new ChangeListener() {
                     @Override
@@ -708,7 +835,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     /**
-     * Eigene Zeichenanweisungen.
+     * Zeichnet die grafischen Element des Bildschirms
      *
      * @param deltaTime Die Zeit in Sekunden seit dem letzten Frame.
      */
@@ -723,24 +850,40 @@ public class MenuScreen extends BaseScreen {
 
         getSpriteBatch().setProjectionMatrix(getCamera().combined);
         getSpriteBatch().begin();
-        // FIXME: Kamerafahrt funktioniert irgendwie noch nicht.
         getSpriteBatch().draw(backgroundSprite, -getCamera().viewportWidth / 2, -getCamera().viewportHeight / 2, getCamera().viewportWidth * scaleFactor, getCamera().viewportHeight * scaleFactor);
         getSpriteBatch().end();
     }
 
+    /**
+     * Blendet eine aufgerufene Tabelle ein, während die aufrufende Tabelle ausgeblendet wird
+     *
+     * @param callingTable Die aufrufende Tabelle
+     * @param calledTable Die aufgerufene Tabelle
+     */
     private void showTable(Table callingTable, Table calledTable) {
         callingTable.setVisible(false);
         calledTable.setVisible(true);
     }
 
+    /**
+     * Zeigt das Hauptmenü an. Die aufrufende Tabelle
+     * wird ausgeblendet
+     *
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showMainMenu(Table callingTable) {
         showTable(callingTable, mainMenuTable);
     }
 
+    /**
+     * Zeigt ein Menü zur Auswahl zwischen Single- und Multiplayer an. Die aufrufende Tabelle
+     * wird ausgeblendet
+     *
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showSelectGameTypeMenu(Table callingTable) {
         if (getMainController().noProfilesYet()) {
             showNewProfileMenu(callingTable);
-            System.out.println("Hallo?");
         } else if (!getMainController().hasCurrentProfile()) {
             showSelectProfileMenu(callingTable);
         } else {
@@ -748,33 +891,66 @@ public class MenuScreen extends BaseScreen {
         }
     }
 
+    /**
+     * Zeigt ein Menü an, bei dem man im Singleplayer auswählen kann, ob man ein neues Spiel
+     * erstellen will oder einen Spielstand laden möchte. Die aufrufende Tabelle wird
+     * ausgeblendet
+     *
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showLoadOrNewGameMenu(Table callingTable) {
         showTable(callingTable, loadOrNewGameTable);
     }
 
+    /**
+     * Zeigt das Menü zum Laden von Spielständen an, während die aufrufende Tabelle
+     * ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showSaveStatesMenuTable(Table callingTable) {
         showTable(callingTable, saveStatesMenuTable);
     }
 
+    /**
+     * Zeigt das Menü zur Auswahl des Spielens als Client oder als Server an, während die aufrufende Tabelle
+     * ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showClientOrServerMenu(Table callingTable) {
         showTable(callingTable, clientOrServerMenuTable);
     }
 
+    /**
+     * Zeigt die Spiellobby an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showGameLobbyMenu(Table callingTable) {
         showTable(callingTable, gameLobbyTable);
     }
 
+    /**
+     * Zeigt das Menü zum Auswählen von Profilen an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showSelectProfileMenu(Table callingTable) {
         refreshProfilesTable();
         showTable(callingTable, selectProfileMenuTable);
     }
 
+    /**
+     * Zeigt das Menü zum Erstellen von Profilen an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showNewProfileMenu(Table callingTable) {
         saveNewOrEditedProfileButton.setText("Profil erstellen");
         updateProfile = false;
         showTable(callingTable, newOrEditProfileMenuTable);
     }
 
+    /**
+     * Zeigt das Menü zum Bearbeiten von Profilen an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showEditProfileMenu(Table callingTable) {
         saveNewOrEditedProfileButton.setText("Profil aktualisieren");
         profileNameTextField.setText(getMainController().getCurrentProfileName());
@@ -783,6 +959,10 @@ public class MenuScreen extends BaseScreen {
         showTable(callingTable, newOrEditProfileMenuTable);
     }
 
+    /**
+     * Aktualisiert und zeigt die Highscore-Tabelle an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showHighScoreMenu(Table callingTable) {
         refreshHighscoresTable();
         showTable(callingTable, highScoreMenuTable);
@@ -796,29 +976,14 @@ public class MenuScreen extends BaseScreen {
         showTable(callingTable, serverListMenuTable);
     }
 
-    private Skin createBasicSkin() {
-        BitmapFont bitmapFont = getBitmapFont();
-        Skin skin = new Skin();
-        skin.add("default", bitmapFont);
-
-        Pixmap pixmap = new Pixmap(Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 10, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        skin.add("background", new Texture(pixmap));
-
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.up = skin.newDrawable("background", Color.GRAY);
-        textButtonStyle.down = skin.newDrawable("background", Color.DARK_GRAY);
-        textButtonStyle.checked = skin.newDrawable("background", Color.DARK_GRAY);
-        textButtonStyle.over = skin.newDrawable("background", Color.LIGHT_GRAY);
-        textButtonStyle.font = skin.getFont("default");
-        skin.add("default", textButtonStyle);
-
-        return skin;
-    }
-
-    private void addUIElement(Table table, Actor button) {
-        table.add(button).fillX().uniformX();
+    /**
+     * Fügt einer Tabelle ein UI-Element hinzu
+     *
+     * @param table Die Tabelle, der das Element hinzugefügt werden soll
+     * @param actor Das hinzuzufügende Element
+     */
+    private void addUIElement(Table table, Actor actor) {
+        table.add(actor).fillX().uniformX();
         table.row().pad(10, 0, 0, 0);
     }
 
