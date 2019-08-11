@@ -476,10 +476,10 @@ public class GameScreen extends BaseScreen implements GameView {
                                     "Name: " + coordinates.getTower().getName() + "\n" +
                                     "Level: " + coordinates.getTower().getUpgradeLevel() + "\n" +
                                     "Angriff: " + coordinates.getTower().getBaseAttackDamage() + "\n" +
-                                    "eff. Angriff: " + coordinates.getTower().getCurrentAttackDamage() + "\n" +
                                     "Speed: " + coordinates.getTower().getBaseAttackSpeed() + "\n" +
                                     "eff. Speed: " + coordinates.getTower().getCurrentAttackSpeed() + "\n" +
                                     "Reichweite: " + coordinates.getTower().getAttackRange() + "\n" +
+                                    "Aura-Reichweite: " + coordinates.getTower().getAuraRange() + "\n" +
                                     "Upgradekosten: " + coordinates.getTower().getUpgradePrice() + "\n" +
                                     "Verkaufen: " + coordinates.getTower().getSellPrice()
                     );
