@@ -116,7 +116,7 @@ public final class WaveFactory {
     private static Wave createFastWave() {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave; i++) {
-            Enemy enemy = createNewEnemy(REGULAR_ENEMY);
+            Enemy enemy = createNewEnemy(FAST_ENEMY);
             wave.addEnemy(enemy);
             //enemy.setWave(wave);
         }
@@ -167,7 +167,7 @@ public final class WaveFactory {
     private static Wave createHeavyAndFastWave() {
         Wave wave = new Wave();
         for (int i = 0; i < enemiesPerWave / 2; i++) {
-            wave.addEnemy(createNewEnemy(REGULAR_ENEMY));
+            wave.addEnemy(createNewEnemy(HEAVY_ENEMY));
         }
         for (int i = 0; i < enemiesPerWave / 2; i++) {
             wave.addEnemy(createNewEnemy(FAST_ENEMY));
