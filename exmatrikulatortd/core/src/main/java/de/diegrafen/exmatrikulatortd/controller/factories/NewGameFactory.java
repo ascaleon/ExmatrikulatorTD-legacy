@@ -85,11 +85,13 @@ public final class NewGameFactory {
     private static List<Wave> createWaves() {
         List<Wave> waves = new LinkedList<>();
         int i = 0;
-        while (i < 4) {
+        while (i < 3) {
             waves.add(createWave(REGULAR_WAVE));
             waves.add(createWave(HEAVY_WAVE));
+            waves.add(createWave(FAST_WAVE));
             waves.add(createWave(REGULAR_AND_HEAVY_WAVE));
-            //waves.add(createWave(BOSS_WAVE));
+            waves.add(createWave(HEAVY_AND_FAST_WAVE));
+            waves.add(createWave(BOSS_WAVE));
             i++;
         }
         return waves;

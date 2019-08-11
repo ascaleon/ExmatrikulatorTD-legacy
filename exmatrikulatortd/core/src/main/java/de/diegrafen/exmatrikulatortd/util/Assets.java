@@ -89,6 +89,8 @@ public final class Assets {
 
         assetManager.load(getEnemyAssetPath(REGULAR_ENEMY_ASSETS), TextureAtlas.class);
         assetManager.load(getEnemyAssetPath(HEAVY_ENEMY_ASSETS), TextureAtlas.class);
+        assetManager.load(getEnemyAssetPath(FAST_ENEMY_ASSETS), TextureAtlas.class);
+        assetManager.load(getEnemyAssetPath(BOSS_ENEMY_ASSETS), TextureAtlas.class);
         // TODO: In normale Spritesheets verschieben.
         assetManager.load(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
 
