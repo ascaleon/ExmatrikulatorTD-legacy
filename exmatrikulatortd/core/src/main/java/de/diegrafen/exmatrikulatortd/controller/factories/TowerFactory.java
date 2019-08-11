@@ -75,7 +75,7 @@ public final class TowerFactory {
      */
     private static Tower createRegularTower() {
         return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 25, 4, 0.5f,
-                NORMAL, 0.45f, new LinkedList<>(), 0, 200, 100, 1, 10,
+                NORMAL, 0.45f, new LinkedList<>(), 0, 200, 200, 1, 10,
                 REGULAR_TOWER_ASSETS, REGULAR_TOWER_PORTRAIT, REGULAR_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(),
                 true, 25, 0.95f, 0.125f, 0);
     }
