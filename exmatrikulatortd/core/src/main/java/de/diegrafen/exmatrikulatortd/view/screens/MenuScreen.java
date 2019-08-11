@@ -20,7 +20,6 @@ import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
- *
  * Bildschirm für das Hauptmenü
  *
  * @author Jan Romann <jan.romann@uni-bremen.de>
@@ -28,22 +27,49 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.*;
  */
 public class MenuScreen extends BaseScreen {
 
+    /**
+     * Tabelle für das Hauptmenü
+     */
     private Table mainMenuTable;
 
+    /**
+     * Tabelle für das Einstellungs-Menü
+     */
     private Table preferencesMenuTable;
 
+    /**
+     * Tabelle für das Untermenü, um entweder Single- oder Multiplayer zu spielen
+     */
     private Table selectGameTypeTable;
 
+    /**
+     * Untermenü für den Singleplayer, um entweder einen Spielstand zu laden oder ein neues Spiel anzufangen
+     */
     private Table loadOrNewGameTable;
 
+    /**
+     * Untermenü für die Verwaltung von Spielstaenden
+     */
     private Table saveStatesMenuTable;
 
+    /**
+     * Tabelle zur Auflistung der gespeicherten Spielstaende
+     */
     private Table savestatesTable;
 
+    /**
+     * Menü für die Verwaltung von Profilen
+     */
     private Table selectProfileMenuTable;
 
+    /**
+     * ButtonGroup, um die Menge an Buttons für jeweils ein Profil besser zu verwalten
+     */
     private ButtonGroup<TextButton> profilesButtonGroup;
 
+    /**
+     * Tabelle zur Auflistung der Profile
+     */
     private Table profilesTable;
 
     /**
@@ -141,8 +167,9 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Konstruktor für den Menü-Bildschirm
+     *
      * @param mainController Der Main-Controller des Spiels
-     * @param assetManager Der Asset-Manager des Spiels
+     * @param assetManager   Der Asset-Manager des Spiels
      */
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
@@ -190,6 +217,7 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Setzt die Standardwerte für eine neue Menü-Tabelle und fügt sie dem Menu-Stack hinzu
+     *
      * @param menuStack Der Menu-Stack, über den die einzelnen Untermenüs aufgerufen werden können
      * @param menuTable Die hinzuzufügende Tabelle
      */
@@ -213,6 +241,7 @@ public class MenuScreen extends BaseScreen {
         TextButton exit = new TextButton("Spiel verlassen", skin);
 
         createGenericMenuTable(menuStack, mainMenuTable);
+        // Da by-default alle Tabellen nicht sichtbar sind, müssen wir das Hauptmenu selbst auf visible setzen
         mainMenuTable.setVisible(true);
 
         addUIElement(mainMenuTable, newGame);
@@ -225,7 +254,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectGameTypeMenu(mainMenuTable);
-                System.out.println("Ohai?");
             }
         });
 
@@ -309,7 +337,7 @@ public class MenuScreen extends BaseScreen {
     /**
      * Fügt dem einen neuen Button zur Auswahl von Spielständen hinzu
      *
-     * @param text Der Buttontext
+     * @param text        Der Buttontext
      * @param saveStateId Die ID des Spielstands
      */
     public void addSaveStateButton(String text, long saveStateId, boolean multiplayer) {
@@ -358,6 +386,7 @@ public class MenuScreen extends BaseScreen {
         loadSaveStateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                // Wenn das Menu fuer die Spielstaende gezeigt werden soll, wird zu erst die Tabelle dazu aktualisiert
                 refreshSavestatesTable();
                 showSaveStatesMenuTable(loadOrNewGameTable);
             }
@@ -377,6 +406,7 @@ public class MenuScreen extends BaseScreen {
      */
     private void refreshProfilesTable() {
         profilesButtonGroup.clear();
+        // Damit nicht Profile, die vorher die Tabelle befuellten, doppelt auftauchen
         profilesTable.clearChildren();
         profilesTable.add(new Label("Profil auswählen.", skin));
         getMainController().updateProfileButtons(this);
@@ -386,8 +416,8 @@ public class MenuScreen extends BaseScreen {
     /**
      * Fügt dem Profilauswahlbildschirm einen neuen Button hinzu
      *
-     * @param profileName Der Name des Profils
-     * @param profileId Die ID des Profils
+     * @param profileName    Der Name des Profils
+     * @param profileId      Die ID des Profils
      * @param currentProfile Gibt an, ob sich bei dem hinzugefügten Profil um das aktuell ausgewählte handelt
      */
     public void addProfileButton(final String profileName, final long profileId, final boolean currentProfile) {
@@ -430,6 +460,7 @@ public class MenuScreen extends BaseScreen {
 
         final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, skin);
 
+        // Aufrufen von refreshProfilesTable bewirkt bei Initialisierung das die Tabelle ueberhaupt erst befuellt wird
         refreshProfilesTable();
 
         Table buttonsTable = new Table();
@@ -464,7 +495,6 @@ public class MenuScreen extends BaseScreen {
         deleteProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
                 final ProfileTextButton selectedProfileButton = (ProfileTextButton) profilesButtonGroup.getChecked();
                 if (selectedProfileButton != null) {
                     getMainController().deleteProfile(selectedProfileButton.getID());
@@ -561,9 +591,9 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Setzt das Profilerstellungs- und -bearbeitungsmenü zurück
-     *
      */
     private void cleanupNewOrEditProfileMenu() {
+        // Damit nicht beim erneuten Oeffnen des Menu die Werte von letzter Bearbeitung erhalten bleiben!
         profileNameTextField.setColor(Color.WHITE);
         profileNameTextField.setText("");
         difficultySelectBox.setSelected(EASY_STRING);
@@ -649,10 +679,11 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Aktualisiert die Highscore-Tabelle
-     *
      */
     private void refreshHighscoresTable() {
+        // Maximal 20 Highscores in der Liste
         List<Highscore> highscoreList = getMainController().retrieveHighscores(20);
+        // Wie bei refreshProfilesTable
         highScoreTable.clearChildren();
 
         for (Highscore highscore : highscoreList) {
@@ -799,6 +830,7 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                // Ist man nicht mehr im Begriff mit jmd. anderem zu spielen, besteht auch kein Grund dazu die Netzwerkfunktionalitaet laufen zu lassen
                 getMainController().shutdownConnections();
                 showClientOrServerMenu(gameLobbyTable);
                 backButton.setChecked(false);
@@ -810,6 +842,7 @@ public class MenuScreen extends BaseScreen {
      * Aktualisiert die Serverliste
      */
     private void updateServerList() {
+        // Wie bei refreshProfilesTable
         serverListTable.clearChildren();
 
         serverList = getMainController().getLocalGameServers();
@@ -817,7 +850,6 @@ public class MenuScreen extends BaseScreen {
         for (String server : serverList) {
             String[] lines = server.split("\n");
             serverListTable.row();
-            System.out.println(lines.length);
             if (lines.length == 4) {
                 int difficulty = Integer.parseInt(lines[3]);
                 String difficultyString = difficultyList.get(difficulty);
@@ -898,7 +930,7 @@ public class MenuScreen extends BaseScreen {
      * Blendet eine aufgerufene Tabelle ein, während die aufrufende Tabelle ausgeblendet wird
      *
      * @param callingTable Die aufrufende Tabelle
-     * @param calledTable Die aufgerufene Tabelle
+     * @param calledTable  Die aufgerufene Tabelle
      */
     private void showTable(Table callingTable, Table calledTable) {
         callingTable.setVisible(false);
@@ -945,6 +977,7 @@ public class MenuScreen extends BaseScreen {
     /**
      * Zeigt das Menü zum Laden von Spielständen an, während die aufrufende Tabelle
      * ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showSaveStatesMenuTable(Table callingTable) {
@@ -954,6 +987,7 @@ public class MenuScreen extends BaseScreen {
     /**
      * Zeigt das Menü zur Auswahl des Spielens als Client oder als Server an, während die aufrufende Tabelle
      * ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showClientOrServerMenu(Table callingTable) {
@@ -962,6 +996,7 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Zeigt die Spiellobby an, während die aufrufende Tabelle ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showGameLobbyMenu(Table callingTable) {
@@ -970,6 +1005,7 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Zeigt das Menü zum Auswählen von Profilen an, während die aufrufende Tabelle ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showSelectProfileMenu(Table callingTable) {
@@ -979,6 +1015,7 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Zeigt das Menü zum Erstellen von Profilen an, während die aufrufende Tabelle ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showNewProfileMenu(Table callingTable) {
@@ -989,6 +1026,7 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Zeigt das Menü zum Bearbeiten von Profilen an, während die aufrufende Tabelle ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showEditProfileMenu(Table callingTable) {
@@ -1001,6 +1039,7 @@ public class MenuScreen extends BaseScreen {
 
     /**
      * Aktualisiert und zeigt die Highscore-Tabelle an, während die aufrufende Tabelle ausgeblendet wird
+     *
      * @param callingTable Die aufrufende Tabelle
      */
     private void showHighScoreMenu(Table callingTable) {
@@ -1008,10 +1047,18 @@ public class MenuScreen extends BaseScreen {
         showTable(callingTable, highScoreMenuTable);
     }
 
+    /**
+     * Zeigt das Menü für Einstellungen an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showPreferencesMenu(Table callingTable) {
         showTable(callingTable, preferencesMenuTable);
     }
 
+    /**
+     * Zeigt das Untermenü für die Listung von Servern an, während die aufrufende Tabelle ausgeblendet wird
+     * @param callingTable Die aufrufende Tabelle
+     */
     private void showServerListMenu(Table callingTable) {
         showTable(callingTable, serverListMenuTable);
     }
