@@ -209,6 +209,10 @@ public class GameScreen extends BaseScreen implements GameView {
 
     private int opposingPlayerNumber;
 
+    private Player opposingPlayer;
+
+    private Player localPlayer;
+
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
      *
@@ -412,7 +416,20 @@ public class GameScreen extends BaseScreen implements GameView {
         //multiplexer.addProcessor(inputProcessorCam);
 
         numberOfPlayers = gameState.getPlayers().size();
+
         background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+
+        localPlayer = logicController.getLocalPlayer();
+
+        if(logicController.isMultiplayer()){
+            if (logicController.getLocalPlayerNumber() == 0) {
+                opposingPlayerNumber = 1;
+            } else {
+                opposingPlayerNumber = 0;
+            }
+
+            opposingPlayer = gameState.getPlayerByNumber(opposingPlayerNumber);
+        }
         initializeUserInterface();
 
         multiplexer.addProcessor(inputProcessorCam);
@@ -472,16 +489,8 @@ public class GameScreen extends BaseScreen implements GameView {
 
     @Override
     public void update() {
-        Player localPlayer = logicController.getLocalPlayer();
 
         if (logicController.isMultiplayer()) {
-            //int numberOfPlayers = gameState.getPlayers().size();
-            if (logicController.getLocalPlayerNumber() == 0) {
-                opposingPlayerNumber = 1;
-            } else {
-                opposingPlayerNumber = 0;
-            }
-            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
             if (opposingPlayer != null) {
                 opponentHealth.setValue(opposingPlayer.getCurrentLives());
                 opponentScore.setText(opposingPlayer.getScore());
@@ -619,8 +628,6 @@ public class GameScreen extends BaseScreen implements GameView {
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
-        Player localPlayer = logicController.getLocalPlayer();
-
         defaultScreen.setFillParent(true);
 
         initProgressbarStyle();
@@ -740,7 +747,6 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     private void initMultiplayerUiComponents(Player localPlayer){
-        Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
         opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
         opponentHealth.setScale(1 / 2);
         opponentHealth.setValue(opposingPlayer.getCurrentLives());
@@ -1110,32 +1116,29 @@ public class GameScreen extends BaseScreen implements GameView {
     private void gameStatsScreen(){
         Group statScreen = new Group();
 
-        Player local = logicController.getLocalPlayer();
-
         Table firstColum = new Table();
         Table secondColum = new Table();
         Table thirdColum = new Table();
         firstColum.add(new Label("Statistiken:", skin)).row();
-        secondColum.add(new Label(local.getPlayerName(), skin)).row();
+        secondColum.add(new Label(localPlayer.getPlayerName(), skin)).row();
         firstColum.add(new Label("Score", skin)).row();
-        secondColum.add(new Label(Integer.toString(local.getScore()), skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getScore()), skin)).row();
         firstColum.add(new Label("Besiegte Gegner", skin)).row();
-        secondColum.add(new Label(Integer.toString(local.getKillTracker()), skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getKillTracker()), skin)).row();
         firstColum.add(new Label("Abgeschlossene Wellen", skin)).row();
         secondColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
         firstColum.add(new Label("Erbaute Tuerme", skin)).row();
-        secondColum.add(new Label(Integer.toString(local.getTowerCounter()), skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getTowerCounter()), skin)).row();
         firstColum.add(new Label("Verdientes Gold", skin)).row();
-        secondColum.add(new Label(Integer.toString(local.getResources() - 1000), skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getResources() - 1000), skin)).row();
 
         if(logicController.isMultiplayer()){
-            Player opponent = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
-            thirdColum.add(new Label(opponent.getPlayerName(), skin)).row();
-            thirdColum.add(new Label(Integer.toString(opponent.getScore()), skin)).row();
-            thirdColum.add(new Label(Integer.toString(opponent.getKillTracker()), skin)).row();
+            thirdColum.add(new Label(opposingPlayer.getPlayerName(), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getScore()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getKillTracker()), skin)).row();
             thirdColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
-            thirdColum.add(new Label(Integer.toString(opponent.getTowerCounter()), skin)).row();
-            thirdColum.add(new Label(Integer.toString(opponent.getResources() -1000), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getTowerCounter()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getResources() -1000), skin)).row();
         }
 
         TextButton back = new TextButton("Zurueck", skin);
