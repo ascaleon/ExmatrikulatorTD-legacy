@@ -1086,31 +1086,13 @@ public class GameScreen extends BaseScreen implements GameView {
         save.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
-                Gdx.input.getTextInput(new Input.TextInputListener() {
-                    @Override
-                    public void input(String text) {
-                        if (text != null && !text.equals("") && text.trim().length() > 0) {
-                            logicController.saveGame(text);
-                            displayErrorMessage("Spiel gespeichert");
-                        } else {
-                            displayErrorMessage("Speichern fehlgeschlagen");
-                        }
-                    }
-
-                    @Override
-                    public void canceled() {
-                        displayErrorMessage("Speichern abgebrochen");
-                    }
-                }, "Name des Spielstand", "savename", "");
-
+                logicController.saveGame("Spielstand");
             }
         });
 
         TextButton back2main = new TextButton("Menu", skin);
 
-        //if (logicController.isPause()) {
-            TextButton load = new TextButton("Load", skin);
+            TextButton load = new TextButton("Quickload", skin);
             load.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
