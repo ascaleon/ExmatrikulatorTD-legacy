@@ -199,6 +199,8 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private Table messageArea;
 
+    private Table menuMessageArea;
+
     /**
      *
      */
@@ -561,7 +563,12 @@ public class GameScreen extends BaseScreen implements GameView {
         }
         if (messageLabel != null) {
             if (timer <= 0) {
-                messageArea.removeActor(messageLabel);
+                if(defaultScreen.isVisible()) {
+                    messageArea.removeActor(messageLabel);
+                }
+                else{
+                    menuMessageArea.removeActor(messageLabel);
+                }
             } else {
                 timer = timer - deltaTime;
                 messageLabel.setColor(1, 0, 0, 1 * timer / 3);
@@ -852,8 +859,8 @@ public class GameScreen extends BaseScreen implements GameView {
         opponent.add(opponentScore).left().row();
         opponent.add(opponentHealth).left();
 
-        Drawable sendRegEnemyIcon = new TextureRegionDrawable(getAssetManager().get(BUFF_PORTRAIT, Texture.class));
-        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(getAssetManager().get(BUFF_PORTRAIT, Texture.class));
+        Drawable sendRegEnemyIcon = new TextureRegionDrawable(getAssetManager().get(SEND_REGULAR_ENEMY_ICON, Texture.class));
+        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(getAssetManager().get(SEND_HEAVY_ENEMY_ICON, Texture.class));
 
         ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
         ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
@@ -872,7 +879,7 @@ public class GameScreen extends BaseScreen implements GameView {
         });
         sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", tooltipManager, skin));
         sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", tooltipManager, skin));
-        sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
+        sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(5).row();
         sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
     }
 
@@ -974,10 +981,16 @@ public class GameScreen extends BaseScreen implements GameView {
     public void displayErrorMessage(String message) {
         Label.LabelStyle messageStyle = new Label.LabelStyle();
         messageStyle.font = getBitmapFont();
-        messageLabel = new Label(message, messageStyle);
-        messageLabel.setColor(Color.RED);
-        messageArea.clear();
-        messageArea.add(messageLabel);
+            messageLabel = new Label(message, messageStyle);
+            messageLabel.setColor(Color.RED);
+        if(defaultScreen.isVisible()) {
+            messageArea.clear();
+            messageArea.add(messageLabel);
+        }
+        else{
+            menuMessageArea.clear();
+            menuMessageArea.add(messageLabel);
+        }
         timer = 3;
     }
 
@@ -1056,7 +1069,7 @@ public class GameScreen extends BaseScreen implements GameView {
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
         Table buttonTable = new Table();
-        Table message = new Table();
+        menuMessageArea = new Table();
         TextButton resume = new TextButton("Resume", skin);
         resume.addListener(new ChangeListener() {
             @Override
@@ -1119,30 +1132,26 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            message.add(messageArea);
-            message.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / buttonTable.getRows());
+            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
 
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
-            pauseGroup.addActor(message);
+            pauseGroup.addActor(menuMessageArea);
 
             getUi().addActor(pauseGroup);
 
         if (logicController.isMultiplayer()) {
             back2main.addListener(new TextTooltip("Warnung: Diese Aktion trennt die Verbindung und beendet die Partie", tooltipManager, skin));
             buttonTable.add(resume).top().center().spaceBottom(10).row();
-            buttonTable.add(back2main).top().center().row();
-            if (logicController.isServer()) {
+            if(logicController.isServer()){
                 buttonTable.add(save).top().center().spaceBottom(10).row();
             }
+            buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
-
-            message.add(messageArea);
-            message.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / buttonTable.getRows());
 
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
-            pauseGroup.addActor(message);
+            pauseGroup.addActor(menuMessageArea);
 
             getUi().addActor(pauseGroup);
         }

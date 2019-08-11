@@ -32,7 +32,9 @@ public final class Assets {
 
     public static final String SELL_ICON = "sellIcon.png";
 
-    public static final String BUFF_PORTRAIT = "sellIcon.png";
+    public static final String SEND_REGULAR_ENEMY_ICON = "sendEnemyRegularIcon.png";
+
+    public static final String SEND_HEAVY_ENEMY_ICON = "sendEnemyHeavyIcon.png";
 
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
@@ -103,7 +105,9 @@ public final class Assets {
         assetManager.load(LOSE_IMAGE, Texture.class);
         assetManager.load(UPRADE_ICON, Texture.class);
         assetManager.load(SELL_ICON, Texture.class);
-        assetManager.load(BUFF_PORTRAIT, Texture.class);
+        assetManager.load(SEND_HEAVY_ENEMY_ICON, Texture.class);
+        assetManager.load(SEND_REGULAR_ENEMY_ICON, Texture.class);
+
         // load atlasses
         assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(UPGRADED_REGULAR_TOWER_ASSETS), TextureAtlas.class);
