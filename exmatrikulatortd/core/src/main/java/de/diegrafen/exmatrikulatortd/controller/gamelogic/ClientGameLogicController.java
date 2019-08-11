@@ -29,7 +29,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     private boolean synchronize = false;
 
-
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
      */
@@ -196,13 +195,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         player.addToResources(tower.getSellPrice());
         player.notifyObserver();
         removeTower(tower);
-    }
-
-    /**
-     * Holt den aktuellen Spielzustand vom Server
-     */
-    public void refreshLocalGameState() {
-
     }
 
     /**
