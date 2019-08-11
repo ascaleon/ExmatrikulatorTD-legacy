@@ -77,7 +77,7 @@ public final class TowerFactory {
         return new Tower("Regular Tower", REGULAR_TOWER_DESCRIPTION, REGULAR_TOWER, 25, 4, 0.5f,
                 NORMAL, 0.45f, new LinkedList<>(), 0, 200, 100, 1, 10,
                 REGULAR_TOWER_ASSETS, REGULAR_TOWER_PORTRAIT, REGULAR_TOWER_PORTRAIT_SELECTED, 0, 0, new LinkedList<>(),
-                true, 25, 1.03f, 0.125f, 0);
+                true, 25, 0.95f, 0.125f, 0);
     }
 
     /**
@@ -95,9 +95,9 @@ public final class TowerFactory {
         auras.add(slowAura);
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 10,
-                4, 3, NORMAL, 0.15f, auras, 4, 500, 500,
+                4, 3, LOGIC, 0.15f, auras, 4, 500, 500,
                 1, 3, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, debuffs, true,
-                5, 1.03f, 0.25f, 0.25f);
+                5, 0.95f, 0.25f, 0.25f);
     }
 
 
@@ -114,7 +114,7 @@ public final class TowerFactory {
         return new Tower("Corruption Tower", CORRUPTION_TOWER_DESCRIPTION, CORRUPTION_TOWER, 100, 4, 1,
                 PIERCING, 0.4f, new LinkedList<>(), 0, 300, 300, 1, 10,
                 CORRUPTION_TOWER_ASSETS, CORRUPTION_TOWER_PORTRAIT, CORRUPTION_TOWER_PORTRAIT_SELECTED,
-                0, 0, attackDebuffs, true, 50, 1.03f, 0.33f, 0);
+                0, 0, attackDebuffs, true, 50, 0.95f, 0.33f, 0);
     }
 
     /**
@@ -126,7 +126,7 @@ public final class TowerFactory {
         return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4, 3,
                 EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 500, 250, 500, 1, 10, EXPLOSIVE_TOWER_ASSETS, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED,
                 0.5f, 1, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true, 100,
-                1.03f, 0.25f,0);
+                0.95f, 0.25f,0);
     }
 
     /**
@@ -148,8 +148,8 @@ public final class TowerFactory {
 
         return new Tower("Aura Tower", AURA_TOWER_DESCRIPTION, AURA_TOWER, 10,
                 4, 3, NORMAL, 0, auras,
-                4, 1000, 750, 1,
-                1, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0, 0, attackDebuffs, true,
-                10, 0.25f,0.5f, 1);
+                4, 1000, 1000, 1,
+                3, AURA_TOWER_ASSETS, AURA_TOWER_PORTRAIT, AURA_TOWER_PORTRAIT_SELECTED, 0, 0, attackDebuffs, true,
+                10, 0.95f,0.5f, 1);
     }
 }
