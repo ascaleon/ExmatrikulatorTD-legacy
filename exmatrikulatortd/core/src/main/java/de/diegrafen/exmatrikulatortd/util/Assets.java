@@ -80,7 +80,7 @@ public final class Assets {
 
     public static final String BOSS_ENEMY_ASSETS = "enemy_boss";
 
-    public static final String DEATH_ANIMATION_SPRITE_PATH = "sprites/objects/projectiles/mine/";
+    public static final String DEATH_ANIMATION_SPRITE_PATH = "sprites/objects/projectiles/";
 
     public static final String DEATH_ANIMATION_ASSETS = "explosion";
 
