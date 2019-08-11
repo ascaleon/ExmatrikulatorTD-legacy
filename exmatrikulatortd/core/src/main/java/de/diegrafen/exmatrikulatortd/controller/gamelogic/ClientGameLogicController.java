@@ -2,11 +2,12 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 
 import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.controller.factories.TowerUpgrader;
 import de.diegrafen.exmatrikulatortd.model.*;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.screens.GameView;
+
+import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
@@ -18,6 +19,10 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.cr
  * @version 15.06.2019 05:29
  */
 public class ClientGameLogicController extends GameLogicController implements ClientLogicController {
+
+    private List<Tower> updateTowers;
+
+    private List<Player> updatePlayers;
 
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
@@ -31,12 +36,13 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * @param profile        Das Spieler-Profil
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
-    public ClientGameLogicController(MainController mainController, Profile profile, int numberOfPlayers, int localPlayerNumber,
-                                     int gamemode, GameView gameView, String mapPath, GameClient gameClient) {
-        super(mainController, profile, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath);
+    public ClientGameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
+                                     int gamemode, GameView gameView, String mapPath, GameClient gameClient, String[] names) {
+        super(mainController, difficulty, numberOfPlayers, localPlayerNumber, gamemode, gameView, mapPath, names);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
         gameClient.reportFinishedLoading();
+        this.updateTowers = null;
     }
 
     public ClientGameLogicController(MainController mainController, SaveState saveState, int allocatedPlayerNumber, GameView gameView, GameClient gameClient) {
@@ -46,6 +52,18 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         setLocalPlayerNumber(allocatedPlayerNumber);
     }
 
+    /**
+     * @param deltaTime Die Zeit, die seit dem Rendern des letzten Frames vergangen ist
+     */
+    @Override
+    public void update(float deltaTime) {
+        if (updateTowers != null & updatePlayers != null) {
+            reinitializeGame(getGameScreen(), updateTowers, updatePlayers);
+            updateTowers = null;
+            updatePlayers = null;
+        }
+        super.update(deltaTime);
+    }
 
     /**
      * Rüstet einen Turm auf
@@ -73,7 +91,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         Player owningPlayer = getGamestate().getPlayerByNumber(playerNumber);
         Tower tower = mapCell.getTower();
         owningPlayer.setResources(owningPlayer.getResources() - tower.getUpgradePrice());
-        TowerUpgrader.upgradeTower(tower);
+        super.upgradeTower(tower);
         owningPlayer.notifyObserver();
         tower.notifyObserver();
     }
@@ -103,7 +121,7 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         Player sendingPlayer = getGamestate().getPlayerByNumber(sendingPlayerNumber);
         Player playerToSendTo = getGamestate().getPlayerByNumber(playerToSendToNumber);
 
-        playerToSendTo.getWaves().get(getGamestate().getRoundNumber() + 1).addEnemy(enemy);
+        playerToSendTo.getWaves().get(getGamestate().getRoundNumber()).addEnemy(enemy);
         sendingPlayer.setResources(sendingPlayer.getResources() - enemy.getSendPrice());
         sendingPlayer.notifyObserver();
     }
@@ -164,8 +182,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     @Override
     public void sellTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber) {
         Tower tower = getMapCellByXandYCoordinates(xCoordinate, yCoordinate).getTower();
-        tower.getOwner().addToResources(tower.getSellPrice());
-        tower.getOwner().notifyObserver();
+        Player player = getGamestate().getPlayers().get(playerNumber);
+        player.addToResources(tower.getSellPrice());
+        player.notifyObserver();
         removeTower(tower);
     }
 
@@ -183,5 +202,36 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     public void exitGame(boolean saveBeforeExit) {
         super.exitGame(false);
         gameClient.shutdown();
+    }
+
+    @Override
+    public void setGamestateFromServer(List<Tower> towers, List<Player> players) {
+        updateTowers = towers;
+        updatePlayers = players;
+    }
+
+    /**
+     * Reinitialisiert den Spielbildschirm nach dem Laden
+     *
+     * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
+     */
+    private void reinitializeGame(GameView gameScreen, List<Tower> towers, List<Player> players) {
+        //gameScreen.clearGameObjects();
+        removeAllTowers();
+//        gamestate.getProjectiles().forEach(projectile -> {
+//            gameScreen.addProjectile(projectile);
+//            projectile.notifyObserver();
+//        });
+        getGamestate().setPlayers(updatePlayers);
+        towers.forEach(tower -> {
+            int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
+            int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
+            addTower(tower, xCoordinate, yCoordinate, tower.getPlayerNumber());
+            tower.notifyObserver();
+        });
+//        gamestate.getEnemies().forEach(enemy -> {
+//            gameScreen.addEnemy(enemy);
+//            enemy.notifyObserver();
+//        });
     }
 }

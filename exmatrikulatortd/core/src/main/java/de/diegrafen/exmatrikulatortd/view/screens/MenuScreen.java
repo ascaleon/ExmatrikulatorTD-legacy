@@ -10,27 +10,25 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
 import de.diegrafen.exmatrikulatortd.model.Highscore;
 import de.diegrafen.exmatrikulatortd.model.Profile;
 import de.diegrafen.exmatrikulatortd.model.SaveState;
+import de.diegrafen.exmatrikulatortd.view.screens.uielements.ProfileTextButton;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.diegrafen.exmatrikulatortd.controller.factories.NewGameFactory.STANDARD_SINGLE_PLAYER_GAME;
 import static de.diegrafen.exmatrikulatortd.util.Assets.MENU_BACKGROUND_IMAGE;
 import static de.diegrafen.exmatrikulatortd.util.Assets.SINGLEPLAYER_MAP_PATH;
-import static de.diegrafen.exmatrikulatortd.util.Constants.DATE_FORMAT;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
  * @author Jan Romann <jan.romann@uni-bremen.de>
  * @version 17.07.2019 19:26
  */
 public class MenuScreen extends BaseScreen {
-
-    //private Stage stage;
 
     private Table mainMenuTable;
 
@@ -42,8 +40,6 @@ public class MenuScreen extends BaseScreen {
 
     private Table savestatesTable;
 
-    private List<Profile> profiles;
-
     private Table selectProfileMenuTable;
 
     private ButtonGroup<TextButton> profilesButtonGroup;
@@ -54,7 +50,7 @@ public class MenuScreen extends BaseScreen {
 
     private TextField profileNameTextField;
 
-    private SelectBox difficultySelectBox;
+    private SelectBox<String> difficultySelectBox;
 
     private Table highScoreMenuTable;
 
@@ -86,6 +82,10 @@ public class MenuScreen extends BaseScreen {
 
     private TextButton saveNewOrEditedProfileButton = new TextButton(null, skin);
 
+    private boolean updateProfile;
+
+    private Array<String> difficultyList;
+
     public MenuScreen(MainController mainController, AssetManager assetManager) {
         super(mainController, assetManager);
         this.serverList = new LinkedList<>();
@@ -97,6 +97,11 @@ public class MenuScreen extends BaseScreen {
         Texture backgroundTexture = getAssetManager().get(MENU_BACKGROUND_IMAGE, Texture.class);
         backgroundTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         backgroundSprite = new Sprite(backgroundTexture);
+        difficultyList = new Array<>(false, 4);
+        difficultyList.add(EASY_STRING);
+        difficultyList.add(MEDIUM_STRING);
+        difficultyList.add(HARD_STRING);
+        difficultyList.add(TESTMODE_STRING);
 
         Gdx.input.setInputProcessor(getUi());
 
@@ -135,20 +140,17 @@ public class MenuScreen extends BaseScreen {
         createGenericMenuTable(menuStack, mainMenuTable);
         mainMenuTable.setVisible(true);
 
-        mainMenuTable.add(newGame).fillX().uniformX();
-        mainMenuTable.row().pad(10, 0, 10, 0);
-        mainMenuTable.add(selectProfile).fillX().uniformX();
-        mainMenuTable.row();
-        mainMenuTable.add(highScores).fillX().uniformX();
-        mainMenuTable.row().pad(10, 0, 10, 0);
-        mainMenuTable.add(preferences).fillX().uniformX();
-        mainMenuTable.row();
-        mainMenuTable.add(exit).fillX().uniformX();
+        addUIElement(mainMenuTable, newGame);
+        addUIElement(mainMenuTable, selectProfile);
+        addUIElement(mainMenuTable, highScores);
+        addUIElement(mainMenuTable, preferences);
+        addUIElement(mainMenuTable, exit);
 
         newGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectGameTypeMenu(mainMenuTable);
+                System.out.println("Ohai?");
             }
         });
 
@@ -189,12 +191,9 @@ public class MenuScreen extends BaseScreen {
 
         createGenericMenuTable(menuStack, selectGameTypeTable);
 
-        selectGameTypeTable.add(newSinglePlayerGameButton).fillX().uniformX();
-        selectGameTypeTable.row().pad(10, 0, 10, 0);
-        selectGameTypeTable.add(newMultiPlayerGameButton).fillX().uniformX();
-        selectGameTypeTable.row();
-        selectGameTypeTable.add(backButton).fillX().uniformX();
-        selectGameTypeTable.row().pad(10, 0, 10, 0);
+        addUIElement(selectGameTypeTable, newSinglePlayerGameButton);
+        addUIElement(selectGameTypeTable, newMultiPlayerGameButton);
+        addUIElement(selectGameTypeTable, backButton);
 
         newSinglePlayerGameButton.addListener(new ChangeListener() {
             @Override
@@ -221,20 +220,19 @@ public class MenuScreen extends BaseScreen {
 
     private void refreshSavestatesTable() {
         savestatesTable.clearChildren();
-        List<SaveState> savestates = getMainController().getSaveStatesForCurrentProfile();
+        getMainController().updateSaveStateButtons(this);
+    }
 
-        for (SaveState saveState : savestates) {
-            savestatesTable.row();
-            String buttonText = saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString();
-            TextButton savestateButton = new TextButton(buttonText, basicSkin);
-            savestateButton.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    idToLoad = saveState.getId();
-                }
-            });
-            savestatesTable.add(savestateButton);
-        }
+    public void addSaveStateButton(String text, long saveStateId) {
+        savestatesTable.row();
+        TextButton savestateButton = new TextButton(text, skin);
+        savestateButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                idToLoad = saveStateId;
+            }
+        });
+        savestatesTable.add(savestateButton);
     }
 
     private void createLoadOrNewGameTable(Stack menuStack) {
@@ -244,27 +242,21 @@ public class MenuScreen extends BaseScreen {
         TextButton newSinglePlayerGameButton = new TextButton("Neues Spiel", skin);
         TextButton loadSaveStateButton = new TextButton("Spiel laden", skin);
         TextButton backButton = new TextButton("Zurueck", skin);
+        final ScrollPane savestatesTableScrollPane = new ScrollPane(savestatesTable, skin);
 
         createGenericMenuTable(menuStack, loadOrNewGameTable);
 
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane savestatesTableScrollPane = new ScrollPane(savestatesTable, scrollPaneStyle);
-        savestatesTable.pad(10).defaults().expandX().space(4);
-
         refreshSavestatesTable();
 
-        loadOrNewGameTable.add(savestatesTableScrollPane).fillX().uniformX();
-        loadOrNewGameTable.row().pad(10, 0, 10, 0);
-        loadOrNewGameTable.add(newSinglePlayerGameButton).fillX().uniformX();
-        loadOrNewGameTable.row().pad(10, 0, 10, 0);
-        loadOrNewGameTable.add(loadSaveStateButton).fillX().uniformX();
-        loadOrNewGameTable.row().pad(10, 0, 10, 0);
-        loadOrNewGameTable.add(backButton).fillX().uniformX();
+        addUIElement(loadOrNewGameTable, savestatesTableScrollPane);
+        addUIElement(loadOrNewGameTable, newSinglePlayerGameButton);
+        addUIElement(loadOrNewGameTable, loadSaveStateButton);
+        addUIElement(loadOrNewGameTable, backButton);
 
         newSinglePlayerGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, SINGLEPLAYER_MAP_PATH);
+                getMainController().createNewSinglePlayerGame(STANDARD_SINGLE_PLAYER_GAME, getMainController().getCurrentProfilePreferredDifficulty(), SINGLEPLAYER_MAP_PATH);
                 showMainMenu(selectGameTypeTable);
             }
         });
@@ -288,55 +280,68 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void refreshProfilesTable() {
-        profiles = getMainController().retrieveProfiles();
-        //if(!profilesButtonGroup.getButtons().isEmpty()) profilesButtonGroup.remove(profilesButtonGroup.getButtons().toArray());
-        for (final TextButton button : profilesButtonGroup.getButtons()) {
-            profilesButtonGroup.remove(button);
-        }
+        profilesButtonGroup.clear();
         profilesTable.clearChildren();
-        for (final Profile profile : profiles) {
-            profilesTable.row();
-            TextButton profileButton = new TextButton(profile.getProfileName(), basicSkin);
+        profilesTable.add(new Label("Profil auswählen.", skin));
+        getMainController().updateProfileButtons(this);
 
-            final Profile currentProfile = getMainController().getCurrentProfile();
-            if (currentProfile != null && currentProfile.getProfileName().equals(profile.getProfileName()))
+    }
+
+    public void addProfileButton(final String profileName, final long profileId, final boolean isCurrentProfile) {
+        profilesTable.row();
+        ProfileTextButton profileButton = new ProfileTextButton(profileName, skin, profileId);
+
+        profileButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                profilesButtonGroup.getButtons().forEach(button -> button.setColor(Color.WHITE));
+                getMainController().setCurrentProfile(profileId);
+                System.out.println(profileButton.getColor());
                 profileButton.setColor(Color.GREEN);
+                refreshSavestatesTable();
+                System.out.println(getMainController().getCurrentProfile().getId());
+            }
+        });
 
-            profilesTable.add(profileButton);
-            profilesButtonGroup.add(profileButton);
+        if (isCurrentProfile) {
+            profileButton.setChecked(true);
+            profileButton.setColor(Color.GREEN);
         }
+
+        profilesTable.add(profileButton);
+        profilesButtonGroup.add(profileButton);
     }
 
     private Profile getSelectedProfileFromButtonGroup() {
-        final TextButton selectedProfileButton = profilesButtonGroup.getChecked();
-        final String selectedProfileButtonText = selectedProfileButton.getText().toString();
-        for (Profile profile : profiles) {
-            if (profile.getProfileName().equals(selectedProfileButtonText)) {
-                return profile;
-            }
+        final ProfileTextButton selectedProfileButton = (ProfileTextButton) profilesButtonGroup.getChecked();
+        if (selectedProfileButton != null) {
+            return getMainController().retrieveProfile(selectedProfileButton.getID());
+        } else {
+            return null;
         }
-        return null;
     }
 
+    /**
+     * Erzeugt das Menü zur Auswahl von Profilen
+     *
+     * @param menuStack
+     */
     private void createSelectProfileMenuTable(Stack menuStack) {
-        // Es soll immer nur ein Profil zur Zeit bearbeit oder entfernt werden
         selectProfileMenuTable = new Table();
 
         profilesTable = new Table();
 
         profilesButtonGroup = new ButtonGroup<>();
         profilesButtonGroup.setMaxCheckCount(1);
-        profilesButtonGroup.setMinCheckCount(1);
+        profilesButtonGroup.setMinCheckCount(0);
         profilesButtonGroup.setUncheckLast(true);
 
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, scrollPaneStyle);
+        final ScrollPane profilesTableScrollPane = new ScrollPane(profilesTable, skin);
 
         refreshProfilesTable();
 
         Table buttonsTable = new Table();
 
-        TextButton switchProfile = new TextButton("Profil wechseln", skin);
         TextButton createNewProfile = new TextButton("Neues Profil", skin);
         TextButton editProfile = new TextButton("Profil bearbeiten", skin);
         TextButton deleteProfile = new TextButton("Profil entfernen", skin);
@@ -348,16 +353,6 @@ public class MenuScreen extends BaseScreen {
 
         selectProfileMenuTable.row().pad(10, 0, 10, 0);
 
-        switchProfile.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Profile profile = getSelectedProfileFromButtonGroup();
-                if (profile != null) {
-                    getMainController().setCurrentProfile(profile);
-                }
-            }
-        });
-
         createNewProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -368,9 +363,8 @@ public class MenuScreen extends BaseScreen {
         editProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile profile = getSelectedProfileFromButtonGroup();
-                if (profile != null) {
-                    showEditProfileMenu(selectProfileMenuTable, profile);
+                if (getMainController().hasCurrentProfile()) {
+                    showEditProfileMenu(selectProfileMenuTable);
                 }
             }
         });
@@ -378,9 +372,10 @@ public class MenuScreen extends BaseScreen {
         deleteProfile.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Profile profile = getSelectedProfileFromButtonGroup();
-                if (profile != null) {
-                    getMainController().deleteProfile(profile);
+
+                final ProfileTextButton selectedProfileButton = (ProfileTextButton) profilesButtonGroup.getChecked();
+                if (selectedProfileButton != null) {
+                    getMainController().deleteProfile(selectedProfileButton.getID());
                 }
                 refreshProfilesTable();
             }
@@ -394,15 +389,10 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        buttonsTable.add(switchProfile).fillX();
-        buttonsTable.row().pad(10, 0, 10, 0);
-        buttonsTable.add(createNewProfile).fillX();
-        buttonsTable.row().pad(10, 0, 10, 0);
-        buttonsTable.add(editProfile).fillX();
-        buttonsTable.row().pad(10, 0, 10, 0);
-        buttonsTable.add(deleteProfile).fillX();
-        buttonsTable.row().pad(10, 0, 10, 0);
-        buttonsTable.add(backButton).fillX();
+        addUIElement(buttonsTable, createNewProfile);
+        addUIElement(buttonsTable, editProfile);
+        addUIElement(buttonsTable, deleteProfile);
+        addUIElement(buttonsTable, backButton);
 
         selectProfileMenuTable.add(profilesTableScrollPane).expand();
         selectProfileMenuTable.add(buttonsTable).expand();
@@ -411,18 +401,38 @@ public class MenuScreen extends BaseScreen {
     private void cleanupNewOrEditProfileMenu() {
         profileNameTextField.setColor(Color.WHITE);
         profileNameTextField.setText("");
-        difficultySelectBox.setSelected(Difficulty.EASY);
+        difficultySelectBox.setSelected(EASY_STRING);
     }
 
     private void createNewOrEditProfileMenuTable(Stack menuStack) {
         newOrEditProfileMenuTable = new Table();
         profileNameTextField = new TextField("", skin);
-        difficultySelectBox = new SelectBox(skin);
+        difficultySelectBox = new SelectBox<>(skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         profileNameTextField.setMessageText("Name");
         profileNameTextField.setMaxLength(255);
-        difficultySelectBox.setItems(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD, Difficulty.TESTMODE);
+
+        difficultySelectBox.setItems(difficultyList);
+
+        saveNewOrEditedProfileButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                final String profileName = profileNameTextField.getText();
+                if (!profileName.isEmpty()) {
+                    int difficulty = difficultyList.indexOf((String) difficultySelectBox.getSelected(), false);
+                    if (updateProfile) {
+                        getMainController().updateProfile(profileName, difficulty, "");
+                    } else {
+                        getMainController().createNewProfile(profileName, difficulty, "");
+                    }
+                    cleanupNewOrEditProfileMenu();
+                    showSelectProfileMenu(newOrEditProfileMenuTable);
+                } else {
+                    profileNameTextField.setColor(Color.RED);
+                }
+            }
+        });
 
         createGenericMenuTable(menuStack, newOrEditProfileMenuTable);
 
@@ -435,13 +445,10 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        newOrEditProfileMenuTable.add(profileNameTextField).fill();
-        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
-        newOrEditProfileMenuTable.add(difficultySelectBox).fill();
-        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
-        newOrEditProfileMenuTable.add(saveNewOrEditedProfileButton);
-        newOrEditProfileMenuTable.row().pad(10, 0, 10, 0);
-        newOrEditProfileMenuTable.add(backButton).fillX().uniformX();
+        addUIElement(newOrEditProfileMenuTable, profileNameTextField);
+        addUIElement(newOrEditProfileMenuTable, difficultySelectBox);
+        addUIElement(newOrEditProfileMenuTable, saveNewOrEditedProfileButton);
+        addUIElement(newOrEditProfileMenuTable, backButton);
     }
 
     private void createPreferenceMenuTable(Stack menuStack) {
@@ -454,8 +461,7 @@ public class MenuScreen extends BaseScreen {
 
         createGenericMenuTable(menuStack, preferencesMenuTable);
 
-        preferencesMenuTable.add(backButton).fillX().uniformX();
-        preferencesMenuTable.row().pad(10, 0, 10, 0);
+        addUIElement(preferencesMenuTable, backButton);
 
         backButton.addListener(new ChangeListener() {
             @Override
@@ -492,8 +498,7 @@ public class MenuScreen extends BaseScreen {
 
         highScoreMenuTable = new Table();
         highScoreTable = new Table();
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, scrollPaneStyle);
+        final ScrollPane upgradesScrollPane = new ScrollPane(highScoreTable, skin);
 
         highScoreTable.pad(10).defaults().expandX().space(4);
 
@@ -503,8 +508,8 @@ public class MenuScreen extends BaseScreen {
 
         createGenericMenuTable(menuStack, highScoreMenuTable);
 
-        highScoreMenuTable.add(upgradesScrollPane).fillX().uniformX();
-        highScoreMenuTable.row().pad(10, 0, 10, 0);
+        addUIElement(highScoreMenuTable, upgradesScrollPane);
+        addUIElement(highScoreMenuTable, backButton);
 
         backButton.addListener(new ChangeListener() {
             @Override
@@ -513,9 +518,6 @@ public class MenuScreen extends BaseScreen {
                 backButton.setChecked(false);
             }
         });
-
-        highScoreMenuTable.add(backButton).fillX().uniformX();
-        highScoreMenuTable.row();
     }
 
     private void createSelectClientOrServerMenu(Stack menuStack) {
@@ -527,13 +529,9 @@ public class MenuScreen extends BaseScreen {
 
         createGenericMenuTable(menuStack, clientOrServerMenuTable);
 
-        clientOrServerMenuTable.add(createGame).fillX().uniformX();
-        clientOrServerMenuTable.row().pad(10, 0, 10, 0);
-        clientOrServerMenuTable.add(searchGame).fillX().uniformX();
-        clientOrServerMenuTable.row();
-        clientOrServerMenuTable.add(backButton).fillX().uniformX();
-        clientOrServerMenuTable.row().pad(10, 0, 10, 0);
-
+        addUIElement(clientOrServerMenuTable, createGame);
+        addUIElement(clientOrServerMenuTable, searchGame);
+        addUIElement(clientOrServerMenuTable, backButton);
 
         createGame.addListener(new ChangeListener() {
             @Override
@@ -563,21 +561,24 @@ public class MenuScreen extends BaseScreen {
         });
     }
 
+    /**
+     * Erzeugt die Gamelobby für den Multiplayermodus
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createGameLobbyTable(Stack menuStack) {
-
         gameLobbyTable = new Table();
         Table playerTable = new Table();
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane playersScrollPane = new ScrollPane(playerTable, scrollPaneStyle);
+        final ScrollPane playersScrollPane = new ScrollPane(playerTable, skin);
 
         TextButton backButton = new TextButton("Zurück", skin);
+        TextButton setReadyButton = new TextButton("Bereit!", skin);
 
         createGenericMenuTable(menuStack, gameLobbyTable);
 
-        gameLobbyTable.add(playersScrollPane).fillX().uniformX();
-        gameLobbyTable.row().pad(10, 0, 10, 0);
-
-        TextButton setReadyButton = new TextButton("Bereit!", skin);
+        addUIElement(gameLobbyTable, playersScrollPane);
+        addUIElement(gameLobbyTable, setReadyButton);
+        addUIElement(gameLobbyTable, backButton);
 
         setReadyButton.addListener(new ChangeListener() {
             @Override
@@ -585,9 +586,6 @@ public class MenuScreen extends BaseScreen {
                 getMainController().toggleReady();
             }
         });
-
-        gameLobbyTable.add(setReadyButton).fillX().uniformX();
-        gameLobbyTable.row();
 
         backButton.addListener(new ChangeListener() {
             @Override
@@ -597,43 +595,57 @@ public class MenuScreen extends BaseScreen {
                 backButton.setChecked(false);
             }
         });
-        gameLobbyTable.add(backButton).fillX().uniformX();
-        gameLobbyTable.row().pad(10, 0, 10, 0);
     }
 
+    /**
+     * Aktualisiert die Serverliste
+     */
     private void updateServerList() {
-
         serverListTable.clearChildren();
 
         for (String server : serverList) {
             String[] lines = server.split("\n");
-            // FIXME: Formatierung passt noch nicht so ganz.
             serverListTable.row();
-            Table rowTable = new TextButton("Map: " + lines[1] + "\nAnzahl Spieler: " + lines[2], basicSkin);
-            serverListTable.add(rowTable);
-            rowTable.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    getMainController().setHostAdress(lines[0]);
-                }
-            });
+            System.out.println(lines.length);
+            if (lines.length == 4) {
+                System.out.println("Hallo?");
+                int difficulty = Integer.parseInt(lines[3]);
+                String difficultyString = difficultyList.get(difficulty);
+                TextButton rowTable = new TextButton("Map: " + lines[1] + "\nAnzahl Spieler: " + lines[2] +
+                        "\n Schwierigkeitsgrad: " + difficultyString, basicSkin);
+                serverListTable.add(rowTable);
+                rowTable.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        getMainController().setHostAdress(lines[0]);
+                        if (getMainController().connectToServer(lines[0])) {
+                            showGameLobbyMenu(serverListMenuTable);
+                        }
+                    }
+                });
+            }
         }
     }
 
+    /**
+     * Erzeugt das Untermenü mit der Liste der Server im lokalen Netzwerk
+     *
+     * @param menuStack Der Menü-Stack, über den die einzelnen Untermenüs aufgerufen werden können
+     */
     private void createServerListTable(Stack menuStack) {
 
         serverListMenuTable = new Table();
         serverListTable = new Table();
-        final ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        final ScrollPane upgradesScrollPane = new ScrollPane(serverListTable, scrollPaneStyle);
+        final ScrollPane serverScrollPane = new ScrollPane(serverListTable, skin);
 
         TextButton connectButton = new TextButton("Verbinden", skin);
         TextButton backButton = new TextButton("Zurück", skin);
 
         createGenericMenuTable(menuStack, serverListMenuTable);
 
-        serverListMenuTable.add(upgradesScrollPane).fillX().uniformX();
-        serverListMenuTable.row().pad(10, 0, 10, 0);
+        addUIElement(serverListMenuTable, serverScrollPane);
+        addUIElement(serverListMenuTable, connectButton);
+        addUIElement(serverListMenuTable, backButton);
 
         connectButton.addListener(new ChangeListener() {
             @Override
@@ -652,13 +664,6 @@ public class MenuScreen extends BaseScreen {
                 backButton.setChecked(false);
             }
         });
-
-        serverListMenuTable.add(connectButton).fillX().uniformX();
-        serverListMenuTable.row();
-        serverListMenuTable.add(backButton).fillX().uniformX();
-        serverListMenuTable.row().pad(10, 0, 10, 0);
-
-        //updateServerList();
     }
 
     /**
@@ -694,6 +699,9 @@ public class MenuScreen extends BaseScreen {
     private void showSelectGameTypeMenu(Table callingTable) {
         if (getMainController().noProfilesYet()) {
             showNewProfileMenu(callingTable);
+            System.out.println("Hallo?");
+        } else if (!getMainController().hasCurrentProfile()) {
+            showSelectProfileMenu(callingTable);
         } else {
             showTable(callingTable, selectGameTypeTable);
         }
@@ -718,41 +726,15 @@ public class MenuScreen extends BaseScreen {
 
     private void showNewProfileMenu(Table callingTable) {
         saveNewOrEditedProfileButton.setText("Profil erstellen");
-        saveNewOrEditedProfileButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                final String profileName = profileNameTextField.getText();
-                if (!profileName.isEmpty()) {
-                    Profile p = getMainController().createNewProfile(profileName, (Difficulty) difficultySelectBox.getSelected(), "");
-                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(p);
-                    cleanupNewOrEditProfileMenu();
-                    showSelectProfileMenu(newOrEditProfileMenuTable);
-                } else {
-                    profileNameTextField.setColor(Color.RED);
-                }
-            }
-        });
+        updateProfile = false;
         showTable(callingTable, newOrEditProfileMenuTable);
     }
 
-    private void showEditProfileMenu(Table callingTable, final Profile profile) {
+    private void showEditProfileMenu(Table callingTable) {
         saveNewOrEditedProfileButton.setText("Profil aktualisieren");
-        profileNameTextField.setText(profile.getProfileName());
-        difficultySelectBox.setSelected(profile.getPreferredDifficulty());
-        saveNewOrEditedProfileButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                final String profileName = profileNameTextField.getText();
-                if (!profileName.isEmpty()) {
-                    getMainController().updateProfile(profile, profileName, (Difficulty) difficultySelectBox.getSelected(), "");
-                    if (getMainController().getCurrentProfile() == null) getMainController().setCurrentProfile(profile);
-                    cleanupNewOrEditProfileMenu();
-                    showSelectProfileMenu(newOrEditProfileMenuTable);
-                } else {
-                    profileNameTextField.setColor(Color.RED);
-                }
-            }
-        });
+        profileNameTextField.setText(getMainController().getCurrentProfileName());
+        difficultySelectBox.setSelected(difficultyList.get(getMainController().getCurrentProfilePreferredDifficulty()));
+        updateProfile = true;
         showTable(callingTable, newOrEditProfileMenuTable);
     }
 
@@ -789,4 +771,10 @@ public class MenuScreen extends BaseScreen {
 
         return skin;
     }
+
+    private void addUIElement(Table table, Actor button) {
+        table.add(button).fillX().uniformX();
+        table.row().pad(10, 0, 0, 0);
+    }
+
 }

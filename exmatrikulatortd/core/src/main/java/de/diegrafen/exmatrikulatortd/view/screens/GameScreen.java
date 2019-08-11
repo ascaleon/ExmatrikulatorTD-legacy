@@ -64,8 +64,6 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
-    //private List<ObservableModel> players;
-
     /**
      * Die Breite der Karte in Pixeln
      */
@@ -154,52 +152,154 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      */
     private Group pauseGroup;
+
+    /**
+     *
+     */
+    private Group endScreenGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
+    /**
+     *
+     */
     private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
 
+    /**
+     *
+     */
+    private ProgressBar.ProgressBarStyle healthBarStyle;
+
+    /**
+     *
+     */
     private List<TowerButton> towerButtons;
 
+    /**
+     *
+     */
     private List<TowerObject> previewTowers;
 
+    /**
+     *
+     */
     private TowerObject previewTower;
 
+    /**
+     *
+     */
     private LogicController logicController;
 
+    /**
+     *
+     */
     private ProgressBar playerHealth;
+    /**
+     *
+     */
     private ProgressBar opponentHealth;
 
+    /**
+     *
+     */
     private Table messageArea;
-    private Table upgradeSell;
-    private Table countdown;
+    private Table menuMessageArea;
 
+    /**
+     *
+     */
+    private Table upgradeSell;
+    /**
+     *
+     */
+    private Table countdown;
+    /**
+     *
+     */
+    private Table opponent;
+    /**
+     *
+     */
+    private Table sendEnemy;
+
+    /**
+     *
+     */
     private Group popUpButtons;
 
+    /**
+     *
+     */
     private Label messageLabel;
 
+    /**
+     *
+     */
     private float timer;
 
+    /**
+     *
+     */
     private float tableDecayTimer;
 
+    /**
+     *
+     */
     private int xCoord, yCoord;
 
+    /**
+     *
+     */
     private static final int X_SIZE = 100;
 
+    /**
+     *
+     */
     private static final int Y_SIZE = 100;
 
+    /**
+     *
+     */
     private static final int NUM_KEY_OFFSET = 8;
 
+    /**
+     *
+     */
     private TooltipManager tooltipManager;
 
+    /**
+     *
+     */
     private Table towerSelect;
 
+    /**
+     *
+     */
     private float mouseXPosition;
 
+    /**
+     *
+     */
     private float mouseYPosition;
 
+    /**
+     *
+     */
     private int numberOfPlayers;
 
+    /**
+     *
+     */
     private Image background;
+
+    /**
+     *
+     */
+    private Player opposingPlayer;
+
+    /**
+     *
+     */
+    private Player localPlayer;
 
     /**
      * Der Konstruktor legt den MainController und das Spielerprofil fest. Außerdem erstellt er den Gamestate und den logicController.
@@ -230,10 +330,6 @@ public class GameScreen extends BaseScreen implements GameView {
         tooltipManager = new TooltipManager();
         tooltipManager.instant();
 
-        //Gdx.input.setInputProcessor(new InputMultiplexer());
-
-        //InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
-
         InputProcessor inputProcessorCam = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
@@ -249,7 +345,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 if (keycode == Input.Keys.DOWN)
                     keyDownDown = true;
                 if (keycode == Input.Keys.I) {
-                    int numberOfPlayers = gameState.getPlayers().size();
+                    int numberOfPlayers = logicController.getNumberOfPlayers();
                     if (numberOfPlayers > 1) {
                         int playerToSendTo = Math.floorMod(localPlayerNumber - numberOfPlayers + 1, numberOfPlayers);
                         logicController.sendEnemy(REGULAR_ENEMY, playerToSendTo, localPlayerNumber);
@@ -274,7 +370,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     } else {
                         buttonNumber = keycode - NUM_KEY_OFFSET;
                     }
-                    System.out.println(buttonNumber);
                     if (towerButtons.size() > buttonNumber) {
                         toggleButton(buttonNumber);
                     }
@@ -327,12 +422,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 if (button == RIGHT) {
                     if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
-                        Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
-                        xCoord = xCoordinate;
-                        yCoord = yCoordinate;
-                        popUpButtons(Math.round(position2.x), Math.round(position2.y));
-                        return true;
+                        if(gameState.getMapCellByListIndex(xCoordinate + yCoordinate* gameState.getNumberOfColumns()).getTower().getPlayerNumber() == localPlayer.getPlayerNumber()) {
+                            Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
+                            Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
+                            xCoord = xCoordinate;
+                            yCoord = yCoordinate;
+                            popUpButtons(Math.round(position2.x), Math.round(position2.y));
+                            return true;
+                        }
                     }
                 } else if (button == LEFT) {
                     if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
@@ -353,7 +450,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
-                getCamera().position.x += touchDownX - position.x;// (position.x - touchDownX, position.y - touchDownY);
+                getCamera().position.x += touchDownX - position.x;
                 getCamera().position.y += touchDownY - position.y;
 
                 resetCameraToBorders();
@@ -381,10 +478,10 @@ public class GameScreen extends BaseScreen implements GameView {
                                     "Name: " + coordinates.getTower().getName() + "\n" +
                                     "Level: " + coordinates.getTower().getUpgradeLevel() + "\n" +
                                     "Angriff: " + coordinates.getTower().getBaseAttackDamage() + "\n" +
-                                    "eff. Angriff: " + coordinates.getTower().getCurrentAttackDamage() + "\n" +
-                                    "Speed: " + coordinates.getTower().getAttackSpeed() + "\n" +
+                                    "Speed: " + coordinates.getTower().getBaseAttackSpeed() + "\n" +
                                     "eff. Speed: " + coordinates.getTower().getCurrentAttackSpeed() + "\n" +
                                     "Reichweite: " + coordinates.getTower().getAttackRange() + "\n" +
+                                    "Aura-Reichweite: " + coordinates.getTower().getAuraRange() + "\n" +
                                     "Upgradekosten: " + coordinates.getTower().getUpgradePrice() + "\n" +
                                     "Verkaufen: " + coordinates.getTower().getSellPrice()
                     );
@@ -401,16 +498,34 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         };
 
-        //multiplexer.addProcessor(inputProcessorCam);
-
         numberOfPlayers = gameState.getPlayers().size();
+
         background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+
+        localPlayer = logicController.getLocalPlayer();
+
+        if(logicController.isMultiplayer()){
+            int opposingPlayerNumber;
+            if (logicController.getLocalPlayerNumber() == 0) {
+                opposingPlayerNumber = 1;
+            } else {
+                opposingPlayerNumber = 0;
+            }
+
+            opposingPlayer = gameState.getPlayerByNumber(opposingPlayerNumber);
+        }
         initializeUserInterface();
 
         multiplexer.addProcessor(inputProcessorCam);
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    /**
+     *
+     * @param xPosition
+     * @param yPosition
+     * @return
+     */
     private boolean updatePreviewTower(float xPosition, float yPosition) {
         int xCoordinate = logicController.getXCoordinateByPosition(xPosition);
         int yCoordinate = logicController.getYCoordinateByPosition(yPosition);
@@ -449,7 +564,12 @@ public class GameScreen extends BaseScreen implements GameView {
         }
         if (messageLabel != null) {
             if (timer <= 0) {
-                messageArea.removeActor(messageLabel);
+                if(defaultScreen.isVisible()) {
+                    messageArea.removeActor(messageLabel);
+                }
+                else{
+                    menuMessageArea.removeActor(messageLabel);
+                }
             } else {
                 timer = timer - deltaTime;
                 messageLabel.setColor(1, 0, 0, 1 * timer / 3);
@@ -462,15 +582,17 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void update() {
-        Player localPlayer = logicController.getLocalPlayer();
 
         if (logicController.isMultiplayer()) {
-            //int numberOfPlayers = gameState.getPlayers().size();
-            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
-            opponentHealth.setValue(opposingPlayer.getCurrentLives());
-            opponentScore.setText(opposingPlayer.getScore());
+            if (opposingPlayer != null) {
+                opponentHealth.setValue(opposingPlayer.getCurrentLives());
+                opponentScore.setText(opposingPlayer.getScore());
+            }
         }
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
@@ -597,89 +719,26 @@ public class GameScreen extends BaseScreen implements GameView {
 
         // TODO: Diese Methode erfordert noch erhebliches Refactoring.
 
-        Table opponent = new Table();
-        Table sendEnemy = new Table();
+        opponent = new Table();
+        sendEnemy = new Table();
 
         final Stack mainUiStack = new Stack();
         mainUiStack.setFillParent(true);
 
-        Player localPlayer = logicController.getLocalPlayer();
-
         defaultScreen.setFillParent(true);
 
-        TooltipManager ttm = new TooltipManager();
-        ttm.instant();
-
-        Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
-        pixRed.setColor(Color.RED);
-        pixRed.fill();
-        TextureRegionDrawable redBG = new TextureRegionDrawable(new TextureRegion(new Texture(pixRed)));
-        pixRed.dispose();
-        Pixmap pixHidden = new Pixmap(0, 20, Pixmap.Format.RGBA8888);
-        pixHidden.setColor(Color.GREEN);
-        pixHidden.fill();
-        TextureRegionDrawable hiddenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixHidden)));
-        pixHidden.dispose();
-        Pixmap pixGreen = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
-        pixGreen.setColor(Color.GREEN);
-        pixGreen.fill();
-        TextureRegionDrawable greenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixGreen)));
-        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
-        progressBarStyle.background = redBG;
-        progressBarStyle.knob = hiddenBar;
-        progressBarStyle.knobBefore = greenBar;
+        initProgressbarStyle();
 
         if (logicController.isMultiplayer()) {
-            //int numberOfPlayers = gameState.getPlayers().size();
-            Player opposingPlayer = gameState.getPlayers().get((numberOfPlayers - logicController.getLocalPlayerNumber()) % numberOfPlayers);
-            opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, progressBarStyle);
-            opponentHealth.setScale(1 / 2);
-            opponentHealth.setValue(opposingPlayer.getCurrentLives());
-            opponentHealth.setAnimateDuration(1);
-            Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
-            scoreLabelStyle.font = getBitmapFont();
-            opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
-            opponent.setBounds(0, 50, 100, 100);
-            opponent.add(new Label(opposingPlayer.getPlayerName(), scoreLabelStyle)).left().row();
-            opponent.add(opponentScore).left().row();
-            opponent.add(opponentHealth).left();
-
-//            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
-//            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
-
-            Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
-            Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("buff_portrait.png")));
-
-            ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
-            ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
-
-            sendRegEnemy.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(REGULAR_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
-                }
-            });
-            sendHvyEnemy.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    logicController.sendEnemy(HEAVY_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
-                }
-            });
-            sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", ttm, skin));
-            sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", ttm, skin));
-            sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(15).row();
-            sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
-
+            initMultiplayerUiComponents(localPlayer);
         }
 
         final Table towerinfoTable = new Table();
         towerinfoTable.add(towerinfoLabel).left().align(RIGHT);
 
         final Table statsTable = new Table();
-        //statsTable.setBackground(background);
         Label.LabelStyle infoLabelsStyle = new Label.LabelStyle();
         infoLabelsStyle.font = getBitmapFont();
-
 
         // score
         statsTable.add(new Label("Punkte: ", infoLabelsStyle)).right().padLeft(10).expandX();
@@ -705,19 +764,129 @@ public class GameScreen extends BaseScreen implements GameView {
         // Time
         statsTable.row().pad(10, 0, 10, 0);
 
-        playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, progressBarStyle);
+        playerHealth = new ProgressBar(0, localPlayer.getMaxLives(), 1, false, healthBarStyle);
         playerHealth.setValue(localPlayer.getCurrentLives());
         playerHealth.setAnimateDuration(1);
 
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
-        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
-        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
-        //TextButtonStyle style = new TextButtonStyle();
+
         towerSelect = new Table();
 
         //Erstellen der Towerbuttons
         logicController.createTowerButtons(this);
 
+        //Exit
+        final Table menu = new Table();
+        ImageButton menuButton = new ImageButton(menuImage);
+        menuButton.setSize(10, 10);
+        menuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!logicController.isPause() & !logicController.isMultiplayer()) {
+                    logicController.setPause(true);
+                    pauseScreen();
+                } else if (logicController.isMultiplayer()) {
+                    logicController.setPause(false);
+                    pauseScreen();
+                }
+
+            }
+        });
+
+        menu.add(menuButton).size(X_SIZE, Y_SIZE);
+
+        initPopUpContent(localPlayer);
+
+        messageArea = new Table();
+
+        //Toprow table
+        final Table topRow = new Table();
+        final Table topLeft = new Table();
+        if (logicController.isMultiplayer()) {
+            topLeft.add(opponent).left().padRight(10).padLeft(10);
+        }
+        topRow.add(menu).top().right();
+        topRow.setBounds(0, 50, defaultScreen.getWidth(), defaultScreen.getHeight());
+
+        final Table bottomOfScreen = new Table();
+        bottomOfScreen.add(towerSelect).expandX();
+
+        countdown = new Table();
+        countdown.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10);
+        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
+        timelabel = new Label(timeLabelText, infoLabelsStyle);
+        countdown.add(timelabel).top().left().align(RIGHT);
+
+        topLeft.add(messageArea).center().top().padLeft(50).colspan(2);
+        topLeft.setBounds(0, 50, 100, 100);
+        defaultScreen.add(topLeft).left();
+        defaultScreen.add(topRow).top().right().expandX().colspan(2);
+        defaultScreen.row();
+
+        statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
+        defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
+        defaultScreen.add(countdown).top().right().colspan(4).padRight(20).row();
+        if (logicController.isMultiplayer()) {
+            defaultScreen.add(sendEnemy).top().right().colspan(4).padRight(20).row();
+        }
+        defaultScreen.add(towerinfoTable).left().colspan(1).padLeft(10);
+        defaultScreen.add().expand().colspan(4);
+        defaultScreen.row();
+        defaultScreen.add(bottomOfScreen).bottom().center().colspan(4).expandX();
+        mainUiStack.addActor(defaultScreen);
+
+        getUi().addActor(mainUiStack);
+        multiplexer.addProcessor(getUi());
+    }
+
+    /**
+     *
+     * @param localPlayer
+     */
+    private void initMultiplayerUiComponents(Player localPlayer){
+        opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
+        opponentHealth.setScale(1 / 2);
+        opponentHealth.setValue(opposingPlayer.getCurrentLives());
+        opponentHealth.setAnimateDuration(1);
+        Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
+        scoreLabelStyle.font = getBitmapFont();
+        opponentScore = new Label("Punkte " + opposingPlayer.getScore(), scoreLabelStyle);
+        opponent.setBounds(0, 50, 100, 100);
+        opponent.add(new Label(opposingPlayer.getPlayerName(), scoreLabelStyle)).left().row();
+        opponent.add(opponentScore).left().row();
+        opponent.add(opponentHealth).left();
+
+        Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
+        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
+
+        ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
+        ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
+
+        sendRegEnemy.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logicController.sendEnemy(REGULAR_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+            }
+        });
+        sendHvyEnemy.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logicController.sendEnemy(HEAVY_ENEMY, opposingPlayer.getPlayerNumber(), localPlayer.getPlayerNumber());
+            }
+        });
+        sendRegEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen leichten Gegner \n" + "Kosten: 50 Gold", tooltipManager, skin));
+        sendHvyEnemy.addListener(new TextTooltip("Sende deinem Gegenspieler einen zusätzlichen schweren Gegner \n" + "Kosten: 100 Gold", tooltipManager, skin));
+        sendEnemy.add(sendRegEnemy).size(X_SIZE, Y_SIZE).padBottom(5).row();
+        sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
+    }
+
+    /**
+     *
+     * @param localPlayer
+     */
+    private void initPopUpContent(Player localPlayer) {
+        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
+        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
 
         ImageButton upgradeButton = new ImageButton(upgradeIcon);
         ImageButton sellButton = new ImageButton(sellIcon);
@@ -744,70 +913,30 @@ public class GameScreen extends BaseScreen implements GameView {
         upgradeSell = new Table();
         upgradeSell.add(upgradeButton).size(X_SIZE, Y_SIZE).row();
         upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
+    }
 
-        //Exit
-        final Table exit = new Table();
-        ImageButton exitButton = new ImageButton(menuImage);
-        exitButton.setSize(10, 10);
-        exitButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!logicController.isPause() & !logicController.isMultiplayer()) {
-                    System.out.println("Pausiert");
-                    logicController.setPause(true);
-                    pauseScreen();
-                } else if (!logicController.isMultiplayer()) {
-                    logicController.setPause(false);
-                    pauseScreen();
-                }
-
-            }
-        });
-
-        exit.add(exitButton).size(X_SIZE, Y_SIZE);
-
-        messageArea = new Table();
-
-        //Toprow table
-        final Table topRow = new Table();
-        final Table topLeft = new Table();
-        if (logicController.isMultiplayer()) {
-            topLeft.add(opponent).left().padRight(10).padLeft(10);
-        }
-        topRow.add(exit).top().right();
-        topRow.setBounds(0, 50, defaultScreen.getWidth(), defaultScreen.getHeight());
-
-        final Table bottomOfScreen = new Table();
-        bottomOfScreen.add(towerSelect).expandX();
-
-        countdown = new Table();
-        countdown.add(new Label("Zeit bis zur nächsten Runde: ", infoLabelsStyle)).right().padLeft(10);
-        String timeLabelText = ("" + (int) Math.max(0, gameState.getTimeUntilNextRound()));
-        timelabel = new Label(timeLabelText, infoLabelsStyle);
-        countdown.add(timelabel).top().left().align(RIGHT);
-
-        topLeft.add(messageArea).center().top().padLeft(50).colspan(2);
-        topLeft.setBounds(0, 50, 100, 100);
-        defaultScreen.add(topLeft).left();
-        defaultScreen.add(topRow).top().right().expandX().colspan(2);
-        defaultScreen.row();
-        //defaultScreen.setDebug(true);
-
-        statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
-        defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
-        //defaultScreen.row();
-        defaultScreen.add(countdown).top().right().colspan(4).padRight(20).row();
-        if (logicController.isMultiplayer()) {
-            defaultScreen.add(sendEnemy).top().right().colspan(4).padRight(20).row();
-        }
-        defaultScreen.add(towerinfoTable).left().colspan(1).padLeft(10);
-        defaultScreen.add().expand().colspan(4);
-        defaultScreen.row();
-        defaultScreen.add(bottomOfScreen).bottom().center().colspan(4).expandX();
-        mainUiStack.addActor(defaultScreen);
-
-        getUi().addActor(mainUiStack);
-        multiplexer.addProcessor(getUi());
+    /**
+     *
+     */
+    private void initProgressbarStyle(){
+        Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixRed.setColor(Color.RED);
+        pixRed.fill();
+        TextureRegionDrawable redBG = new TextureRegionDrawable(new TextureRegion(new Texture(pixRed)));
+        pixRed.dispose();
+        Pixmap pixHidden = new Pixmap(0, 20, Pixmap.Format.RGBA8888);
+        pixHidden.setColor(Color.GREEN);
+        pixHidden.fill();
+        TextureRegionDrawable hiddenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixHidden)));
+        pixHidden.dispose();
+        Pixmap pixGreen = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixGreen.setColor(Color.GREEN);
+        pixGreen.fill();
+        TextureRegionDrawable greenBar = new TextureRegionDrawable(new TextureRegion(new Texture(pixGreen)));
+        healthBarStyle = new ProgressBar.ProgressBarStyle();
+        healthBarStyle.background = redBG;
+        healthBarStyle.knob = hiddenBar;
+        healthBarStyle.knobBefore = greenBar;
     }
 
     /**
@@ -849,10 +978,16 @@ public class GameScreen extends BaseScreen implements GameView {
     public void displayErrorMessage(String message) {
         Label.LabelStyle messageStyle = new Label.LabelStyle();
         messageStyle.font = getBitmapFont();
-        messageLabel = new Label(message, messageStyle);
-        messageLabel.setColor(Color.RED);
-        messageArea.clear();
-        messageArea.add(messageLabel);
+            messageLabel = new Label(message, messageStyle);
+            messageLabel.setColor(Color.RED);
+        if(defaultScreen.isVisible()) {
+            messageArea.clear();
+            messageArea.add(messageLabel);
+        }
+        else{
+            menuMessageArea.clear();
+            menuMessageArea.add(messageLabel);
+        }
         timer = 3;
     }
 
@@ -927,28 +1062,59 @@ public class GameScreen extends BaseScreen implements GameView {
      * Erstellt/Zeigt den Pausenbildschirm an. Das Spiel UI wird ausgeblendet, während das Spiel pausiert ist.
      */
     private void pauseScreen() {
-        if (logicController.isPause()) {
-            pauseGroup = new Group();
-            background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        pauseGroup = new Group();
+        background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            Table buttonTable = new Table();
-            TextButton resume = new TextButton("Resume", skin);
-            resume.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
+        Table buttonTable = new Table();
+        menuMessageArea = new Table();
+        TextButton resume = new TextButton("Resume", skin);
+        resume.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(!logicController.isMultiplayer()) {
                     logicController.setPause(false);
-                    pauseGroup.setVisible(false);
-                    defaultScreen.setVisible(true);
                 }
-            });
-            TextButton save = new TextButton("Save", skin);
-            save.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
-                    logicController.saveGame("Blah.");
-                }
-            });
+                pauseGroup.setVisible(false);
+                defaultScreen.setVisible(true);
+            }
+        });
+
+        TextButton back2main = new TextButton("Menu", skin);
+        back2main.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                logicController.exitGame(false);
+            }
+        });
+        TextButton save = new TextButton("Save", skin);
+        save.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
+
+                Gdx.input.getTextInput(new Input.TextInputListener() {
+                    @Override
+                    public void input(String text) {
+                        if(text != null && text != "" && text.trim().length() > 0){
+                            logicController.saveGame(text);
+                            displayErrorMessage("Spiel gespeichert");
+                        }
+                        else {
+                            displayErrorMessage("Speichern fehlgeschlagen");
+                        }
+                    }
+
+                    @Override
+                    public void canceled() {
+                        displayErrorMessage("Speichern abgebrochen");
+                    }
+                }, "Name des Spielstand", "savename", "");
+
+            }
+        });
+
+
+        if (logicController.isPause()) {
             TextButton load = new TextButton("Load", skin);
             load.addListener(new ChangeListener() {
                 @Override
@@ -961,13 +1127,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     }
                 }
             });
-            TextButton back2main = new TextButton("Menu", skin);
-            back2main.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(true);
-                }
-            });
 
             buttonTable.add(resume).top().center().spaceBottom(10).row();
             buttonTable.add(save).top().center().spaceBottom(10).row();
@@ -975,8 +1134,29 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
+            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
+
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
+            pauseGroup.addActor(menuMessageArea);
+
+            defaultScreen.setVisible(false);
+            getUi().addActor(pauseGroup);
+
+        } else if(logicController.isMultiplayer()){
+            back2main.addListener(new TextTooltip("Warnung: Diese Aktion trennt die Verbindung und beendet die Partie", tooltipManager, skin));
+            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            if(logicController.isServer()){
+                buttonTable.add(save).top().center().spaceBottom(10).row();
+            }
+            buttonTable.add(back2main).top().center().row();
+            buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
+            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
+
+            pauseGroup.addActor(background);
+            pauseGroup.addActor(buttonTable);
+            pauseGroup.addActor(menuMessageArea);
 
             defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
@@ -988,25 +1168,22 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Der Bildschirm der am Ende vom Spiel dargestellt wird.
      * Gewonnen/Verloren + Punkte + Highscore des Users
+     *
+     * @param victorious Gibt an, ob der lokale Spieler siegreich war
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
-        Group endScreenGroup = new Group();
+        endScreenGroup = new Group();
 
-        //Label resultLabel;
         Image resultImage;
         if (victorious) {
-            //resultLabel =  new Label("Gewonnen!", skin);
             resultImage = new Image(new Texture(Gdx.files.internal("win.png")));
         } else {
-            //resultLabel =  new Label("Verloren!", skin);
             resultImage = new Image(new Texture(Gdx.files.internal("loose.png")));
-            //resultLabel.setFontScale(3);
         }
 
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
         Label highscoreLabel = new Label("Highscore: " + highscore, skin);
-        // TODO: Zum Assetmanager hinzufügen
 
         Table buttonTable = new Table();
 
@@ -1017,10 +1194,18 @@ public class GameScreen extends BaseScreen implements GameView {
                 logicController.exitGame(false);
             }
         });
+        TextButton stats = new TextButton("Statistiken", skin);
+        stats.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                endScreenGroup.setVisible(false);
+                gameStatsScreen();
+            }
+        });
 
-        //buttonTable.add(resultLabel).center().row();
         buttonTable.add(currentScoreLabel).center().row();
         buttonTable.add(highscoreLabel).center().row();
+        buttonTable.add(stats).top().center().spaceRight(10);
         buttonTable.add(back2main).top().center().row();
         buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / 2);
 
@@ -1079,6 +1264,64 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
+     *
+     */
+    private void gameStatsScreen(){
+        Group statScreen = new Group();
+
+        Table firstColum = new Table();
+        Table secondColum = new Table();
+        Table thirdColum = new Table();
+        firstColum.add(new Label("Statistiken:", skin)).row();
+        secondColum.add(new Label(localPlayer.getPlayerName(), skin)).row();
+        firstColum.add(new Label("Score", skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getScore()), skin)).row();
+        firstColum.add(new Label("Besiegte Gegner", skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getKillTracker()), skin)).row();
+        firstColum.add(new Label("Abgeschlossene Wellen", skin)).row();
+        secondColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
+        firstColum.add(new Label("Erbaute Tuerme", skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getTowerCounter()), skin)).row();
+        firstColum.add(new Label("Verdientes Gold", skin)).row();
+        secondColum.add(new Label(Integer.toString(localPlayer.getResources() - 1000), skin)).row();
+
+        if(logicController.isMultiplayer()){
+            thirdColum.add(new Label(opposingPlayer.getPlayerName(), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getScore()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getKillTracker()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(logicController.getGamestate().getRoundNumber()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getTowerCounter()), skin)).row();
+            thirdColum.add(new Label(Integer.toString(opposingPlayer.getResources() -1000), skin)).row();
+        }
+
+        TextButton back = new TextButton("Zurueck", skin);
+        back.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                statScreen.setVisible(false);
+                endScreenGroup.setVisible(true);
+            }
+        });
+
+        Table statTable = new Table();
+        statTable.add(firstColum).center().expandX();
+        statTable.add(secondColum).center().expandX();
+        if(logicController.isMultiplayer()){
+            statTable.add(thirdColum).center().expandX();
+            statTable.row();
+            statTable.add(back).center().colspan(3);
+        }
+        else {
+            statTable.row();
+            statTable.add(back).center().colspan(2);
+        }
+        statTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        statScreen.addActor(background);
+        statScreen.addActor(statTable);
+
+        getUi().addActor(statScreen);
+    }
+    /**
      * Legt einen Spielzustand als Attribut der GameView fest
      *
      * @param gameState Der als Attribut festzulegende Spielzustand
@@ -1088,6 +1331,25 @@ public class GameScreen extends BaseScreen implements GameView {
         this.gameState = gameState;
     }
 
+    /**
+     *
+     */
+    @Override
+    public void clearGameObjects() {
+        List<GameObject> objectsToRemove = new LinkedList<>();
+        gameObjects.forEach(gameObject -> {
+            if (gameObject instanceof TowerObject) {
+                objectsToRemove.add(gameObject);
+            }
+        });
+        objectsToRemove.forEach(gameObjects::remove);
+    }
+
+    /**
+     * Passt die Größe des Hintergrundbildes an die neue Fenstergröße an
+     * @param width Die neue Breite.
+     * @param height Die neue Höhe.
+     */
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);

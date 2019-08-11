@@ -22,8 +22,6 @@ import java.util.List;
 @Table(name = "Auras")
 public class Aura extends BaseModel {
 
-    private float range;
-
     @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> debuffs;
@@ -35,8 +33,7 @@ public class Aura extends BaseModel {
     public Aura() {
     }
 
-    public Aura(float range, List<Debuff> debuffs, List<Buff> buffs) {
-        this.range = range;
+    public Aura(List<Debuff> debuffs, List<Buff> buffs) {
         this.debuffs = debuffs;
         this.buffs = buffs;
     }
@@ -46,16 +43,11 @@ public class Aura extends BaseModel {
      * @param aura Die Aura, die kopiert werden soll
      */
     Aura(Aura aura) {
-        this.range = aura.getRange();
         this.debuffs = new LinkedList<>();
         this.buffs = new LinkedList<>();
 
         aura.getBuffs().forEach(buff -> buffs.add(new Buff(buff)));
         aura.getDebuffs().forEach(debuff -> debuffs.add(new Debuff(debuff)));
-    }
-
-    public float getRange() {
-        return range;
     }
 
     public List<Debuff> getDebuffs() {

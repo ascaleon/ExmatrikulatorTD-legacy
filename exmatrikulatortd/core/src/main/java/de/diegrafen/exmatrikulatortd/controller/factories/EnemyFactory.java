@@ -4,8 +4,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.REGULAR_ENEMY_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Assets.HEAVY_ENEMY_ASSETS;
-import static de.diegrafen.exmatrikulatortd.util.Constants.HEAVY;
-import static de.diegrafen.exmatrikulatortd.util.Constants.MEDIUM;
+import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
  * Factory für Gegner
@@ -65,7 +64,7 @@ public final class EnemyFactory {
      * @return Der erzeugte normale Gegner
      */
     private static Enemy createRegularEnemy() {
-        return new Enemy("Regular Enemy", 150, 300, 1, 50, 50, MEDIUM, 2, REGULAR_ENEMY_ASSETS, 0, 0, 10);
+        return new Enemy("Regular Enemy", 150, 300, 1, 50, 50, REGULAR, 2, REGULAR_ENEMY_ASSETS, 0, 0, 10);
     }
 
     /**

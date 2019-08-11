@@ -89,9 +89,13 @@ public interface LogicController {
 
     boolean isMultiplayer();
 
+    boolean isServer();
+
     void saveGame(String saveGameName);
 
     void loadGame(int id);
 
     boolean isActiveRound();
+
+    int getNumberOfPlayers();
 }

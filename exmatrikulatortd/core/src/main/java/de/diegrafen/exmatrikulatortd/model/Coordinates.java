@@ -1,12 +1,8 @@
 package de.diegrafen.exmatrikulatortd.model;
 
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -53,11 +49,6 @@ public class Coordinates extends BaseModel {
     @JoinColumn(table = "collision_matrix")
     private Tower tower;
 
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Coordinates> neighbours;
-
-
     /**
      * Gibt an, welcher Spieler an der Koordinate bauen darf
      */
@@ -85,7 +76,6 @@ public class Coordinates extends BaseModel {
     public Coordinates(int xCoordinate, int yCoordinate, int buildableByPlayer, int width, int height) {
         this(xCoordinate, yCoordinate, width, height);
         this.buildableByPlayer = buildableByPlayer;
-        this.neighbours = new ArrayList<>();
     }
 
     public Coordinates(int xCoordinate, int yCoordinate, int playerNumber, int waypointIndex, int width, int height) {
@@ -94,9 +84,12 @@ public class Coordinates extends BaseModel {
         this.waypointIndex = waypointIndex;
     }
 
-
-
-    Coordinates(Coordinates coordinates) {
+    /**
+     * Kopierkonstruktor
+     *
+     * @param coordinates Die zu kopierenden Koordinaten
+     */
+    public Coordinates(Coordinates coordinates) {
         this.xCoordinate = coordinates.xCoordinate;
         this.yCoordinate = coordinates.yCoordinate;
         this.playerNumber = coordinates.playerNumber;
@@ -104,10 +97,7 @@ public class Coordinates extends BaseModel {
         this.waypointIndex = coordinates.waypointIndex;
         this.width = coordinates.width;
         this.height = coordinates.height;
-        if (coordinates.getTower() != null) {
-            this.tower = new Tower(coordinates.tower);
-        }
-        this.neighbours = null;
+        this.tower = null;
     }
 
     public int getXCoordinate() {
@@ -144,10 +134,6 @@ public class Coordinates extends BaseModel {
 
     public int getBuildableByPlayer() {
         return buildableByPlayer;
-    }
-
-    public void addNeighbour (Coordinates neighbour) {
-        this.neighbours.add(neighbour);
     }
 
     @Override

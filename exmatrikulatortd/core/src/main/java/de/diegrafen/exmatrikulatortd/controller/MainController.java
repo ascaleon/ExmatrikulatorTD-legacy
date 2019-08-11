@@ -11,11 +11,8 @@ import de.diegrafen.exmatrikulatortd.persistence.HighscoreDao;
 import de.diegrafen.exmatrikulatortd.persistence.ProfileDao;
 import de.diegrafen.exmatrikulatortd.persistence.SaveStateDao;
 import de.diegrafen.exmatrikulatortd.view.screens.*;
-import org.hibernate.Session;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -68,12 +65,24 @@ public class MainController {
      */
     private GameClient gameClient;
 
+    /**
+     * Der Introbildschirm
+     */
     private final Screen introScreen;
 
+    /**
+     * Gibt an, ob die Datenbank geladen ist
+     */
     private boolean databaseLoaded;
 
+    /**
+     * Die aktuelle Hostadresse im Multiplayer
+     */
     private String hostAdress = "";
 
+    /**
+     * Gibt an, ob die aktuelle Spielinstanz Host im Multiplayer-Modus ist
+     */
     private boolean host;
 
     /**
@@ -89,14 +98,6 @@ public class MainController {
         this.profileDao = new ProfileDao();
         this.highScoreDao = new HighscoreDao();
         this.saveStateDao = new SaveStateDao();
-
-        long profileID = game.getPreferences().getLong("profileID", -1L);
-        if (profileID != -1L) {
-            currentProfile = profileDao.retrieve(profileID);
-        }
-        if (currentProfile == null) {
-            game.getPreferences().putLong("profileID", -1L);
-        }
         //
     }
 
@@ -111,6 +112,14 @@ public class MainController {
      * Zeigt das Hauptmenü an
      */
     public void showMenuScreen() {
+        long profileID = game.getPreferences().getLong("profileID", -1L);
+        if (profileID != -1L) {
+            currentProfile = profileDao.retrieve(profileID);
+        }
+        if (currentProfile == null) {
+            game.getPreferences().putLong("profileID", -1L);
+            game.getPreferences().flush();
+        }
         game.setScreen(new MenuScreen(this, game.getAssetManager()));
     }
 
@@ -129,10 +138,10 @@ public class MainController {
         return currentProfile;
     }
 
-    public void setCurrentProfile(Profile currentProfile) {
-        game.getPreferences().putLong("profileID", currentProfile.getId());
+    public void setCurrentProfile(long profileId) {
+        game.getPreferences().putLong("profileID", profileId);
         game.getPreferences().flush();
-        this.currentProfile = currentProfile;
+        this.currentProfile = profileDao.retrieve(profileId);
     }
 
     /**
@@ -141,25 +150,38 @@ public class MainController {
      * @param profileName    Der Name des Profils
      * @param profilePicture Das Bild des Profils
      */
-    public Profile createNewProfile(String profileName, Difficulty preferredDifficulty, String profilePicture) {
+    public void createNewProfile(String profileName, int preferredDifficulty, String profilePicture) {
         Profile profile = new Profile(profileName, preferredDifficulty, profilePicture);
         profileDao.create(profile);
-        return profile;
+        currentProfile = profile;
     }
 
-    public Profile updateProfile(final Profile profile, final String newProfileName, final Difficulty newDifficulty, final String newProfilePicturePath) {
-        profile.setProfileName(newProfileName);
-        profile.setPreferredDifficulty(newDifficulty);
-        profile.setProfilePicturePath(newProfilePicturePath);
-        profileDao.update(profile);
-        return profile;
+    /**
+     * Aktualisiert das aktuell ausgewählte Profil
+     *
+     * @param newProfileName Der neue Profilname
+     * @param newDifficulty Der neue Schwierigkeitsgrad
+     * @param newProfilePicturePath Das neue Profilbild
+     */
+    public void updateProfile(final String newProfileName, final int newDifficulty, final String newProfilePicturePath) {
+        currentProfile.setProfileName(newProfileName);
+        currentProfile.setPreferredDifficulty(newDifficulty);
+        currentProfile.setProfilePicturePath(newProfilePicturePath);
+        profileDao.update(currentProfile);
     }
 
-    public void deleteProfile(final Profile profile) {
+    /**
+     *
+     * Löscht das Profil mit der angegebenen ID
+     *
+     * @param profileId Die ID des zu löschenden Profils
+     */
+    public void deleteProfile(final long profileId) {
         try{
+            Profile profile = profileDao.retrieve(profileId);
             profileDao.delete(profile);
         } catch (final PersistenceException e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -180,36 +202,23 @@ public class MainController {
             this.gameClient = new GameClient();
             this.gameClient.setMainController(this);
         }
+        host = false;
     }
 
+    /**
+     *
+     * Holt Informationen über lokale Spielserver vom GameClient, enkodiert in einen String
+     *
+     * @return Die Informationen über lokale Spielserver als String
+     */
     public List<String> getLocalGameServers() {
-
-        // Code, um Server-Funktionalität zu testen.
         List<InetAddress> servers = gameClient.discoverLocalServers();
-
-
-        // TODO: Empfangene Informationen müssen geparst werden
-        //for (InetAddress inetAddress : servers) {
-        //System.out.println(inetAddress.getHostAddress());
-        //serverList.add(inetAddress.getHostAddress());
-        //}
-
-        List<String> serverList = gameClient.getReceivedSessionInfo();
-
-        for (String string : serverList) {
-            System.out.println(string);
-        }
-
-        //if (!servers.isEmpty()) {
-        //gameClient.connect(servers.get(0).getHostName());
-        //} else {
-        if (servers.isEmpty()) {
-            System.out.println("Keine Server gefunden!");
-        }
-
-        return serverList;
+        return gameClient.getReceivedSessionInfo();
     }
 
+    /**
+     * Schließt alle Verbindungen mit GameClients oder GameServern
+     */
     public void shutdownConnections() {
         if (gameClient != null) {
             gameClient.shutdown();
@@ -226,7 +235,7 @@ public class MainController {
      * Startet den GameServer
      */
     public void startServer() {
-        gameServer.startServer(2);
+        gameServer.startServer(2, currentProfile.getPreferredDifficulty());
     }
 
     /**
@@ -238,10 +247,20 @@ public class MainController {
         return gameClient.connect(host);
     }
 
+    /**
+     * Holt alle Spielstände aus der Datenbank
+     *
+     * @return Eine Liste aller in der Datenbank gespeicherten Spielstände
+     */
     public List<SaveState> getAllSavestates() {
         return saveStateDao.findAllSaveStates();
     }
 
+    /**
+     * Holt alle Spielstände für das aktuell ausgewählte Profil aus der Datenbank
+     *
+     * @return Eine Liste aller in der Datenbank gespeicherten Spielstände für das aktuell ausgewählte Profil
+     */
     public List<SaveState> getSaveStatesForCurrentProfile() {
         return saveStateDao.findSaveStatesForProfile(currentProfile);
     }
@@ -249,9 +268,10 @@ public class MainController {
     /**
      * Erstellt ein neues Einzelspieler-Spiel
      */
-    public void createNewSinglePlayerGame(int gamemode, String mapPath) {
+    public void createNewSinglePlayerGame(int gamemode, int difficulty, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new GameLogicController(this, currentProfile, 1, 0, gamemode, gameScreen, mapPath);
+        String[] names = { currentProfile.getProfileName() };
+        new GameLogicController(this, difficulty, 1, 0, gamemode, gameScreen, mapPath, names);
         showScreen(gameScreen);
     }
 
@@ -270,10 +290,9 @@ public class MainController {
     /**
      * Erzeugt ein neues Multiplayer-Spiel als Client
      */
-    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+    public void createNewMultiplayerClientGame(int numberOfPlayers, int allocatedPlayerNumber, int difficulty, int gamemode, String mapPath, String[] names) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new ClientGameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient);
-        //showScreen(gameScreen);
+        new ClientGameLogicController(this, difficulty, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameClient, names);
     }
 
     /**
@@ -288,10 +307,9 @@ public class MainController {
     /**
      * Erzeugt ein Multiplayer-Spiel als Server
      */
-    public void createNewMultiplayerServerGame(int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath) {
+    public void createNewMultiplayerServerGame(int numberOfPlayers, int difficulty, int allocatedPlayerNumber, int gamemode, String mapPath, String[] names) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new GameLogicController(this, currentProfile, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer);
-        //showScreen(gameScreen);
+        new GameLogicController(this, difficulty, numberOfPlayers, allocatedPlayerNumber, gamemode, gameScreen, mapPath, gameServer, names);
     }
 
     /**
@@ -305,57 +323,66 @@ public class MainController {
         showScreen(gameScreen);
     }
 
-    public List<Profile> retrieveProfiles() {
-        /*try{
-            return profileDao.openCurrentSession().createQuery("from Profiles").list();
-        } catch (final Exception e){
-            return new LinkedList<>();
-        }*/
-        final Session session = profileDao.openCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Profile> criteriaQuery = criteriaBuilder.createQuery(Profile.class);
-        criteriaQuery.from(Profile.class);
-        return session.createQuery(criteriaQuery).getResultList();
+    private List<Profile> retrieveProfiles() {
+        return profileDao.findAllProfiles();
+    }
+
+    public Profile retrieveProfile(long id) {
+        return profileDao.retrieve(id);
     }
 
     public boolean noProfilesYet() {
         return retrieveProfiles().isEmpty();
     }
 
+    /**
+     * Holt eine bestimmte Anzahl der höchsten HighScores aus der Datenbank
+     *
+     * @param limit Die Anzahl der HighScores, die aus der Datenbank geholt werden sollen
+     * @return Die Liste der HighScores
+     */
     public List<Highscore> retrieveHighscores(int limit) {
-
-/*        createNewProfile("Sherlock Holmes", Difficulty.EASY, "sherlock.png.");
-
-        Profile profile = profileDao.retrieve(1L);
-
-        Highscore highscore1 = new Highscore(profile, 9000, 25, new Date());
-        Highscore highscore2 = new Highscore(profile, 5012, 691, new Date());
-        Highscore highscore3 = new Highscore(profile, 1337, 42, new Date());
-
-        highScoreDao.create(highscore1);
-        highScoreDao.create(highscore2);
-        highScoreDao.create(highscore3);*/
-
-        //return new LinkedList<>();
         return highScoreDao.findHighestScores(limit);
     }
 
+    /**
+     * Zeigt einen Screen an
+     *
+     * @param screen Der anzuzeigende Screen
+     */
     public void showScreen(Screen screen) {
         game.setScreen(screen);
     }
 
+    /**
+     * Zeigt den Introbildschirm an
+     */
     public void showIntroScreen() {
         game.setScreen(introScreen);
     }
 
+    /**
+     * Gibt Auskunft darüber, ob die Datenbank geladen ist
+     *
+     * @return true, wenn die Datenbank geladen ist, ansonsten false
+     */
     public boolean isDatabaseLoaded() {
         return databaseLoaded;
     }
 
+    /**
+     * Setzt die Variable, die Auskunft darüber gibt, ob die Datenbank geladen ist, auf true oder false
+     *
+     * @param databaseLoaded Der neue Wahrheitswert
+     */
     public void setDatabaseLoaded(boolean databaseLoaded) {
         this.databaseLoaded = databaseLoaded;
     }
 
+    /**
+     * Gibt die aktuelle HostAdresse zurück
+     * @return Die Hostadresse
+     */
     public String getHostAdress() {
         return hostAdress;
     }
@@ -364,6 +391,10 @@ public class MainController {
         this.hostAdress = hostAdress;
     }
 
+    /**
+     * Ändert den Bereitschaftszustand der Spielinstanz im Multiplayer und schickt als Client eine entsprechende
+     * Nachricht an den Server
+     */
     public void toggleReady() {
         if (host) {
             gameServer.setServerReady();
@@ -372,11 +403,56 @@ public class MainController {
         }
     }
 
+    /**
+     * Gibt das HighScoreDao des Controllers zurück
+     *
+     * @return Das HighScoreDao
+     */
     public HighscoreDao getHighScoreDao() {
         return highScoreDao;
     }
 
-    public ProfileDao getProfileDao() {
-        return profileDao;
+    /**
+     * Aktualisiert die Profilauswahl-Buttons eines MenuScreens
+     * @param menuScreen Der MenuScreen, dessen Profilauswahl-Buttons aktualisiert werden sollen
+     */
+    public void updateProfileButtons(MenuScreen menuScreen) {
+        for (final Profile profile : profileDao.findAllProfiles()) {
+
+            boolean isCurrentProfile = false;
+
+            if (currentProfile != null) {
+                if (currentProfile.getId().equals(profile.getId())) {
+                    isCurrentProfile = true;
+                }
+            }
+
+            menuScreen.addProfileButton(profile.getProfileName(), profile.getId(), isCurrentProfile);
+        }
+    }
+
+    public boolean hasCurrentProfile() {
+
+        return currentProfile != null;
+    }
+
+    public String getCurrentProfileName() {
+        return currentProfile.getProfileName();
+    }
+
+    public int getCurrentProfilePreferredDifficulty() {
+        return currentProfile.getPreferredDifficulty();
+    }
+
+    public String getCurrentProfilePicturePath() {
+        return currentProfile.getProfilePicturePath();
+    }
+
+    public void updateSaveStateButtons(MenuScreen menuScreen) {
+
+        for (SaveState saveState : saveStateDao.findAllSaveStates()) {
+            menuScreen.addSaveStateButton("Player name:" + saveState.getProfile().getProfileName() + "\n" + saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString(),
+                    saveState.getId());
+        }
     }
 }

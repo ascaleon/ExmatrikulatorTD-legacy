@@ -1,12 +1,10 @@
 package de.diegrafen.exmatrikulatortd.communication.client.requests;
 
-import de.diegrafen.exmatrikulatortd.model.Difficulty;
-
 public class GetGameInfoRequest extends Request {
 
     private String playerName;
 
-    private Difficulty difficulty;
+    private int difficulty;
 
     private String profilePicturePath;
 
@@ -14,7 +12,7 @@ public class GetGameInfoRequest extends Request {
         super();
     }
 
-    public GetGameInfoRequest(String playerName, Difficulty difficulty, String profilePicturePath) {
+    public GetGameInfoRequest(String playerName, int difficulty, String profilePicturePath) {
         this.playerName = playerName;
         this.difficulty = difficulty;
         this.profilePicturePath = profilePicturePath;
@@ -24,7 +22,7 @@ public class GetGameInfoRequest extends Request {
         return playerName;
     }
 
-    public Difficulty getDifficulty() {
+    public int getDifficulty() {
         return difficulty;
     }
 
