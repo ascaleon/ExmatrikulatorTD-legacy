@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.diegrafen.exmatrikulatortd.model.enemy.ObservableEnemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.*;
+import static de.diegrafen.exmatrikulatortd.util.Assets.getEnemyAssetPath;
 
 /**
  * Das Spielobjekt eines Gegners
@@ -52,7 +53,7 @@ public class EnemyObject extends BaseObject {
         //dies ist eine änderung
 
         String assetsName = getAssetsName();
-        TextureAtlas deathAnimationAtlas = getAssetManager().get(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
+        TextureAtlas deathAnimationAtlas = getAssetManager().get(getEnemyAssetPath(DEATH_ANIMATION_ASSETS), TextureAtlas.class);
         setTextureAtlas(getAssetManager().get(getEnemyAssetPath(assetsName), TextureAtlas.class));
 
         //standingAnimation = new Animation<>(0.033f, getTextureAtlas().findRegions(getAssetsName() + "standing"), Animation.PlayMode.LOOP);

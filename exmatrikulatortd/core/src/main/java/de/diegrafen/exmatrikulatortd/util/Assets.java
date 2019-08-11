@@ -1,13 +1,9 @@
 package de.diegrafen.exmatrikulatortd.util;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  *
@@ -39,8 +35,6 @@ public final class Assets {
     private static final String TOWER_SPRITE_PATH = "sprites/objects/towers/";
 
     public static final String REGULAR_TOWER_ASSETS = "tower_gun";
-
-    public static final String UPGRADED_REGULAR_TOWER_ASSETS = "tower_gun";
 
     public static final String REGULAR_TOWER_PORTRAIT = "gunwoman_portrait.png";
 
@@ -80,8 +74,6 @@ public final class Assets {
 
     public static final String BOSS_ENEMY_ASSETS = "enemy_boss";
 
-    public static final String DEATH_ANIMATION_SPRITE_PATH = "sprites/objects/projectiles/";
-
     public static final String DEATH_ANIMATION_ASSETS = "explosion";
 
     public static final String SINGLEPLAYER_MAP_PATH = "sprites/gamemap/singleplayerMap.tmx";
@@ -94,10 +86,9 @@ public final class Assets {
 
     public static final String SKIN = "ui-skin/golden-ui-skin.json";
 
-
     public static void queueAssets(AssetManager assetManager) {
 
-        // load Textures
+        // load textures
         assetManager.load(MENU_BACKGROUND_IMAGE, Texture.class);
         assetManager.load(TRANSPARENT_BACKGROUND_IMAGE, Texture.class);
         assetManager.load(MENU_ICON_PLACEHOLDER, Texture.class);
@@ -108,24 +99,24 @@ public final class Assets {
         assetManager.load(SEND_HEAVY_ENEMY_ICON, Texture.class);
         assetManager.load(SEND_REGULAR_ENEMY_ICON, Texture.class);
 
-        // load atlasses
+        // load tower atlasses
         assetManager.load(getTowerAssetPath(REGULAR_TOWER_ASSETS), TextureAtlas.class);
-        assetManager.load(getTowerAssetPath(UPGRADED_REGULAR_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(SLOW_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(CORRUPTION_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(EXPLOSIVE_TOWER_ASSETS), TextureAtlas.class);
         assetManager.load(getTowerAssetPath(AURA_TOWER_ASSETS), TextureAtlas.class);
 
+        // load enemy atlasses
         assetManager.load(getEnemyAssetPath(REGULAR_ENEMY_ASSETS), TextureAtlas.class);
         assetManager.load(getEnemyAssetPath(HEAVY_ENEMY_ASSETS), TextureAtlas.class);
         assetManager.load(getEnemyAssetPath(FAST_ENEMY_ASSETS), TextureAtlas.class);
         assetManager.load(getEnemyAssetPath(BOSS_ENEMY_ASSETS), TextureAtlas.class);
+        assetManager.load(getEnemyAssetPath(DEATH_ANIMATION_ASSETS), TextureAtlas.class);
 
-        assetManager.load(DEATH_ANIMATION_SPRITE_PATH + DEATH_ANIMATION_ASSETS + ".atlas", TextureAtlas.class);
-
+        // load projectile atlasses
         assetManager.load(getProjectileAssetPath(FIREBALL_ASSETS), TextureAtlas.class);
 
-        // Load Skins
+        // Load skins
         assetManager.load(SKIN, Skin.class);
     }
 

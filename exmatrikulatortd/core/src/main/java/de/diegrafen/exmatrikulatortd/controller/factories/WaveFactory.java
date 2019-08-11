@@ -92,7 +92,7 @@ final class WaveFactory {
     private static Wave createFastWave() {
         Wave wave = new Wave();
         for (int i = 0; i < ENEMIES_PER_WAVE; i++) {
-            addEnemyToWaveEnemies(REGULAR_ENEMY, wave);
+            addEnemyToWaveEnemies(FAST_ENEMY, wave);
         }
         return wave;
     }

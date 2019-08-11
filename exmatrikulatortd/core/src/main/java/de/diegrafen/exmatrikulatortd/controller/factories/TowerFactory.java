@@ -125,7 +125,7 @@ public final class TowerFactory {
     private static Tower createExplosiveTower() {
         return new Tower("Explosive Tower", EXPLOSIVE_TOWER_DESCRIPTION, EXPLOSIVE_TOWER, 200, 4, 3,
                 EXPLOSIVE, 0.4f, new LinkedList<>(), 0, 500, 250, 500, 1, 10, EXPLOSIVE_TOWER_ASSETS, EXPLOSIVE_TOWER_PORTRAIT, EXPLOSIVE_TOWER_PORTRAIT_SELECTED,
-                0.5f, 2f, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true, 100,
+                0.5f, 1.5f, new LinkedList<>(), "fireball", FIREBALL_ASSETS, 400, true, 100,
                 1.03f, 0.25f,0);
     }
 
