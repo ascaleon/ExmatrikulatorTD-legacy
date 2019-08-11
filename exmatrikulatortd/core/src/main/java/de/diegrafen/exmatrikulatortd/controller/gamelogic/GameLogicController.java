@@ -911,4 +911,9 @@ public class GameLogicController implements LogicController {
     public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
+
+    @Override
+    public boolean isServer() {
+        return server;
+    }
 }

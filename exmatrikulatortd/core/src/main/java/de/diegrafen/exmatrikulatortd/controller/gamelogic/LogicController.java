@@ -129,6 +129,8 @@ public interface LogicController {
 
     boolean isPause();
 
+    boolean isServer();
+
     void setPause(boolean pause);
 
     void gameConnectionLost();

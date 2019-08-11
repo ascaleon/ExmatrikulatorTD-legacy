@@ -321,7 +321,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showMainMenu(selectGameTypeTable);
-                backButton.setChecked(false);
             }
         });
     }
@@ -396,7 +395,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectGameTypeMenu(loadOrNewGameTable);
-                backButton.setChecked(false);
             }
         });
     }
@@ -507,7 +505,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showMainMenu(selectProfileMenuTable);
-                backButton.setChecked(false);
             }
         });
 
@@ -556,7 +553,6 @@ public class MenuScreen extends BaseScreen {
                         showGameLobbyMenu(menuTable);
                     }
                 }
-                loadButton.setChecked(false);
             }
         });
 
@@ -577,7 +573,6 @@ public class MenuScreen extends BaseScreen {
                 } else {
                     showLoadOrNewGameMenu(menuTable);
                 }
-                backButton.setChecked(false);
             }
         });
 
@@ -640,7 +635,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectProfileMenu(newOrEditProfileMenuTable);
-                backButton.setChecked(false);
                 cleanupNewOrEditProfileMenu();
             }
         });
@@ -672,7 +666,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showMainMenu(preferencesMenuTable);
-                backButton.setChecked(false);
             }
         });
     }
@@ -730,7 +723,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showMainMenu(highScoreMenuTable);
-                backButton.setChecked(false);
             }
         });
     }
@@ -784,7 +776,6 @@ public class MenuScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showSelectGameTypeMenu(clientOrServerMenuTable);
-                backButton.setChecked(false);
             }
         });
     }
@@ -833,7 +824,6 @@ public class MenuScreen extends BaseScreen {
                 // Ist man nicht mehr im Begriff, mit jmd. anderem zu spielen, besteht auch kein Grund dazu, die Netzwerkfunktionalität laufen zu lassen
                 getMainController().shutdownConnections();
                 showClientOrServerMenu(gameLobbyTable);
-                backButton.setChecked(false);
             }
         });
     }
@@ -901,7 +891,6 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 getMainController().shutdownConnections();
                 showClientOrServerMenu(serverListMenuTable);
-                backButton.setChecked(false);
             }
         });
     }

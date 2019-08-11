@@ -325,7 +325,9 @@ public class MainController {
     /**
      * Lädt ein Multiplayerspiel als Server
      *
-     * @param saveState Der Spielzustand, der geladen werden soll
+     * @param gamestate Der Spielzustand, der geladen werden soll
+     * @param allocatedPlayerNumber Die zugewiesene Spielernummer
+     * @param mapPath Der Dateipfad der Map
      */
     public void loadMultiPlayerServerGame(Gamestate gamestate, int allocatedPlayerNumber, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
@@ -334,10 +336,6 @@ public class MainController {
 
     private List<Profile> retrieveProfiles() {
         return profileDao.findAllProfiles();
-    }
-
-    public Profile retrieveProfile(long id) {
-        return profileDao.retrieve(id);
     }
 
     public boolean noProfilesYet() {
@@ -468,5 +466,16 @@ public class MainController {
     public void deleteSaveState(Long idToLoad) {
         SaveState saveState = saveStateDao.retrieve(idToLoad);
         saveStateDao.delete(saveState);
+    }
+
+    /**
+     * Lädt den letzten gespeicherten Spielstand für das aktuelle Profil, wenn ein solcher existiert
+     */
+    public void loadLastSaveGame() {
+        List<SaveState> saveStates = getSaveStatesForCurrentProfile();
+        if (!saveStates.isEmpty()) {
+            SaveState saveState = saveStates.get(saveStates.size() - 1);
+            loadSinglePlayerGame(saveState.getId());
+        }
     }
 }
