@@ -30,11 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
-import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.util.Assets.TRANSPARENT_BACKGROUND_IMAGE;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.CAMERA_TRANSLATE_VALUE;
 
 /**
@@ -131,6 +130,7 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      */
     private Label.LabelStyle towerinfoLabelsStyle = new Label.LabelStyle(getBitmapFont(), Color.WHITE);
+
     private Label towerinfoLabel = new Label(null, towerinfoLabelsStyle);
 
     /**
@@ -157,12 +157,8 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      */
     private Group endScreenGroup;
-    // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
-    /**
-     *
-     */
-    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
+    private Skin skin;
 
     /**
      *
@@ -202,6 +198,7 @@ public class GameScreen extends BaseScreen implements GameView {
      *
      */
     private Table messageArea;
+
     private Table menuMessageArea;
 
     /**
@@ -318,6 +315,7 @@ public class GameScreen extends BaseScreen implements GameView {
     public void init() {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
+        skin = getAssetManager().get(SKIN, Skin.class);
 
         getCamera().setToOrtho(false, width, height);
 
@@ -500,7 +498,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         numberOfPlayers = gameState.getPlayers().size();
 
-        background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+        background = new Image(getAssetManager().get(TRANSPARENT_BACKGROUND_IMAGE, Texture.class));
 
         localPlayer = logicController.getLocalPlayer();
 
@@ -515,6 +513,7 @@ public class GameScreen extends BaseScreen implements GameView {
             opposingPlayer = gameState.getPlayerByNumber(opposingPlayerNumber);
         }
         initializeUserInterface();
+        initPauseScreen();
 
         multiplexer.addProcessor(inputProcessorCam);
         Gdx.input.setInputProcessor(multiplexer);
@@ -597,7 +596,6 @@ public class GameScreen extends BaseScreen implements GameView {
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
         playerHealth.setValue(localPlayer.getCurrentLives());
-
         resourcesLabel.setText(localPlayer.getResources());
         if (gameState.isEndlessGame()) {
             roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
@@ -717,8 +715,6 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private void initializeUserInterface() {
 
-        // TODO: Diese Methode erfordert noch erhebliches Refactoring.
-
         opponent = new Table();
         sendEnemy = new Table();
 
@@ -768,7 +764,7 @@ public class GameScreen extends BaseScreen implements GameView {
         playerHealth.setValue(localPlayer.getCurrentLives());
         playerHealth.setAnimateDuration(1);
 
-        Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
+        Drawable menuImage = new TextureRegionDrawable(getAssetManager().get(MENU_ICON_PLACEHOLDER, Texture.class));
 
         towerSelect = new Table();
 
@@ -784,12 +780,11 @@ public class GameScreen extends BaseScreen implements GameView {
             public void changed(ChangeEvent event, Actor actor) {
                 if (!logicController.isPause() & !logicController.isMultiplayer()) {
                     logicController.setPause(true);
-                    pauseScreen();
+                    //pauseScreen();
                 } else if (logicController.isMultiplayer()) {
                     logicController.setPause(false);
-                    pauseScreen();
                 }
-
+                showPauseScreen();
             }
         });
 
@@ -839,11 +834,19 @@ public class GameScreen extends BaseScreen implements GameView {
         multiplexer.addProcessor(getUi());
     }
 
-    /**
-     *
-     * @param localPlayer
-     */
+    private void showPauseScreen() {
+        defaultScreen.setVisible(false);
+        pauseGroup.setVisible(true);
+    }
+
     private void initMultiplayerUiComponents(Player localPlayer){
+        int opposingPlayerNumber;
+        if (logicController.getLocalPlayerNumber() == 0) {
+            opposingPlayerNumber = 1;
+        } else {
+            opposingPlayerNumber = 0;
+        }
+        Player opposingPlayer = gameState.getPlayers().get(opposingPlayerNumber);
         opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
         opponentHealth.setScale(1 / 2);
         opponentHealth.setValue(opposingPlayer.getCurrentLives());
@@ -856,8 +859,8 @@ public class GameScreen extends BaseScreen implements GameView {
         opponent.add(opponentScore).left().row();
         opponent.add(opponentHealth).left();
 
-        Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
-        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
+        Drawable sendRegEnemyIcon = new TextureRegionDrawable(getAssetManager().get(SEND_REGULAR_ENEMY_ICON, Texture.class));
+        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(getAssetManager().get(SEND_HEAVY_ENEMY_ICON, Texture.class));
 
         ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
         ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
@@ -885,8 +888,8 @@ public class GameScreen extends BaseScreen implements GameView {
      * @param localPlayer
      */
     private void initPopUpContent(Player localPlayer) {
-        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
-        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
+        Drawable upgradeIcon = new TextureRegionDrawable(getAssetManager().get(UPRADE_ICON, Texture.class));
+        Drawable sellIcon = new TextureRegionDrawable(getAssetManager().get(SELL_ICON, Texture.class));
 
         ImageButton upgradeButton = new ImageButton(upgradeIcon);
         ImageButton sellButton = new ImageButton(sellIcon);
@@ -1061,7 +1064,7 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Erstellt/Zeigt den Pausenbildschirm an. Das Spiel UI wird ausgeblendet, während das Spiel pausiert ist.
      */
-    private void pauseScreen() {
+    private void initPauseScreen() {
         pauseGroup = new Group();
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
@@ -1071,7 +1074,7 @@ public class GameScreen extends BaseScreen implements GameView {
         resume.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!logicController.isMultiplayer()) {
+                if (!logicController.isMultiplayer()) {
                     logicController.setPause(false);
                 }
                 pauseGroup.setVisible(false);
@@ -1079,58 +1082,35 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        TextButton back2main = new TextButton("Menu", skin);
-        back2main.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                logicController.exitGame(false);
-            }
-        });
         TextButton save = new TextButton("Save", skin);
         save.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
-
-                Gdx.input.getTextInput(new Input.TextInputListener() {
-                    @Override
-                    public void input(String text) {
-                        if(text != null && text != "" && text.trim().length() > 0){
-                            logicController.saveGame(text);
-                            displayErrorMessage("Spiel gespeichert");
-                        }
-                        else {
-                            displayErrorMessage("Speichern fehlgeschlagen");
-                        }
-                    }
-
-                    @Override
-                    public void canceled() {
-                        displayErrorMessage("Speichern abgebrochen");
-                    }
-                }, "Name des Spielstand", "savename", "");
-
+                logicController.saveGame("Spielstand");
             }
         });
 
+        TextButton back2main = new TextButton("Menu", skin);
 
-        if (logicController.isPause()) {
-            TextButton load = new TextButton("Load", skin);
+            TextButton load = new TextButton("Quickload", skin);
             load.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    List<SaveState> saveStates = getMainController().getAllSavestates();
-                    if (!saveStates.isEmpty()) {
-                        SaveState saveState = saveStates.get(saveStates.size() - 1);
-                        //TODO: Dropdown-Menü zur Auswahl von Spielständen ergänzen
-                        getMainController().loadSinglePlayerGame(saveState.getId());
-                    }
+                    getMainController().loadLastSaveGame();
+                }
+            });
+            back2main.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    logicController.exitGame(logicController.isServer());
                 }
             });
 
             buttonTable.add(resume).top().center().spaceBottom(10).row();
-            buttonTable.add(save).top().center().spaceBottom(10).row();
-            buttonTable.add(load).top().center().spaceBottom(10).row();
+            if (!logicController.isMultiplayer()) {
+                buttonTable.add(save).top().center().spaceBottom(10).row();
+                buttonTable.add(load).top().center().spaceBottom(10).row();
+            }
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
@@ -1140,10 +1120,9 @@ public class GameScreen extends BaseScreen implements GameView {
             pauseGroup.addActor(buttonTable);
             pauseGroup.addActor(menuMessageArea);
 
-            defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
 
-        } else if(logicController.isMultiplayer()){
+        if (logicController.isMultiplayer()) {
             back2main.addListener(new TextTooltip("Warnung: Diese Aktion trennt die Verbindung und beendet die Partie", tooltipManager, skin));
             buttonTable.add(resume).top().center().spaceBottom(10).row();
             if(logicController.isServer()){
@@ -1152,17 +1131,13 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
-
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
             pauseGroup.addActor(menuMessageArea);
 
-            defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
-        } else {
-            pauseGroup.setVisible(false);
         }
+        pauseGroup.setVisible(false);
     }
 
     /**
@@ -1170,6 +1145,8 @@ public class GameScreen extends BaseScreen implements GameView {
      * Gewonnen/Verloren + Punkte + Highscore des Users
      *
      * @param victorious Gibt an, ob der lokale Spieler siegreich war
+     * @param score Die Punkte des lokalen Spielers
+     * @param highscore Der Highscore des lokalen Spielers
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
@@ -1177,9 +1154,9 @@ public class GameScreen extends BaseScreen implements GameView {
 
         Image resultImage;
         if (victorious) {
-            resultImage = new Image(new Texture(Gdx.files.internal("win.png")));
+            resultImage = new Image(getAssetManager().get(WIN_IMAGE, Texture.class));
         } else {
-            resultImage = new Image(new Texture(Gdx.files.internal("loose.png")));
+            resultImage = new Image(getAssetManager().get(LOSE_IMAGE, Texture.class));
         }
 
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
@@ -1263,10 +1240,11 @@ public class GameScreen extends BaseScreen implements GameView {
         previewTowers.add(new TowerObject(observableTower, getAssetManager()));
     }
 
+
     /**
-     *
+     * Erzeugt einen Bildschirm mit Statistiken, der am Ende des Spiels angezeigt wird
      */
-    private void gameStatsScreen(){
+    private void gameStatsScreen() {
         Group statScreen = new Group();
 
         Table firstColum = new Table();
@@ -1346,7 +1324,8 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
-     * Passt die Größe des Hintergrundbildes an die neue Fenstergröße an
+     * Nimmt Anpasssungen bei Änderung der Fenstergröße vor
+     *
      * @param width Die neue Breite.
      * @param height Die neue Höhe.
      */

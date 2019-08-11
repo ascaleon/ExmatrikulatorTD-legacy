@@ -22,13 +22,6 @@ public class Player extends BaseModel implements Observable {
      * Die eindeutige Serialisierungs-ID
      */
     static final long serialVersionUID = 4918147183123L;
-//
-//    /**
-//     * Der Zustand des laufenden Spiels
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "gamestate_id")
-//    private Gamestate gameState;
 
     /**
      * Die Spielernummer
@@ -74,6 +67,7 @@ public class Player extends BaseModel implements Observable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Coordinates> wayPoints;
 
     private float timeSinceLastSpawn;

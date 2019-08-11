@@ -55,5 +55,5 @@ public interface ClientLogicController extends LogicController {
      */
     void upgradeTowerFromServer(int xCoordinate, int yCoordinate, int playerNumber);
 
-    void setGamestateFromServer(List<Tower> towers, List<Player> players);
+    void setGamestateFromServer(List<Tower> towers, List<Player> players, float timeUntilNextRound);
 }

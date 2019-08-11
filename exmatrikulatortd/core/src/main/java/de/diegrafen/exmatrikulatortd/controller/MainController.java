@@ -195,6 +195,16 @@ public class MainController {
     }
 
     /**
+     * Erzeugt einen neuen GameServer mit einem zu ladenden Spielstand
+     */
+    public void createServer(long idToLoad) {
+        SaveState saveState = saveStateDao.retrieve(idToLoad);
+        this.gameServer = new GameServer(new Gamestate(saveState.getGamestate()));
+        this.gameServer.setMainController(this);
+        this.host = true;
+    }
+
+    /**
      * Erzeugt einen neuen GameClient
      */
     public void createClient() {
@@ -212,7 +222,7 @@ public class MainController {
      * @return Die Informationen über lokale Spielserver als String
      */
     public List<String> getLocalGameServers() {
-        List<InetAddress> servers = gameClient.discoverLocalServers();
+        gameClient.discoverLocalServers();
         return gameClient.getReceivedSessionInfo();
     }
 
@@ -298,10 +308,10 @@ public class MainController {
     /**
      * Lädt ein Multiplayerspiel als Client
      */
-    public void loadMultiPlayerClientGame(SaveState saveState, int allocatedPlayerNumber) {
+    public void loadMultiPlayerClientGame(Gamestate gamestate, int allocatedPlayerNumber, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new ClientGameLogicController(this, saveState, allocatedPlayerNumber, gameScreen, gameClient);
-        showScreen(gameScreen);
+        new ClientGameLogicController(this, gamestate, allocatedPlayerNumber, gameScreen, mapPath, gameClient);
+        //showScreen(gameScreen);
     }
 
     /**
@@ -315,20 +325,17 @@ public class MainController {
     /**
      * Lädt ein Multiplayerspiel als Server
      *
-     * @param saveState Der Spielzustand, der geladen werden soll
+     * @param gamestate Der Spielzustand, der geladen werden soll
+     * @param allocatedPlayerNumber Die zugewiesene Spielernummer
+     * @param mapPath Der Dateipfad der Map
      */
-    public void loadMultiPlayerServerGame(SaveState saveState) {
+    public void loadMultiPlayerServerGame(Gamestate gamestate, int allocatedPlayerNumber, String mapPath) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
-        new GameLogicController(this, saveState, gameScreen, gameServer);
-        showScreen(gameScreen);
+        new GameLogicController(this, gamestate, allocatedPlayerNumber, gameScreen, mapPath, gameServer);
     }
 
     private List<Profile> retrieveProfiles() {
         return profileDao.findAllProfiles();
-    }
-
-    public Profile retrieveProfile(long id) {
-        return profileDao.retrieve(id);
     }
 
     public boolean noProfilesYet() {
@@ -452,7 +459,23 @@ public class MainController {
 
         for (SaveState saveState : saveStateDao.findAllSaveStates()) {
             menuScreen.addSaveStateButton("Player name:" + saveState.getProfile().getProfileName() + "\n" + saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString(),
-                    saveState.getId());
+                    saveState.getId(), saveState.isMultiplayer());
+        }
+    }
+
+    public void deleteSaveState(Long idToLoad) {
+        SaveState saveState = saveStateDao.retrieve(idToLoad);
+        saveStateDao.delete(saveState);
+    }
+
+    /**
+     * Lädt den letzten gespeicherten Spielstand für das aktuelle Profil, wenn ein solcher existiert
+     */
+    public void loadLastSaveGame() {
+        List<SaveState> saveStates = getSaveStatesForCurrentProfile();
+        if (!saveStates.isEmpty()) {
+            SaveState saveState = saveStates.get(saveStates.size() - 1);
+            loadSinglePlayerGame(saveState.getId());
         }
     }
 }

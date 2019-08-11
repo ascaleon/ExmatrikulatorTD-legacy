@@ -36,13 +36,13 @@ public class GameListener implements Listener {
         if (object instanceof FinishedLoadingRequest) {
             handleFinishedLoadingRequest(connection);
         } else if (object instanceof BuildRequest) {
-            handleBuildRequest((BuildRequest) object);
+            handleBuildRequest(connection, (BuildRequest) object);
         } else if (object instanceof SellRequest) {
-            handleSellRequest((SellRequest) object);
+            handleSellRequest(connection, (SellRequest) object);
         } else if (object instanceof SendEnemyRequest) {
-            handleSendEnemyRequest((SendEnemyRequest) object);
+            handleSendEnemyRequest(connection, (SendEnemyRequest) object);
         } else if (object instanceof UpgradeRequest) {
-            handleUpgradeRequest((UpgradeRequest) object);
+            handleUpgradeRequest(connection, (UpgradeRequest) object);
         } else if (object instanceof GetServerStateRequest) {
             handleGetServerStateRequest(connection);
         }
@@ -64,9 +64,12 @@ public class GameListener implements Listener {
      *
      * @param buildRequest f
      */
-    private void handleBuildRequest(final BuildRequest buildRequest) {
-        Gdx.app.postRunnable(() -> logicController.buildTower(buildRequest.getTowerType(), buildRequest.getxCoordinate(),
-                buildRequest.getyCoordinate(), buildRequest.getPlayerNumber()));
+    private void handleBuildRequest(final Connection connection, final BuildRequest buildRequest) {
+        int playerNumber = gameServer.getPlayerNumberByConnectionID(connection.getID());
+        if (playerNumber == buildRequest.getPlayerNumber()) {
+            Gdx.app.postRunnable(() -> logicController.buildTower(buildRequest.getTowerType(), buildRequest.getxCoordinate(),
+                    buildRequest.getyCoordinate(), buildRequest.getPlayerNumber()));
+        }
     }
 
     /**
@@ -75,8 +78,11 @@ public class GameListener implements Listener {
      *
      * @param sellRequest f
      */
-    private void handleSellRequest(final SellRequest sellRequest) {
-        Gdx.app.postRunnable(() -> logicController.sellTower(sellRequest.getxCoordinate(), sellRequest.getyCoordinate(), sellRequest.getPlayerNumber()));
+    private void handleSellRequest(final Connection connection, final SellRequest sellRequest) {
+        int playerNumber = gameServer.getPlayerNumberByConnectionID(connection.getID());
+        if (playerNumber == sellRequest.getPlayerNumber()) {
+            Gdx.app.postRunnable(() -> logicController.sellTower(sellRequest.getxCoordinate(), sellRequest.getyCoordinate(), sellRequest.getPlayerNumber()));
+        }
     }
 
     /**
@@ -84,8 +90,11 @@ public class GameListener implements Listener {
      *
      * @param sendEnemyRequest f
      */
-    private void handleSendEnemyRequest(final SendEnemyRequest sendEnemyRequest) {
-        Gdx.app.postRunnable(() -> logicController.sendEnemy(sendEnemyRequest.getEnemyType(), sendEnemyRequest.getPlayerToSendTo(), sendEnemyRequest.getSendingPlayer()));
+    private void handleSendEnemyRequest(final Connection connection, final SendEnemyRequest sendEnemyRequest) {
+        int playerNumber = gameServer.getPlayerNumberByConnectionID(connection.getID());
+        if (playerNumber == sendEnemyRequest.getSendingPlayer()) {
+            Gdx.app.postRunnable(() -> logicController.sendEnemy(sendEnemyRequest.getEnemyType(), sendEnemyRequest.getPlayerToSendTo(), sendEnemyRequest.getSendingPlayer()));
+        }
     }
 
     /**
@@ -93,8 +102,11 @@ public class GameListener implements Listener {
      *
      * @param upgradeRequest f
      */
-    private void handleUpgradeRequest(final UpgradeRequest upgradeRequest) {
-        Gdx.app.postRunnable(() -> logicController.upgradeTower(upgradeRequest.getxCoordinate(), upgradeRequest.getyCoordinate(), upgradeRequest.getPlayerNumber()));
+    private void handleUpgradeRequest(final Connection connection, final UpgradeRequest upgradeRequest) {
+        int playerNumber = gameServer.getPlayerNumberByConnectionID(connection.getID());
+        if (playerNumber == upgradeRequest.getPlayerNumber()) {
+            Gdx.app.postRunnable(() -> logicController.upgradeTower(upgradeRequest.getxCoordinate(), upgradeRequest.getyCoordinate(), upgradeRequest.getPlayerNumber()));
+        }
     }
 
     /**

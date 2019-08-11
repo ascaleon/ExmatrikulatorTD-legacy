@@ -557,10 +557,6 @@ public class Tower extends ObservableModel implements ObservableTower {
         return this.attacking;
     }
 
-    public float getAttackSpeed() {
-        return currentAttackSpeed;
-    }
-
     public float getBaseAttackDelay() {
         return baseAttackDelay;
     }

@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.communication.server.responses;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.util.List;
@@ -13,27 +14,23 @@ import java.util.List;
  */
 public class GetServerStateResponse extends Response {
 
-    private Gamestate gamestate;
-
     private List<Tower> towers;
 
     private List<Player> players;
 
+    private float timeUntilNextRound;
 
     public GetServerStateResponse() {
         super();
     }
 
-    public GetServerStateResponse(List<Tower> towers, List<Player> players) {
-        super();
+    public GetServerStateResponse(List<Tower> towers, List<Player> players, float timeUntilNextRound) {
+        this();
         this.towers = towers;
         this.players = players;
-        //this.gamestate = gamestate;
+        this.timeUntilNextRound = timeUntilNextRound;
     }
 
-    public Gamestate getGamestate() {
-        return gamestate;
-    }
 
     public List<Tower> getTowers() {
         return towers;
@@ -41,5 +38,9 @@ public class GetServerStateResponse extends Response {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public float getTimeUntilNextRound() {
+        return timeUntilNextRound;
     }
 }

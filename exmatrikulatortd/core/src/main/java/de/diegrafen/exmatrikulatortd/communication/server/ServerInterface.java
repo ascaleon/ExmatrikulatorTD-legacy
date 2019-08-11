@@ -1,7 +1,6 @@
 package de.diegrafen.exmatrikulatortd.communication.server;
 
 import de.diegrafen.exmatrikulatortd.communication.ConnectorInterface;
-import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
@@ -15,5 +14,5 @@ interface ServerInterface extends ConnectorInterface {
 
     void serverFinishedLoading();
 
-    void sendServerGameState(List<Tower> towers, List<Player> players);
+    void sendServerGameState(List<Tower> towers, List<Player> players, float timeUntilNextRound);
 }

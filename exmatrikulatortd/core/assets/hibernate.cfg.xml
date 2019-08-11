@@ -20,14 +20,6 @@
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.DerbyTenSevenDialect</property>
 
-        <!-- Second-level cache  -->
-        <!--         <property name="cache.use_second_level_cache">true</property>
-                <property name="cache.use_query_cache">true</property>
-                <property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property> -->
-
-        <!-- Echo all executed SQL to stdout -->
-<!--        <property name="show_sql">true</property>-->
-
         <property name="hbm2ddl.auto">update</property>
 
         <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>

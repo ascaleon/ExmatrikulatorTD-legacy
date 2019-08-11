@@ -36,10 +36,16 @@ abstract class BaseScreen implements Screen {
      */
     private Stage ui;
 
+    /**
+     * Das zum Rendern verwendete Spritebatch
+     */
     private final SpriteBatch spriteBatch;
 
     private final Viewport viewport;
 
+    /**
+     * Eine Bitmap-Font zum
+     */
     private final BitmapFont bitmapFont = new BitmapFont();
 
     private final AssetManager assetManager;
@@ -110,7 +116,8 @@ abstract class BaseScreen implements Screen {
     void draw(float deltaTime) {}
 
     /**
-     * Falls das Fenster mit dem Spiel in der Größe angepasst wird, so muss auch der Viewport angepasst werden.
+     * Nimmt Anpasssungen bei Änderung der Fenstergröße vor
+     *
      * @param width Die neue Breite.
      * @param height Die neue Höhe.
      */
@@ -122,7 +129,7 @@ abstract class BaseScreen implements Screen {
     }
 
     /**
-     * Das Spiel wird pausiert.
+     * Wird ausgeführt, sobald das Spiel pausiert wird
      */
     @Override
     public void pause() {
@@ -130,7 +137,7 @@ abstract class BaseScreen implements Screen {
     }
 
     /**
-     * Das Spiel wird fortgeführt.
+     * Wird ausgeführt, sobald das Spiel fortgeführt wird
      */
     @Override
     public void resume() {
@@ -138,7 +145,7 @@ abstract class BaseScreen implements Screen {
     }
 
     /**
-     * Das Spiel zeigt diesen Screen nicht mehr an, er wird wieder versteckt.
+     * Wird ausgeführt, sobald das Spiel ausgeblendet wird
      */
     @Override
     public void hide() {
@@ -146,14 +153,20 @@ abstract class BaseScreen implements Screen {
     }
 
     /**
-     * Die nicht mehr benötigten Recourccen werden freigegeben.
+     * Gibt nicht mehr benötigte Ressourcen frei
      */
     @Override
     public void dispose() {
-        if(ui != null) ui.dispose();
+        if (ui != null) {
+            ui.dispose();
+        }
         ui = null;
     }
 
+    /**
+     * Gibt den Hauptcontroller zurück
+     * @return Der Hauptcontroller
+     */
     MainController getMainController() {
         return mainController;
     }
