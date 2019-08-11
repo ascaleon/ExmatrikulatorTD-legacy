@@ -4,6 +4,8 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 
 import static de.diegrafen.exmatrikulatortd.util.Assets.REGULAR_ENEMY_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Assets.HEAVY_ENEMY_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Assets.FAST_ENEMY_ASSETS;
+import static de.diegrafen.exmatrikulatortd.util.Assets.BOSS_ENEMY_ASSETS;
 import static de.diegrafen.exmatrikulatortd.util.Constants.*;
 
 /**
@@ -83,7 +85,7 @@ public final class EnemyFactory {
      * @return Der erzeugte schnelle Gegner
      */
     private static Enemy createFastEnemy() {
-        return null;
+        return new Enemy ("Fast Enemy", 200, 250, 1, 75, 75, LIGHT, 2, FAST_ENEMY_ASSETS, 0, 0, 15);
     }
 
     /**
@@ -92,7 +94,7 @@ public final class EnemyFactory {
      * @return Der erzeugte Boss-Gegner
      */
     private static Enemy createBossEnemy() {
-        return null;
+        return new Enemy("Boss", 125, 10000, 25, 500,1000, HEAVY, 10, BOSS_ENEMY_ASSETS, 0, 0, 100);
     }
 
 }
