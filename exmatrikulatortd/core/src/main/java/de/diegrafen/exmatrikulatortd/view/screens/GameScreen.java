@@ -64,8 +64,6 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
-    //private List<ObservableModel> players;
-
     /**
      * Die Breite der Karte in Pixeln
      */
@@ -155,62 +153,151 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private Group pauseGroup;
 
+    /**
+     *
+     */
     private Group endScreenGroup;
     // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
 
+    /**
+     *
+     */
     private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
 
+    /**
+     *
+     */
     private ProgressBar.ProgressBarStyle healthBarStyle;
 
+    /**
+     *
+     */
     private List<TowerButton> towerButtons;
 
+    /**
+     *
+     */
     private List<TowerObject> previewTowers;
 
+    /**
+     *
+     */
     private TowerObject previewTower;
 
+    /**
+     *
+     */
     private LogicController logicController;
 
+    /**
+     *
+     */
     private ProgressBar playerHealth;
+    /**
+     *
+     */
     private ProgressBar opponentHealth;
 
+    /**
+     *
+     */
     private Table messageArea;
+
+    /**
+     *
+     */
     private Table upgradeSell;
+    /**
+     *
+     */
     private Table countdown;
+    /**
+     *
+     */
     private Table opponent;
+    /**
+     *
+     */
     private Table sendEnemy;
 
+    /**
+     *
+     */
     private Group popUpButtons;
 
+    /**
+     *
+     */
     private Label messageLabel;
 
+    /**
+     *
+     */
     private float timer;
 
+    /**
+     *
+     */
     private float tableDecayTimer;
 
+    /**
+     *
+     */
     private int xCoord, yCoord;
 
+    /**
+     *
+     */
     private static final int X_SIZE = 100;
 
+    /**
+     *
+     */
     private static final int Y_SIZE = 100;
 
+    /**
+     *
+     */
     private static final int NUM_KEY_OFFSET = 8;
 
+    /**
+     *
+     */
     private TooltipManager tooltipManager;
 
+    /**
+     *
+     */
     private Table towerSelect;
 
+    /**
+     *
+     */
     private float mouseXPosition;
 
+    /**
+     *
+     */
     private float mouseYPosition;
 
+    /**
+     *
+     */
     private int numberOfPlayers;
 
+    /**
+     *
+     */
     private Image background;
 
-    private int opposingPlayerNumber;
-
+    /**
+     *
+     */
     private Player opposingPlayer;
 
+    /**
+     *
+     */
     private Player localPlayer;
 
     /**
@@ -241,10 +328,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         tooltipManager = new TooltipManager();
         tooltipManager.instant();
-
-        //Gdx.input.setInputProcessor(new InputMultiplexer());
-
-        //InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
 
         InputProcessor inputProcessorCam = new InputProcessor() {
             @Override
@@ -286,7 +369,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     } else {
                         buttonNumber = keycode - NUM_KEY_OFFSET;
                     }
-                    System.out.println(buttonNumber);
                     if (towerButtons.size() > buttonNumber) {
                         toggleButton(buttonNumber);
                     }
@@ -339,12 +421,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 if (button == RIGHT) {
                     if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
-                        Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
-                        xCoord = xCoordinate;
-                        yCoord = yCoordinate;
-                        popUpButtons(Math.round(position2.x), Math.round(position2.y));
-                        return true;
+                        if(gameState.getMapCellByListIndex(xCoordinate + yCoordinate* gameState.getNumberOfColumns()).getTower().getPlayerNumber() == localPlayer.getPlayerNumber()) {
+                            Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
+                            Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
+                            xCoord = xCoordinate;
+                            yCoord = yCoordinate;
+                            popUpButtons(Math.round(position2.x), Math.round(position2.y));
+                            return true;
+                        }
                     }
                 } else if (button == LEFT) {
                     if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
@@ -365,7 +449,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
-                getCamera().position.x += touchDownX - position.x;// (position.x - touchDownX, position.y - touchDownY);
+                getCamera().position.x += touchDownX - position.x;
                 getCamera().position.y += touchDownY - position.y;
 
                 resetCameraToBorders();
@@ -413,8 +497,6 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         };
 
-        //multiplexer.addProcessor(inputProcessorCam);
-
         numberOfPlayers = gameState.getPlayers().size();
 
         background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
@@ -422,6 +504,7 @@ public class GameScreen extends BaseScreen implements GameView {
         localPlayer = logicController.getLocalPlayer();
 
         if(logicController.isMultiplayer()){
+            int opposingPlayerNumber;
             if (logicController.getLocalPlayerNumber() == 0) {
                 opposingPlayerNumber = 1;
             } else {
@@ -436,6 +519,12 @@ public class GameScreen extends BaseScreen implements GameView {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    /**
+     *
+     * @param xPosition
+     * @param yPosition
+     * @return
+     */
     private boolean updatePreviewTower(float xPosition, float yPosition) {
         int xCoordinate = logicController.getXCoordinateByPosition(xPosition);
         int yCoordinate = logicController.getYCoordinateByPosition(yPosition);
@@ -487,6 +576,9 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void update() {
 
@@ -553,7 +645,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
         List<GameObject> objectsToRemove = new ArrayList<>();
 
-        //
         gameObjects.sort((o1, o2) -> Float.compare(o2.getyPosition(), o1.getyPosition()));
 
         for (GameObject gameObject : gameObjects) {
@@ -673,24 +764,22 @@ public class GameScreen extends BaseScreen implements GameView {
 
         Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
 
-        //TextButtonStyle style = new TextButtonStyle();
         towerSelect = new Table();
 
         //Erstellen der Towerbuttons
         logicController.createTowerButtons(this);
 
         //Exit
-        final Table exit = new Table();
-        ImageButton exitButton = new ImageButton(menuImage);
-        exitButton.setSize(10, 10);
-        exitButton.addListener(new ChangeListener() {
+        final Table menu = new Table();
+        ImageButton menuButton = new ImageButton(menuImage);
+        menuButton.setSize(10, 10);
+        menuButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!logicController.isPause() & !logicController.isMultiplayer()) {
-                    System.out.println("Pausiert");
                     logicController.setPause(true);
                     pauseScreen();
-                } else if (!logicController.isMultiplayer()) {
+                } else if (logicController.isMultiplayer()) {
                     logicController.setPause(false);
                     pauseScreen();
                 }
@@ -698,7 +787,7 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        exit.add(exitButton).size(X_SIZE, Y_SIZE);
+        menu.add(menuButton).size(X_SIZE, Y_SIZE);
 
         initPopUpContent(localPlayer);
 
@@ -710,7 +799,7 @@ public class GameScreen extends BaseScreen implements GameView {
         if (logicController.isMultiplayer()) {
             topLeft.add(opponent).left().padRight(10).padLeft(10);
         }
-        topRow.add(exit).top().right();
+        topRow.add(menu).top().right();
         topRow.setBounds(0, 50, defaultScreen.getWidth(), defaultScreen.getHeight());
 
         final Table bottomOfScreen = new Table();
@@ -727,11 +816,9 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX().colspan(2);
         defaultScreen.row();
-        //defaultScreen.setDebug(true);
 
         statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
         defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
-        //defaultScreen.row();
         defaultScreen.add(countdown).top().right().colspan(4).padRight(20).row();
         if (logicController.isMultiplayer()) {
             defaultScreen.add(sendEnemy).top().right().colspan(4).padRight(20).row();
@@ -746,6 +833,10 @@ public class GameScreen extends BaseScreen implements GameView {
         multiplexer.addProcessor(getUi());
     }
 
+    /**
+     *
+     * @param localPlayer
+     */
     private void initMultiplayerUiComponents(Player localPlayer){
         opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
         opponentHealth.setScale(1 / 2);
@@ -786,6 +877,10 @@ public class GameScreen extends BaseScreen implements GameView {
         sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
     }
 
+    /**
+     *
+     * @param localPlayer
+     */
     private void initPopUpContent(Player localPlayer) {
         Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
         Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
@@ -817,6 +912,9 @@ public class GameScreen extends BaseScreen implements GameView {
         upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
     }
 
+    /**
+     *
+     */
     private void initProgressbarStyle(){
         Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
         pixRed.setColor(Color.RED);
@@ -955,28 +1053,39 @@ public class GameScreen extends BaseScreen implements GameView {
      * Erstellt/Zeigt den Pausenbildschirm an. Das Spiel UI wird ausgeblendet, während das Spiel pausiert ist.
      */
     private void pauseScreen() {
-        if (logicController.isPause()) {
-            pauseGroup = new Group();
-            background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        pauseGroup = new Group();
+        background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            Table buttonTable = new Table();
-            TextButton resume = new TextButton("Resume", skin);
-            resume.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
+        Table buttonTable = new Table();
+        TextButton resume = new TextButton("Resume", skin);
+        resume.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(!logicController.isMultiplayer()) {
                     logicController.setPause(false);
-                    pauseGroup.setVisible(false);
-                    defaultScreen.setVisible(true);
                 }
-            });
-            TextButton save = new TextButton("Save", skin);
-            save.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
-                    logicController.saveGame("Blah.");
-                }
-            });
+                pauseGroup.setVisible(false);
+                defaultScreen.setVisible(true);
+            }
+        });
+
+        TextButton back2main = new TextButton("Menu", skin);
+        back2main.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                logicController.exitGame(false);
+            }
+        });
+        TextButton save = new TextButton("Save", skin);
+        save.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
+                logicController.saveGame("Blah.");
+            }
+        });
+
+        if (logicController.isPause()) {
             TextButton load = new TextButton("Load", skin);
             load.addListener(new ChangeListener() {
                 @Override
@@ -989,18 +1098,26 @@ public class GameScreen extends BaseScreen implements GameView {
                     }
                 }
             });
-            TextButton back2main = new TextButton("Menu", skin);
-            back2main.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    logicController.exitGame(false);
-                }
-            });
 
             buttonTable.add(resume).top().center().spaceBottom(10).row();
             buttonTable.add(save).top().center().spaceBottom(10).row();
             buttonTable.add(load).top().center().spaceBottom(10).row();
             buttonTable.add(back2main).top().center().row();
+            buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
+            pauseGroup.addActor(background);
+            pauseGroup.addActor(buttonTable);
+
+            defaultScreen.setVisible(false);
+            getUi().addActor(pauseGroup);
+
+        } else if(logicController.isMultiplayer()){
+            back2main.addListener(new TextTooltip("Warnung: Diese Aktion trennt die Verbindung und beendet die Partie", tooltipManager, skin));
+            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            buttonTable.add(back2main).top().center().row();
+            if(logicController.isServer()){
+                buttonTable.add(save).top().center().spaceBottom(10).row();
+            }
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
             pauseGroup.addActor(background);
@@ -1051,7 +1168,6 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        //buttonTable.add(resultLabel).center().row();
         buttonTable.add(currentScoreLabel).center().row();
         buttonTable.add(highscoreLabel).center().row();
         buttonTable.add(stats).top().center().spaceRight(10);
@@ -1112,7 +1228,9 @@ public class GameScreen extends BaseScreen implements GameView {
         previewTowers.add(new TowerObject(observableTower, getAssetManager()));
     }
 
-
+    /**
+     *
+     */
     private void gameStatsScreen(){
         Group statScreen = new Group();
 
@@ -1178,6 +1296,9 @@ public class GameScreen extends BaseScreen implements GameView {
         this.gameState = gameState;
     }
 
+    /**
+     *
+     */
     @Override
     public void clearGameObjects() {
         List<GameObject> objectsToRemove = new LinkedList<>();
@@ -1187,9 +1308,13 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
         objectsToRemove.forEach(gameObjects::remove);
-        //gameObjects.clear();
     }
 
+    /**
+     * Passt die Größe des Hintergrundbildes an die neue Fenstergröße an
+     * @param width Die neue Breite.
+     * @param height Die neue Höhe.
+     */
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
