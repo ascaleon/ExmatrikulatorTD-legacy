@@ -89,7 +89,7 @@ public class GameServer extends Connector implements ServerInterface {
     public GameServer() {
         this.tcpPort = TCP_PORT;
         this.udpPort = UDP_PORT;
-        this.server = new Server(100000, 100000);
+        this.server = new Server(120000, 120000);
         registerObjects(server.getKryo());
         this.server.addListener(new ConnectionListener(this));
         System.out.println("Server created!");

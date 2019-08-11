@@ -63,8 +63,6 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
-    //private List<ObservableModel> players;
-
     /**
      * Die Breite der Karte in Pixeln
      */
@@ -155,59 +153,147 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private Group pauseGroup;
 
+    /**
+     *
+     */
     private Group endScreenGroup;
 
     private Skin skin;
 
+    /**
+     *
+     */
     private ProgressBar.ProgressBarStyle healthBarStyle;
 
+    /**
+     *
+     */
     private List<TowerButton> towerButtons;
 
+    /**
+     *
+     */
     private List<TowerObject> previewTowers;
 
+    /**
+     *
+     */
     private TowerObject previewTower;
 
+    /**
+     *
+     */
     private LogicController logicController;
 
+    /**
+     *
+     */
     private ProgressBar playerHealth;
+    /**
+     *
+     */
     private ProgressBar opponentHealth;
 
+    /**
+     *
+     */
     private Table messageArea;
+
+    /**
+     *
+     */
     private Table upgradeSell;
+    /**
+     *
+     */
     private Table countdown;
+    /**
+     *
+     */
     private Table opponent;
+    /**
+     *
+     */
     private Table sendEnemy;
 
+    /**
+     *
+     */
     private Group popUpButtons;
 
+    /**
+     *
+     */
     private Label messageLabel;
 
+    /**
+     *
+     */
     private float timer;
 
+    /**
+     *
+     */
     private float tableDecayTimer;
 
+    /**
+     *
+     */
     private int xCoord, yCoord;
 
+    /**
+     *
+     */
     private static final int X_SIZE = 100;
 
+    /**
+     *
+     */
     private static final int Y_SIZE = 100;
 
+    /**
+     *
+     */
     private static final int NUM_KEY_OFFSET = 8;
 
+    /**
+     *
+     */
     private TooltipManager tooltipManager;
 
+    /**
+     *
+     */
     private Table towerSelect;
 
+    /**
+     *
+     */
     private float mouseXPosition;
 
+    /**
+     *
+     */
     private float mouseYPosition;
 
+    /**
+     *
+     */
+    private int numberOfPlayers;
+
+    /**
+     *
+     */
     private Image background;
 
-    private int opposingPlayerNumber;
-
+    /**
+     *
+     */
     private Player opposingPlayer;
 
+    /**
+     *
+     */
     private Player localPlayer;
 
     /**
@@ -280,7 +366,6 @@ public class GameScreen extends BaseScreen implements GameView {
                     } else {
                         buttonNumber = keycode - NUM_KEY_OFFSET;
                     }
-                    System.out.println(buttonNumber);
                     if (towerButtons.size() > buttonNumber) {
                         toggleButton(buttonNumber);
                     }
@@ -333,12 +418,14 @@ public class GameScreen extends BaseScreen implements GameView {
 
                 if (button == RIGHT) {
                     if (logicController.hasCellTower(xCoordinate, yCoordinate)) {
-                        Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
-                        Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
-                        xCoord = xCoordinate;
-                        yCoord = yCoordinate;
-                        popUpButtons(Math.round(position2.x), Math.round(position2.y));
-                        return true;
+                        if(gameState.getMapCellByListIndex(xCoordinate + yCoordinate* gameState.getNumberOfColumns()).getTower().getPlayerNumber() == localPlayer.getPlayerNumber()) {
+                            Vector3 clickCoordinates2 = new Vector3(screenX, screenY, 0);
+                            Vector3 position2 = getStageViewport().unproject(clickCoordinates2);
+                            xCoord = xCoordinate;
+                            yCoord = yCoordinate;
+                            popUpButtons(Math.round(position2.x), Math.round(position2.y));
+                            return true;
+                        }
                     }
                 } else if (button == LEFT) {
                     if (logicController.checkIfCoordinatesAreBuildable(xCoordinate, yCoordinate, localPlayerNumber)) {
@@ -359,7 +446,7 @@ public class GameScreen extends BaseScreen implements GameView {
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = getCamera().unproject(clickCoordinates);
 
-                getCamera().position.x += touchDownX - position.x;// (position.x - touchDownX, position.y - touchDownY);
+                getCamera().position.x += touchDownX - position.x;
                 getCamera().position.y += touchDownY - position.y;
 
                 resetCameraToBorders();
@@ -407,11 +494,14 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         };
 
+        numberOfPlayers = gameState.getPlayers().size();
+
         background = new Image(getAssetManager().get(TRANSPARENT_BACKGROUND_IMAGE, Texture.class));
 
         localPlayer = logicController.getLocalPlayer();
 
         if(logicController.isMultiplayer()){
+            int opposingPlayerNumber;
             if (logicController.getLocalPlayerNumber() == 0) {
                 opposingPlayerNumber = 1;
             } else {
@@ -427,6 +517,12 @@ public class GameScreen extends BaseScreen implements GameView {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    /**
+     *
+     * @param xPosition
+     * @param yPosition
+     * @return
+     */
     private boolean updatePreviewTower(float xPosition, float yPosition) {
         int xCoordinate = logicController.getXCoordinateByPosition(xPosition);
         int yCoordinate = logicController.getYCoordinateByPosition(yPosition);
@@ -478,6 +574,9 @@ public class GameScreen extends BaseScreen implements GameView {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void update() {
 
@@ -666,24 +765,23 @@ public class GameScreen extends BaseScreen implements GameView {
         logicController.createTowerButtons(this);
 
         //Exit
-        final Table exit = new Table();
-        ImageButton exitButton = new ImageButton(menuImage);
-        exitButton.setSize(10, 10);
-        exitButton.addListener(new ChangeListener() {
+        final Table menu = new Table();
+        ImageButton menuButton = new ImageButton(menuImage);
+        menuButton.setSize(10, 10);
+        menuButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!logicController.isPause() & !logicController.isMultiplayer()) {
-                    System.out.println("Pausiert");
                     logicController.setPause(true);
                     //pauseScreen();
-                } else if (!logicController.isMultiplayer()) {
+                } else if (logicController.isMultiplayer()) {
                     logicController.setPause(false);
                 }
                 showPauseScreen();
             }
         });
 
-        exit.add(exitButton).size(X_SIZE, Y_SIZE);
+        menu.add(menuButton).size(X_SIZE, Y_SIZE);
 
         initPopUpContent(localPlayer);
 
@@ -695,7 +793,7 @@ public class GameScreen extends BaseScreen implements GameView {
         if (logicController.isMultiplayer()) {
             topLeft.add(opponent).left().padRight(10).padLeft(10);
         }
-        topRow.add(exit).top().right();
+        topRow.add(menu).top().right();
         topRow.setBounds(0, 50, defaultScreen.getWidth(), defaultScreen.getHeight());
 
         final Table bottomOfScreen = new Table();
@@ -712,11 +810,9 @@ public class GameScreen extends BaseScreen implements GameView {
         defaultScreen.add(topLeft).left();
         defaultScreen.add(topRow).top().right().expandX().colspan(2);
         defaultScreen.row();
-        //defaultScreen.setDebug(true);
 
         statsTable.add(playerHealth).left().align(RIGHT).expandX().padRight(-40);
         defaultScreen.add(statsTable).top().right().colspan(4).padRight(20).row();
-        //defaultScreen.row();
         defaultScreen.add(countdown).top().right().colspan(4).padRight(20).row();
         if (logicController.isMultiplayer()) {
             defaultScreen.add(sendEnemy).top().right().colspan(4).padRight(20).row();
@@ -737,6 +833,7 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     private void initMultiplayerUiComponents(Player localPlayer){
+        int opposingPlayerNumber;
         if (logicController.getLocalPlayerNumber() == 0) {
             opposingPlayerNumber = 1;
         } else {
@@ -779,6 +876,10 @@ public class GameScreen extends BaseScreen implements GameView {
         sendEnemy.add(sendHvyEnemy).size(X_SIZE, Y_SIZE);
     }
 
+    /**
+     *
+     * @param localPlayer
+     */
     private void initPopUpContent(Player localPlayer) {
         Drawable upgradeIcon = new TextureRegionDrawable(getAssetManager().get(UPRADE_ICON, Texture.class));
         Drawable sellIcon = new TextureRegionDrawable(getAssetManager().get(SELL_ICON, Texture.class));
@@ -810,6 +911,9 @@ public class GameScreen extends BaseScreen implements GameView {
         upgradeSell.add(sellButton).size(X_SIZE, Y_SIZE);
     }
 
+    /**
+     *
+     */
     private void initProgressbarStyle(){
         Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
         pixRed.setColor(Color.RED);
@@ -948,42 +1052,62 @@ public class GameScreen extends BaseScreen implements GameView {
      * Erstellt/Zeigt den Pausenbildschirm an. Das Spiel UI wird ausgeblendet, während das Spiel pausiert ist.
      */
     private void initPauseScreen() {
-        //if (logicController.isPause()) {
-            pauseGroup = new Group();
-            background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+        pauseGroup = new Group();
+        background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            Table buttonTable = new Table();
-            TextButton resume = new TextButton("Resume", skin);
-            resume.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    if (!logicController.isMultiplayer()) {
-                        logicController.setPause(false);
+        Table buttonTable = new Table();
+        Table message = new Table();
+        TextButton resume = new TextButton("Resume", skin);
+        resume.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!logicController.isMultiplayer()) {
+                    logicController.setPause(false);
+                }
+                pauseGroup.setVisible(false);
+                defaultScreen.setVisible(true);
+            }
+        });
+
+        TextButton save = new TextButton("Save", skin);
+        save.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+                Gdx.input.getTextInput(new Input.TextInputListener() {
+                    @Override
+                    public void input(String text) {
+                        if (text != null && !text.equals("") && text.trim().length() > 0) {
+                            logicController.saveGame(text);
+                            displayErrorMessage("Spiel gespeichert");
+                        } else {
+                            displayErrorMessage("Speichern fehlgeschlagen");
+                        }
                     }
-                    pauseGroup.setVisible(false);
-                    defaultScreen.setVisible(true);
-                }
-            });
-            TextButton save = new TextButton("Save", skin);
-            save.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
-                    logicController.saveGame("Savestate.");
-                }
-            });
-            TextButton load = new TextButton("Quickload", skin);
+
+                    @Override
+                    public void canceled() {
+                        displayErrorMessage("Speichern abgebrochen");
+                    }
+                }, "Name des Spielstand", "savename", "");
+
+            }
+        });
+
+        TextButton back2main = new TextButton("Menu", skin);
+
+        //if (logicController.isPause()) {
+            TextButton load = new TextButton("Load", skin);
             load.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     getMainController().loadLastSaveGame();
                 }
             });
-            TextButton back2main = new TextButton("Menu", skin);
             back2main.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                logicController.exitGame(logicController.isServer());
+                    logicController.exitGame(logicController.isServer());
                 }
             });
 
@@ -995,11 +1119,34 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
+            message.add(messageArea);
+            message.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / buttonTable.getRows());
+
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
+            pauseGroup.addActor(message);
 
             getUi().addActor(pauseGroup);
-            pauseGroup.setVisible(false);
+
+        if (logicController.isMultiplayer()) {
+            back2main.addListener(new TextTooltip("Warnung: Diese Aktion trennt die Verbindung und beendet die Partie", tooltipManager, skin));
+            buttonTable.add(resume).top().center().spaceBottom(10).row();
+            buttonTable.add(back2main).top().center().row();
+            if (logicController.isServer()) {
+                buttonTable.add(save).top().center().spaceBottom(10).row();
+            }
+            buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
+
+            message.add(messageArea);
+            message.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight() / buttonTable.getRows());
+
+            pauseGroup.addActor(background);
+            pauseGroup.addActor(buttonTable);
+            pauseGroup.addActor(message);
+
+            getUi().addActor(pauseGroup);
+        }
+        pauseGroup.setVisible(false);
     }
 
     /**
@@ -1007,6 +1154,8 @@ public class GameScreen extends BaseScreen implements GameView {
      * Gewonnen/Verloren + Punkte + Highscore des Users
      *
      * @param victorious Gibt an, ob der lokale Spieler siegreich war
+     * @param score Die Punkte des lokalen Spielers
+     * @param highscore Der Highscore des lokalen Spielers
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
@@ -1169,6 +1318,9 @@ public class GameScreen extends BaseScreen implements GameView {
         this.gameState = gameState;
     }
 
+    /**
+     *
+     */
     @Override
     public void clearGameObjects() {
         List<GameObject> objectsToRemove = new LinkedList<>();
@@ -1178,7 +1330,6 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
         objectsToRemove.forEach(gameObjects::remove);
-        //gameObjects.clear();
     }
 
     /**

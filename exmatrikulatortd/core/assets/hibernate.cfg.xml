@@ -13,24 +13,12 @@
         <property name="connection.username">user</property>
         <property name="connection.password">password</property>
 
-        <!-- JDBC connection pool (use the built-in) -->
-<!--        <property name="connection.pool_size">20</property>-->
         <property name="hibernate.c3p0.min_size">10</property>
 
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.DerbyTenSevenDialect</property>
 
-        <!-- Second-level cache  -->
-        <!--         <property name="cache.use_second_level_cache">true</property>
-                <property name="cache.use_query_cache">true</property>
-                <property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property> -->
-
-        <!-- Echo all executed SQL to stdout -->
-<!--        <property name="show_sql">true</property>-->
-
         <property name="hbm2ddl.auto">update</property>
-
-        <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
 
         <mapping class="de.diegrafen.exmatrikulatortd.model.Gamestate" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.Coordinates" />
@@ -45,7 +33,6 @@
         <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Aura" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Projectile" />
         <mapping class="de.diegrafen.exmatrikulatortd.model.tower.Buff" />
-
 
     </session-factory>
 

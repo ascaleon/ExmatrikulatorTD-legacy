@@ -141,6 +141,5 @@ public interface LogicController {
 
     boolean isActiveRound();
 
-
     int getNumberOfPlayers();
 }
