@@ -29,13 +29,9 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
 
     private float currentMaxHitPoints;
 
-    @OneToMany(orphanRemoval = true, cascade=CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Debuff> debuffs;
-
-//    @ManyToOne
-//    @JoinColumn(name="player_id")
-//    private Player attackedPlayer;
 
     private int playerNumber;
 
@@ -69,8 +65,6 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
 
     private boolean respawning;
 
-    private boolean isAttacking;
-
     /**
      * Standardkonstruktor für JPA
      */
@@ -89,13 +83,16 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
      * @param bounty                 Die Anzahl der Ressourcen, die die Spielerin für das Ausschalten des Gegners erhält.
      * @param sendPrice              Die Kosten für das Versenden eines solchen Gegners im Multiplayer-Modus.
      * @param assetsName             Die Bezeichnung der Assets, die für die Darstellung dieses Gegners verwendet werden.
+     * @param armorType              Der Rüstungstyp des Gegners
+     * @param baseArmor              Der Basisrüstungswert der Gegners
+     * @param xPosition              Die x-Position des Gegners
+     * @param yPosition              Die y-Position des Gegners
+     * @param pointsGranted          Die Anzahl der Punkte, die dieser Gegner dem angegriffenen Spieler beim Besiegen bringt
      */
     public Enemy(String name, float baseSpeed, float maxHitPoints, int amountOfDamageToPlayer, int bounty, int sendPrice,
                  int armorType, float baseArmor, String assetsName, float xPosition, float yPosition, int pointsGranted) {
         super();
-
         this.debuffs = new LinkedList<>();
-
         this.armorType = armorType;
         this.baseArmor = baseArmor;
         this.currentArmor = baseArmor;
@@ -113,34 +110,15 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.wayPointIndex = 0;
-
         this.respawning = false;
     }
 
-    public Enemy(float baseSpeed, float currentSpeed, float baseMaxHitPoints, float currentHitPoints, float currentMaxHitPoints, List<Debuff> debuffs, Gamestate gameState, Player attackedPlayer, float xPosition, float yPosition, int amountOfDamageToPlayer, int bounty, int pointsGranted, int sendPrice, int wayPointIndex, float baseArmor, float currentArmor, int armorType, String assetsName, String name, String description, float targetxPosition, float targetyPosition, boolean respawning, Wave wave, Coordinates currentMapCell) {
-        this.baseSpeed = baseSpeed;
-        this.currentSpeed = currentSpeed;
-        this.baseMaxHitPoints = baseMaxHitPoints;
-        this.currentHitPoints = currentHitPoints;
-        this.currentMaxHitPoints = currentMaxHitPoints;
-        this.debuffs = debuffs;
-        //this.attackedPlayer = attackedPlayer;
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
-        this.amountOfDamageToPlayer = amountOfDamageToPlayer;
-        this.bounty = bounty;
-        this.pointsGranted = pointsGranted;
-        this.sendPrice = sendPrice;
-        this.wayPointIndex = wayPointIndex;
-        this.baseArmor = baseArmor;
-        this.currentArmor = currentArmor;
-        this.armorType = armorType;
-        this.assetsName = assetsName;
-        this.respawning = respawning;
-    }
-
+    /**
+     * Kopier-Konstruktor
+     *
+     * @param enemy Der zu kopierende Gegner
+     */
     public Enemy(Enemy enemy) {
-
         this.debuffs = new LinkedList<>();
 
         for (Debuff debuff : enemy.getDebuffs()) {
@@ -167,27 +145,32 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         this.targetyPosition = enemy.targetyPosition;
         this.wayPointIndex = enemy.wayPointIndex;
         this.armorType = enemy.armorType;
-        this.isAttacking = enemy.isAttacking;
         this.playerNumber = enemy.playerNumber;
 
         this.respawning = enemy.isRespawning();
-        //this.attackedPlayer = null;
     }
 
+    /**
+     * Kopier-Konstruktor, der eine neue Spielernummer festlegt
+     *
+     * @param enemy        Der zu kopierende Gegner
+     * @param playerNumber Die neue Spielernummer
+     */
     public Enemy(int playerNumber, Enemy enemy) {
         this(enemy);
         this.playerNumber = playerNumber;
-        //this.attackedPlayer = player;
     }
 
+    /**
+     * Kopier-Konstruktor, der gleichzeitig den Wegpunkt-Index festsetzt
+     *
+     * @param enemy         Der zu kopierende Gegner
+     * @param wayPointIndex Der neue Wegpunktindex
+     */
     public Enemy(Enemy enemy, int wayPointIndex) {
         this(enemy);
         this.wayPointIndex = wayPointIndex;
     }
-
-    //public void setAttackedPlayer(Player attackedPlayer) {
-        //this.attackedPlayer = attackedPlayer;
-    //}
 
     public float getxPosition() {
         return xPosition;
@@ -212,10 +195,6 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
     public String getName() {
         return name;
     }
-
-//    public Player getAttackedPlayer() {
-//        return attackedPlayer;
-//    }
 
     public int getAmountOfDamageToPlayer() {
         return amountOfDamageToPlayer;
@@ -274,10 +253,6 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
         return debuffs;
     }
 
-    public void setDebuffs(List<Debuff> debuffs) {
-        this.debuffs = debuffs;
-    }
-
     public void addDebuff(Debuff debuff) {
         debuffs.add(debuff);
     }
@@ -333,12 +308,6 @@ public class Enemy extends ObservableModel implements ObservableEnemy {
     public void clearDebuffs() {
         debuffs.clear();
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public boolean isAttacking(){return this.isAttacking;}
 
     public int getPlayerNumber() {
         return playerNumber;
