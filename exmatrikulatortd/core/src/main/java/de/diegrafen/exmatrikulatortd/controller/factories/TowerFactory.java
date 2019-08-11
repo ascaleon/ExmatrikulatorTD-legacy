@@ -19,7 +19,7 @@ import static de.diegrafen.exmatrikulatortd.util.Constants.*;
  */
 public final class TowerFactory {
 
-    private static final String REGULAR_TOWER_DESCRIPTION = "Standardturm" + "\n" + "Kosten: 200";
+    private static final String REGULAR_TOWER_DESCRIPTION = "Standardturm\n" + "Günstiger Turm, der seinen Zweck erfüllt\n" + "Kosten: 200";
 
     private static final String SLOW_TOWER_DESCRIPTION = "Verlangsamungsturm\n" + "Verlangsamt Gegner" + "\n" + "Kosten: 500";
 
@@ -95,7 +95,7 @@ public final class TowerFactory {
         auras.add(slowAura);
 
         return new Tower("Slowtower", SLOW_TOWER_DESCRIPTION, SLOW_TOWER, 10,
-                4, 3, LOGIC, 0.15f, auras, 4, 500, 500,
+                4, 3, MAGIC, 0.15f, auras, 4, 500, 500,
                 1, 3, SLOW_TOWER_ASSETS, SLOW_TOWER_PORTRAIT, SLOW_TOWER_PORTRAIT_SELECTED, 0, 0, debuffs, true,
                 5, 1.05f, 0.25f, 0.25f);
     }

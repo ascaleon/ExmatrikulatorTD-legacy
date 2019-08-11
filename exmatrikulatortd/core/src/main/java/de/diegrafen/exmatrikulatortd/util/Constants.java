@@ -70,9 +70,9 @@ public final class Constants {
     public static final int EXPLOSIVE = 2;
 
     /**
-     * Angriffstyp "Logikschaden". Überfordert Studierende mit vielen mathematischen Symbolen.
+     * Angriffstyp "Magieschaden".
      */
-    public static final int LOGIC = 3;
+    public static final int MAGIC = 3;
 
     /**
      * Rüstungstyp "ohne Rüstung"
