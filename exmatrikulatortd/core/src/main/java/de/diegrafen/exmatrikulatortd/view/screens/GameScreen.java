@@ -1057,6 +1057,7 @@ public class GameScreen extends BaseScreen implements GameView {
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
         Table buttonTable = new Table();
+        Table message = new Table();
         TextButton resume = new TextButton("Resume", skin);
         resume.addListener(new ChangeListener() {
             @Override
@@ -1081,9 +1082,28 @@ public class GameScreen extends BaseScreen implements GameView {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
-                logicController.saveGame("Blah.");
+
+                Gdx.input.getTextInput(new Input.TextInputListener() {
+                    @Override
+                    public void input(String text) {
+                        if(text != null && text != "" && text.trim().length() > 0){
+                            logicController.saveGame(text);
+                            displayErrorMessage("Spiel gespeichert");
+                        }
+                        else {
+                            displayErrorMessage("Speichern fehlgeschlagen");
+                        }
+                    }
+
+                    @Override
+                    public void canceled() {
+                        displayErrorMessage("Speichern abgebrochen");
+                    }
+                }, "Name des Spielstand", "savename", "");
+
             }
         });
+
 
         if (logicController.isPause()) {
             TextButton load = new TextButton("Load", skin);
@@ -1105,8 +1125,12 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
+            message.add(messageArea);
+            message.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
+
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
+            pauseGroup.addActor(message);
 
             defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
@@ -1120,8 +1144,12 @@ public class GameScreen extends BaseScreen implements GameView {
             }
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
+            message.add(messageArea);
+            message.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
+
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
+            pauseGroup.addActor(message);
 
             defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
