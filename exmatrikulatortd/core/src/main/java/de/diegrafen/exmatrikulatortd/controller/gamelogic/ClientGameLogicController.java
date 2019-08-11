@@ -55,6 +55,9 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         super(mainController, gamestate, gameView, allocatedPlayerNumber, true, mapPath);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
+        gameClient.reportFinishedLoading();
+        this.towersToUpdate = new LinkedList<>();
+        this.playersToUpdate = new LinkedList<>();
     }
 
     /**

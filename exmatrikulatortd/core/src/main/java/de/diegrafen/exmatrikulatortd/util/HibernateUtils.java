@@ -73,20 +73,5 @@ public class HibernateUtils {
                 towerDao.create(buildableTower);
             }
         }
-        createSchemaWithHibernate5();
-    }
-
-    private static void createSchemaWithHibernate5() {
-        StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                .configure("hibernate.cfg.xml") //
-                .build();
-        Metadata metadata = new MetadataSources(serviceRegistry) //
-                .buildMetadata();
-
-        new SchemaExport() //
-                .setOutputFile("db-schema.hibernate5.ddl") //
-                .create(EnumSet.of(TargetType.SCRIPT), metadata);
-
-        metadata.buildSessionFactory().close();
     }
 }

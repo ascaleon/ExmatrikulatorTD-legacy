@@ -70,8 +70,14 @@ public class Player extends BaseModel implements Observable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Coordinates> wayPoints;
 
+    /**
+     * Misst die Zeit seit dem letzten Spawn eines Gegners
+     */
     private float timeSinceLastSpawn;
 
+    /**
+     * Gibt an, ob alle Gegner der aktuellen Welle gespawnt sind
+     */
     private boolean enemiesSpawned;
 
     private transient List<Observer> observers;
@@ -99,7 +105,7 @@ public class Player extends BaseModel implements Observable {
     public Player(int playerNumber) {
         this.wayPoints = new ArrayList<>();
         this.waves = new ArrayList<>();
-        this.observers = new ArrayList<>();
+        this.observers = new LinkedList<>();
         this.playerNumber = playerNumber;
 
         this.timeSinceLastSpawn = 0;
@@ -124,6 +130,7 @@ public class Player extends BaseModel implements Observable {
         this.difficulty = player.difficulty;
         this.victorious = player.victorious;
         this.lost = player.lost;
+        this.observers = new LinkedList<>();
 
         this.wayPoints = new LinkedList<>();
         player.getWayPoints().forEach(waypoint -> wayPoints.add(new Coordinates(waypoint)));

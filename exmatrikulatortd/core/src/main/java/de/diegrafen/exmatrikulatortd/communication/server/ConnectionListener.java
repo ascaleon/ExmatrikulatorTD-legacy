@@ -70,7 +70,8 @@ public class ConnectionListener implements Listener {
         System.out.println("ClientReadyRequest erhalten!");
         if (gameServer.areAllPlayersReady()) {
             gameServer.sendAllPlayersReadyResponse();
-            Gdx.app.postRunnable(() -> gameServer.getMainController().createNewMultiplayerServerGame(gameServer.getNumberOfPlayers(), gameServer.getMainController().getCurrentProfilePreferredDifficulty(), 0, MULTIPLAYER_DUEL, gameServer.getMapPath(), gameServer.getPlayerNames()));
+            gameServer.createGame();
+
         }
     }
 }
