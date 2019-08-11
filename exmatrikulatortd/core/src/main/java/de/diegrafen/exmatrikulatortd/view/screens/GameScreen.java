@@ -200,10 +200,6 @@ public class GameScreen extends BaseScreen implements GameView {
      * UI Bereich in dem die Benachrichtigungen angezeigt werden
      */
     private Table messageArea;
-    /**
-     * UI Bereich im Menu in dem die Benachrichtigungen angezeigt werden
-     */
-    private Table menuMessageArea;
 
     /**
      * UI Bereich in dem sich die Buttons zum Upgraden und Verkaufen befinden
@@ -568,12 +564,7 @@ public class GameScreen extends BaseScreen implements GameView {
         }
         if (messageLabel != null) {
             if (timer <= 0) {
-                if(defaultScreen.isVisible()) {
-                    messageArea.removeActor(messageLabel);
-                }
-                else{
-                    menuMessageArea.removeActor(messageLabel);
-                }
+                messageArea.removeActor(messageLabel);
             } else {
                 timer = timer - deltaTime;
                 messageLabel.setColor(1, 0, 0, 1 * timer / 3);
@@ -887,7 +878,7 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Initialisiert die Inhalte des Turmmanagement Pop Up menu
      */
-    private void initPopUpContent(Player localPlayer) {
+    private void initPopUpContent() {
         Drawable upgradeIcon = new TextureRegionDrawable(getAssetManager().get(UPRADE_ICON, Texture.class));
         Drawable sellIcon = new TextureRegionDrawable(getAssetManager().get(SELL_ICON, Texture.class));
 
@@ -981,16 +972,11 @@ public class GameScreen extends BaseScreen implements GameView {
     public void displayErrorMessage(String message) {
         Label.LabelStyle messageStyle = new Label.LabelStyle();
         messageStyle.font = getBitmapFont();
-            messageLabel = new Label(message, messageStyle);
-            messageLabel.setColor(Color.RED);
-        if(defaultScreen.isVisible()) {
-            messageArea.clear();
-            messageArea.add(messageLabel);
-        }
-        else{
-            menuMessageArea.clear();
-            menuMessageArea.add(messageLabel);
-        }
+        messageLabel = new Label(message, messageStyle);
+        messageLabel.setColor(Color.RED);
+        messageArea.clear();
+        messageArea.add(messageLabel);
+
         timer = 3;
     }
 
@@ -1069,7 +1055,6 @@ public class GameScreen extends BaseScreen implements GameView {
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
         Table buttonTable = new Table();
-        menuMessageArea = new Table();
         TextButton resume = new TextButton("Resume", skin);
         resume.addListener(new ChangeListener() {
             @Override
@@ -1114,11 +1099,8 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
-
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
-            pauseGroup.addActor(menuMessageArea);
 
             getUi().addActor(pauseGroup);
 
@@ -1133,7 +1115,6 @@ public class GameScreen extends BaseScreen implements GameView {
 
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
-            pauseGroup.addActor(menuMessageArea);
 
             getUi().addActor(pauseGroup);
         }
@@ -1334,6 +1315,5 @@ public class GameScreen extends BaseScreen implements GameView {
     public void resize(int width, int height) {
         super.resize(width, height);
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
-
     }
 }
