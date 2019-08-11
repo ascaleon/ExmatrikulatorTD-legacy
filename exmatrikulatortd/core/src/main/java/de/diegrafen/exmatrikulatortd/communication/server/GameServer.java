@@ -10,6 +10,8 @@ import de.diegrafen.exmatrikulatortd.controller.gamelogic.LogicController;
 import de.diegrafen.exmatrikulatortd.communication.Connector;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.io.IOException;
@@ -79,16 +81,23 @@ public class GameServer extends Connector implements ServerInterface {
 
     private final String mapName = "Die Magieakademie";
 
+    private Gamestate gamestate;
+
     /**
      * Erzeugt einen neuen GameServer
      */
     public GameServer() {
         this.tcpPort = TCP_PORT;
         this.udpPort = UDP_PORT;
-        this.server = new Server(50000, 50000);
+        this.server = new Server(120000, 120000);
         registerObjects(server.getKryo());
         this.server.addListener(new ConnectionListener(this));
         System.out.println("Server created!");
+    }
+
+    public GameServer(Gamestate gamestate) {
+        this();
+        this.gamestate = gamestate;
     }
 
     /**
@@ -233,15 +242,26 @@ public class GameServer extends Connector implements ServerInterface {
 
         if (areAllPlayersReady()) {
             sendAllPlayersReadyResponse();
+            createGame();
+        }
+    }
 
+    private void createGame() {
+        if (gamestate == null) {
             Gdx.app.postRunnable(() -> mainController.createNewMultiplayerServerGame(numberOfPlayers, difficulty, 0, MULTIPLAYER_DUEL, mapPath, playerNames));
+        } else {
+            Gdx.app.postRunnable(() -> mainController.loadMultiPlayerServerGame(gamestate, 0, mapPath));
         }
     }
 
     void sendAllPlayersReadyResponse() {
         for (Connection connection : server.getConnections()) {
             int allocatedPlayerNumber = connectionAndPlayerNumbers.get(connection.getID());
-            server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
+            if (gamestate != null) {
+                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(gamestate, allocatedPlayerNumber, mapPath));
+            } else {
+                server.sendToTCP(connection.getID(), new AllPlayersReadyResponse(difficulty, numberOfPlayers, allocatedPlayerNumber, MULTIPLAYER_DUEL, mapPath, playerNames));
+            }
         }
     }
 
@@ -300,8 +320,8 @@ public class GameServer extends Connector implements ServerInterface {
     }
 
     @Override
-    public void sendServerGameState(List<Tower> towers, List<Player> players) {
-        server.sendToAllTCP(new GetServerStateResponse(towers, players));
+    public void sendServerGameState(List<Tower> towers, List<Player> players, float timeUntilNextRound) {
+        server.sendToAllTCP(new GetServerStateResponse(towers, players, timeUntilNextRound));
     }
 
     boolean isLookingForPlayers() {
@@ -356,5 +376,9 @@ public class GameServer extends Connector implements ServerInterface {
 
     void registerClientAsFinishedLoading(int connectionID) {
         playersfinishedLoading[connectionAndPlayerNumbers.get(connectionID)] = true;
+    }
+
+    int getPlayerNumberByConnectionID(int connectionID) {
+        return connectionAndPlayerNumbers.get(connectionID);
     }
 }

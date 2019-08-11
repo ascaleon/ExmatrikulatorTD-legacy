@@ -3,6 +3,7 @@ package de.diegrafen.exmatrikulatortd.controller.gamelogic;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import de.diegrafen.exmatrikulatortd.communication.client.GameClient;
 import de.diegrafen.exmatrikulatortd.communication.server.GameServer;
 import de.diegrafen.exmatrikulatortd.controller.MainController;
 import de.diegrafen.exmatrikulatortd.model.*;
@@ -104,7 +105,6 @@ public class GameLogicController implements LogicController {
         this.gamestate = createGameState(gamemode, numberOfPlayers, difficulty, names);
         this.gameLogicUnit = new GameLogicUnit(this);
         this.gameScreen.setGameState(gamestate);
-        System.out.println(gamestate);
         this.gamestate.registerObserver(gameScreen);
         this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
 
@@ -129,14 +129,43 @@ public class GameLogicController implements LogicController {
         this.saveStateDao = new SaveStateDao();
         this.towerDao = new TowerDao();
         this.mainController = mainController;
-        if (saveState.getGamestate() == null) {
-            System.out.println("Kein Gamestate vorhanden?");
-        }
         this.gamestate = gameStateDao.retrieve(saveState.getGamestate().getId());
         this.gameLogicUnit = new GameLogicUnit(this);
         this.mapPath = saveState.getMapPath();
         this.localPlayerNumber = saveState.getLocalPlayerNumber();
         this.multiplayer = saveState.isMultiplayer();
+        this.gameScreen = gameView;
+        this.loaded = true;
+        this.gameScreen.setLogicController(this);
+        this.gameScreen.setGameState(gamestate);
+        this.gamestate.registerObserver(gameScreen);
+        this.gamestate.getPlayers().forEach(player -> player.registerObserver(gameScreen));
+        this.numberOfPlayers = this.gamestate.getPlayers().size();
+        initializeMap(mapPath);
+
+        this.gameScreen.loadMap(mapPath);
+
+        reinitializeGame(this.gameScreen, this.gamestate);
+    }
+
+    public GameLogicController(MainController mainController, Gamestate gamestate, int allocatedPlayerNumber, GameView gameView, String mapPath, GameServer gameServer) {
+        this(mainController, gamestate, gameView, allocatedPlayerNumber, true, mapPath);
+        this.gameServer = gameServer;
+        gameServer.attachRequestListeners(this);
+    }
+
+    GameLogicController(MainController mainController, Gamestate gamestate, GameView gameView,
+                               int localPlayerNumber, boolean multiplayer, String mapPath) {
+        this.gameStateDao = new GameStateDao();
+        this.saveStateDao = new SaveStateDao();
+        this.towerDao = new TowerDao();
+        this.mainController = mainController;
+        this.gamestate = gamestate;
+        this.gameLogicUnit = new GameLogicUnit(this);
+        this.mapPath = mapPath;
+
+        this.localPlayerNumber = localPlayerNumber;
+        this.multiplayer = multiplayer;
         this.gameScreen = gameView;
         this.loaded = true;
         this.gameScreen.setLogicController(this);
@@ -163,7 +192,7 @@ public class GameLogicController implements LogicController {
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
      * @param gamestate  Der Spielzustand für die Reinitialisierung
      */
-    private void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+    void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
         gameScreen.clearGameObjects();
         gamestate.getProjectiles().forEach(projectile -> {
             gameScreen.addProjectile(projectile);
@@ -290,12 +319,13 @@ public class GameLogicController implements LogicController {
         }
     }
 
+    /**
+     * Ermittelt für jeden Spieler, ob er verloren hat
+     */
     private void determineLosers() {
-
         for (Player player : gamestate.getPlayers()) {
             if (!player.hasLost() & player.getCurrentLives() <= 0) {
                 player.setLost(true);
-                System.out.println("Spielerin " + (player.getPlayerNumber() + 1) + " hat verloren!");
             }
         }
     }
@@ -355,7 +385,7 @@ public class GameLogicController implements LogicController {
             List<Player> playersToSend = new LinkedList<>();
             gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
             gamestate.getPlayers().forEach(player -> playersToSend.add(new Player(player)));
-            gameServer.sendServerGameState(towersToSend, playersToSend);
+            gameServer.sendServerGameState(towersToSend, playersToSend, gamestate.getTimeUntilNextRound());
         }
         gamestate.setNewRound(true);
         gamestate.setRoundEnded(false);
@@ -400,10 +430,10 @@ public class GameLogicController implements LogicController {
 
         TiledMapTileLayer buildPermissionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Kollisionsmatrix");
 
-        for (int i = 0; i < numberOfRows; i++) {
-            for (int j = 0; j < numberOfColumns; j++) {
-                int buildableByPlayer = (int) buildPermissionLayer.getCell(j, i).getTile().getProperties().get("buildableByPlayer");
-                addGameMapTile(j, i, buildableByPlayer, tileWidth, tileHeight);
+        for (int rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+            for (int columnNumber = 0; columnNumber < numberOfColumns; columnNumber++) {
+                int buildableByPlayer = (int) buildPermissionLayer.getCell(columnNumber, rowNumber).getTile().getProperties().get("buildableByPlayer");
+                addGameMapTile(columnNumber, rowNumber, buildableByPlayer, tileWidth, tileHeight);
             }
         }
     }
@@ -421,7 +451,7 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Gibt die y-Koordinate zurück, die der angegebenen x-Position auf der Karte entspricht
+     * Gibt die x-Koordinate zurück, die der angegebenen x-Position auf der Karte entspricht
      *
      * @param xPosition Die x-Position, für die die x-Koordinate ermittelt werden soll
      * @return Die passende x-Koordinate
@@ -440,6 +470,14 @@ public class GameLogicController implements LogicController {
         return (int) yPosition / gamestate.getTileHeight();
     }
 
+    /**
+     *
+     * Gibt eine Spielfeldzelle auf Basis ihrer x- und y-Koordinaten zurück
+     *
+     * @param xCoordinate Die x-Koordinate der Zelle
+     * @param yCoordinate Die y-Koordinate der Zelle
+     * @return Die Zelle des Spielfelds
+     */
     Coordinates getMapCellByXandYCoordinates(int xCoordinate, int yCoordinate) {
 
         yCoordinate *= gamestate.getNumberOfColumns();
@@ -447,13 +485,14 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xCoordinate + yCoordinate);
     }
 
-
     /**
      *
-     * @param tower
-     * @param xCoordinate
-     * @param yCoordinate
-     * @param playerNumber
+     * Fügt einen Turm zum Spiel hinzu
+     *
+     * @param tower Der hinzuzufügende Turm
+     * @param xCoordinate Die x-Koordinate, an der der Turm errichtet werden soll
+     * @param yCoordinate Die y-Koordinate, an der der Turm errichtet werden soll
+     * @param playerNumber Die Nummer des Spielers, zu der der Turm gehört
      */
     void addTower(Tower tower, int xCoordinate, int yCoordinate, int playerNumber) {
         tower.setPlayerNumber(playerNumber);
@@ -466,8 +505,6 @@ public class GameLogicController implements LogicController {
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
     }
-
-
 
     /**
      * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
@@ -558,9 +595,9 @@ public class GameLogicController implements LogicController {
 
     /**
      * Überprüft, ob ein Spieler zu einer Spielernummer existiert
-     * @param playerNumber
-     * @param gamestate
-     * @return
+     * @param playerNumber Die zu überprüfende Spielernummer
+     * @param gamestate Der Spielzustand, der überprüft wird
+     * @return true, wenn ein Spieler mit dieser Nummer existiert, ansonsten false
      */
     private boolean playerExists(int playerNumber, Gamestate gamestate) {
         return playerNumber >= 0 | gamestate.getPlayers().size() < playerNumber;
@@ -569,9 +606,9 @@ public class GameLogicController implements LogicController {
     /**
      * Überprüft, ob sich auf einem Feld des Spielwelt ein Turm befindet
      *
-     * @param xCoordinate
-     * @param yCoordinate
-     * @return
+     * @param xCoordinate Die abgefragte x-Koordinate
+     * @param yCoordinate Die abgefragte y-Koordinate
+     * @return true, wenn sich auf dem Feld ein Turm befindet, ansonsten false
      */
     public boolean hasCellTower(int xCoordinate, int yCoordinate) {
         Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
@@ -775,28 +812,18 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Lädt ein Spiel
-     * @param id
-     */
-    @Override
-    public void loadGame(int id) {
-
-    }
-
-    /**
      * Rüstet einen Turm gemäß der in ihm festgelegten Upgrade-Wert auf.
      * @param tower Der aufzurüstende Turm
      */
     void upgradeTower(Tower tower) {
         tower.setUpgradeLevel(tower.getUpgradeLevel() + 1);
         tower.setBaseAttackDamage(tower.getBaseAttackDamage() + tower.getAttackDamageUpgradeBonus()); // tower.getAttackDamageUpgradeBonus()
-        tower.setBaseAttackSpeed(tower.getBaseAttackSpeed() * tower.getAttackSpeedUpgradeMultiplier());
+        tower.setBaseAttackSpeed(tower.getBaseAttackSpeed() * (1 / tower.getAttackSpeedUpgradeMultiplier()));
         tower.setAttackRange(tower.getAttackRange() + tower.getAttackRangeUpgradeBonus());
         tower.setAuraRange(tower.getAuraRange() + tower.getAuraRangeUpgradeBonus());
+        tower.setSellPrice(tower.getSellPrice() + tower.getUpgradePrice() / 2);
         tower.setUpgradePrice(tower.getUpgradePrice() * 2);
-        tower.setSellPrice(tower.getSellPrice() * 2);
         tower.notifyObserver();
-        System.out.println("Upgraded!");
     }
 
     /**
@@ -828,32 +855,47 @@ public class GameLogicController implements LogicController {
     /**
      * Gibt die Nummer des lokalen Spielers zurück
      *
-     * @return
+     * @return Die Nummer des lokalen Spielers
      */
+    @Override
     public int getLocalPlayerNumber() {
         return localPlayerNumber;
     }
 
+    /**
+     * Setzt die lokale Spielernummer
+     *
+     * @param localPlayerNumber Die neue lokale Spielernummer
+     */
     void setLocalPlayerNumber(int localPlayerNumber) {
         this.localPlayerNumber = localPlayerNumber;
     }
 
+    /**
+     * Gibt zurück, ob das Spiel pausiert ist
+     * @return true, wenn das Spiel pausiert ist
+     */
     public boolean isPause() {
         return pause;
     }
 
+    /**
+     * Legt fest, ob das Spiel pausiert ist
+     * @param pause
+     */
     public void setPause(boolean pause) {
         this.pause = pause;
     }
 
     @Override
     public void gameConnectionLost() {
-        exitGame(false);
+        if (!gamestate.isGameOver()) {
+            exitGame(false);
+        }
     }
 
     @Override
     public boolean isActiveRound() {
-        // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
         return gamestate.getTimeUntilNextRound() < 0;
     }
 
@@ -871,7 +913,7 @@ public class GameLogicController implements LogicController {
     }
 
     @Override
-    public boolean isServer(){
+    public boolean isServer() {
         return server;
     }
 }

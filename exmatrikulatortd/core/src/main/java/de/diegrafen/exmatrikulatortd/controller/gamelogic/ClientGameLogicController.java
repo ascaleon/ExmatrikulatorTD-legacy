@@ -7,6 +7,7 @@ import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.view.screens.GameView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.createNewEnemy;
@@ -20,9 +21,14 @@ import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.cr
  */
 public class ClientGameLogicController extends GameLogicController implements ClientLogicController {
 
-    private List<Tower> updateTowers;
+    private List<Tower> towersToUpdate;
 
-    private List<Player> updatePlayers;
+    private List<Player> playersToUpdate;
+
+    private float timeUntilNextRoundToUpdate = 0;
+
+    private boolean synchronize = false;
+
 
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
@@ -33,7 +39,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * Konstruktor für den Spiellogik-Controller
      *
      * @param mainController Der Haupt-Controller der Anwendung
-     * @param profile        Das Spieler-Profil
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ClientGameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
@@ -42,14 +47,14 @@ public class ClientGameLogicController extends GameLogicController implements Cl
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
         gameClient.reportFinishedLoading();
-        this.updateTowers = null;
+        this.towersToUpdate = new LinkedList<>();
+        this.playersToUpdate = new LinkedList<>();
     }
 
-    public ClientGameLogicController(MainController mainController, SaveState saveState, int allocatedPlayerNumber, GameView gameView, GameClient gameClient) {
-        super(mainController, saveState, gameView);
+    public ClientGameLogicController(MainController mainController, Gamestate gamestate, int allocatedPlayerNumber, GameView gameView, String mapPath, GameClient gameClient) {
+        super(mainController, gamestate, gameView, allocatedPlayerNumber, true, mapPath);
         this.gameClient = gameClient;
         gameClient.attachResponseListeners(this);
-        setLocalPlayerNumber(allocatedPlayerNumber);
     }
 
     /**
@@ -57,10 +62,12 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      */
     @Override
     public void update(float deltaTime) {
-        if (updateTowers != null & updatePlayers != null) {
-            reinitializeGame(getGameScreen(), updateTowers, updatePlayers);
-            updateTowers = null;
-            updatePlayers = null;
+        if (synchronize) {
+            synchronizeGame(towersToUpdate, playersToUpdate, timeUntilNextRoundToUpdate);
+            synchronize = false;
+            towersToUpdate.clear();
+            playersToUpdate.clear();
+            timeUntilNextRoundToUpdate = -1;
         }
         super.update(deltaTime);
     }
@@ -205,33 +212,27 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     @Override
-    public void setGamestateFromServer(List<Tower> towers, List<Player> players) {
-        updateTowers = towers;
-        updatePlayers = players;
+    public void setGamestateFromServer(List<Tower> towers, List<Player> players, float timeUntilNextRound) {
+        towersToUpdate = towers;
+        playersToUpdate = players;
+        timeUntilNextRoundToUpdate = timeUntilNextRound;
     }
 
     /**
-     * Reinitialisiert den Spielbildschirm nach dem Laden
+     * Synchronisiert den Spielzustand mit empfangenen Serverinformationen
      *
-     * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
+     * @param towers Die Türme, die synchronisiert werden sollen
+     *
      */
-    private void reinitializeGame(GameView gameScreen, List<Tower> towers, List<Player> players) {
-        //gameScreen.clearGameObjects();
+    private void synchronizeGame(List<Tower> towers, List<Player> players, float timeUntilNextRound) {
+        getGamestate().setPlayers(players);
+        getGamestate().setTimeUntilNextRound(timeUntilNextRound);
         removeAllTowers();
-//        gamestate.getProjectiles().forEach(projectile -> {
-//            gameScreen.addProjectile(projectile);
-//            projectile.notifyObserver();
-//        });
-        getGamestate().setPlayers(updatePlayers);
         towers.forEach(tower -> {
             int xCoordinate = getXCoordinateByPosition(tower.getxPosition());
             int yCoordinate = getYCoordinateByPosition(tower.getyPosition());
             addTower(tower, xCoordinate, yCoordinate, tower.getPlayerNumber());
             tower.notifyObserver();
         });
-//        gamestate.getEnemies().forEach(enemy -> {
-//            gameScreen.addEnemy(enemy);
-//            enemy.notifyObserver();
-//        });
     }
 }

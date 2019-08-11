@@ -1,6 +1,10 @@
 package de.diegrafen.exmatrikulatortd.communication.server.responses;
 
+import de.diegrafen.exmatrikulatortd.model.Gamestate;
+
 public class AllPlayersReadyResponse extends Response {
+
+    private Gamestate gamestate;
 
     private int difficulty;
 
@@ -18,6 +22,13 @@ public class AllPlayersReadyResponse extends Response {
         super();
     }
 
+    public AllPlayersReadyResponse(Gamestate gamestate, int numberOfPlayers, String mapPath) {
+        this();
+        this.gamestate = gamestate;
+        this.numberOfPlayers = numberOfPlayers;
+        this.mapPath = mapPath;
+    }
+
     public AllPlayersReadyResponse(int difficulty, int numberOfPlayers, int allocatedPlayerNumber, int gamemode, String mapPath, String[] playerNames) {
         this();
         this.difficulty = difficulty;
@@ -26,6 +37,10 @@ public class AllPlayersReadyResponse extends Response {
         this.gamemode = gamemode;
         this.mapPath = mapPath;
         this.playerNames = playerNames;
+    }
+
+    public Gamestate getGamestate() {
+        return gamestate;
     }
 
     public int getDifficulty() {

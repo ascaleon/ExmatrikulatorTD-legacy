@@ -3,7 +3,15 @@ package de.diegrafen.exmatrikulatortd.util;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 import de.diegrafen.exmatrikulatortd.persistence.TowerDao;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.schema.TargetType;
+
+import java.util.EnumSet;
 
 import static de.diegrafen.exmatrikulatortd.controller.factories.TowerFactory.createNewTower;
 import static de.diegrafen.exmatrikulatortd.util.Constants.NUMBER_OF_TOWERS;
@@ -65,5 +73,20 @@ public class HibernateUtils {
                 towerDao.create(buildableTower);
             }
         }
+        createSchemaWithHibernate5();
+    }
+
+    private static void createSchemaWithHibernate5() {
+        StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                .configure("hibernate.cfg.xml") //
+                .build();
+        Metadata metadata = new MetadataSources(serviceRegistry) //
+                .buildMetadata();
+
+        new SchemaExport() //
+                .setOutputFile("db-schema.hibernate5.ddl") //
+                .create(EnumSet.of(TargetType.SCRIPT), metadata);
+
+        metadata.buildSessionFactory().close();
     }
 }

@@ -30,11 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Buttons.LEFT;
-import static com.badlogic.gdx.Input.Buttons.MIDDLE;
 import static com.badlogic.gdx.Input.Buttons.RIGHT;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.HEAVY_ENEMY;
 import static de.diegrafen.exmatrikulatortd.controller.factories.EnemyFactory.REGULAR_ENEMY;
-import static de.diegrafen.exmatrikulatortd.util.Assets.TRANSPARENT_BACKGROUND_IMAGE;
+import static de.diegrafen.exmatrikulatortd.util.Assets.*;
 import static de.diegrafen.exmatrikulatortd.util.Constants.CAMERA_TRANSLATE_VALUE;
 
 /**
@@ -98,39 +97,42 @@ public class GameScreen extends BaseScreen implements GameView {
     private boolean keyLeftDown = false;
 
     /**
-     *
+     * Label für den Punktestand des lokalen Spielers
      */
     private Label scoreLabel;
 
     /**
-     *
+     * Label für den Punktestand des Gegenspielers
      */
     private Label opponentScore;
 
     /**
-     *
+     * Label für die Anzeige der Resourcen
      */
     private Label resourcesLabel;
 
     /**
-     *
+     * Label für das Leben des Spielers
      */
     private Label livesLabel;
 
     /**
-     *
+     * Label für die Anzahl der Runden
      */
     private Label roundsLabel;
 
     /**
-     *
+     * Label für die Zeit bis zur nächsten Runde
      */
     private Label timelabel;
 
     /**
-     *
+     * Style der Towerinformation
      */
     private Label.LabelStyle towerinfoLabelsStyle = new Label.LabelStyle(getBitmapFont(), Color.WHITE);
+    /**
+     * Die Towerinformation
+     */
     private Label towerinfoLabel = new Label(null, towerinfoLabelsStyle);
 
     /**
@@ -144,110 +146,105 @@ public class GameScreen extends BaseScreen implements GameView {
     private float touchDownY;
 
     /**
-     *
+     * Verwaltet Inputs von Maus und Tastatur und von den UI Elementen
      */
     private InputMultiplexer multiplexer;
 
     /**
-     *
+     * Der Container für die UI Elemnte des Pause/Menubildschirm
      */
     private Group pauseGroup;
 
     /**
-     *
+     * Der Container für die UI Elemente des Endbildschirm
      */
     private Group endScreenGroup;
-    // TODO: Variablen sinnvollere Bezeichnungen geben bzw. ersetzen
+
+    private Skin skin;
 
     /**
-     *
-     */
-    private final Skin skin = new Skin(Gdx.files.internal("ui-skin/golden-ui-skin.json"));
-
-    /**
-     *
+     * Der Style der Lebensanzeigen
      */
     private ProgressBar.ProgressBarStyle healthBarStyle;
 
     /**
-     *
+     * Eine Liste der Buttons für die Auswahl eines Turmes
      */
     private List<TowerButton> towerButtons;
 
     /**
-     *
+     * Eine Liste der einzelnen Vorschautürme
      */
     private List<TowerObject> previewTowers;
 
     /**
-     *
+     * Der Vorschauturm
      */
     private TowerObject previewTower;
 
     /**
-     *
+     * Das Interface der Spiellogik
      */
     private LogicController logicController;
 
     /**
-     *
+     * Die Lebensleiste des Lokalenspielers
      */
     private ProgressBar playerHealth;
     /**
-     *
+     * Die Lebensleiste des Gegenspielers
      */
     private ProgressBar opponentHealth;
 
     /**
-     *
+     * UI Bereich in dem die Benachrichtigungen angezeigt werden
      */
     private Table messageArea;
-    private Table menuMessageArea;
 
     /**
-     *
+     * UI Bereich in dem sich die Buttons zum Upgraden und Verkaufen befinden
      */
     private Table upgradeSell;
     /**
-     *
+     * UI bereich in dem der Rundencountdown angezeigt wird
      */
     private Table countdown;
     /**
-     *
+     * UI Bereich der die Informationen über den Gegenspieler beinhaltet
      */
     private Table opponent;
     /**
-     *
+     * UI Bereich für die Buttons zum Senden von Einheiten an den Gegenspieler
      */
     private Table sendEnemy;
 
     /**
-     *
+     * Container für die Elemente des Pop Up Menu
      */
     private Group popUpButtons;
 
     /**
-     *
+     * Die Nachricht die dem Spieler angezeigt wird
      */
     private Label messageLabel;
 
     /**
-     *
+     * Timer für die Benachrichtigungen
      */
     private float timer;
 
     /**
-     *
+     * Timer für das Pop Up Menu
      */
     private float tableDecayTimer;
 
     /**
-     *
+     * Koordinaten für die Position eines Turmes
      */
     private int xCoord, yCoord;
 
     /**
-     *
+     * Die
      */
     private static final int X_SIZE = 100;
 
@@ -262,42 +259,42 @@ public class GameScreen extends BaseScreen implements GameView {
     private static final int NUM_KEY_OFFSET = 8;
 
     /**
-     *
+     * Der Tooltipmanager für die Infoboxen der Buttons
      */
     private TooltipManager tooltipManager;
 
     /**
-     *
+     * Die Tabelle in die die einzelnen Towerbuttons hinzugefügt werden
      */
     private Table towerSelect;
 
     /**
-     *
+     * Die X-Position der Maus
      */
     private float mouseXPosition;
 
     /**
-     *
+     * Die Y-Position der Maus
      */
     private float mouseYPosition;
 
     /**
-     *
+     * Die Anzahl der Spieler
      */
     private int numberOfPlayers;
 
     /**
-     *
+     * Das Hintergrundbild für die Menus
      */
     private Image background;
 
     /**
-     *
+     * Der Gegenspieler
      */
     private Player opposingPlayer;
 
     /**
-     *
+     * Der lokale Spieler
      */
     private Player localPlayer;
 
@@ -312,12 +309,14 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
-     * Die Initialisierung erstellt den SpriteBatch und lädt Texturen.
+     * Die Initialisierung erzeugt die Inputprocessoren, initialisiert benötigte Variablen
+     * und erstellt die Spielerobjekte welche für die UI benötigt werden.
      */
     @Override
     public void init() {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
+        skin = getAssetManager().get(SKIN, Skin.class);
 
         getCamera().setToOrtho(false, width, height);
 
@@ -500,7 +499,7 @@ public class GameScreen extends BaseScreen implements GameView {
 
         numberOfPlayers = gameState.getPlayers().size();
 
-        background = new Image(new Texture(Gdx.files.internal("transparentBG.png")));
+        background = new Image(getAssetManager().get(TRANSPARENT_BACKGROUND_IMAGE, Texture.class));
 
         localPlayer = logicController.getLocalPlayer();
 
@@ -515,6 +514,7 @@ public class GameScreen extends BaseScreen implements GameView {
             opposingPlayer = gameState.getPlayerByNumber(opposingPlayerNumber);
         }
         initializeUserInterface();
+        initPauseScreen();
 
         multiplexer.addProcessor(inputProcessorCam);
         Gdx.input.setInputProcessor(multiplexer);
@@ -564,12 +564,7 @@ public class GameScreen extends BaseScreen implements GameView {
         }
         if (messageLabel != null) {
             if (timer <= 0) {
-                if(defaultScreen.isVisible()) {
-                    messageArea.removeActor(messageLabel);
-                }
-                else{
-                    menuMessageArea.removeActor(messageLabel);
-                }
+                messageArea.removeActor(messageLabel);
             } else {
                 timer = timer - deltaTime;
                 messageLabel.setColor(1, 0, 0, 1 * timer / 3);
@@ -583,7 +578,7 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
-     *
+     * Aktuallisiert die UI Elemente
      */
     @Override
     public void update() {
@@ -597,7 +592,6 @@ public class GameScreen extends BaseScreen implements GameView {
         scoreLabel.setText(localPlayer.getScore());
         livesLabel.setText(localPlayer.getCurrentLives() + "/" + localPlayer.getMaxLives());
         playerHealth.setValue(localPlayer.getCurrentLives());
-
         resourcesLabel.setText(localPlayer.getResources());
         if (gameState.isEndlessGame()) {
             roundsLabel.setText(Integer.toString(gameState.getRoundNumber() + 1));
@@ -717,8 +711,6 @@ public class GameScreen extends BaseScreen implements GameView {
      */
     private void initializeUserInterface() {
 
-        // TODO: Diese Methode erfordert noch erhebliches Refactoring.
-
         opponent = new Table();
         sendEnemy = new Table();
 
@@ -730,7 +722,7 @@ public class GameScreen extends BaseScreen implements GameView {
         initProgressbarStyle();
 
         if (logicController.isMultiplayer()) {
-            initMultiplayerUiComponents(localPlayer);
+            initMultiplayerUiComponents();
         }
 
         final Table towerinfoTable = new Table();
@@ -768,7 +760,7 @@ public class GameScreen extends BaseScreen implements GameView {
         playerHealth.setValue(localPlayer.getCurrentLives());
         playerHealth.setAnimateDuration(1);
 
-        Drawable menuImage = new TextureRegionDrawable(new Texture(Gdx.files.internal("menuIcon_placeholder.png")));
+        Drawable menuImage = new TextureRegionDrawable(getAssetManager().get(MENU_ICON_PLACEHOLDER, Texture.class));
 
         towerSelect = new Table();
 
@@ -784,18 +776,17 @@ public class GameScreen extends BaseScreen implements GameView {
             public void changed(ChangeEvent event, Actor actor) {
                 if (!logicController.isPause() & !logicController.isMultiplayer()) {
                     logicController.setPause(true);
-                    pauseScreen();
+                    //pauseScreen();
                 } else if (logicController.isMultiplayer()) {
                     logicController.setPause(false);
-                    pauseScreen();
                 }
-
+                showPauseScreen();
             }
         });
 
         menu.add(menuButton).size(X_SIZE, Y_SIZE);
 
-        initPopUpContent(localPlayer);
+        initPopUpContent();
 
         messageArea = new Table();
 
@@ -839,11 +830,15 @@ public class GameScreen extends BaseScreen implements GameView {
         multiplexer.addProcessor(getUi());
     }
 
+    private void showPauseScreen() {
+        defaultScreen.setVisible(false);
+        pauseGroup.setVisible(true);
+    }
+
     /**
-     *
-     * @param localPlayer
+     * Initialisiert die Komponenten des Userinterfaces die nur für den Multiplayer benötigt werden.
      */
-    private void initMultiplayerUiComponents(Player localPlayer){
+    private void initMultiplayerUiComponents(){
         opponentHealth = new ProgressBar(0, opposingPlayer.getMaxLives(), 1, false, healthBarStyle);
         opponentHealth.setScale(1 / 2);
         opponentHealth.setValue(opposingPlayer.getCurrentLives());
@@ -856,8 +851,8 @@ public class GameScreen extends BaseScreen implements GameView {
         opponent.add(opponentScore).left().row();
         opponent.add(opponentHealth).left();
 
-        Drawable sendRegEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyRegularIcon.png")));
-        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sendEnemyHeavyIcon.png")));
+        Drawable sendRegEnemyIcon = new TextureRegionDrawable(getAssetManager().get(SEND_REGULAR_ENEMY_ICON, Texture.class));
+        Drawable sendHvyEnemyIcon = new TextureRegionDrawable(getAssetManager().get(SEND_HEAVY_ENEMY_ICON, Texture.class));
 
         ImageButton sendRegEnemy = new ImageButton(sendRegEnemyIcon);
         ImageButton sendHvyEnemy = new ImageButton(sendHvyEnemyIcon);
@@ -881,12 +876,11 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
-     *
-     * @param localPlayer
+     * Initialisiert die Inhalte des Turmmanagement Pop Up menu
      */
-    private void initPopUpContent(Player localPlayer) {
-        Drawable upgradeIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("upgradeIcon.png")));
-        Drawable sellIcon = new TextureRegionDrawable(new Texture(Gdx.files.internal("sellIcon.png")));
+    private void initPopUpContent() {
+        Drawable upgradeIcon = new TextureRegionDrawable(getAssetManager().get(UPRADE_ICON, Texture.class));
+        Drawable sellIcon = new TextureRegionDrawable(getAssetManager().get(SELL_ICON, Texture.class));
 
         ImageButton upgradeButton = new ImageButton(upgradeIcon);
         ImageButton sellButton = new ImageButton(sellIcon);
@@ -916,7 +910,7 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
-     *
+     * Initialisiert die Stylekomponenten der Progressbar welche für die Lebensanzeigen der Spieler verwendet wird
      */
     private void initProgressbarStyle(){
         Pixmap pixRed = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
@@ -978,16 +972,11 @@ public class GameScreen extends BaseScreen implements GameView {
     public void displayErrorMessage(String message) {
         Label.LabelStyle messageStyle = new Label.LabelStyle();
         messageStyle.font = getBitmapFont();
-            messageLabel = new Label(message, messageStyle);
-            messageLabel.setColor(Color.RED);
-        if(defaultScreen.isVisible()) {
-            messageArea.clear();
-            messageArea.add(messageLabel);
-        }
-        else{
-            menuMessageArea.clear();
-            menuMessageArea.add(messageLabel);
-        }
+        messageLabel = new Label(message, messageStyle);
+        messageLabel.setColor(Color.RED);
+        messageArea.clear();
+        messageArea.add(messageLabel);
+
         timer = 3;
     }
 
@@ -1061,17 +1050,16 @@ public class GameScreen extends BaseScreen implements GameView {
     /**
      * Erstellt/Zeigt den Pausenbildschirm an. Das Spiel UI wird ausgeblendet, während das Spiel pausiert ist.
      */
-    private void pauseScreen() {
+    private void initPauseScreen() {
         pauseGroup = new Group();
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
         Table buttonTable = new Table();
-        menuMessageArea = new Table();
         TextButton resume = new TextButton("Resume", skin);
         resume.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!logicController.isMultiplayer()) {
+                if (!logicController.isMultiplayer()) {
                     logicController.setPause(false);
                 }
                 pauseGroup.setVisible(false);
@@ -1079,71 +1067,44 @@ public class GameScreen extends BaseScreen implements GameView {
             }
         });
 
-        TextButton back2main = new TextButton("Menu", skin);
-        back2main.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                logicController.exitGame(false);
-            }
-        });
         TextButton save = new TextButton("Save", skin);
         save.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // TODO: Mögichkeit zum Eingeben von Spielstandnamen hinzufügen
-
-                Gdx.input.getTextInput(new Input.TextInputListener() {
-                    @Override
-                    public void input(String text) {
-                        if(text != null && text != "" && text.trim().length() > 0){
-                            logicController.saveGame(text);
-                            displayErrorMessage("Spiel gespeichert");
-                        }
-                        else {
-                            displayErrorMessage("Speichern fehlgeschlagen");
-                        }
-                    }
-
-                    @Override
-                    public void canceled() {
-                        displayErrorMessage("Speichern abgebrochen");
-                    }
-                }, "Name des Spielstand", "savename", "");
-
+                logicController.saveGame("Spielstand");
             }
         });
 
+        TextButton back2main = new TextButton("Menu", skin);
 
-        if (logicController.isPause()) {
-            TextButton load = new TextButton("Load", skin);
+            TextButton load = new TextButton("Quickload", skin);
             load.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    List<SaveState> saveStates = getMainController().getAllSavestates();
-                    if (!saveStates.isEmpty()) {
-                        SaveState saveState = saveStates.get(saveStates.size() - 1);
-                        //TODO: Dropdown-Menü zur Auswahl von Spielständen ergänzen
-                        getMainController().loadSinglePlayerGame(saveState.getId());
-                    }
+                    getMainController().loadLastSaveGame();
+                }
+            });
+            back2main.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    logicController.exitGame(logicController.isServer());
                 }
             });
 
             buttonTable.add(resume).top().center().spaceBottom(10).row();
-            buttonTable.add(save).top().center().spaceBottom(10).row();
-            buttonTable.add(load).top().center().spaceBottom(10).row();
+            if (!logicController.isMultiplayer()) {
+                buttonTable.add(save).top().center().spaceBottom(10).row();
+                buttonTable.add(load).top().center().spaceBottom(10).row();
+            }
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
-
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
-            pauseGroup.addActor(menuMessageArea);
 
-            defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
 
-        } else if(logicController.isMultiplayer()){
+        if (logicController.isMultiplayer()) {
             back2main.addListener(new TextTooltip("Warnung: Diese Aktion trennt die Verbindung und beendet die Partie", tooltipManager, skin));
             buttonTable.add(resume).top().center().spaceBottom(10).row();
             if(logicController.isServer()){
@@ -1152,17 +1113,12 @@ public class GameScreen extends BaseScreen implements GameView {
             buttonTable.add(back2main).top().center().row();
             buttonTable.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
 
-            menuMessageArea.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight()/buttonTable.getRows());
-
             pauseGroup.addActor(background);
             pauseGroup.addActor(buttonTable);
-            pauseGroup.addActor(menuMessageArea);
 
-            defaultScreen.setVisible(false);
             getUi().addActor(pauseGroup);
-        } else {
-            pauseGroup.setVisible(false);
         }
+        pauseGroup.setVisible(false);
     }
 
     /**
@@ -1170,6 +1126,8 @@ public class GameScreen extends BaseScreen implements GameView {
      * Gewonnen/Verloren + Punkte + Highscore des Users
      *
      * @param victorious Gibt an, ob der lokale Spieler siegreich war
+     * @param score Die Punkte des lokalen Spielers
+     * @param highscore Der Highscore des lokalen Spielers
      */
     @Override
     public void endOfGameScreen(boolean victorious, int score, int highscore) {
@@ -1177,9 +1135,9 @@ public class GameScreen extends BaseScreen implements GameView {
 
         Image resultImage;
         if (victorious) {
-            resultImage = new Image(new Texture(Gdx.files.internal("win.png")));
+            resultImage = new Image(getAssetManager().get(WIN_IMAGE, Texture.class));
         } else {
-            resultImage = new Image(new Texture(Gdx.files.internal("loose.png")));
+            resultImage = new Image(getAssetManager().get(LOSE_IMAGE, Texture.class));
         }
 
         Label currentScoreLabel = new Label("Erzielte Punkte: " + score, skin);
@@ -1263,10 +1221,12 @@ public class GameScreen extends BaseScreen implements GameView {
         previewTowers.add(new TowerObject(observableTower, getAssetManager()));
     }
 
+
     /**
-     *
+     * Erstellt einen Bildschirm der am Ende des Spiels aufgerufen werden kann.
+     * Zeigt diverse Statistiken über die abgeschlossene Partie an.
      */
-    private void gameStatsScreen(){
+    private void gameStatsScreen() {
         Group statScreen = new Group();
 
         Table firstColum = new Table();
@@ -1346,7 +1306,8 @@ public class GameScreen extends BaseScreen implements GameView {
     }
 
     /**
-     * Passt die Größe des Hintergrundbildes an die neue Fenstergröße an
+     * Nimmt Anpasssungen bei Änderung der Fenstergröße vor
+     *
      * @param width Die neue Breite.
      * @param height Die neue Höhe.
      */
@@ -1354,6 +1315,5 @@ public class GameScreen extends BaseScreen implements GameView {
     public void resize(int width, int height) {
         super.resize(width, height);
         background.setSize(getStageViewport().getScreenWidth(), getStageViewport().getScreenHeight());
-
     }
 }

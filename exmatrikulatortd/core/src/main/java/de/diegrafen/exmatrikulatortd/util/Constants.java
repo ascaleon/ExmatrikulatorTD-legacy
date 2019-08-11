@@ -44,18 +44,15 @@ public final class Constants {
     /**
      * Konstante, die angibt, in welchem zeitlichen Abstand ein Turm nach einem neuen Gegner sucht.
      */
-    //public static final float SEARCH_TARGET_INTERVAL = 0.1f;
     public static final float SEARCH_TARGET_INTERVAL = 0;
-
-    public static final int TILE_SIZE = 64;
 
     public static final float AURA_REFRESH_RATE = 0.1f;
 
     public static final float DAMAGE_REDUCTION_FACTOR = 0.06f;
 
-    public static final float SPEED_INCREASE_PER_LEVEL = 1.5f;
+    public static final float SPEED_INCREASE_PER_LEVEL = 3f;
 
-    public static final float ARMOR_INCREASE_PER_LEVEL = 1.5f;
+    public static final float ARMOR_INCREASE_PER_LEVEL = 2f;
 
     /**
      * Angriffstyp "Normaler Schaden"
@@ -73,9 +70,9 @@ public final class Constants {
     public static final int EXPLOSIVE = 2;
 
     /**
-     * Angriffstyp "Logikschaden". Überfordert Studierende mit vielen mathematischen Symbolen.
+     * Angriffstyp "Magieschaden".
      */
-    public static final int LOGIC = 3;
+    public static final int MAGIC = 3;
 
     /**
      * Rüstungstyp "ohne Rüstung"
@@ -111,7 +108,6 @@ public final class Constants {
             {1.50f, 0.50f, 1.00f, 2.00f, 0},
             {1.00f, 1.25f, 0.75f, 1.50f, 0}};
 
-
     public final static int EASY = 0;
 
     public final static String EASY_STRING = "Leicht";
@@ -137,4 +133,20 @@ public final class Constants {
     public static final int MULTIPLAYER_STANDARD_GAME = 3;
 
     public static final int MULTIPLAYER_ENDLESS_GAME = 4;
+
+    public static final int ENEMIES_PER_WAVE = 20;
+
+    public static final int REGULAR_WAVE = 0;
+
+    public static final int HEAVY_WAVE = 1;
+
+    public static final int FAST_WAVE = 2;
+
+    public static final int REGULAR_AND_HEAVY_WAVE = 3;
+
+    public static final int REGULAR_AND_FAST_WAVE = 4;
+
+    public static final int HEAVY_AND_FAST_WAVE = 5;
+
+    public static final int BOSS_WAVE = 6;
 }

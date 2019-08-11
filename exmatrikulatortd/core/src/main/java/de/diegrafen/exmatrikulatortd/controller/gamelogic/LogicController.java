@@ -57,20 +57,66 @@ public interface LogicController {
      */
     void sendEnemy(int enemyType, int playerToSendTo, int sendingPlayer);
 
+    /**
+     * Überprüft, ob ausgewählte Koordinaten vom angegebenen Spieler bebaut werden dürfen.
+     *
+     * @param xCoordinate Die x-Koordinate des betreffenden Feldes
+     * @param yCoordinate Die y-Koordinate des betreffenden Feldes
+     * @param playerNumber Die Nummer des betreffenden Spielers
+     * @return true, wenn die betreffende Map-Zelle bebaut werden darf, ansonsten false
+     */
     boolean checkIfCoordinatesAreBuildable(int xCoordinate, int yCoordinate, int playerNumber);
 
+    /**
+     * Gibt die x-Koordinate zurück, die der angegebenen x-Position auf der Karte entspricht
+     *
+     * @param xPosition Die x-Position, für die die x-Koordinate ermittelt werden soll
+     * @return Die passende x-Koordinate
+     */
     int getXCoordinateByPosition(float xPosition);
 
+    /**
+     * Gibt die y-Koordinate zurück, die der angegebenen y-Position auf der Karte entspricht
+     *
+     * @param yPosition Die y-Position, für die die y-Koordinate ermittelt werden soll
+     * @return Die passende y-Koordinate
+     */
     int getYCoordinateByPosition(float yPosition);
 
+    /**
+     * Legt den Spielzustand fest
+     *
+     * @param gamestate Der festzulegende Spielzustand
+     */
     void setGamestate(Gamestate gamestate);
 
+    /**
+     * Zeigt eine Fehlermeldung für einen Spieler an. Sendet im Multiplayer-Medus die Fehlernachricht an den betreffenden
+     * Spieler
+     *
+     * @param errorMessage Die Fehlermeldung
+     * @param playerNumber Die Nummer des Spielers, bei dem der Fehler aufgetreten ist
+     */
     void displayErrorMessage(String errorMessage, int playerNumber);
 
+    /**
+     * Gibt den Spielzustand zurück
+     *
+     * @return Der aktuelle Spielzustand
+     */
     Gamestate getGamestate();
 
+    /**
+     * Gibt den Spielbildschirm zurück
+     * @return Der Spielbildschirm
+     */
     GameView getGameScreen();
 
+    /**
+     * Gibt die Nummer des lokalen Spielers zurück
+     *
+     * @return Die Nummer des lokalen Spielers
+     */
     int getLocalPlayerNumber();
 
     boolean hasCellTower(int xCoordinate, int yCoordinate);
@@ -83,17 +129,15 @@ public interface LogicController {
 
     boolean isPause();
 
+    boolean isServer();
+
     void setPause(boolean pause);
 
     void gameConnectionLost();
 
     boolean isMultiplayer();
 
-    boolean isServer();
-
     void saveGame(String saveGameName);
-
-    void loadGame(int id);
 
     boolean isActiveRound();
 

@@ -91,7 +91,7 @@ public class GameListener implements Listener {
 
 
     private void handleGetServerStateResponse(final GetServerStateResponse getServerStateResponse) {
-        Gdx.app.postRunnable(() -> clientLogicController.setGamestateFromServer(getServerStateResponse.getTowers(), getServerStateResponse.getPlayers()));
+        Gdx.app.postRunnable(() -> clientLogicController.setGamestateFromServer(getServerStateResponse.getTowers(), getServerStateResponse.getPlayers(), getServerStateResponse.getTimeUntilNextRound()));
     }
 
     /**
