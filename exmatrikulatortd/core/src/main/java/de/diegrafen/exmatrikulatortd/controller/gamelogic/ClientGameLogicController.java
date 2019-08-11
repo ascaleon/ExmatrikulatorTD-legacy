@@ -24,6 +24,8 @@ public class ClientGameLogicController extends GameLogicController implements Cl
 
     private List<Player> updatePlayers;
 
+    private Gamestate updateGameState;
+
     /**
      * Der GameClient, über den die Netzwerkkommuikation abläuft
      */
@@ -33,7 +35,6 @@ public class ClientGameLogicController extends GameLogicController implements Cl
      * Konstruktor für den Spiellogik-Controller
      *
      * @param mainController Der Haupt-Controller der Anwendung
-     * @param profile        Das Spieler-Profil
      * @param gameClient     Der GameClient, über den die Netzwerkkommunikation abläuft
      */
     public ClientGameLogicController(MainController mainController, int difficulty, int numberOfPlayers, int localPlayerNumber,
@@ -58,7 +59,8 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     @Override
     public void update(float deltaTime) {
         if (updateTowers != null & updatePlayers != null) {
-            reinitializeGame(getGameScreen(), updateTowers, updatePlayers);
+            //reinitializeGame(getGameScreen(), updateTowers, updatePlayers);
+            reinitializeGame(getGameScreen(), updateGameState);
             updateTowers = null;
             updatePlayers = null;
         }
@@ -205,9 +207,10 @@ public class ClientGameLogicController extends GameLogicController implements Cl
     }
 
     @Override
-    public void setGamestateFromServer(List<Tower> towers, List<Player> players) {
-        updateTowers = towers;
-        updatePlayers = players;
+    public void setGamestateFromServer(Gamestate gamestate) {
+//        updateTowers = towers;
+//        updatePlayers = players;
+        updateGameState = gamestate;
     }
 
     /**

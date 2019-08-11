@@ -91,9 +91,8 @@ public interface LogicController {
 
     void saveGame(String saveGameName);
 
-    void loadGame(int id);
-
     boolean isActiveRound();
+
 
     int getNumberOfPlayers();
 }

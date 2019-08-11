@@ -3,6 +3,8 @@ package de.diegrafen.exmatrikulatortd.communication.server;
 import de.diegrafen.exmatrikulatortd.communication.ConnectorInterface;
 import de.diegrafen.exmatrikulatortd.model.Gamestate;
 import de.diegrafen.exmatrikulatortd.model.Player;
+import de.diegrafen.exmatrikulatortd.model.enemy.Enemy;
+import de.diegrafen.exmatrikulatortd.model.tower.Projectile;
 import de.diegrafen.exmatrikulatortd.model.tower.Tower;
 
 import java.util.List;
@@ -15,5 +17,5 @@ interface ServerInterface extends ConnectorInterface {
 
     void serverFinishedLoading();
 
-    void sendServerGameState(List<Tower> towers, List<Player> players);
+    void sendServerGameState(Gamestate gamestate);
 }

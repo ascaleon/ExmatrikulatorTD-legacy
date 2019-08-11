@@ -38,6 +38,8 @@ public class MenuScreen extends BaseScreen {
 
     private Table loadOrNewGameTable;
 
+    private Table saveStatesMenuTable;
+
     private Table savestatesTable;
 
     private Table selectProfileMenuTable;
@@ -113,6 +115,7 @@ public class MenuScreen extends BaseScreen {
         createPreferenceMenuTable(menuStack);
         createSelectGameTypeTable(menuStack);
         createLoadOrNewGameTable(menuStack);
+        createSaveStatesMenuTable(menuStack);
         createSelectProfileMenuTable(menuStack);
         createNewOrEditProfileMenuTable(menuStack);
         createHighscoreMenuTable(menuStack);
@@ -229,6 +232,7 @@ public class MenuScreen extends BaseScreen {
         savestateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                //getMainController().loadSinglePlayerGame(saveStateId);
                 idToLoad = saveStateId;
             }
         });
@@ -237,18 +241,13 @@ public class MenuScreen extends BaseScreen {
 
     private void createLoadOrNewGameTable(Stack menuStack) {
         loadOrNewGameTable = new Table();
-        savestatesTable = new Table();
 
         TextButton newSinglePlayerGameButton = new TextButton("Neues Spiel", skin);
         TextButton loadSaveStateButton = new TextButton("Spiel laden", skin);
         TextButton backButton = new TextButton("Zurueck", skin);
-        final ScrollPane savestatesTableScrollPane = new ScrollPane(savestatesTable, skin);
 
         createGenericMenuTable(menuStack, loadOrNewGameTable);
 
-        refreshSavestatesTable();
-
-        addUIElement(loadOrNewGameTable, savestatesTableScrollPane);
         addUIElement(loadOrNewGameTable, newSinglePlayerGameButton);
         addUIElement(loadOrNewGameTable, loadSaveStateButton);
         addUIElement(loadOrNewGameTable, backButton);
@@ -264,9 +263,8 @@ public class MenuScreen extends BaseScreen {
         loadSaveStateButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (idToLoad != -1L) {
-                    getMainController().loadSinglePlayerGame(idToLoad);
-                }
+                refreshSavestatesTable();
+                showSaveStatesMenuTable(loadOrNewGameTable);
             }
         });
 
@@ -296,10 +294,8 @@ public class MenuScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 profilesButtonGroup.getButtons().forEach(button -> button.setColor(Color.WHITE));
                 getMainController().setCurrentProfile(profileId);
-                System.out.println(profileButton.getColor());
                 profileButton.setColor(Color.GREEN);
                 refreshSavestatesTable();
-                System.out.println(getMainController().getCurrentProfile().getId());
             }
         });
 
@@ -310,15 +306,6 @@ public class MenuScreen extends BaseScreen {
 
         profilesTable.add(profileButton);
         profilesButtonGroup.add(profileButton);
-    }
-
-    private Profile getSelectedProfileFromButtonGroup() {
-        final ProfileTextButton selectedProfileButton = (ProfileTextButton) profilesButtonGroup.getChecked();
-        if (selectedProfileButton != null) {
-            return getMainController().retrieveProfile(selectedProfileButton.getID());
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -396,6 +383,59 @@ public class MenuScreen extends BaseScreen {
 
         selectProfileMenuTable.add(profilesTableScrollPane).expand();
         selectProfileMenuTable.add(buttonsTable).expand();
+    }
+
+
+
+    private void createSaveStatesMenuTable(Stack menuStack) {
+        saveStatesMenuTable = new Table();
+        savestatesTable = new Table();
+
+        final ScrollPane savestatesTableScrollPane = new ScrollPane(savestatesTable, skin);
+        Table buttonsTable = new Table();
+        TextButton loadButton = new TextButton("Spielstand laden", skin);
+        TextButton deleteButton = new TextButton("Spielstand löschen", skin);
+        TextButton backButton = new TextButton("Zurück", skin);
+
+        savestatesTable.pad(10).defaults().expandX().space(4);
+
+        createGenericMenuTable(menuStack, saveStatesMenuTable);
+
+        saveStatesMenuTable.row().pad(10, 0, 10, 0);
+
+        loadButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (idToLoad != -1L) {
+                    getMainController().loadSinglePlayerGame(idToLoad);
+                }
+                loadButton.setChecked(false);
+            }
+        });
+
+        deleteButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                getMainController().deleteSaveState(idToLoad);
+                idToLoad = -1L;
+                refreshSavestatesTable();
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showLoadOrNewGameMenu(saveStatesMenuTable);
+                backButton.setChecked(false);
+            }
+        });
+
+        addUIElement(buttonsTable, loadButton);
+        addUIElement(buttonsTable, deleteButton);
+        addUIElement(buttonsTable, backButton);
+
+        saveStatesMenuTable.add(savestatesTableScrollPane).expand();
+        saveStatesMenuTable.add(buttonsTable).expand();
     }
 
     private void cleanupNewOrEditProfileMenu() {
@@ -555,7 +595,8 @@ public class MenuScreen extends BaseScreen {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showMainMenu(clientOrServerMenuTable);
+                showSelectGameTypeMenu(clientOrServerMenuTable);
+                //showMainMenu(clientOrServerMenuTable);
                 backButton.setChecked(false);
             }
         });
@@ -709,6 +750,10 @@ public class MenuScreen extends BaseScreen {
 
     private void showLoadOrNewGameMenu(Table callingTable) {
         showTable(callingTable, loadOrNewGameTable);
+    }
+
+    private void showSaveStatesMenuTable(Table callingTable) {
+        showTable(callingTable, saveStatesMenuTable);
     }
 
     private void showClientOrServerMenu(Table callingTable) {

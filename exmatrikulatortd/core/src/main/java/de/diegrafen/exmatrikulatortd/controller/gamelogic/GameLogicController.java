@@ -163,7 +163,7 @@ public class GameLogicController implements LogicController {
      * @param gameScreen Der Spielbildschirm, der reinitialisiert werden soll
      * @param gamestate  Der Spielzustand für die Reinitialisierung
      */
-    private void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
+    void reinitializeGame(GameView gameScreen, Gamestate gamestate) {
         gameScreen.clearGameObjects();
         gamestate.getProjectiles().forEach(projectile -> {
             gameScreen.addProjectile(projectile);
@@ -355,7 +355,7 @@ public class GameLogicController implements LogicController {
             List<Player> playersToSend = new LinkedList<>();
             gamestate.getTowers().forEach(tower -> towersToSend.add(new Tower(tower)));
             gamestate.getPlayers().forEach(player -> playersToSend.add(new Player(player)));
-            gameServer.sendServerGameState(towersToSend, playersToSend);
+            gameServer.sendServerGameState(new Gamestate(gamestate));
         }
         gamestate.setNewRound(true);
         gamestate.setRoundEnded(false);
@@ -400,10 +400,10 @@ public class GameLogicController implements LogicController {
 
         TiledMapTileLayer buildPermissionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Kollisionsmatrix");
 
-        for (int i = 0; i < numberOfRows; i++) {
-            for (int j = 0; j < numberOfColumns; j++) {
-                int buildableByPlayer = (int) buildPermissionLayer.getCell(j, i).getTile().getProperties().get("buildableByPlayer");
-                addGameMapTile(j, i, buildableByPlayer, tileWidth, tileHeight);
+        for (int rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+            for (int columnNumber = 0; columnNumber < numberOfColumns; columnNumber++) {
+                int buildableByPlayer = (int) buildPermissionLayer.getCell(columnNumber, rowNumber).getTile().getProperties().get("buildableByPlayer");
+                addGameMapTile(columnNumber, rowNumber, buildableByPlayer, tileWidth, tileHeight);
             }
         }
     }
@@ -440,6 +440,14 @@ public class GameLogicController implements LogicController {
         return (int) yPosition / gamestate.getTileHeight();
     }
 
+    /**
+     *
+     * Gibt eine Spielfeldzelle auf Basis ihrer x- und y-Koordinaten zurück
+     *
+     * @param xCoordinate Die x-Koordinate der Zelle
+     * @param yCoordinate Die y-Koordinate der Zelle
+     * @return Die Zelle des Spielfelds
+     */
     Coordinates getMapCellByXandYCoordinates(int xCoordinate, int yCoordinate) {
 
         yCoordinate *= gamestate.getNumberOfColumns();
@@ -447,13 +455,14 @@ public class GameLogicController implements LogicController {
         return gamestate.getMapCellByListIndex(xCoordinate + yCoordinate);
     }
 
-
     /**
      *
-     * @param tower
-     * @param xCoordinate
-     * @param yCoordinate
-     * @param playerNumber
+     * Fügt einen Turm zum Spiel hinzu
+     *
+     * @param tower Der hinzuzufügende Turm
+     * @param xCoordinate Die x-Koordinate, an der der Turm errichtet werden soll
+     * @param yCoordinate Die y-Koordinate, an der der Turm errichtet werden soll
+     * @param playerNumber Die Nummer des Spielers, zu der der Turm gehört
      */
     void addTower(Tower tower, int xCoordinate, int yCoordinate, int playerNumber) {
         tower.setPlayerNumber(playerNumber);
@@ -466,8 +475,6 @@ public class GameLogicController implements LogicController {
         gamestate.addTower(tower);
         gameScreen.addTower(tower);
     }
-
-
 
     /**
      * Baut einen neuen Turm an den angegebenen Koordinaten auf der Karte
@@ -558,9 +565,9 @@ public class GameLogicController implements LogicController {
 
     /**
      * Überprüft, ob ein Spieler zu einer Spielernummer existiert
-     * @param playerNumber
-     * @param gamestate
-     * @return
+     * @param playerNumber Die zu überprüfende Spielernummer
+     * @param gamestate Der Spielzustand, der überprüft wird
+     * @return true, wenn ein Spieler mit dieser Nummer existiert, ansonsten false
      */
     private boolean playerExists(int playerNumber, Gamestate gamestate) {
         return playerNumber >= 0 | gamestate.getPlayers().size() < playerNumber;
@@ -569,9 +576,9 @@ public class GameLogicController implements LogicController {
     /**
      * Überprüft, ob sich auf einem Feld des Spielwelt ein Turm befindet
      *
-     * @param xCoordinate
-     * @param yCoordinate
-     * @return
+     * @param xCoordinate Die abgefragte x-Koordinate
+     * @param yCoordinate Die abgefragte y-Koordinate
+     * @return true, wenn sich auf dem Feld ein Turm befindet, ansonsten false
      */
     public boolean hasCellTower(int xCoordinate, int yCoordinate) {
         Coordinates coordinates = getMapCellByXandYCoordinates(xCoordinate, yCoordinate);
@@ -775,15 +782,6 @@ public class GameLogicController implements LogicController {
     }
 
     /**
-     * Lädt ein Spiel
-     * @param id
-     */
-    @Override
-    public void loadGame(int id) {
-
-    }
-
-    /**
      * Rüstet einen Turm gemäß der in ihm festgelegten Upgrade-Wert auf.
      * @param tower Der aufzurüstende Turm
      */
@@ -829,7 +827,7 @@ public class GameLogicController implements LogicController {
     /**
      * Gibt die Nummer des lokalen Spielers zurück
      *
-     * @return
+     * @return Die Nummer des lokalen Spielers
      */
     public int getLocalPlayerNumber() {
         return localPlayerNumber;
@@ -854,7 +852,6 @@ public class GameLogicController implements LogicController {
 
     @Override
     public boolean isActiveRound() {
-        // TODO: Bestimmung, wann eine Runde aktiv ist, sollte vereinfacht werden
         return gamestate.getTimeUntilNextRound() < 0;
     }
 

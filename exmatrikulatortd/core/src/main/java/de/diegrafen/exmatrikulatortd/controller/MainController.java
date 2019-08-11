@@ -301,7 +301,7 @@ public class MainController {
     public void loadMultiPlayerClientGame(SaveState saveState, int allocatedPlayerNumber) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new ClientGameLogicController(this, saveState, allocatedPlayerNumber, gameScreen, gameClient);
-        showScreen(gameScreen);
+        //showScreen(gameScreen);
     }
 
     /**
@@ -320,7 +320,7 @@ public class MainController {
     public void loadMultiPlayerServerGame(SaveState saveState) {
         GameView gameScreen = new GameScreen(this, game.getAssetManager());
         new GameLogicController(this, saveState, gameScreen, gameServer);
-        showScreen(gameScreen);
+        //showScreen(gameScreen);
     }
 
     private List<Profile> retrieveProfiles() {
@@ -454,5 +454,10 @@ public class MainController {
             menuScreen.addSaveStateButton("Player name:" + saveState.getProfile().getProfileName() + "\n" + saveState.getSaveStateName() + "\nSaved: " + saveState.getSaveDate().toString(),
                     saveState.getId());
         }
+    }
+
+    public void deleteSaveState(Long idToLoad) {
+        SaveState saveState = saveStateDao.retrieve(idToLoad);
+        saveStateDao.delete(saveState);
     }
 }
