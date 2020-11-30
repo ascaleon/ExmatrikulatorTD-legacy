@@ -31,8 +31,6 @@ public class TowerObject extends BaseObject {
 
     private boolean lookingLeft = false;
 
-    private float attackFrameDuration;
-
     float speed = 1;
 
     public TowerObject (ObservableTower observableUnit, AssetManager assetManager) {
@@ -81,7 +79,7 @@ public class TowerObject extends BaseObject {
         super.update();
 
         if (getObservable() != null) {
-            attackFrameDuration = getObservable().getCurrentAttackSpeed()/attackLeftAnimation.getKeyFrames().length;
+            float attackFrameDuration = getObservable().getCurrentAttackSpeed() / attackLeftAnimation.getKeyFrames().length;
             if (attackFrameDuration < 0.05f){
                 attackLeftAnimation.setFrameDuration(attackFrameDuration);
                 attackRightAnimation.setFrameDuration(attackFrameDuration);
